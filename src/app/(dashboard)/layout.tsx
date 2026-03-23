@@ -74,7 +74,7 @@ export default function DashboardLayout({
   useEffect(() => {
     setIsMounted(true)
     // Check for saved preference
-    const saved = localStorage.getItem('aqinvest-sidebar-collapsed')
+    const saved = localStorage.getItem('investiq-sidebar-collapsed')
     if (saved) {
       setIsSidebarCollapsed(JSON.parse(saved))
     }
@@ -83,19 +83,19 @@ export default function DashboardLayout({
   const toggleSidebar = () => {
     const newState = !isSidebarCollapsed
     setIsSidebarCollapsed(newState)
-    localStorage.setItem('aqinvest-sidebar-collapsed', JSON.stringify(newState))
+    localStorage.setItem('investiq-sidebar-collapsed', JSON.stringify(newState))
   }
 
   const user = authUser
     ? { name: authUser.name ?? null, email: authUser.email ?? null, image: authUser.image ?? null, plan: (authUser as any).plan ?? 'free' }
-    : { name: 'Rafael Demo', email: 'demo@aqinvest.com.br', image: null, plan: 'elite' }
+    : { name: 'Demo', email: 'demo@investiq.com.br', image: null, plan: 'pro' }
 
   if (!isMounted) {
     return (
       <div className="min-h-screen bg-[var(--bg)]">
         <div className="flex items-center justify-center h-screen">
           <div className="w-10 h-10 rounded-[var(--radius)] bg-[var(--accent-1)] flex items-center justify-center animate-pulse">
-            <span className="text-white font-bold text-[var(--text-subheading)]">aQ</span>
+            <span className="text-white font-bold text-[var(--text-subheading)]">IQ</span>
           </div>
         </div>
       </div>

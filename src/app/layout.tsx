@@ -2,9 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { ThemeProvider } from '@/lib/theme'
-import { TRPCProvider } from '@/lib/trpc/provider'
-import { AuthProvider } from '@/lib/auth/provider'
-import { OrganizationJsonLd, SoftwareApplicationJsonLd } from '@/components/seo'
+import { QueryProvider } from '@/lib/api/query-provider'
 import './globals.css'
 
 // Geist Sans (--font-geist-sans): fonte principal para UI, headings e body text.
@@ -13,16 +11,16 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: 'aQ-Invest | Inteligência que valoriza',
-    template: '%s | aQ-Invest',
+    default: 'InvestIQ | Inteligência Quantamental',
+    template: '%s | InvestIQ',
   },
   description:
-    'Plataforma premium de analytics de investimentos com aQ Intelligence™. Análise fundamentalista com motor proprietário, portfólio analytics e gestão de carteira numa única experiência.',
+    'Plataforma de inteligência quantamental para ações brasileiras. Motor IQ-Cognit com IQ-Score proprietário, valuation DCF/Gordon, screener avançado e gestão de carteira.',
   keywords: [
     'investimentos',
     'ações',
     'análise fundamentalista',
-    'aQ Score',
+    'IQ-Score',
     'portfolio',
     'ações brasileiras',
     'B3',
@@ -30,15 +28,15 @@ export const metadata: Metadata = {
     'analytics',
     'bolsa de valores',
   ],
-  authors: [{ name: 'aQ-Invest' }],
-  creator: 'aQ-Invest',
-  publisher: 'aQ-Invest',
+  authors: [{ name: 'InvestIQ' }],
+  creator: 'InvestIQ',
+  publisher: 'InvestIQ',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://aqinvest.com.br'),
+  metadataBase: new URL('https://investiq.com.br'),
   alternates: {
     canonical: '/',
   },
@@ -52,26 +50,26 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://aqinvest.com.br',
-    siteName: 'aQ-Invest',
-    title: 'aQ-Invest | Inteligência que valoriza',
+    url: 'https://investiq.com.br',
+    siteName: 'InvestIQ',
+    title: 'InvestIQ | Inteligência Quantamental',
     description:
-      'Plataforma premium de analytics de investimentos com aQ Intelligence™.',
+      'Motor IQ-Cognit com IQ-Score proprietário para ações brasileiras.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'aQ-Invest - Inteligência que valoriza',
+        alt: 'InvestIQ - Inteligência Quantamental',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'aQ-Invest',
-    description: 'Inteligência que valoriza.',
+    title: 'InvestIQ',
+    description: 'Inteligência Quantamental.',
     images: ['/og-image.png'],
-    creator: '@aqinvest',
+    creator: '@investiq',
   },
   robots: {
     index: true,
@@ -108,13 +106,9 @@ export default function RootLayout({
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <body className="min-h-screen font-sans antialiased">
-        <OrganizationJsonLd />
-        <SoftwareApplicationJsonLd />
-        <AuthProvider>
-          <TRPCProvider>
-            <ThemeProvider>{children}</ThemeProvider>
-          </TRPCProvider>
-        </AuthProvider>
+        <QueryProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   )

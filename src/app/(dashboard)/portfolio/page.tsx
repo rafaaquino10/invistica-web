@@ -2,325 +2,236 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
-import { Button, Modal, Input, ScoreBadge, ChangeIndicator, ScrollableStrip } from '@/components/ui'
-import { AssetLogo } from '@/components/ui/asset-logo'
-import { trpc } from '@/lib/trpc/provider'
-import { formatCurrency } from '@/lib/utils/formatters'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { Button, Modal, Input, Skeleton } from '@/components/ui'
 import { cn } from '@/lib/utils'
-import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
+import { pro } from '@/lib/api/endpoints'
+import { useAuth } from '@/hooks/use-auth'
 
-// Carteira de exemplo — 5 ações PoC
-const SAMPLE_PORTFOLIO = [
-  { ticker: 'PRIO3', quantity: 50, price: 42.50 },
-  { ticker: 'WEGE3', quantity: 30, price: 35.80 },
-  { ticker: 'EQTL3', quantity: 40, price: 31.20 },
-  { ticker: 'ITSA4', quantity: 100, price: 10.50 },
-  { ticker: 'GMAT3', quantity: 80, price: 7.90 },
-]
+function fmtR$(val: number): string {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val)
+}
+
+function pct(value: number): string {
+  const sign = value >= 0 ? '+' : ''
+  return `${sign}${value.toFixed(2).replace('.', ',')}%`
+}
 
 export default function PortfolioPage() {
-  const router = useRouter()
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [newPortfolioName, setNewPortfolioName] = useState('')
-  const [isCreatingSample, setIsCreatingSample] = useState(false)
+  const { token } = useAuth()
+  const queryClient = useQueryClient()
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [newTicker, setNewTicker] = useState('')
+  const [newQty, setNewQty] = useState('')
+  const [newPrice, setNewPrice] = useState('')
 
-  const utils = trpc.useUtils()
+  const { data: portfolio, isLoading } = useQuery({
+    queryKey: ['portfolio'],
+    queryFn: () => pro.getPortfolio(token ?? undefined),
+  })
 
-  const { data: portfolios, isLoading } = trpc.portfolio.list.useQuery()
-
-  const createPortfolio = trpc.portfolio.create.useMutation({
-    onSuccess: (data) => {
-      utils.portfolio.list.invalidate()
-      setIsCreateModalOpen(false)
-      setNewPortfolioName('')
-      // Redireciona para a carteira criada
-      if (data?.id) {
-        router.push(`/portfolio/${data.id}`)
-      }
+  const addMutation = useMutation({
+    mutationFn: (data: { ticker: string; qty: number; avg_price: number }) =>
+      pro.addPosition(data, token ?? undefined),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['portfolio'] })
+      setShowAddForm(false)
+      setNewTicker('')
+      setNewQty('')
+      setNewPrice('')
     },
   })
 
-  const addTransaction = trpc.portfolio.addTransaction.useMutation()
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => pro.deletePosition(id, token ?? undefined),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['portfolio'] }),
+  })
 
-  const handleCreatePortfolio = () => {
-    if (newPortfolioName.trim()) {
-      createPortfolio.mutate({
-        name: newPortfolioName.trim(),
-        isDefault: portfolios?.length === 0,
-      })
-    }
-  }
-
-  const handleCreateSamplePortfolio = async () => {
-    setIsCreatingSample(true)
-    try {
-      const portfolio = await createPortfolio.mutateAsync({
-        name: 'Minha Carteira',
-        description: 'Carteira de exemplo com 5 ações',
-        isDefault: true,
-      })
-      if (portfolio?.id) {
-        for (const stock of SAMPLE_PORTFOLIO) {
-          await addTransaction.mutateAsync({
-            portfolioId: portfolio.id,
-            ticker: stock.ticker,
-            type: 'BUY',
-            date: new Date(),
-            quantity: stock.quantity,
-            price: stock.price,
-            fees: 0,
-          })
-        }
-        utils.portfolio.list.invalidate()
-        router.push(`/portfolio/${portfolio.id}`)
-      }
-    } finally {
-      setIsCreatingSample(false)
-    }
-  }
-
-  // Totals
-  const totalValue = portfolios?.reduce((sum, p) => sum + p.totalValue, 0) ?? 0
-  const totalCost = portfolios?.reduce((sum, p) => sum + p.totalCost, 0) ?? 0
-  const totalGainLoss = totalValue - totalCost
-  const totalGainLossPercent = totalCost > 0 ? (totalGainLoss / totalCost) * 100 : 0
-  const avgAqScore = portfolios?.length
-    ? portfolios.reduce((sum, p) => sum + p.avgAqScore, 0) / portfolios.length
-    : 0
-  const totalPositions = portfolios?.reduce((sum, p) => sum + p.positionsCount, 0) ?? 0
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="h-10 w-48 bg-[var(--surface-2)] rounded-lg animate-pulse" />
-        <div className="h-20 bg-[var(--surface-2)] rounded-[var(--radius)] animate-pulse" />
-        <div className="h-64 bg-[var(--surface-2)] rounded-[var(--radius)] animate-pulse" />
-      </div>
-    )
-  }
+  const positions = portfolio?.positions ?? []
+  const totalValue = positions.reduce((s, p) => s + p.current_price * p.qty, 0)
+  const totalCost = positions.reduce((s, p) => s + p.avg_price * p.qty, 0)
+  const totalGain = totalValue - totalCost
+  const totalGainPct = totalCost > 0 ? (totalGain / totalCost) * 100 : 0
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-[var(--text-title)] font-bold tracking-tight">Portfólio</h1>
-          <p className="text-[var(--text-small)] text-[var(--text-2)] mt-0.5">
-            {portfolios?.length ?? 0} carteira{(portfolios?.length ?? 0) !== 1 ? 's' : ''} · {totalPositions} posições
-          </p>
+          <h1 className="text-xl font-bold text-[var(--text-1)]">Portfolio</h1>
+          <p className="text-[var(--text-small)] text-[var(--text-2)]">{positions.length} posicoes</p>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)} size="sm">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Nova Carteira
-        </Button>
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="px-4 py-2 bg-[var(--accent-1)] text-white text-sm font-medium rounded-lg hover:opacity-90 transition-opacity"
+        >
+          + Adicionar Acao
+        </button>
       </div>
 
-      {/* KPI Strip — inline horizontal */}
-      <ScrollableStrip>
-        <div className="flex items-center gap-8 pb-1">
-          <div>
-            <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-0.5">Patrimônio</p>
-            <p className="text-[var(--text-heading)] font-bold font-mono">{formatCurrency(totalValue)}</p>
-          </div>
-          <div className="w-px h-10 bg-[var(--border-1)]/30 flex-shrink-0" />
-          <div>
-            <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-0.5">Resultado</p>
-            <p className={cn('text-[var(--text-heading)] font-bold font-mono', totalGainLoss >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
-              {totalGainLoss >= 0 ? '+' : ''}{formatCurrency(totalGainLoss)}
-            </p>
-            <ChangeIndicator value={totalGainLossPercent} size="sm" />
-          </div>
-          <div className="w-px h-10 bg-[var(--border-1)]/30 flex-shrink-0" />
-          <div>
-            <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-0.5">Score Médio</p>
-            <ScoreBadge score={avgAqScore} size="lg" showBar />
-          </div>
-          <div className="w-px h-10 bg-[var(--border-1)]/30 flex-shrink-0" />
-          <div>
-            <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-0.5">Custo Total</p>
-            <p className="text-[var(--text-heading)] font-bold font-mono text-[var(--text-2)]">{formatCurrency(totalCost)}</p>
-          </div>
+      {/* Summary */}
+      {positions.length > 0 && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <SummaryCard label="Patrimonio" value={fmtR$(totalValue)} />
+          <SummaryCard label="Custo Total" value={fmtR$(totalCost)} />
+          <SummaryCard
+            label="Ganho/Perda"
+            value={fmtR$(totalGain)}
+            valueColor={totalGain >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'}
+          />
+          <SummaryCard
+            label="Rentabilidade"
+            value={pct(totalGainPct)}
+            valueColor={totalGainPct >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'}
+          />
         </div>
-      </ScrollableStrip>
+      )}
 
-      {/* Empty State */}
-      {(!portfolios || portfolios.length === 0) && (
-        <div className="py-16 text-center border border-dashed border-[var(--border-1)] rounded-[var(--radius)]">
-          <div className="w-14 h-14 mx-auto mb-4 rounded-[var(--radius)] bg-[var(--accent-1)]/10 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accent-1)]">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-            </svg>
-          </div>
-          <h3 className="font-semibold mb-1">Comece em menos de 3 minutos</h3>
-          <p className="text-[var(--text-small)] text-[var(--text-2)] mb-5 max-w-sm mx-auto">
-            Adicione suas 3 principais ações ou use nossa carteira de exemplo para ver o diagnóstico completo.
-          </p>
-          <div className="flex items-center gap-3 justify-center">
-            <Button onClick={() => setIsCreateModalOpen(true)} size="sm">
-              Criar Carteira
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleCreateSamplePortfolio}
-              disabled={isCreatingSample}
+      {/* Add Form */}
+      {showAddForm && (
+        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-4">
+          <h3 className="font-semibold text-[var(--text-1)] mb-3">Adicionar Posicao</h3>
+          <div className="flex flex-wrap gap-3 items-end">
+            <div>
+              <label className="text-[var(--text-caption)] text-[var(--text-2)] block mb-1">Ticker</label>
+              <input
+                value={newTicker}
+                onChange={(e) => setNewTicker(e.target.value.toUpperCase())}
+                placeholder="VALE3"
+                className="w-28 px-3 py-2 text-sm rounded-lg bg-[var(--bg)] border border-[var(--border-1)] text-[var(--text-1)] font-mono"
+              />
+            </div>
+            <div>
+              <label className="text-[var(--text-caption)] text-[var(--text-2)] block mb-1">Quantidade</label>
+              <input
+                type="number"
+                value={newQty}
+                onChange={(e) => setNewQty(e.target.value)}
+                placeholder="100"
+                className="w-24 px-3 py-2 text-sm rounded-lg bg-[var(--bg)] border border-[var(--border-1)] text-[var(--text-1)] font-mono"
+              />
+            </div>
+            <div>
+              <label className="text-[var(--text-caption)] text-[var(--text-2)] block mb-1">Preco Medio</label>
+              <input
+                type="number"
+                step="0.01"
+                value={newPrice}
+                onChange={(e) => setNewPrice(e.target.value)}
+                placeholder="85.00"
+                className="w-28 px-3 py-2 text-sm rounded-lg bg-[var(--bg)] border border-[var(--border-1)] text-[var(--text-1)] font-mono"
+              />
+            </div>
+            <button
+              onClick={() => addMutation.mutate({
+                ticker: newTicker,
+                qty: Number(newQty),
+                avg_price: Number(newPrice),
+              })}
+              disabled={!newTicker || !newQty || !newPrice || addMutation.isPending}
+              className="px-4 py-2 bg-[var(--accent-1)] text-white text-sm font-medium rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
-              {isCreatingSample ? 'Criando...' : 'Usar carteira de exemplo'}
-            </Button>
+              {addMutation.isPending ? 'Salvando...' : 'Salvar'}
+            </button>
+            <button
+              onClick={() => setShowAddForm(false)}
+              className="px-4 py-2 text-sm text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors"
+            >
+              Cancelar
+            </button>
           </div>
         </div>
       )}
 
-      {/* Portfolio Cards — ordenado: principal primeiro, depois por valor */}
-      {portfolios && portfolios.length > 0 && (
-        <motion.div
-          className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
-          variants={staggerContainer}
-          initial="hidden"
-          animate="show"
-        >
-          {[...portfolios]
-            .sort((a, b) => {
-              if (a.isDefault && !b.isDefault) return -1
-              if (!a.isDefault && b.isDefault) return 1
-              return b.totalValue - a.totalValue
-            })
-            .map((portfolio) => {
-              const health = portfolio.avgAqScore
-              const borderColor = health > 60
-                ? 'border-[var(--pos)]/30'
-                : health > 30
-                  ? 'border-amber-500/30'
-                  : 'border-[var(--neg)]/30'
+      {/* Positions Table */}
+      <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[var(--border-1)] bg-[var(--bg)]">
+                <th className="text-left px-4 py-3 text-[var(--text-2)] font-medium">Ativo</th>
+                <th className="text-right px-4 py-3 text-[var(--text-2)] font-medium">Qtd</th>
+                <th className="text-right px-4 py-3 text-[var(--text-2)] font-medium">PM</th>
+                <th className="text-right px-4 py-3 text-[var(--text-2)] font-medium">Atual</th>
+                <th className="text-right px-4 py-3 text-[var(--text-2)] font-medium">Valor</th>
+                <th className="text-right px-4 py-3 text-[var(--text-2)] font-medium">Ganho</th>
+                <th className="text-right px-4 py-3 text-[var(--text-2)] font-medium">IQ-Score</th>
+                <th className="text-center px-4 py-3 text-[var(--text-2)] font-medium">Acoes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="border-b border-[var(--border-1)]/50">
+                    <td className="px-4 py-3" colSpan={8}><Skeleton className="h-6" /></td>
+                  </tr>
+                ))
+              ) : positions.length > 0 ? (
+                positions.map((pos) => {
+                  const value = pos.current_price * pos.qty
+                  const cost = pos.avg_price * pos.qty
+                  const gain = value - cost
+                  const gainPct = cost > 0 ? (gain / cost) * 100 : 0
 
-              return (
-                <motion.div key={portfolio.id} variants={fadeInUp}>
-                <Link href={`/portfolio/${portfolio.id}`} className="group">
-                  <div className={cn(
-                    'h-full rounded-[var(--radius)] bg-[var(--surface-1)] p-5 transition-all group-hover:shadow-md border',
-                    borderColor,
-                    portfolio.isDefault && 'ring-1 ring-[var(--accent-1)]/30',
-                  )}>
-                    {/* Card Header */}
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-[var(--text-base)] font-semibold truncate group-hover:text-[var(--accent-1)] transition-colors">
-                            {portfolio.name}
-                          </h3>
-                          {portfolio.isDefault && (
-                            <span className="shrink-0 text-[9px] uppercase tracking-wider font-semibold text-[var(--accent-1)] bg-[var(--accent-1)]/10 px-1.5 py-0.5 rounded">
-                              Principal
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[var(--text-caption)] text-[var(--text-2)] mt-0.5">
-                          {portfolio.positionsCount} {portfolio.positionsCount === 1 ? 'posição' : 'posições'}
-                        </p>
-                      </div>
-                      <ScoreBadge score={portfolio.avgAqScore} size="lg" showLabel />
-                    </div>
-
-                    {/* Value + Return */}
-                    <div className="flex items-baseline gap-2 mb-3">
-                      <span className="text-[var(--text-heading)] font-semibold font-mono">{formatCurrency(portfolio.totalValue)}</span>
-                      <span className={cn(
-                        'text-[var(--text-small)] font-mono',
-                        portfolio.gainLossPercent >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'
-                      )}>
-                        {portfolio.gainLossPercent >= 0 ? '+' : ''}{portfolio.gainLossPercent.toFixed(2)}%
-                      </span>
-                    </div>
-
-                    {/* Top 3 posições com logos */}
-                    {portfolio.topPositions && portfolio.topPositions.length > 0 && (
-                      <div className="flex items-center gap-1.5 mt-2">
-                        {portfolio.topPositions.map((p: { ticker: string; name: string }) => (
-                          <AssetLogo key={p.ticker} ticker={p.ticker} size={22} />
-                        ))}
-                        {portfolio.positionsCount > 3 && (
-                          <span className="text-[var(--text-caption)] text-[var(--text-2)] ml-1">
-                            +{portfolio.positionsCount - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Score bar */}
-                    <div className="mt-3">
-                      <ScoreBadge score={portfolio.avgAqScore} size="sm" showBar />
-                    </div>
-                  </div>
-                </Link>
-                </motion.div>
-              )
-            })}
-
-          {/* New Portfolio Card */}
-          <motion.div variants={fadeInUp}>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="h-full min-h-[160px] border border-dashed border-[var(--border-1)] rounded-[var(--radius)] transition-colors hover:border-[var(--accent-1)]/30 group"
-          >
-            <div className="flex flex-col items-center justify-center h-full text-[var(--text-2)] group-hover:text-[var(--accent-1)] transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mb-2">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-              <span className="text-[var(--text-small)] font-medium">Nova Carteira</span>
-            </div>
-          </button>
-          </motion.div>
-        </motion.div>
-      )}
-
-      {/* Create Portfolio Modal */}
-      <Modal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        title="Nova Carteira"
-      >
-        <div className="space-y-4">
-          <p className="text-[13px] text-[var(--text-2)]">
-            Adicione suas 3 principais ações para começar a ver o diagnóstico completo.
-          </p>
-          <div>
-            <label className="block text-[var(--text-small)] font-medium mb-1.5">Nome da Carteira</label>
-            <Input
-              value={newPortfolioName}
-              onChange={(e) => setNewPortfolioName(e.target.value)}
-              placeholder="Ex: Carteira Principal, Dividendos..."
-              autoFocus
-            />
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleCreateSamplePortfolio}
-              disabled={isCreatingSample || createPortfolio.isPending}
-            >
-              {isCreatingSample ? 'Criando...' : 'Usar carteira de exemplo'}
-            </Button>
-            <div className="flex gap-2">
-              <Button variant="ghost" onClick={() => setIsCreateModalOpen(false)}>
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleCreatePortfolio}
-                disabled={!newPortfolioName.trim() || createPortfolio.isPending}
-              >
-                {createPortfolio.isPending ? 'Criando...' : 'Criar'}
-              </Button>
-            </div>
-          </div>
+                  return (
+                    <tr key={pos.id} className="border-b border-[var(--border-1)]/50 hover:bg-[var(--surface-2)] transition-colors">
+                      <td className="px-4 py-3">
+                        <Link href={`/ativo/${pos.ticker}`} className="hover:text-[var(--accent-1)]">
+                          <p className="font-semibold text-[var(--text-1)]">{pos.ticker}</p>
+                          <p className="text-[var(--text-caption)] text-[var(--text-2)] truncate max-w-[150px]">{pos.company_name}</p>
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-[var(--text-1)]">{pos.qty}</td>
+                      <td className="px-4 py-3 text-right font-mono text-[var(--text-1)]">{fmtR$(pos.avg_price)}</td>
+                      <td className="px-4 py-3 text-right font-mono text-[var(--text-1)]">{fmtR$(pos.current_price)}</td>
+                      <td className="px-4 py-3 text-right font-mono text-[var(--text-1)]">{fmtR$(value)}</td>
+                      <td className="px-4 py-3 text-right">
+                        <span className={cn('font-mono', gain >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
+                          {pct(gainPct)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <span className={cn('font-mono font-bold',
+                          (pos.iq_score ?? 0) >= 65 ? 'text-[var(--pos)]' : 'text-[var(--text-1)]'
+                        )}>
+                          {pos.iq_score ?? '--'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() => {
+                            if (confirm(`Remover ${pos.ticker} do portfolio?`)) {
+                              deleteMutation.mutate(pos.id)
+                            }
+                          }}
+                          className="text-[var(--neg)] hover:text-[var(--neg)]/80 text-xs"
+                        >
+                          Remover
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                })
+              ) : (
+                <tr>
+                  <td className="px-4 py-12 text-center text-[var(--text-2)]" colSpan={8}>
+                    <p className="text-lg mb-2">Nenhuma posicao</p>
+                    <p className="text-sm">Clique em &quot;+ Adicionar Acao&quot; para comecar.</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      </Modal>
+      </div>
+    </div>
+  )
+}
+
+function SummaryCard({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
+  return (
+    <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-4">
+      <p className="text-[var(--text-caption)] text-[var(--text-2)] uppercase tracking-wider mb-1">{label}</p>
+      <p className={cn('font-mono text-lg font-bold', valueColor || 'text-[var(--text-1)]')}>{value}</p>
     </div>
   )
 }
