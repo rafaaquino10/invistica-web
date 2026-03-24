@@ -357,4 +357,30 @@ export const pro = {
     apiFetch<{ mandate: string; weights: Record<string, unknown> }>(
       `/portfolio/${portfolioId}/mandate`, { token },
     ),
+
+  // Analytics
+  getICTimeline: (months = 12, token?: string) =>
+    apiFetch<{ snapshots: Array<{ reference_date: string; ic_spearman: number; hit_rate: number }>; metrics: Record<string, unknown> }>(
+      `/analytics/ic-timeline${qs({ months })}`, { token },
+    ),
+
+  getSignalDecay: (token?: string) =>
+    apiFetch<{ quintiles: Array<{ quintile: string; label: string; count: number; avg_iq_score: number; avg_quanti: number; avg_quali: number; avg_valuation: number }>; count: number }>(
+      '/analytics/signal-decay', { token },
+    ),
+
+  getSensitivity: (token?: string) =>
+    apiFetch<{ scenarios: Array<{ name: string; variable: string; current: number; stressed: number; impact_score: number; description: string; affected_sectors: string[] }>; macro: Record<string, unknown> }>(
+      '/analytics/sensitivity', { token },
+    ),
+
+  getPortfolioAttribution: (portfolioId: string, token?: string) =>
+    apiFetch<{ total_invested: number; total_current: number; total_return_pct: number; by_sector: Array<{ cluster_id: number; tickers: string[]; weight_pct: number; return_pct: number; contribution: number }> }>(
+      `/analytics/portfolio/${portfolioId}/attribution`, { token },
+    ),
+
+  getPortfolioRisk: (portfolioId: string, token?: string) =>
+    apiFetch<{ positions: number; hhi: number; concentration: string; top3_weight_pct: number; max_sector_weight_pct: number; weights: Array<{ ticker: string; weight: number; cluster_id: number }> }>(
+      `/analytics/portfolio/${portfolioId}/risk`, { token },
+    ),
 }

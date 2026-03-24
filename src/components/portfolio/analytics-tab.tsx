@@ -1,5 +1,8 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/utils/formatters'
 import {
@@ -47,10 +50,32 @@ function MetricBox({ label, value, sub, color }: { label: string; value: string;
 // ─── Component ──────────────────────────────────────────────────────
 
 export function AnalyticsTab({ portfolioId }: AnalyticsTabProps) {
-  const { data: attribution, isLoading: loadingAttr } = { data: undefined, isLoading: false }
-  const { data: risk, isLoading: loadingRisk } = { data: undefined, isLoading: false }
-  const { data: scenario, isLoading: loadingScenario } = { data: undefined, isLoading: false }
-  const { data: quintile, isLoading: loadingQuintile } = { data: undefined, isLoading: false }
+  const { token } = useAuth()
+
+  const { data: attribution, isLoading: loadingAttr } = useQuery({
+    queryKey: ['portfolio-attribution'],
+    queryFn: () => pro.getPortfolioAttribution('default', token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
+  const { data: risk, isLoading: loadingRisk } = useQuery({
+    queryKey: ['portfolio-risk'],
+    queryFn: () => pro.getPortfolioRisk('default', token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
+  const { data: scenario, isLoading: loadingScenario } = useQuery({
+    queryKey: ['portfolio-scenario'],
+    queryFn: () => pro.getSensitivity(token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
+  const { data: quintile, isLoading: loadingQuintile } = useQuery({
+    queryKey: ['portfolio-quintile'],
+    queryFn: () => pro.getSignalDecay(token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
 
   const isLoading = loadingAttr || loadingRisk || loadingScenario || loadingQuintile
 

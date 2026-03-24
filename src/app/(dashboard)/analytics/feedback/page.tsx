@@ -124,7 +124,12 @@ function FeedbackContent({ forwardDays }: { forwardDays: number }) {
     enabled: !!token,
   })
 
-  const { data: timeline } = { data: undefined, isLoading: false }
+  const { data: timeline } = useQuery({
+    queryKey: ['feedback-timeline'],
+    queryFn: () => pro.getICTimeline(12, token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
   const snapshotCount = timeline?.length ?? 0
 
   if (snapshotCount < 4) {

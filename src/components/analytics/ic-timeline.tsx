@@ -4,6 +4,9 @@
  */
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ReferenceLine, ReferenceArea, ResponsiveContainer,
@@ -16,9 +19,22 @@ interface ICTimelineProps {
 }
 
 export function ICTimeline({ startDate, endDate, forwardDays }: ICTimelineProps) {
-  const { data: snapshots, isLoading } = { data: undefined, isLoading: false }
+  const { token } = useAuth()
 
-  const { data: metrics } = { data: undefined, isLoading: false }
+  const { data: snapshots, isLoading } = useQuery({
+    queryKey: ['ic-timeline'],
+    queryFn: () => pro.getICTimeline(12, token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const { data: metrics } = useQuery({
+    queryKey: ['ic-timeline'],
+    queryFn: () => pro.getICTimeline(12, token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+    select: (result) => result?.metrics,
+  })
 
   const icValue = metrics?.ic?.value
   const icSignificant = metrics?.ic?.isSignificant

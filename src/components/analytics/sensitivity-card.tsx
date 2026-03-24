@@ -1,6 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { REGIME_DISPLAY } from '@/lib/scoring/regime-detector'
@@ -12,8 +15,14 @@ interface SensitivityCardProps {
 
 export function SensitivityCard({ ticker }: SensitivityCardProps) {
   const [expanded, setExpanded] = useState<string | null>(null)
+  const { token } = useAuth()
 
-  const { data: scenarios, isLoading } = { data: undefined, isLoading: false }
+  const { data: scenarios, isLoading } = useQuery({
+    queryKey: ['sensitivity'],
+    queryFn: () => pro.getSensitivity(token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
 
   if (isLoading) {
     return (

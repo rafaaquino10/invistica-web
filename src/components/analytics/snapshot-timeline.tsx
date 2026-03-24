@@ -5,10 +5,20 @@
 'use client'
 
 import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 
 export function SnapshotTimeline() {
   const [expanded, setExpanded] = useState(false)
-  const { data: snapshots, isLoading } = { data: undefined, isLoading: false }
+  const { token } = useAuth()
+
+  const { data: snapshots, isLoading } = useQuery({
+    queryKey: ['snapshot-timeline'],
+    queryFn: () => pro.getICTimeline(24, token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
 
   return (
     <div className="rounded-lg border bg-card p-4 space-y-4">

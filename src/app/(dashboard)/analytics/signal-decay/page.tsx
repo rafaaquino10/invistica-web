@@ -1,5 +1,8 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 import { PaywallGate } from '@/components/billing/paywall-gate'
 import { cn } from '@/lib/utils'
@@ -24,7 +27,14 @@ const PILLAR_COLORS: Record<string, string> = {
 }
 
 export default function SignalDecayPage() {
-  const { data, isLoading } = { data: undefined, isLoading: false }
+  const { token } = useAuth()
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['signal-decay'],
+    queryFn: () => pro.getSignalDecay(token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
 
   return (
     <div className="space-y-6">
