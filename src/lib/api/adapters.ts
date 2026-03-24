@@ -131,10 +131,10 @@ export function adaptScoreToAsset(
   // Adapt financials
   const adaptedFundamentals: AdaptedFundamental[] = (financials ?? []).map((f: Record<string, unknown>) => ({
     periodType: 'annual' as const,
-    roe: f.roe as number | undefined,
-    margemLiquida: f.net_margin as number | undefined,
-    netDebtEbitda: f.dl_ebitda as number | undefined,
-    patrimLiquido: f.equity as number | undefined,
+    roe: f['roe'] as number | undefined,
+    margemLiquida: f['net_margin'] as number | undefined,
+    netDebtEbitda: f['dl_ebitda'] as number | undefined,
+    patrimLiquido: f['equity'] as number | undefined,
   }))
 
   return {
@@ -161,7 +161,7 @@ export function adaptScoreToAsset(
       metadata: { confiabilidade: 0.85 },
     },
     narrative: {
-      badge: ratingBadges[iq.rating] ?? ratingBadges.HOLD,
+      badge: ratingBadges[iq.rating] ?? ratingBadges['HOLD']!,
       oneLiner: score.thesis_summary ?? '',
       researchNote: score.thesis_summary ?? '',
       highlights: {

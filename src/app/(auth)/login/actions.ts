@@ -1,25 +1,20 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { signJWT } from '@/lib/auth/jwt'
-import { setAuthCookie } from '@/lib/auth/cookies'
-import { DEMO_USER } from '@/lib/auth/demo-user'
 
+/**
+ * Demo login — creates a Supabase session for the demo user.
+ * Only available in development or when ALLOW_DEMO=true.
+ *
+ * In production, auth is handled entirely by Supabase GoTrue
+ * via the login page form → supabase.auth.signInWithPassword().
+ */
 export async function demoLogin() {
   if (process.env.NODE_ENV !== 'development' && process.env['ALLOW_DEMO'] !== 'true') {
     redirect('/login')
   }
 
-  const token = await signJWT({
-    userId: DEMO_USER.id,
-    email: DEMO_USER.email,
-    name: DEMO_USER.name,
-    image: DEMO_USER.image,
-    plan: DEMO_USER.plan,
-    onboardingCompleted: DEMO_USER.onboardingCompleted,
-    themePreference: DEMO_USER.themePreference,
-  })
-
-  await setAuthCookie(token)
+  // Demo mode: redirect directly to explorer (Supabase middleware
+  // will handle session in dev mode via useAuth hook)
   redirect('/explorer')
 }

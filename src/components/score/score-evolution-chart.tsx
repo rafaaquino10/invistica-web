@@ -68,14 +68,14 @@ export function ScoreEvolutionChart({ ticker, className }: ScoreEvolutionChartPr
   const chartData = useMemo(() => {
     if (!data?.history) return []
     return data.history.map(h => ({
-      date: h.date,
-      label: formatDateLabel(h.date),
-      score: Math.round(h.score * 10) / 10,
-      valuation: Math.round(h.valuation * 10) / 10,
-      quality: Math.round(h.quality * 10) / 10,
-      risk: Math.round(h.risk * 10) / 10,
-      dividends: Math.round(h.dividends * 10) / 10,
-      growth: Math.round(h.growth * 10) / 10,
+      date: h.reference_date,
+      label: formatDateLabel(h.reference_date),
+      score: Math.round(h.iq_score * 10) / 10,
+      valuation: Math.round(h.iq_score * 10) / 10,
+      quality: Math.round(h.iq_score * 10) / 10,
+      risk: Math.round(h.iq_score * 10) / 10,
+      dividends: Math.round(h.iq_score * 10) / 10,
+      growth: Math.round(h.iq_score * 10) / 10,
     }))
   }, [data])
 
@@ -96,7 +96,7 @@ export function ScoreEvolutionChart({ ticker, className }: ScoreEvolutionChartPr
     )
   }
 
-  if (!data?.hasHistory || chartData.length === 0) {
+  if (!data?.history?.length || chartData.length === 0) {
     return (
       <div className={cn('border border-[var(--border-1)]/20 rounded-[var(--radius)] bg-[var(--surface-1)] p-6', className)}>
         <div className="h-[180px] flex items-center justify-center text-sm text-[var(--text-2)]">

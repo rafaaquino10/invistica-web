@@ -23,9 +23,9 @@ function mapUser(user: User): AuthUser {
   return {
     id: user.id,
     email: user.email ?? null,
-    name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
-    image: user.user_metadata?.avatar_url ?? null,
-    plan: user.user_metadata?.plan ?? 'free',
+    name: user.user_metadata?.['full_name'] ?? user.user_metadata?.['name'] ?? null,
+    image: user.user_metadata?.['avatar_url'] ?? null,
+    plan: user.user_metadata?.['plan'] ?? 'free',
   }
 }
 

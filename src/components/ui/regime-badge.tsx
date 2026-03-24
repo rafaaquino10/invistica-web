@@ -23,10 +23,10 @@ export function RegimeBadge() {
   const colors = colorMap[regimeKey] ?? colorMap.neutral
 
   return (
-    <div className="hidden md:flex items-center" title={`${regime.description ?? 'Regime macro'}\nSELIC: ${regime.selic ?? '?'}%`}>
+    <div className="hidden md:flex items-center" title={`${regime.description ?? 'Regime macro'}\nSELIC: ${regime.inputSelic ?? '?'}%`}>
       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-[var(--radius-sm)] text-[11px] font-medium border ${colors}`}>
-        <span>{regime.display?.emoji ?? ''}</span>
-        <span>{regime.display?.label ?? regimeKey}</span>
+        <span>{regimeKey === 'risk_on' ? '🟢' : regimeKey === 'risk_off' ? '🔴' : '🟡'}</span>
+        <span>{regimeKey === 'risk_on' ? 'Risk On' : regimeKey === 'risk_off' ? 'Risk Off' : 'Neutro'}</span>
       </span>
     </div>
   )
