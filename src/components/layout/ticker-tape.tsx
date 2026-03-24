@@ -3,7 +3,8 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { trpc } from '@/lib/trpc/client'
+import { useQuery } from '@tanstack/react-query'
+import { free } from '@/lib/api/endpoints'
 
 const MARQUEE_TICKERS = [
   'PETR4', 'VALE3', 'ITUB4', 'BBAS3', 'WEGE3', 'ABEV3', 'RENT3', 'SUZB3',
@@ -11,55 +12,40 @@ const MARQUEE_TICKERS = [
   'LREN3', 'PRIO3', 'CSAN3', 'ELET3', 'TAEE11', 'SBSP3', 'ENEV3', 'RDOR3',
 ]
 
-interface MacroItem {
-  label: string
-  value: string
-  change?: number
+interface TickerQuote {
+  ticker: string
+  close: number
+  change: number
 }
 
 export function TickerTape() {
   const [isPaused, setIsPaused] = useState(false)
 
-  const { data } = trpc.screener.query.useQuery({
-    pageSize: 50,
-    sortBy: 'scoreTotal',
-    sortOrder: 'desc',
+  // Fetch quotes for marquee tickers
+  const { data: tickersData } = useQuery({
+    queryKey: ['ticker-tape'],
+    queryFn: async () => {
+      const results: TickerQuote[] = []
+      // Fetch quotes in parallel (batch of main tickers)
+      const promises = MARQUEE_TICKERS.map(async (ticker) => {
+        try {
+          const quote = await free.getQuote(ticker)
+          return { ticker, close: quote.close, change: 0 }
+        } catch {
+          return null
+        }
+      })
+      const settled = await Promise.all(promises)
+      for (const r of settled) {
+        if (r) results.push(r)
+      }
+      return results
+    },
+    staleTime: 15 * 60 * 1000, // 15min cache
+    refetchInterval: 15 * 60 * 1000,
   })
 
-  const { data: economy } = trpc.economy.indicators.useQuery()
-
-  const macroItems = useMemo<MacroItem[]>(() => {
-    if (!economy) return []
-    const items: MacroItem[] = []
-    if (economy.ibov?.points) {
-      items.push({ label: 'IBOV', value: economy.ibov.points.toLocaleString('pt-BR'), change: economy.ibov.change })
-    }
-    if (economy.usdBrl?.bid) {
-      items.push({ label: 'USD/BRL', value: `R$ ${Number(economy.usdBrl.bid).toFixed(2)}`, change: economy.usdBrl.change })
-    }
-    if (economy.eurBrl?.bid) {
-      items.push({ label: 'EUR/BRL', value: `R$ ${Number(economy.eurBrl.bid).toFixed(2)}`, change: economy.eurBrl.change })
-    }
-    return items
-  }, [economy])
-
-  const tickers = useMemo(() => {
-    if (!data?.assets) return []
-    const assetMap = new Map(data.assets.map((a: any) => [a.ticker, a]))
-    const result: any[] = []
-    const seen = new Set<string>()
-
-    for (const t of MARQUEE_TICKERS) {
-      const a = assetMap.get(t)
-      if (a) { result.push(a); seen.add(t) }
-    }
-    for (const a of data.assets as any[]) {
-      if (!seen.has(a.ticker) && result.length < 30) {
-        result.push(a); seen.add(a.ticker)
-      }
-    }
-    return result
-  }, [data])
+  const tickers = tickersData ?? []
 
   if (tickers.length === 0) return null
 
@@ -100,15 +86,13 @@ export function TickerTape() {
           )}
         >
           {items.map((a, i) => {
-            const change = a.latestQuote?.changePercent ?? 0
-            const price = a.latestQuote?.close ?? 0
-            const isUp = Number(change) >= 0
+            const price = a.close ?? 0
             return (
               <Link
                 key={`${a.ticker}-${i}`}
                 href={`/ativo/${a.ticker}`}
                 className="group inline-flex items-center gap-1.5 flex-shrink-0 hover:opacity-80 transition-opacity relative"
-                title={`${a.ticker} — R$ ${Number(price).toFixed(2)} (${isUp ? '+' : ''}${Number(change).toFixed(2)}%)`}
+                title={`${a.ticker} — R$ ${Number(price).toFixed(2)}`}
               >
                 <span className="text-[11px] font-semibold text-[var(--text-2)]">
                   {a.ticker}
@@ -116,40 +100,8 @@ export function TickerTape() {
                 <span className="text-[11px] font-mono tabular-nums text-[var(--text-3)]">
                   {Number(price).toFixed(2)}
                 </span>
-                <span className={cn(
-                  'text-[11px] font-mono tabular-nums font-semibold',
-                  isUp ? 'text-[var(--pos)]' : 'text-[var(--neg)]'
-                )}>
-                  {isUp ? '+' : ''}{Number(change).toFixed(2)}%
-                </span>
-                <span className="text-[var(--border-2)] text-[6px] ml-1">•</span>
+                <span className="text-[var(--border-2)] text-[6px] ml-1">&bull;</span>
               </Link>
-            )
-          })}
-          {/* Macro indicators inline */}
-          {macroItems.length > 0 && items.length > tickers.length && macroItems.map((m, i) => {
-            const isUp = (m.change ?? 0) >= 0
-            return (
-              <span
-                key={`macro-${m.label}-${i}`}
-                className="inline-flex items-center gap-1.5 flex-shrink-0"
-              >
-                <span className="text-[11px] font-bold text-[var(--text-1)]">
-                  {m.label}
-                </span>
-                <span className="text-[11px] font-mono tabular-nums text-[var(--text-2)]">
-                  {m.value}
-                </span>
-                {m.change != null && m.change !== 0 && (
-                  <span className={cn(
-                    'text-[11px] font-mono tabular-nums font-semibold',
-                    isUp ? 'text-[var(--pos)]' : 'text-[var(--neg)]'
-                  )}>
-                    {isUp ? '+' : ''}{Number(m.change).toFixed(2)}%
-                  </span>
-                )}
-                <span className="text-[var(--border-2)] text-[6px] ml-1">•</span>
-              </span>
             )
           })}
         </div>

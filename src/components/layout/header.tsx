@@ -9,7 +9,8 @@ import { useAuth } from '@/hooks/use-auth'
 import { ThemeToggle } from './theme-toggle'
 import { Logo } from '@/components/brand'
 import { cn } from '@/lib/utils'
-import { trpc } from '@/lib/trpc/provider'
+import { useQuery } from '@tanstack/react-query'
+import { free } from '@/lib/api/endpoints'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { RegimeBadge } from '@/components/ui/regime-badge'
 
@@ -123,13 +124,25 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
-  // Search results via tRPC
-  const { data: searchResults, isLoading: isSearchLoading } = trpc.assets.search.useQuery(
-    { query: debouncedQuery },
-    { enabled: debouncedQuery.length >= 1 }
-  )
+  // Search results via InvestIQ API
+  const { data: searchData, isLoading: isSearchLoading } = useQuery({
+    queryKey: ['ticker-search', debouncedQuery],
+    queryFn: () => free.getTickers({ limit: 100 }),
+    enabled: debouncedQuery.length >= 1,
+    staleTime: 5 * 60 * 1000,
+  })
 
-  const results = searchResults?.slice(0, 8) ?? []
+  const searchResults = debouncedQuery.length >= 1
+    ? (searchData?.tickers ?? [])
+        .filter(t =>
+          t.ticker.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
+          (t.company_name ?? '').toLowerCase().includes(debouncedQuery.toLowerCase())
+        )
+        .map(t => ({ ticker: t.ticker, name: t.company_name, logo: null as string | null, sector: null as string | null }))
+        .slice(0, 8)
+    : []
+
+  const results = searchResults
 
   // Quick actions para command palette
   const quickActions = [

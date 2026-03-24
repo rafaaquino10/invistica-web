@@ -3,12 +3,24 @@
 // Files stored in gateway/data/score-history/{YYYY-MM-DD}.json.
 // Alerts detect significant score changes (>= 5 pts) between days.
 
-import fs from 'fs'
-import path from 'path'
 import type { AssetData } from './data-source'
 
-const HISTORY_DIR = path.join(process.cwd(), 'gateway', 'data', 'score-history')
-const ALERTS_FILE = path.join(process.cwd(), 'gateway', 'data', 'score-alerts.json')
+// Dynamic imports — only available on server (Node.js), not browser
+const isServer = typeof window === 'undefined'
+let fs: typeof import('fs') | null = null
+let path: typeof import('path') | null = null
+
+if (isServer) {
+  try {
+    fs = require('fs')
+    path = require('path')
+  } catch {
+    // Browser environment — fs/path not available
+  }
+}
+
+const HISTORY_DIR = isServer && path ? path.join(process.cwd(), 'gateway', 'data', 'score-history') : ''
+const ALERTS_FILE = isServer && path ? path.join(process.cwd(), 'gateway', 'data', 'score-alerts.json') : ''
 const ALERT_THRESHOLD = 5
 
 // ─── Types ──────────────────────────────────────────────────
@@ -51,6 +63,7 @@ export interface ScoreMover {
 // ─── Snapshot Persistence ───────────────────────────────────
 
 function ensureHistoryDir(): void {
+  if (!fs || !HISTORY_DIR) return
   if (!fs.existsSync(HISTORY_DIR)) {
     fs.mkdirSync(HISTORY_DIR, { recursive: true })
   }
@@ -62,10 +75,11 @@ function ensureHistoryDir(): void {
  * Only writes once per day (overwrites same-day file).
  */
 export function saveScoreSnapshot(assets: AssetData[]): void {
+  if (!fs || !path) return
   ensureHistoryDir()
 
   const today = new Date().toISOString().split('T')[0]!
-  const filePath = path.join(HISTORY_DIR, `${today}.json`)
+  const filePath = path!.join(HISTORY_DIR, `${today}.json`)
 
   const scores: DailyScoreSnapshot['scores'] = {}
   let count = 0
@@ -93,8 +107,8 @@ export function saveScoreSnapshot(assets: AssetData[]): void {
 
   // Atomic write: tmp then rename
   const tmpPath = filePath + '.tmp'
-  fs.writeFileSync(tmpPath, JSON.stringify(snapshot), 'utf-8')
-  fs.renameSync(tmpPath, filePath)
+  fs!.writeFileSync(tmpPath, JSON.stringify(snapshot), 'utf-8')
+  fs!.renameSync(tmpPath, filePath)
   console.log(`[score-history] Snapshot saved: ${count} stocks, date: ${today}`)
 }
 
@@ -102,6 +116,7 @@ export function saveScoreSnapshot(assets: AssetData[]): void {
  * Load a snapshot for a specific date.
  */
 export function loadScoreSnapshot(date: string): DailyScoreSnapshot | null {
+  if (!fs || !path) return null
   const filePath = path.join(HISTORY_DIR, `${date}.json`)
   if (!fs.existsSync(filePath)) return null
   try {
@@ -115,6 +130,7 @@ export function loadScoreSnapshot(date: string): DailyScoreSnapshot | null {
  * List all available snapshot dates (sorted ascending).
  */
 export function listAvailableDates(): string[] {
+  if (!fs) return []
   if (!fs.existsSync(HISTORY_DIR)) return []
   return fs.readdirSync(HISTORY_DIR)
     .filter(f => f.endsWith('.json'))
@@ -182,6 +198,7 @@ export function getScoreHistory(
  * Saves alerts to score-alerts.json, purging entries older than 90 days.
  */
 export function detectScoreAlerts(todayDate: string): ScoreAlert[] {
+  if (!fs) return []
   const dates = listAvailableDates()
   const todayIdx = dates.indexOf(todayDate)
   if (todayIdx <= 0) return []
@@ -226,9 +243,9 @@ export function detectScoreAlerts(todayDate: string): ScoreAlert[] {
 
   // Persist alerts: merge with existing, purge >90 days
   let existing: ScoreAlert[] = []
-  if (fs.existsSync(ALERTS_FILE)) {
+  if (fs!.existsSync(ALERTS_FILE)) {
     try {
-      existing = JSON.parse(fs.readFileSync(ALERTS_FILE, 'utf-8')) as ScoreAlert[]
+      existing = JSON.parse(fs!.readFileSync(ALERTS_FILE, 'utf-8')) as ScoreAlert[]
     } catch {
       existing = []
     }
@@ -245,8 +262,8 @@ export function detectScoreAlerts(todayDate: string): ScoreAlert[] {
 
   ensureHistoryDir()
   const tmpPath = ALERTS_FILE + '.tmp'
-  fs.writeFileSync(tmpPath, JSON.stringify(merged, null, 2), 'utf-8')
-  fs.renameSync(tmpPath, ALERTS_FILE)
+  fs!.writeFileSync(tmpPath, JSON.stringify(merged, null, 2), 'utf-8')
+  fs!.renameSync(tmpPath, ALERTS_FILE)
 
   return alerts.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
 }
@@ -255,6 +272,7 @@ export function detectScoreAlerts(todayDate: string): ScoreAlert[] {
  * Read persisted alerts, filtered to the last N days.
  */
 export function getScoreAlerts(days: number = 30): ScoreAlert[] {
+  if (!fs) return []
   if (!fs.existsSync(ALERTS_FILE)) return []
   try {
     const all = JSON.parse(fs.readFileSync(ALERTS_FILE, 'utf-8')) as ScoreAlert[]
