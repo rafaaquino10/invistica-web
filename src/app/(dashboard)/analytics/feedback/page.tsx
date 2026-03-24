@@ -6,7 +6,11 @@
 'use client'
 
 import { useState } from 'react'
+// TODO: Migrate to InvestIQ API when endpoint is available
 import { trpc } from '@/lib/trpc/client'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { PaywallGate } from '@/components/billing'
 import { HitRateCards } from '@/components/analytics/hit-rate-cards'
 import { ICTimeline } from '@/components/analytics/ic-timeline'
@@ -114,16 +118,15 @@ function EarlyAccessState({ snapshotCount }: { snapshotCount: number }) {
 }
 
 function FeedbackContent({ forwardDays }: { forwardDays: number }) {
-  const endDate = new Date()
-  const startDate = new Date()
-  startDate.setMonth(startDate.getMonth() - 12)
+  const { token } = useAuth()
 
-  const { data: metrics, isLoading: metricsLoading } = trpc.scoreSnapshots.feedbackMetrics.useQuery({
-    startDate,
-    endDate,
-    forwardDays,
+  const { data: metrics, isLoading: metricsLoading } = useQuery({
+    queryKey: ['performance', forwardDays],
+    queryFn: () => pro.getPerformance(token ?? undefined),
+    enabled: !!token,
   })
 
+  // TODO: Migrate to InvestIQ API when endpoint is available
   const { data: timeline } = trpc.scoreSnapshots.snapshotTimeline.useQuery({ limit: 12 })
   const snapshotCount = timeline?.length ?? 0
 

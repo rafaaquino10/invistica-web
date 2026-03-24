@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+// TODO: Migrate to InvestIQ API when endpoint is available
 import { trpc } from '@/lib/trpc/client'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 import { cn } from '@/lib/utils'

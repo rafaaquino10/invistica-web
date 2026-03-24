@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui'
+// TODO: Migrate to InvestIQ API when endpoint is available
 import { trpc } from '@/lib/trpc/client'
 import { PaywallGate } from '@/components/billing'
 import { parseCurrencyInput, formatCurrency } from './currency-helpers'

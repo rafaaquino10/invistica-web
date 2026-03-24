@@ -3,6 +3,7 @@
 import { use } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, Skeleton, Badge } from '@/components/ui'
+// TODO: Migrate to InvestIQ API when endpoint is available
 import { trpc } from '@/lib/trpc/client'
 import { PaywallGate } from '@/components/billing'
 import { AssetLogo } from '@/components/ui/asset-logo'

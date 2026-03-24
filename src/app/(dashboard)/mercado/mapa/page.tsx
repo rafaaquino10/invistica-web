@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+// TODO: Migrate to InvestIQ API when endpoint is available
 import { trpc } from '@/lib/trpc/provider'
 import { MarketTreemap, type ColorMode } from '@/components/treemap/market-treemap'
 import { cn } from '@/lib/utils'

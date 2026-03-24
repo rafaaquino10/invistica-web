@@ -7,6 +7,7 @@ import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { FontSizeToggle } from '@/components/layout/font-size-toggle'
 import { Button, Input, Badge, DataCard } from '@/components/ui'
 import { cn } from '@/lib/utils'
+// TODO: Migrate to InvestIQ API when endpoint is available
 import { trpc } from '@/lib/trpc/provider'
 
 type TabType = 'profile' | 'preferences' | 'notifications' | 'billing'

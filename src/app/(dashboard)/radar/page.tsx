@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button, Modal, Input, Skeleton, Tabs, TabPanel, ScrollableStrip } from '@/components/ui'
+// TODO: Migrate to InvestIQ API when endpoint is available
 import { trpc } from '@/lib/trpc/client'
 import { PaywallGate } from '@/components/billing'
 import { cn } from '@/lib/utils'

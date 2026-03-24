@@ -1,5 +1,6 @@
 'use client'
 
+// TODO: Migrate to InvestIQ API when endpoint is available
 import { trpc } from '@/lib/trpc/provider'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/utils/formatters'

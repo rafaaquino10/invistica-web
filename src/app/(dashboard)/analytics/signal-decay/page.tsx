@@ -1,5 +1,6 @@
 'use client'
 
+// TODO: Migrate to InvestIQ API when endpoint is available
 import { trpc } from '@/lib/trpc/client'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 import { PaywallGate } from '@/components/billing/paywall-gate'

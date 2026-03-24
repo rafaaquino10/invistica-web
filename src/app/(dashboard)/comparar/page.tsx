@@ -4,7 +4,11 @@ import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { Button, Input, Disclaimer } from '@/components/ui'
 import { ComparisonRadarChart } from '@/components/charts'
+// TODO: Migrate trpc.assets.search and trpc.assets.getHistory to InvestIQ API when endpoints are available
 import { trpc } from '@/lib/trpc/provider'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { free, pro } from '@/lib/api/endpoints'
 import { formatCurrency, getScoreHex } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
 import { AssetLogo } from '@/components/ui/asset-logo'
@@ -28,10 +32,24 @@ export default function ComparisonPage() {
     { enabled: searchQuery.length >= 1 }
   )
 
-  const { data: comparisonData, isLoading } = trpc.assets.getMultiple.useQuery(
-    { tickers: selectedTickers },
-    { enabled: selectedTickers.length > 0 }
-  )
+  const { token } = useAuth()
+
+  const { data: comparisonData, isLoading } = useQuery({
+    queryKey: ['comparison', selectedTickers],
+    queryFn: async () => {
+      const results = await Promise.all(
+        selectedTickers.map(async (ticker) => {
+          const [tickerData, scoreData] = await Promise.all([
+            free.getTicker(ticker),
+            pro.getScore(ticker, {}, token ?? undefined).catch(() => null),
+          ])
+          return { ...tickerData, aqScore: scoreData?.iq_cognit ?? null }
+        })
+      )
+      return results
+    },
+    enabled: selectedTickers.length > 0,
+  })
 
   const addAsset = useCallback((ticker: string) => {
     if (selectedTickers.length < MAX_ASSETS && !selectedTickers.includes(ticker)) {

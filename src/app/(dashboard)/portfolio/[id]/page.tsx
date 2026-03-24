@@ -12,7 +12,11 @@ import { PortfolioDiagnostics } from '@/components/portfolio/portfolio-diagnosti
 import { PaywallGate } from '@/components/billing/paywall-gate'
 import { MonteCarloSection } from '@/components/simulation/monte-carlo-chart'
 import { IRPFCalculator } from '@/components/portfolio/irpf-calculator'
+// TODO: Migrate remaining trpc calls (portfolio.performance, assets.search, addTransaction, deleteTransaction) to InvestIQ API when endpoints are available
 import { trpc } from '@/lib/trpc/provider'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { formatCurrency, formatDate } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -36,12 +40,14 @@ export default function PortfolioDetailPage() {
   })
   const [tickerSelected, setTickerSelected] = useState(false)
 
+  const { token } = useAuth()
   const utils = trpc.useUtils()
 
-  const { data: portfolio, isLoading, error } = trpc.portfolio.get.useQuery(
-    { id: portfolioId },
-    { enabled: !!portfolioId }
-  )
+  const { data: portfolio, isLoading, error } = useQuery({
+    queryKey: ['portfolio', portfolioId],
+    queryFn: () => pro.getPortfolio(token ?? undefined),
+    enabled: !!portfolioId && !!token,
+  })
 
   const { data: performance } = trpc.portfolio.performance.useQuery(
     { portfolioId, period: '1Y' },

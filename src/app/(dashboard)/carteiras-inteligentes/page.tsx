@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Card, CardContent, Skeleton, Disclaimer } from '@/components/ui'
+// TODO: Migrate to InvestIQ API when endpoint is available
 import { trpc } from '@/lib/trpc/client'
 import { PaywallGate } from '@/components/billing'
 import { cn } from '@/lib/utils'

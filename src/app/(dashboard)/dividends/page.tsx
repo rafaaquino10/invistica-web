@@ -4,7 +4,11 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input, Button, ScrollableStrip } from '@/components/ui'
+// TODO: Migrate trpc.dividends.calendar, summary, projections, simulate to InvestIQ API when endpoints are available
 import { trpc } from '@/lib/trpc/provider'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { free, pro } from '@/lib/api/endpoints'
 import { formatCurrency } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
 import { AssetLogo } from '@/components/ui/asset-logo'
@@ -31,6 +35,16 @@ export default function DividendsPage() {
   const [simulatorTickers, setSimulatorTickers] = useState<string[]>(['', '', ''])
   const [simulatorAmounts, setSimulatorAmounts] = useState<string[]>(['10000', '10000', '10000'])
 
+  const { token } = useAuth()
+
+  // Dividend radar from InvestIQ API (available endpoint)
+  const { data: dividendRadar } = useQuery({
+    queryKey: ['dividendRadar'],
+    queryFn: () => pro.getDividendRadar(70, token ?? undefined),
+    enabled: !!token,
+  })
+
+  // TODO: Migrate to InvestIQ API when endpoints are available
   const { data: calendar, isLoading: calendarLoading } = trpc.dividends.calendar.useQuery({})
   const { data: summary } = trpc.dividends.summary.useQuery({ period })
   const { data: projections } = trpc.dividends.projections.useQuery({ months: 12 })
