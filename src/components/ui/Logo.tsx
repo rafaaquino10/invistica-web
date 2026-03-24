@@ -1,9 +1,9 @@
 /**
- * aQ-Invest Logo Component
+ * InvestIQ Logo Component
  * Font: Switzer (Fontshare, self-hosted)
  *
  * Variants:
- * - wordmark: Typography only (aQ-Invest)
+ * - wordmark: Typography only (InvestIQ)
  * - horizontal: Symbol + wordmark side by side
  * - stacked: Symbol + wordmark + tagline stacked
  * - symbol: Badge icon only (for favicon/app icon)
@@ -47,7 +47,7 @@ const Symbol: React.FC<{ size: number }> = ({ size }) => (
     viewBox="0 0 56 56"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    aria-label="aQ-Invest symbol"
+    aria-label="InvestIQ symbol"
   >
     <rect x="4" y="4" width="48" height="48" rx="12" fill={COLORS.electricBlue} />
     <text

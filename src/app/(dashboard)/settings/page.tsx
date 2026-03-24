@@ -436,7 +436,7 @@ function BillingTab() {
             <p className="text-[var(--text-caption)] font-medium text-[var(--text-2)] mb-1.5">Recursos incluídos:</p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
               {(isPaid
-                ? ['Explorer completo', 'aQ Score ilimitado', 'Todas as funcionalidades']
+                ? ['Explorer completo', 'IQ-Score ilimitado', 'Todas as funcionalidades']
                 : ['Até 3 portfólios', 'Explorer básico', 'Até 5 alertas']
               ).map((f) => (
                 <span key={f} className="flex items-center gap-1.5 text-[var(--text-caption)] text-[var(--text-2)]">

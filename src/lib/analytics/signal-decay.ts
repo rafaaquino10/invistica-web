@@ -1,5 +1,5 @@
 // ─── Signal Decay Analysis ───────────────────────────────────
-// Monitora eficácia preditiva (IC) de cada pilar do aQ Score.
+// Monitora eficácia preditiva (IC) de cada pilar do IQ-Score.
 // Alerta quando IC < 0.05 (fator perdeu poder preditivo).
 
 export interface MonthlyIC {

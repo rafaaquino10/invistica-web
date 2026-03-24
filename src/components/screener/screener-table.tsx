@@ -54,7 +54,7 @@ const columns = [
   { key: 'ticker', label: 'Ativo', sortable: true, align: 'left' as const },
   { key: 'price', label: 'Preço', sortable: false, align: 'right' as const },
   { key: 'change', label: 'Var.', sortable: false, align: 'right' as const },
-  { key: 'scoreTotal', label: 'aQ Score', sortable: true, align: 'center' as const },
+  { key: 'scoreTotal', label: 'IQ-Score', sortable: true, align: 'center' as const },
   { key: 'dividendYield', label: 'DY', sortable: true, align: 'right' as const },
   { key: 'peRatio', label: 'P/L', sortable: true, align: 'right' as const },
   { key: 'roe', label: 'ROE', sortable: true, align: 'right' as const },

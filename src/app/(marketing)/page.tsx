@@ -239,7 +239,7 @@ function ScorePipeline() {
       <ConveyorDots />
 
       <div className="relative h-[200px]">
-        {/* Center — aQ Score Engine (absolutely centered on page) */}
+        {/* Center — IQ-Score Engine (absolutely centered on page) */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
           {/* Soft glow behind — intensifies subtly on processing */}
           <motion.div
@@ -279,7 +279,7 @@ function ScorePipeline() {
           </motion.div>
 
           <span className="mt-3 text-[11px] uppercase tracking-[0.2em] font-semibold text-[var(--accent-1)]/70">
-            aQ Intelligence™
+            IQ-Cognit™
           </span>
         </div>
 
@@ -417,7 +417,7 @@ function MobileScorePipeline() {
           </AnimatePresence>
         </div>
 
-        {/* Center — aQ Score Engine */}
+        {/* Center — IQ-Score Engine */}
         <div className="relative z-10 flex flex-col items-center py-3">
           <motion.div
             animate={{
@@ -440,7 +440,7 @@ function MobileScorePipeline() {
             <AQSymbol size={56} />
           </motion.div>
           <span className="mt-2 text-[10px] uppercase tracking-[0.2em] font-semibold text-[var(--accent-1)]/70">
-            aQ Intelligence™
+            IQ-Cognit™
           </span>
         </div>
 
@@ -676,7 +676,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <p className="text-sm font-medium tracking-widest uppercase text-[var(--accent-1)] mb-4">aQ Intelligence™</p>
+            <p className="text-sm font-medium tracking-widest uppercase text-[var(--accent-1)] mb-4">IQ-Cognit™</p>
             <h2 className="text-3xl md:text-4xl font-bold leading-tight">
               Motor proprietário com calibração setorial.
             </h2>
@@ -851,7 +851,7 @@ export default function HomePage() {
                     <th className="text-left py-3 px-4 font-medium">Ativo</th>
                     <th className="text-right py-3 px-3 font-medium">Preço</th>
                     <th className="text-right py-3 px-3 font-medium">Dia</th>
-                    <th className="text-center py-3 px-3 font-medium">aQ Score</th>
+                    <th className="text-center py-3 px-3 font-medium">IQ-Score</th>
                     <th className="text-center py-3 px-3 font-medium hidden sm:table-cell">Momento</th>
                     <th className="text-right py-3 px-3 font-medium hidden md:table-cell">P/L</th>
                     <th className="text-right py-3 px-3 font-medium hidden md:table-cell">ROE</th>
@@ -1279,7 +1279,7 @@ export default function HomePage() {
               {
                 name: 'Free',
                 price: 'R$ 0',
-                features: ['Explorer + aQ Score', 'Até 5 ativos em detalhe', 'Dados em tempo real', 'Comparação básica'],
+                features: ['Explorer + IQ-Score', 'Até 5 ativos em detalhe', 'Dados em tempo real', 'Comparação básica'],
                 highlight: false,
               },
               {

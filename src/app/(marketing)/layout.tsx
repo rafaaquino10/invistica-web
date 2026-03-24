@@ -10,7 +10,7 @@ import { Disclaimer } from '@/components/ui'
 
 const navLinks = [
   { label: 'Recursos', href: '#features' },
-  { label: 'aQ Intelligence™', href: '#aq-score' },
+  { label: 'IQ-Cognit™', href: '#aq-score' },
   { label: 'Planos', href: '/pricing' },
 ]
 
@@ -179,7 +179,7 @@ export default function MarketingLayout({
 
             {/* Right — copyright */}
             <div className="lg:ml-auto text-[var(--text-caption)] text-[var(--text-3)] flex flex-col sm:flex-row gap-1 sm:gap-3">
-              <span>© 2026 aQ-Invest</span>
+              <span>© 2026 InvestIQ</span>
               <span className="hidden sm:inline">·</span>
               <Disclaimer variant="inline" />
             </div>

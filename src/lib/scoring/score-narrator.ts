@@ -136,7 +136,7 @@ function generateResearchNote(
 
   // Frase 1: Visão geral
   sentences.push(
-    `${ticker} recebe nota ${score.toFixed(0)} (${classificacao}) no modelo aQ Score, ` +
+    `${ticker} recebe nota ${score.toFixed(0)} (${classificacao}) no modelo IQ-Score, ` +
     `com base em ${metadata.indicadoresDisponiveis} de ${metadata.indicadoresTotais} indicadores avaliados.`
   )
 

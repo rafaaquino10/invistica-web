@@ -112,7 +112,7 @@ export function formatTicker(ticker: string): string {
 }
 
 /**
- * Format aQ Score with color indicator
+ * Format IQ-Score with color indicator
  */
 export function getScoreColor(score: number): 'critical' | 'attention' | 'healthy' | 'exceptional' {
   if (score <= 30) return 'critical'
@@ -132,7 +132,7 @@ export function getScoreLabel(score: number): string {
 }
 
 /**
- * Get Tailwind text color class for aQ Score
+ * Get Tailwind text color class for IQ-Score
  */
 export function getScoreTextClass(score: number): string {
   if (score >= 81) return 'text-[var(--accent-1)]'
@@ -142,7 +142,7 @@ export function getScoreTextClass(score: number): string {
 }
 
 /**
- * Get Tailwind background color class for aQ Score
+ * Get Tailwind background color class for IQ-Score
  */
 export function getScoreBgClass(score: number): string {
   if (score >= 81) return 'bg-[var(--accent-1)]'
@@ -152,7 +152,7 @@ export function getScoreBgClass(score: number): string {
 }
 
 /**
- * Get Tailwind light background + text color classes for aQ Score badges
+ * Get Tailwind light background + text color classes for IQ-Score badges
  */
 export function getScoreBgLightClass(score: number): string {
   if (score >= 81) return 'bg-[var(--accent-1)]/10 text-[var(--accent-1)]'
@@ -162,7 +162,7 @@ export function getScoreBgLightClass(score: number): string {
 }
 
 /**
- * Get hex color string for aQ Score (for inline styles, SVGs, charts)
+ * Get hex color string for IQ-Score (for inline styles, SVGs, charts)
  */
 export function getScoreHex(score: number): string {
   if (score >= 81) return '#1A73E8'

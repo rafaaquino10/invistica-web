@@ -1,5 +1,5 @@
 /**
- * Gráfico de barras: retorno médio forward por classificação aQ Score.
+ * Gráfico de barras: retorno médio forward por classificação IQ-Score.
  * Espera-se: Excepcional > Saudável > Atenção > Crítico (monotonicidade).
  */
 'use client'

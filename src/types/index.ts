@@ -1,5 +1,5 @@
 // ===========================================
-// aQ-Invest Core Types
+// InvestIQ Core Types
 // ===========================================
 
 // User & Auth Types
@@ -88,7 +88,7 @@ export interface Fundamental {
   netDebtEbitda: number | null
 }
 
-// aQ Score™ Types
+// IQ-Score™ Types
 export interface AqScore {
   id: string
   assetId: string

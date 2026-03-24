@@ -27,10 +27,10 @@ export const DEMO_PORTFOLIOS = [
 
 export const DEMO_ALERTS = [
   { id: '1', ticker: 'PETR4', type: 'price_below', message: 'PETR4 atingiu seu alerta de preço em R$ 38,00', time: '2h atrás', read: false },
-  { id: '2', ticker: 'VALE3', type: 'score_change', message: 'aQ Score de VALE3 subiu para 75 pontos', time: '5h atrás', read: false },
+  { id: '2', ticker: 'VALE3', type: 'score_change', message: 'IQ-Score de VALE3 subiu para 75 pontos', time: '5h atrás', read: false },
   { id: '3', ticker: 'ITUB4', type: 'dividend', message: 'ITUB4 anunciou dividendo de R$ 0,28/ação', time: '1 dia atrás', read: true },
   { id: '4', ticker: 'BBAS3', type: 'dividend', message: 'BBAS3 anunciou JCP de R$ 0,55/ação', time: '2 dias atrás', read: true },
-  { id: '5', ticker: 'WEGE3', type: 'score_change', message: 'aQ Score de WEGE3 atingiu 88 - Excepcional', time: '3 dias atrás', read: true },
+  { id: '5', ticker: 'WEGE3', type: 'score_change', message: 'IQ-Score de WEGE3 atingiu 88 - Excepcional', time: '3 dias atrás', read: true },
 ]
 
 export const DEMO_INSIGHTS = [

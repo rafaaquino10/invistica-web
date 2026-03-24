@@ -38,7 +38,7 @@ function FeedbackHeader({
       <div>
         <h1 className="font-display text-[var(--text-title)] font-bold tracking-tight">Feedback Loop</h1>
         <p className="text-[var(--text-small)] text-muted-foreground">
-          Acurácia do aQ Score — retornos reais vs previsões
+          Acurácia do IQ-Score — retornos reais vs previsões
         </p>
       </div>
       <div className="flex items-center gap-1 rounded-lg border bg-card p-1">
@@ -78,7 +78,7 @@ function EarlyAccessState({ snapshotCount }: { snapshotCount: number }) {
         <h2 className="text-[var(--text-heading)] font-semibold">Feedback Loop em Construção</h2>
         <p className="text-[var(--text-small)] text-muted-foreground">
           Os scores estão sendo gravados semanalmente. Em ~3 meses você verá
-          se as previsões do aQ Score estão acertando.
+          se as previsões do IQ-Score estão acertando.
         </p>
       </div>
       {/* Progresso */}
@@ -99,7 +99,7 @@ function EarlyAccessState({ snapshotCount }: { snapshotCount: number }) {
         <details className="rounded-lg border p-3">
           <summary className="cursor-pointer text-[var(--text-small)] font-medium">O que é o Feedback Loop?</summary>
           <p className="mt-2 text-[var(--text-caption)] text-muted-foreground">
-            O Feedback Loop compara os scores atribuídos pelo aQ Score com os
+            O Feedback Loop compara os scores atribuídos pelo IQ-Score com os
             retornos reais obtidos nos meses seguintes. Se ativos com score
             alto performam melhor, o modelo está funcionando.
           </p>

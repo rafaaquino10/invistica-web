@@ -30,7 +30,7 @@ interface ScreenerFiltersProps {
 }
 
 const sortOptions = [
-  { value: 'scoreTotal', label: 'aQ Score' },
+  { value: 'scoreTotal', label: 'IQ-Score' },
   { value: 'ticker', label: 'Ticker' },
   { value: 'sector', label: 'Setor' },
   { value: 'changePercent', label: 'Variação Dia' },
@@ -165,7 +165,7 @@ export function ScreenerFilters({
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               <div className="space-y-1">
                 <label className="text-[11px] font-medium text-[var(--text-2)]">
-                  aQ Score Min
+                  IQ-Score Min
                 </label>
                 <Input
                   type="number"
@@ -179,7 +179,7 @@ export function ScreenerFilters({
               </div>
               <div className="space-y-1">
                 <label className="text-[11px] font-medium text-[var(--text-2)]">
-                  aQ Score Max
+                  IQ-Score Max
                 </label>
                 <Input
                   type="number"

@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils'
 
 /**
- * Gauge circular animado para aQ Score.
+ * Gauge circular animado para IQ-Score.
  * Mostra score de 0-100 com arco colorido e classificação.
  */
 

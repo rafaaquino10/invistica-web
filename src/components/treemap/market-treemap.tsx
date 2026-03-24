@@ -143,7 +143,7 @@ function Tooltip({ data }: { data: TooltipData }) {
             </span>
           </div>
           <div>
-            <span className="text-[var(--text-3)]">aQ Score</span>
+            <span className="text-[var(--text-3)]">IQ-Score</span>
             <span className="ml-1 font-mono font-bold" style={{ color: getScoreColor(stock.aqScore) }}>
               {stock.aqScore !== null ? Math.round(stock.aqScore) : '--'}
             </span>
@@ -193,7 +193,7 @@ function SectorTooltipComponent({ data }: { data: SectorTooltipData }) {
             </span>
           </div>
           <div>
-            <span className="text-[var(--text-3)]">aQ Score</span>
+            <span className="text-[var(--text-3)]">IQ-Score</span>
             <span className="ml-1 font-mono font-bold" style={{ color: getScoreColor(sector.averageScore) }}>
               {sector.averageScore !== null ? Math.round(sector.averageScore) : '--'}
             </span>

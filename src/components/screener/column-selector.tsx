@@ -8,7 +8,7 @@ export const ALL_COLUMNS = [
   { key: 'changePercent', label: 'Variação (Dia)' },
   { key: 'marketCap', label: 'Mkt Cap' },
   { key: 'sector', label: 'Setor' },
-  { key: 'scoreTotal', label: 'aQ Score' },
+  { key: 'scoreTotal', label: 'IQ-Score' },
   { key: 'peRatio', label: 'P/L' },
   { key: 'pbRatio', label: 'P/VP' },
   { key: 'roe', label: 'ROE' },

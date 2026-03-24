@@ -22,9 +22,9 @@ export function OrganizationJsonLd() {
       data={{
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        name: 'aQ-Invest',
-        url: 'https://aqinvest.com.br',
-        logo: 'https://aqinvest.com.br/logo.png',
+        name: 'InvestIQ',
+        url: 'https://investiq.com.br',
+        logo: 'https://investiq.com.br/logo.png',
         description: 'Plataforma de análise fundamentalista de ações brasileiras para investidores',
         sameAs: [
           'https://twitter.com/aqinvest',
@@ -33,7 +33,7 @@ export function OrganizationJsonLd() {
         contactPoint: {
           '@type': 'ContactPoint',
           contactType: 'customer service',
-          email: 'contato@aqinvest.com.br',
+          email: 'contato@investiq.com.br',
         },
       }}
     />
@@ -47,7 +47,7 @@ export function SoftwareApplicationJsonLd() {
       data={{
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'aQ-Invest',
+        name: 'InvestIQ',
         operatingSystem: 'Web',
         applicationCategory: 'FinanceApplication',
         offers: {
@@ -114,7 +114,7 @@ export function AssetJsonLd({ ticker, name, type, sector, price, priceChange, sc
           }] : []),
           ...(score !== null ? [{
             '@type': 'PropertyValue',
-            name: 'aQ Score',
+            name: 'IQ-Score',
             value: score,
           }] : []),
         ],

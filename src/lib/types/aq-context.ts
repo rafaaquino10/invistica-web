@@ -1,5 +1,5 @@
 // ─── AQContext — Unified 4-Dimension Analysis Context ────────────
-// Central interface consumed by all aQ Score v2 subsystems (Phases B-G).
+// Central interface consumed by all IQ-Score v2 subsystems (Phases B-G).
 // In Phase 1, only `fundamental` is populated; other dimensions use
 // defaults/null and will be filled in subsequent phases.
 

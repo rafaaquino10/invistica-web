@@ -39,7 +39,7 @@ const PILLAR_COLORS: Record<string, string> = {
 }
 
 const PILLAR_LABELS: Record<string, string> = {
-  score: 'aQ Score',
+  score: 'IQ-Score',
   valuation: 'Valuation',
   quality: 'Qualidade',
   risk: 'Risco',

@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
   // Score display defaults (OG image is static, score computed client-side)
   const score: number | null = null
   const scoreColor = '#1A73E8'
-  const scoreLabel = 'aQ Score'
+  const scoreLabel = 'IQ-Score'
 
   return new ImageResponse(
     (
@@ -109,7 +109,7 @@ export async function GET(request: NextRequest) {
           </div>
 
           <p style={{ color: '#94A3B8', fontSize: '24px', marginBottom: '40px' }}>
-            Análise completa com aQ Score
+            Análise completa com IQ-Score
           </p>
 
           <div
@@ -132,7 +132,7 @@ export async function GET(request: NextRequest) {
 >
               <span style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>aQ</span>
             </div>
-            <span style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>aQ-Invest</span>
+            <span style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>InvestIQ</span>
           </div>
         </div>
 
@@ -157,12 +157,12 @@ export async function GET(request: NextRequest) {
               justifyContent: 'center',
             }}
           >
-            <span style={{ color: 'white', fontSize: '72px', fontWeight: 'bold' }}>{score ?? 'aQ'}</span>
+            <span style={{ color: 'white', fontSize: '72px', fontWeight: 'bold' }}>{score ?? 'IQ'}</span>
           </div>
           <span style={{ color: scoreColor, fontSize: '28px', fontWeight: 'bold', marginTop: '20px' }}>
             {scoreLabel}
           </span>
-          <span style={{ color: '#94A3B8', fontSize: '20px', marginTop: '8px' }}>aQ Score</span>
+          <span style={{ color: '#94A3B8', fontSize: '20px', marginTop: '8px' }}>IQ-Score</span>
         </div>
       </div>
     ),

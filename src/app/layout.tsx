@@ -6,7 +6,7 @@ import { QueryProvider } from '@/lib/api/query-provider'
 import './globals.css'
 
 // Geist Sans (--font-geist-sans): fonte principal para UI, headings e body text.
-// Geist Mono (--font-geist-mono): para números financeiros, tabelas, aQ Score
+// Geist Mono (--font-geist-mono): para números financeiros, tabelas, IQ-Score
 //   e qualquer dado numérico — usar classe `font-mono` nos elementos.
 
 export const metadata: Metadata = {

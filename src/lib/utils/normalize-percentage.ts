@@ -1,7 +1,7 @@
 /**
  * ─── Normalização de Percentuais ─────────────────────────────
  *
- * PADRÃO CANÔNICO do aQ-Invest:
+ * PADRÃO CANÔNICO do InvestIQ:
  *   Percentuais são armazenados internamente como WHOLE NUMBERS.
  *   13.84 significa 13.84% (NÃO 0.1384)
  *

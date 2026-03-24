@@ -78,7 +78,7 @@ export function calculateLensScores(
 
   for (const lens of LENSES) {
     if (lens.id === 'general') {
-      // General lens = main aQ Score (already sector-calibrated)
+      // General lens = main IQ-Score (already sector-calibrated)
       result[lens.id] = scoreResult.score
     } else if (lens.id === 'momentum') {
       if (momentumScore == null) {

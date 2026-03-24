@@ -283,7 +283,7 @@ export default function ComparisonPage() {
             <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
           <span className="text-amber-300/90">
-            Comparando ações de setores diferentes. Os pesos do aQ Intelligence variam por setor.
+            Comparando ações de setores diferentes. Os pesos do IQ-Cognit variam por setor.
           </span>
         </div>
       )}
@@ -358,7 +358,7 @@ export default function ComparisonPage() {
           {/* Pillar Comparison — Horizontal Bars (primary) */}
           {comparisonData.some((a: any) => a.aqScore) && (
             <div>
-              <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Pilares aQ Intelligence</h2>
+              <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Pilares IQ-Cognit</h2>
               <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-5">
                 <div className="space-y-5">
                   {[

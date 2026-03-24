@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!asset) {
     return {
-      title: `${upperTicker} - Ativo não encontrado | aQ-Invest`,
+      title: `${upperTicker} - Ativo não encontrado | InvestIQ`,
       description: `O ativo ${upperTicker} não foi encontrado em nossa base de dados.`,
     }
   }
@@ -71,12 +71,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const price = asset.quotes[0] ? Number(asset.quotes[0].close) : null
   const scoreLabel = score !== null ? getScoreLabel(score) : null
 
-  const title = `${upperTicker} - ${asset.name} | aQ-Invest`
+  const title = `${upperTicker} - ${asset.name} | InvestIQ`
   const description = score !== null
-    ? `Análise completa de ${upperTicker} (${asset.name}). aQ Score: ${score.toFixed(0)} (${scoreLabel}). ${asset.type === 'fii' ? 'Fundo Imobiliário' : 'Ação'} do setor ${asset.sector ?? 'N/A'}.`
+    ? `Análise completa de ${upperTicker} (${asset.name}). IQ-Score: ${score.toFixed(0)} (${scoreLabel}). ${asset.type === 'fii' ? 'Fundo Imobiliário' : 'Ação'} do setor ${asset.sector ?? 'N/A'}.`
     : `Análise de ${upperTicker} (${asset.name}). ${asset.type === 'fii' ? 'Fundo Imobiliário' : 'Ação'} do setor ${asset.sector ?? 'N/A'}.`
 
-  const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://aqinvest.com.br'
+  const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://investiq.com.br'
 
   return {
     title,
@@ -90,21 +90,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       'investimento',
       'bolsa brasileira',
       'B3',
-      'aQ Score',
+      'IQ-Score',
     ].filter(Boolean),
-    authors: [{ name: 'aQ-Invest' }],
+    authors: [{ name: 'InvestIQ' }],
     openGraph: {
       title,
       description,
       type: 'website',
       url: `${baseUrl}/ativo/${upperTicker}`,
-      siteName: 'aQ-Invest',
+      siteName: 'InvestIQ',
       images: [
         {
           url: `${baseUrl}/api/og?ticker=${upperTicker}`,
           width: 1200,
           height: 630,
-          alt: `${upperTicker} - aQ Score`,
+          alt: `${upperTicker} - IQ-Score`,
         },
       ],
     },

@@ -23,7 +23,7 @@ const COLORS = {
   white: '#FFFFFF',
 }
 
-// The aQ Symbol - official brand badge
+// The IQ Symbol - official brand badge
 export function AQSymbol({ size = 40, animated = false }: { size?: number; animated?: boolean }) {
   return (
     <svg
@@ -32,7 +32,7 @@ export function AQSymbol({ size = 40, animated = false }: { size?: number; anima
       viewBox="0 0 56 56"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="aQ-Invest symbol"
+      aria-label="InvestIQ symbol"
       className={cn(animated && 'group transition-transform duration-300 hover:scale-105')}
     >
       <rect x="4" y="4" width="48" height="48" rx="12" fill={COLORS.electricBlue} />
@@ -45,15 +45,15 @@ export function AQSymbol({ size = 40, animated = false }: { size?: number; anima
         fill={COLORS.white}
         textAnchor="middle"
       >
-        aQ
+        IQ
       </text>
     </svg>
   )
 }
 
 // Wordmark component - typography only
-// When withSymbol=true, shows only "-Invest" (symbol already provides "aQ")
-// When withSymbol=false, shows full "aQ-Invest"
+// When withSymbol=true, shows "InvestIQ" (symbol provides the icon)
+// When withSymbol=false, shows "InvestIQ" with colored prefix
 export function AQWordmark({
   fontSize = 32,
   className,
@@ -73,8 +73,8 @@ export function AQWordmark({
         letterSpacing: '-0.04em',
       }}
     >
-      {!withSymbol && <span style={{ color: COLORS.electricBlue }}>aQ</span>}
-      <span style={{ color: 'var(--logo-text-color, #0F2B46)' }}>{withSymbol ? 'Invest' : '-Invest'}</span>
+      {!withSymbol && <span style={{ color: COLORS.electricBlue }}>Invest</span>}
+      <span style={{ color: 'var(--logo-text-color, #0F2B46)' }}>{withSymbol ? 'InvestIQ' : 'IQ'}</span>
     </span>
   )
 }

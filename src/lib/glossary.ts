@@ -4,9 +4,9 @@
  */
 
 export const GLOSSARY: Record<string, string> = {
-  // aQ Intelligence
-  'aQ Score': 'Nota de 0 a 100 que avalia a saúde financeira da ação em 6 dimensões: valuation, qualidade, risco, dividendos, crescimento e qualitativo.',
-  'aQ Intelligence': 'Sistema proprietário de análise que combina score quantitativo, diagnóstico IA e monitoramento em tempo real.',
+  // IQ-Cognit
+  'IQ-Score': 'Nota de 0 a 100 que avalia a saúde financeira da ação em 6 dimensões: valuation, qualidade, risco, dividendos, crescimento e qualitativo.',
+  'IQ-Cognit': 'Sistema proprietário de análise que combina score quantitativo, diagnóstico IA e monitoramento em tempo real.',
 
   // Valuation
   'P/L': 'Preço/Lucro: quantos anos de lucro atual o mercado paga pela ação. Menor = mais barato.',

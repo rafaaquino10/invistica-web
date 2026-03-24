@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback, memo } from 'react'
 import { cn } from '@/lib/utils'
 
 // ─── aQ Charts Engine v2 ──────────────────────────────────────────
-// Gráfico proprietário aQ Invest — Canvas API puro, zero dependências.
+// Gráfico proprietário InvestIQ — Canvas API puro, zero dependências.
 // Linha fluida com gradiente vivo, volume integrado, crosshair elegante.
 
 interface ChartDataPoint {

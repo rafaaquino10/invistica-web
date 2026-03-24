@@ -383,7 +383,7 @@ export function ScoreXRay({ breakdown, ticker }: ScoreXRayProps) {
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-semibold">Análise aQ Intelligence — {ticker}</h3>
+              <h3 className="text-sm font-semibold">Análise IQ-Cognit — {ticker}</h3>
               <p className="text-[11px] text-[var(--text-3)]">
                 {breakdown.metadata.indicadoresDisponiveis}/{breakdown.metadata.indicadoresTotais} indicadores · Setor: {SECTOR_LABELS[breakdown.setorCalibrado.setor] ?? breakdown.setorCalibrado.setor}
                 {' · '}

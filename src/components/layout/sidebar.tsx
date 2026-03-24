@@ -129,7 +129,7 @@ const navigationSections: NavSection[] = [
     ],
   },
   {
-    label: 'aQ INTELLIGENCE',
+    label: 'IQ-COGNIT',
     items: [
       {
         label: 'Carteiras aQ',

@@ -28,7 +28,7 @@ export function FontSizeToggle({ className }: { className?: string }) {
 
   useEffect(() => {
     setMounted(true)
-    const saved = localStorage.getItem('aqinvest-font-size') as FontScale | null
+    const saved = localStorage.getItem('investiq-font-size') as FontScale | null
     if (saved && ZOOM_MAP[saved]) {
       setScale(saved)
       applyZoom(saved)
@@ -43,7 +43,7 @@ export function FontSizeToggle({ className }: { className?: string }) {
     const next = order[(idx + 1) % order.length] as FontScale
     setScale(next)
     applyZoom(next)
-    localStorage.setItem('aqinvest-font-size', next)
+    localStorage.setItem('investiq-font-size', next)
   }
 
   const currentLabel = SCALES.find(s => s.key === scale)?.label ?? 'Normal'

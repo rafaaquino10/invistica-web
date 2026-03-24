@@ -37,7 +37,7 @@ export default function SignalDecayPage() {
       <div>
         <h1 className="font-display text-[var(--text-title)] font-bold tracking-tight">Signal Decay Monitor</h1>
         <p className="text-[var(--text-small)] text-[var(--text-2)] mt-0.5">
-          Monitoramento de eficácia preditiva (IC) de cada pilar do aQ Score. Alerta quando IC cai abaixo de 0.05.
+          Monitoramento de eficácia preditiva (IC) de cada pilar do IQ-Score. Alerta quando IC cai abaixo de 0.05.
         </p>
       </div>
 

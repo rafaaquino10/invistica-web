@@ -53,7 +53,7 @@ const PROFILE_CONFIG: Record<InvestorProfile, { label: string; color: string; de
     label: 'Conservador',
     color: 'var(--color-info-500, #3B82F6)',
     description: 'Você prioriza segurança e previsibilidade. Prefere ações com dividendos consistentes e baixa volatilidade.',
-    tip: 'Foque em ações com DY acima de 5%, baixo endividamento e scores de Risco altos no aQ Intelligence.',
+    tip: 'Foque em ações com DY acima de 5%, baixo endividamento e scores de Risco altos no IQ-Cognit.',
   },
   moderado: {
     label: 'Moderado',
@@ -65,7 +65,7 @@ const PROFILE_CONFIG: Record<InvestorProfile, { label: string; color: string; de
     label: 'Arrojado',
     color: 'var(--color-premium-500, #F59E0B)',
     description: 'Você aceita volatilidade em busca de retornos superiores. Foco em crescimento e valuation.',
-    tip: 'Explore ações com alto crescimento de receita e ROE elevado. A carteira "Top aQ Score" tende a ter mais aderência ao seu perfil.',
+    tip: 'Explore ações com alto crescimento de receita e ROE elevado. A carteira "Top IQ-Score" tende a ter mais aderência ao seu perfil.',
   },
 }
 

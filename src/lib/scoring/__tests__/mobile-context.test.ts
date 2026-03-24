@@ -36,7 +36,7 @@ vi.mock('@/lib/prisma', () => ({
 vi.mock('@/lib/auth/demo-user', () => ({
   DEMO_USER: {
     id: 'demo-user-id',
-    email: 'demo@aqinvest.com.br',
+    email: 'demo@investiq.com.br',
     name: 'Rafael Demo',
     image: null,
     plan: 'elite',

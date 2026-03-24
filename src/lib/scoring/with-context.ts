@@ -1,4 +1,4 @@
-// ─── aQ Score with Context ────────────────────────────────────
+// ─── IQ-Score with Context ────────────────────────────────────
 // Thin wrapper around calcularAqScore. Previously applied prediction
 // markets context adjustment — Kalshi removed (US data, irrelevant for BR).
 // Kept for backward compatibility with components that import from here.

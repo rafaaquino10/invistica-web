@@ -1,7 +1,7 @@
 /**
- * aQ Score™ Calculation Service
+ * IQ-Score™ Calculation Service
  *
- * This service handles the calculation and storage of aQ Scores for assets.
+ * This service handles the calculation and storage of IQ-Scores for assets.
  * It can be called from data pipelines or API endpoints.
  */
 
@@ -16,7 +16,7 @@ interface CalculateScoreOptions {
 }
 
 /**
- * Calculate and optionally save aQ Score for a single asset
+ * Calculate and optionally save IQ-Score for a single asset
  */
 export async function calculateAssetScore(
   prisma: PrismaClient,

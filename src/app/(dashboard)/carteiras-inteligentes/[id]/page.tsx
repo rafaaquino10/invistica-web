@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 import { IncomeSimulatorCard } from '@/components/smart-portfolios/income-simulator'
 import type { AlmostQualified } from '@/lib/smart-portfolios/types'
 
-const CVM_DISCLAIMER = `As Carteiras Inteligentes são seleções algorítmicas baseadas em critérios quantitativos públicos (dados CVM e B3). Não constituem recomendação de investimento, análise de valores mobiliários, ou consultoria financeira nos termos da Resolução CVM 20/2021. O aQ Invest não é registrado como analista ou consultor de valores mobiliários. Decisões de investimento são de responsabilidade exclusiva do investidor.`
+const CVM_DISCLAIMER = `As Carteiras Inteligentes são seleções algorítmicas baseadas em critérios quantitativos públicos (dados CVM e B3). Não constituem recomendação de investimento, análise de valores mobiliários, ou consultoria financeira nos termos da Resolução CVM 20/2021. O InvestIQ não é registrado como analista ou consultor de valores mobiliários. Decisões de investimento são de responsabilidade exclusiva do investidor.`
 
 function formatCriteria(criteria: Record<string, unknown>): string[] {
   const labels: string[] = []

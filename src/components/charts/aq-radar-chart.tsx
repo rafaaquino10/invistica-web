@@ -159,7 +159,7 @@ export function AQRadarChart({
 
           {/* Actual values */}
           <Radar
-            name="aQ Score"
+            name="IQ-Score"
             dataKey="value"
             stroke="#1A73E8"
             fill="url(#radarGradient)"

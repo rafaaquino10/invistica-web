@@ -54,7 +54,7 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
   // ─── Font scale state ───────────────────────────────
   const [fontScale, setFontScale] = useState<FontScale>('normal')
   useEffect(() => {
-    const saved = localStorage.getItem('aqinvest-font-size') as FontScale | null
+    const saved = localStorage.getItem('investiq-font-size') as FontScale | null
     if (saved && ZOOM_MAP[saved]) {
       setFontScale(saved)
       applyZoom(saved)
@@ -67,7 +67,7 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
     const next = order[(idx + 1) % order.length] as FontScale
     setFontScale(next)
     applyZoom(next)
-    localStorage.setItem('aqinvest-font-size', next)
+    localStorage.setItem('investiq-font-size', next)
   }
 
   // ─── Search State ──────────────────────────────────

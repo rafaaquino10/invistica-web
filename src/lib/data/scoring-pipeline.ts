@@ -1,5 +1,5 @@
 // ─── Scoring Pipeline ────────────────────────────────────────
-// Applies aQ Score, lens scores, macro factor, and kill switch to a merged asset.
+// Applies IQ-Score, lens scores, macro factor, and kill switch to a merged asset.
 
 import { calcularAqScore, mapearSetor, type DadosFundamentalistas, type AqScoreResult, type RegimeWeights, type CagedTrend } from '../scoring/aq-score'
 import { calculateLensScores } from '../scoring/lens-calculator'

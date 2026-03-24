@@ -96,7 +96,7 @@ export default function BacktestPage() {
             Prova de Robustez
           </h1>
           <p className="text-lg md:text-xl text-slate-400 mb-2">
-            Motor aQ Intelligence™
+            Motor IQ-Cognit™
           </p>
           <p className="text-sm text-slate-500 max-w-2xl mx-auto">
             Backtest completo de jan/2016 a dez/2025 com 120 meses de dados reais da B3.
@@ -110,7 +110,7 @@ export default function BacktestPage() {
         {/* ─── 1. Equity Curve ──────────────────────────── */}
         <section>
           <h2 className="text-2xl font-bold mb-2">Curva de Patrimônio</h2>
-          <p className="text-slate-400 text-sm mb-6">R$ 1M investidos em jan/2016 → R$ 9M com aQ Top-10 vs R$ 3.7M no IBOV</p>
+          <p className="text-slate-400 text-sm mb-6">R$ 1M investidos em jan/2016 → R$ 9M com IQ Top-10 vs R$ 3.7M no IBOV</p>
           <div className="bg-[#1E293B] rounded-xl p-4 md:p-6 border border-white/5">
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={equityCurve}>
@@ -120,9 +120,9 @@ export default function BacktestPage() {
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1E293B', border: '1px solid #334155', borderRadius: 8 }}
                   labelStyle={{ color: '#94A3B8' }}
-                  formatter={(value: number, name: string) => [formatBRL(value), name === 'portfolio' ? 'aQ Top-10' : name === 'ibov' ? 'IBOV' : 'CDI']}
+                  formatter={(value: number, name: string) => [formatBRL(value), name === 'portfolio' ? 'IQ Top-10' : name === 'ibov' ? 'IBOV' : 'CDI']}
                 />
-                <Legend formatter={(value) => value === 'portfolio' ? 'aQ Top-10' : value === 'ibov' ? 'IBOV' : 'CDI'} />
+                <Legend formatter={(value) => value === 'portfolio' ? 'IQ Top-10' : value === 'ibov' ? 'IBOV' : 'CDI'} />
                 <Line type="monotone" dataKey="portfolio" stroke="#1A73E8" strokeWidth={2.5} dot={false} />
                 <Line type="monotone" dataKey="ibov" stroke="#94A3B8" strokeWidth={1.5} dot={false} strokeDasharray="5 5" />
                 <Line type="monotone" dataKey="cdi" stroke="#EAB308" strokeWidth={1} dot={false} strokeDasharray="3 3" />
@@ -136,7 +136,7 @@ export default function BacktestPage() {
         {/* ─── 2. Performance Anual ─────────────────────── */}
         <section>
           <h2 className="text-2xl font-bold mb-2">Performance Anual</h2>
-          <p className="text-slate-400 text-sm mb-6">Retorno anual do portfólio aQ Top-10 vs IBOV (líquido de custos)</p>
+          <p className="text-slate-400 text-sm mb-6">Retorno anual do portfólio IQ Top-10 vs IBOV (líquido de custos)</p>
           <div className="bg-[#1E293B] rounded-xl p-4 md:p-6 border border-white/5">
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={annualReturns} barCategoryGap="20%">
@@ -145,9 +145,9 @@ export default function BacktestPage() {
                 <YAxis stroke="#94A3B8" fontSize={12} tickFormatter={(v) => `${v}%`} />
                 <Tooltip
                   contentStyle={{ backgroundColor: '#1E293B', border: '1px solid #334155', borderRadius: 8 }}
-                  formatter={(value: number, name: string) => [`${value.toFixed(1)}%`, name === 'q1' ? 'aQ Top-10' : 'IBOV']}
+                  formatter={(value: number, name: string) => [`${value.toFixed(1)}%`, name === 'q1' ? 'IQ Top-10' : 'IBOV']}
                 />
-                <Legend formatter={(value) => value === 'q1' ? 'aQ Top-10' : 'IBOV'} />
+                <Legend formatter={(value) => value === 'q1' ? 'IQ Top-10' : 'IBOV'} />
                 <ReferenceLine y={0} stroke="#475569" />
                 <Bar dataKey="q1" fill="#1A73E8" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="ibov" fill="#475569" radius={[4, 4, 0, 0]} />
@@ -159,7 +159,7 @@ export default function BacktestPage() {
         {/* ─── 3. Quintis ──────────────────────────────── */}
         <section>
           <h2 className="text-2xl font-bold mb-2">Análise por Quintis</h2>
-          <p className="text-slate-400 text-sm mb-6">Retorno acumulado (2016-2025) por quintil de aQ Score — Q1 (melhores) vs Q5 (piores)</p>
+          <p className="text-slate-400 text-sm mb-6">Retorno acumulado (2016-2025) por quintil de IQ-Score — Q1 (melhores) vs Q5 (piores)</p>
           <div className="bg-[#1E293B] rounded-xl p-4 md:p-6 border border-white/5">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={quintiles} layout="vertical" barCategoryGap="25%">
@@ -293,7 +293,7 @@ export default function BacktestPage() {
         {/* ─── CTA ──────────────────────────────────────── */}
         <section className="text-center py-12">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Experimente o aQ Score em todas as 387 ações
+            Experimente o IQ-Score em todas as 387 ações
           </h2>
           <p className="text-slate-400 mb-8 max-w-xl mx-auto">
             O mesmo motor que gerou +10.55% de alpha anualizado está disponível em tempo real para sua carteira.

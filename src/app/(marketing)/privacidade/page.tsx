@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Política de Privacidade',
-  description: 'Política de privacidade e proteção de dados da plataforma aQ-Invest.',
+  description: 'Política de privacidade e proteção de dados da plataforma InvestIQ.',
 }
 
 const sections = [
@@ -17,7 +17,7 @@ const sections = [
       </svg>
     ),
     title: 'Introdução',
-    content: `O aQ-Invest está comprometido em proteger sua privacidade. Esta política descreve como coletamos, usamos e protegemos suas informações pessoais em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018).`,
+    content: `O InvestIQ está comprometido em proteger sua privacidade. Esta política descreve como coletamos, usamos e protegemos suas informações pessoais em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018).`,
   },
   {
     id: 'dados-coletados',
@@ -363,8 +363,8 @@ export default function PrivacidadePage() {
               <h3 className="text-lg font-semibold mb-1">Encarregado de Dados (DPO)</h3>
               <p className="text-[var(--text-2)]">
                 Para exercer seus direitos ou tirar dúvidas sobre privacidade:{' '}
-                <a href="mailto:privacidade@aqinvest.com.br" className="text-teal hover:underline font-medium">
-                  privacidade@aqinvest.com.br
+                <a href="mailto:privacidade@investiq.com.br" className="text-teal hover:underline font-medium">
+                  privacidade@investiq.com.br
                 </a>
               </p>
             </div>

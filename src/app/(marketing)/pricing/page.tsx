@@ -12,7 +12,7 @@ const plans = [
   {
     key: 'free' as const,
     features: [
-      { name: 'aQ Score™', value: 'Ilimitado' },
+      { name: 'IQ-Score™', value: 'Ilimitado' },
       { name: 'Screener', value: 'Todos os filtros' },
       { name: 'Carteiras', value: '1 carteira, 20 ativos' },
       { name: 'Indicadores', value: 'Todos (20)' },
@@ -28,7 +28,7 @@ const plans = [
   {
     key: 'pro' as const,
     features: [
-      { name: 'aQ Score™', value: 'Ilimitado' },
+      { name: 'IQ-Score™', value: 'Ilimitado' },
       { name: 'Screener', value: '50+ filtros' },
       { name: 'Carteiras', value: '5 carteiras, ativos ilimitados' },
       { name: 'Indicadores', value: 'Todos + histórico' },
@@ -44,7 +44,7 @@ const plans = [
   {
     key: 'elite' as const,
     features: [
-      { name: 'aQ Score™', value: 'Ilimitado + customizável' },
+      { name: 'IQ-Score™', value: 'Ilimitado + customizável' },
       { name: 'Screener', value: 'Todos os filtros' },
       { name: 'Carteiras', value: 'Ilimitadas' },
       { name: 'Indicadores', value: 'Todos + DCF + Valor Intrínseco' },

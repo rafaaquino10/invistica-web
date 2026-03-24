@@ -18,7 +18,7 @@ interface Step {
 
 const steps: Step[] = [
   {
-    title: 'Bem-vindo ao aQ Invest',
+    title: 'Bem-vindo ao InvestIQ',
     description:
       'Sua plataforma de análise fundamentalista inteligente. Avaliamos ações brasileiras de 0 a 100 com base em 6 pilares: Valuation, Qualidade, Risco, Dividendos, Crescimento e Qualitativo.',
     icon: (
@@ -51,7 +51,7 @@ const steps: Step[] = [
     action: { label: 'Explorar', href: '/explorer' },
   },
   {
-    title: 'aQ Intelligence™',
+    title: 'IQ-Cognit™',
     description:
       'Motor proprietário que analisa 20 indicadores com calibração setorial, detecção de regime e diagnóstico IA. Scores de 81+ são Excepcionais, 61-80 Saudáveis, 31-60 Atenção e abaixo de 30 Críticos.',
     icon: (
