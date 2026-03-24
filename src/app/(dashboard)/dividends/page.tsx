@@ -51,10 +51,22 @@ export default function DividendsPage() {
   })
   const calendar = calendarData?.calendar ?? []
 
-  // Placeholder data for tabs not yet migrated
-  const summary = null
-  const projections = null
-  const simulation = null
+  // Summary and projections from InvestIQ API
+  const { data: summaryData } = useQuery({
+    queryKey: ['dividend-summary', period],
+    queryFn: () => pro.getDividendSummary(period === 'ALL' ? 60 : period === '1Y' ? 12 : period === '6M' ? 6 : period === '3M' ? 3 : 1, token ?? undefined),
+    enabled: !!token && activeTab === 'summary',
+  })
+  const summary = summaryData ?? null
+
+  const { data: projectionsData } = useQuery({
+    queryKey: ['dividend-projections'],
+    queryFn: () => pro.getDividendProjections(12, token ?? undefined),
+    enabled: !!token && activeTab === 'projections',
+  })
+  const projections = projectionsData ?? null
+
+  const simulation = null // Simulator endpoint not yet available
 
   const validTickers = simulatorTickers.filter(t => t.trim().length >= 4)
   const validAmounts = simulatorAmounts

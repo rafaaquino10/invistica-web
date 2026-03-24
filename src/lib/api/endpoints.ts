@@ -316,6 +316,21 @@ export const pro = {
       `/dividends/calendar${qs({ days })}`, { token },
     ),
 
+  getDividendSummary: (months = 12, token?: string) =>
+    apiFetch<{ months: number; summary: Array<{ month: string; entries: Array<{ ticker: string; value: number; type: string; ex_date: string }>; subtotal: number }>; total: number }>(
+      `/dividends/summary${qs({ months })}`, { token },
+    ),
+
+  getDividendProjections: (months = 12, token?: string) =>
+    apiFetch<{ months: number; projections: Array<{ ticker: string; company_name: string; dividend_yield_proj: number; dividend_safety: number; dividend_cagr_5y: number | null }> }>(
+      `/dividends/projections${qs({ months })}`, { token },
+    ),
+
+  getRadarFeed: (limit = 30, filter = 'all', token?: string) =>
+    apiFetch<{ feed: Array<{ id: string; type: string; title: string; message: string; severity: string; date: string; tickers: string[]; source?: string; url?: string; sentiment?: string }>; count: number }>(
+      `/radar/feed${qs({ limit, filter })}`, { token },
+    ),
+
   // Mandate
   suggestMandate: (
     portfolioId: string,

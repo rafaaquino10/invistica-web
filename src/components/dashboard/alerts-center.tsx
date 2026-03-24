@@ -1,6 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { cn } from '@/lib/utils'
 
 /**
@@ -40,7 +43,14 @@ const EXIT_TYPE_LABELS: Record<string, string> = {
 }
 
 export function AlertsCenter() {
-  const { data: feed } = { data: undefined, isLoading: false }
+  const { token } = useAuth()
+  const { data: feedData } = useQuery({
+    queryKey: ['radar-feed-alerts'],
+    queryFn: () => pro.getRadarFeed(15, 'all', token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
+  const feed = feedData?.feed
 
   // Filtrar apenas exit_alerts do feed
   const alerts = (feed ?? []).filter(

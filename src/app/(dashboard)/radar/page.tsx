@@ -3,14 +3,24 @@
 import { useState } from 'react'
 import { Button, Modal, Input, Skeleton, Tabs, TabPanel, ScrollableStrip } from '@/components/ui'
 import { PaywallGate } from '@/components/billing'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { cn } from '@/lib/utils'
 import { AssetLogo } from '@/components/ui/asset-logo'
 
 export default function RadarPage() {
   const [showCreateAlert, setShowCreateAlert] = useState(false)
+  const { token } = useAuth()
 
-  const { data: feed } = { data: undefined, isLoading: false }
-  const { data: alerts } = { data: undefined, isLoading: false }
+  const { data: feedData } = useQuery({
+    queryKey: ['radar-feed'],
+    queryFn: () => pro.getRadarFeed(30, 'all', token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
+  const feed = feedData?.feed ?? undefined
+  const alerts: unknown[] | undefined = undefined // Alerts management not yet available
 
   const feedCount = feed?.length ?? 0
   const alertCount = alerts?.filter((a: any) => a.isActive)?.length ?? 0
