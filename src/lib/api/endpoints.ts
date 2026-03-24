@@ -311,6 +311,11 @@ export const pro = {
       `/dividends/radar${qs({ min_safety })}`, { token },
     ),
 
+  getDividendCalendar: (days = 30, token?: string) =>
+    apiFetch<{ calendar: Array<{ ticker_id: string; ticker: string; company_name: string; ex_date: string; value_per_share: number; type: string }> }>(
+      `/dividends/calendar${qs({ days })}`, { token },
+    ),
+
   // Mandate
   suggestMandate: (
     portfolioId: string,

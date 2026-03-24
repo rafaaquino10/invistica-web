@@ -4,8 +4,7 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input, Button, ScrollableStrip } from '@/components/ui'
-// TODO: Migrate trpc.dividends.calendar, summary, projections, simulate to InvestIQ API when endpoints are available
-import { trpc } from '@/lib/trpc/provider'
+// summary, projections, simulate tabs use placeholder data (endpoints not yet available)
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/use-auth'
 import { free, pro } from '@/lib/api/endpoints'
@@ -44,20 +43,23 @@ export default function DividendsPage() {
     enabled: !!token,
   })
 
-  // TODO: Migrate to InvestIQ API when endpoints are available
-  const { data: calendar, isLoading: calendarLoading } = trpc.dividends.calendar.useQuery({})
-  const { data: summary } = trpc.dividends.summary.useQuery({ period })
-  const { data: projections } = trpc.dividends.projections.useQuery({ months: 12 })
+  // Calendar from InvestIQ API
+  const { data: calendarData, isLoading: calendarLoading } = useQuery({
+    queryKey: ['dividend-calendar'],
+    queryFn: () => pro.getDividendCalendar(90, token ?? undefined),
+    enabled: !!token,
+  })
+  const calendar = calendarData?.calendar ?? []
+
+  // Placeholder data for tabs not yet migrated
+  const summary = null
+  const projections = null
+  const simulation = null
 
   const validTickers = simulatorTickers.filter(t => t.trim().length >= 4)
   const validAmounts = simulatorAmounts
     .filter((_, i) => (simulatorTickers[i] ?? '').trim().length >= 4)
     .map(a => parseFloat(a) || 0)
-
-  const { data: simulation } = trpc.dividends.simulate.useQuery(
-    { tickers: validTickers, amounts: validAmounts },
-    { enabled: validTickers.length > 0 }
-  )
 
   const nextPayment = calendar?.entries.find((e) => {
     const date = e.paymentDate ?? e.exDate

@@ -7,8 +7,7 @@ import { ThemeToggle } from '@/components/layout/theme-toggle'
 import { FontSizeToggle } from '@/components/layout/font-size-toggle'
 import { Button, Input, Badge, DataCard } from '@/components/ui'
 import { cn } from '@/lib/utils'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/provider'
+// Profile via Supabase auth, preferences via localStorage
 
 type TabType = 'profile' | 'preferences' | 'notifications' | 'billing'
 
@@ -75,8 +74,6 @@ function ProfileTab({ session }: { session: any }) {
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
 
-  const updateProfile = trpc.user.updateProfile.useMutation()
-
   useEffect(() => {
     if (user?.name) {
       setEditName(user.name)
@@ -92,8 +89,10 @@ function ProfileTab({ session }: { session: any }) {
     setSaveSuccess(false)
 
     try {
-      await updateProfile.mutateAsync({ name: editName.trim() })
-      await update({ name: editName.trim() })
+      // Update via Supabase auth metadata
+      const { createClient } = await import('@/lib/supabase/client')
+      const supabase = createClient()
+      await supabase.auth.updateUser({ data: { full_name: editName.trim() } })
       setSaveSuccess(true)
       setTimeout(() => setSaveSuccess(false), 2000)
     } catch {
@@ -208,22 +207,21 @@ function PreferencesTab() {
 // ===========================================
 
 function NotificationsTab() {
-  const { data: prefs, isLoading } = trpc.user.getNotificationPreferences.useQuery()
-  const updateNotifications = trpc.user.updateNotificationPreferences.useMutation()
+  const isLoading = false
   const [emailEnabled, setEmailEnabled] = useState(false)
   const [saved, setSaved] = useState(false)
 
   useEffect(() => {
-    if (prefs) {
-      setEmailEnabled(prefs.emailNotifications)
-    }
-  }, [prefs])
+    // Load from localStorage
+    const stored = localStorage.getItem('investiq-email-notifications')
+    if (stored !== null) setEmailEnabled(stored === 'true')
+  }, [])
 
   const handleToggle = async () => {
     const newValue = !emailEnabled
     setEmailEnabled(newValue)
     try {
-      await updateNotifications.mutateAsync({ emailNotifications: newValue })
+      localStorage.setItem('investiq-email-notifications', String(newValue))
       setSaved(true)
       setTimeout(() => setSaved(false), 2000)
     } catch {
