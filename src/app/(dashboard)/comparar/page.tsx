@@ -4,8 +4,7 @@ import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { Button, Input, Disclaimer } from '@/components/ui'
 import { ComparisonRadarChart } from '@/components/charts'
-// TODO: Migrate trpc.assets.search and trpc.assets.getHistory to InvestIQ API when endpoints are available
-import { trpc } from '@/lib/trpc/provider'
+// Search and history migrated to InvestIQ API
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/use-auth'
 import { free, pro } from '@/lib/api/endpoints'
@@ -17,8 +16,10 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip as Recharts
 const MAX_ASSETS = 4
 const COMPARISON_COLORS = ['#1A73E8', '#0D9488', '#D97706', '#EF4444']
 const HISTORY_RANGES = [
-  { label: '1M', range: '1mo' as const, interval: '1d' as const },
-  { label: '3M', range: '3mo' as const, interval: '1d' as const },
+  { label: '1M', range: '1mo' as const, interval: '1d' as const, days: 30 },
+  { label: '3M', range: '3mo' as const, interval: '1d' as const, days: 90 },
+  { label: '6M', range: '6mo' as const, interval: '1d' as const, days: 180 },
+  { label: '1A', range: '1y' as const, interval: '1d' as const, days: 365 },
 ]
 
 export default function ComparisonPage() {
@@ -27,10 +28,17 @@ export default function ComparisonPage() {
   const [isSearching, setIsSearching] = useState(false)
   const [historyRange, setHistoryRange] = useState(HISTORY_RANGES[3]!) // 1A default
 
-  const { data: searchResults } = trpc.assets.search.useQuery(
-    { query: searchQuery },
-    { enabled: searchQuery.length >= 1 }
-  )
+  const { data: searchData } = useQuery({
+    queryKey: ['compare-search', searchQuery],
+    queryFn: () => free.searchTickers(searchQuery, 10),
+    enabled: searchQuery.length >= 1,
+  })
+  const searchResults = (searchData?.results ?? []).map(t => ({
+    ticker: t.ticker,
+    name: t.company_name,
+    logo: null as string | null,
+    sector: null as string | null,
+  }))
 
   const { token } = useAuth()
 
@@ -88,22 +96,26 @@ export default function ComparisonPage() {
     return padded
   }, [selectedTickers])
 
-  const hq0 = trpc.assets.getHistory.useQuery(
-    { ticker: paddedTickers[0]!, range: historyRange.range, interval: historyRange.interval },
-    { enabled: !!paddedTickers[0] && selectedTickers.length >= 2 }
-  )
-  const hq1 = trpc.assets.getHistory.useQuery(
-    { ticker: paddedTickers[1]!, range: historyRange.range, interval: historyRange.interval },
-    { enabled: !!paddedTickers[1] && selectedTickers.length >= 2 }
-  )
-  const hq2 = trpc.assets.getHistory.useQuery(
-    { ticker: paddedTickers[2]!, range: historyRange.range, interval: historyRange.interval },
-    { enabled: !!paddedTickers[2] && selectedTickers.length >= 2 }
-  )
-  const hq3 = trpc.assets.getHistory.useQuery(
-    { ticker: paddedTickers[3]!, range: historyRange.range, interval: historyRange.interval },
-    { enabled: !!paddedTickers[3] && selectedTickers.length >= 2 }
-  )
+  const hq0 = useQuery({
+    queryKey: ['history', paddedTickers[0], historyRange.days],
+    queryFn: () => free.getHistory(paddedTickers[0]!, historyRange.days),
+    enabled: !!paddedTickers[0] && selectedTickers.length >= 2,
+  })
+  const hq1 = useQuery({
+    queryKey: ['history', paddedTickers[1], historyRange.days],
+    queryFn: () => free.getHistory(paddedTickers[1]!, historyRange.days),
+    enabled: !!paddedTickers[1] && selectedTickers.length >= 2,
+  })
+  const hq2 = useQuery({
+    queryKey: ['history', paddedTickers[2], historyRange.days],
+    queryFn: () => free.getHistory(paddedTickers[2]!, historyRange.days),
+    enabled: !!paddedTickers[2] && selectedTickers.length >= 2,
+  })
+  const hq3 = useQuery({
+    queryKey: ['history', paddedTickers[3], historyRange.days],
+    queryFn: () => free.getHistory(paddedTickers[3]!, historyRange.days),
+    enabled: !!paddedTickers[3] && selectedTickers.length >= 2,
+  })
 
   const historyQueries = useMemo(() => {
     return [hq0, hq1, hq2, hq3].slice(0, selectedTickers.length)

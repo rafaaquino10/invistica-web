@@ -1,7 +1,8 @@
 'use client'
 
-// TODO: Add /news/{ticker} endpoint to InvestIQ API, then migrate
-import { trpc } from '@/lib/trpc/client'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui'
 
@@ -44,18 +45,19 @@ const RI_TYPE_LABEL: Record<string, string> = {
 }
 
 export function NewsSection({ ticker, companyName }: NewsSectionProps) {
-  const { data: news, isLoading: newsLoading } = trpc.news.forTicker.useQuery(
-    { ticker, companyName, limit: 8 },
-    { staleTime: 5 * 60 * 1000 }
-  )
-  const { data: riEvents, isLoading: riLoading } = trpc.news.riForTicker.useQuery(
-    { ticker, limit: 5 },
-    { staleTime: 5 * 60 * 1000 }
-  )
+  const { token } = useAuth()
+  const { data: newsData, isLoading: newsLoading } = useQuery({
+    queryKey: ['news', ticker],
+    queryFn: () => pro.getNews(ticker, 8, token ?? undefined),
+    enabled: !!ticker && !!token,
+    staleTime: 5 * 60 * 1000,
+  })
 
-  const isLoading = newsLoading || riLoading
-  const hasNews = news && news.length > 0
-  const hasRi = riEvents && riEvents.length > 0
+  const news = newsData?.news ?? []
+  const isLoading = newsLoading
+  const hasNews = news.length > 0
+  const hasRi = false // RI events endpoint not yet available
+  const riEvents: unknown[] = []
 
   if (isLoading) {
     return (

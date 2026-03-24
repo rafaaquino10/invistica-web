@@ -192,6 +192,16 @@ export const free = {
 
   getClusters: () =>
     apiFetch<{ clusters: Cluster[] }>('/clusters'),
+
+  searchTickers: (q: string, limit = 10) =>
+    apiFetch<{ count: number; results: Ticker[] }>(
+      `/tickers/search${qs({ q, limit })}`,
+    ),
+
+  getHistory: (ticker: string, days = 90) =>
+    apiFetch<{ ticker: string; days: number; data: Array<{ date: string; open: number; high: number; low: number; close: number; volume: number }> }>(
+      `/tickers/${ticker}/history${qs({ days })}`,
+    ),
 }
 
 // ════════════════════════════════════════════════════════════
@@ -282,6 +292,12 @@ export const pro = {
   getSmartContribution: (aporte_total = 1000, token?: string) =>
     apiFetch<{ aporte_total: number; suggestions: Array<{ ticker: string; percentual: number; valor_recomendado: number; motivo: string }> }>(
       `/portfolio/smart-contribution${qs({ aporte_total })}`, { token },
+    ),
+
+  // News
+  getNews: (ticker: string, limit = 10, token?: string) =>
+    apiFetch<{ ticker: string; news: Array<{ id: string; title: string; summary: string | null; url: string | null; source: string | null; published_at: string; sentiment: string | null; sentiment_score: number | null; relevance_score: number | null }>; count: number }>(
+      `/news/${ticker}${qs({ limit })}`, { token },
     ),
 
   // Dividends

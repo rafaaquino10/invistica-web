@@ -127,22 +127,17 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
   // Search results via InvestIQ API
   const { data: searchData, isLoading: isSearchLoading } = useQuery({
     queryKey: ['ticker-search', debouncedQuery],
-    queryFn: () => free.getTickers({ limit: 100 }),
+    queryFn: () => free.searchTickers(debouncedQuery, 8),
     enabled: debouncedQuery.length >= 1,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 1000,
   })
 
-  const searchResults = debouncedQuery.length >= 1
-    ? (searchData?.tickers ?? [])
-        .filter(t =>
-          t.ticker.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-          (t.company_name ?? '').toLowerCase().includes(debouncedQuery.toLowerCase())
-        )
-        .map(t => ({ ticker: t.ticker, name: t.company_name, logo: null as string | null, sector: null as string | null }))
-        .slice(0, 8)
-    : []
-
-  const results = searchResults
+  const results = (searchData?.results ?? []).map(t => ({
+    ticker: t.ticker,
+    name: t.company_name,
+    logo: null as string | null,
+    sector: null as string | null,
+  }))
 
   // Quick actions para command palette
   const quickActions = [
