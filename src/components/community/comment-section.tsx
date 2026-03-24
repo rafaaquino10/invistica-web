@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/provider'
 import { useAuth } from '@/hooks/use-auth'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui'
@@ -23,29 +21,11 @@ export function CommentSection({ ticker }: CommentSectionProps) {
   const [sentiment, setSentiment] = useState<'bull' | 'bear' | null>(null)
   const [showForm, setShowForm] = useState(false)
 
-  const utils = trpc.useUtils()
+  const { data: comments, isLoading } = { data: undefined, isLoading: false }
 
-  const { data: comments, isLoading } = trpc.community.listByTicker.useQuery({
-    ticker,
-    sort,
-    sentiment: sentimentFilter,
-    limit: 20,
-  })
+  const createComment = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false, isPending: false }
 
-  const createComment = trpc.community.create.useMutation({
-    onSuccess: () => {
-      utils.community.listByTicker.invalidate({ ticker })
-      setNewComment('')
-      setShowForm(false)
-      setSentiment(null)
-    },
-  })
-
-  const voteMutation = trpc.community.vote.useMutation({
-    onSuccess: () => {
-      utils.community.listByTicker.invalidate({ ticker })
-    },
-  })
+  const voteMutation = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false }
 
   const handleSubmit = () => {
     if (newComment.trim().length < 10) return

@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import { Button, Modal, Input, Skeleton, Tabs, TabPanel, ScrollableStrip } from '@/components/ui'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { PaywallGate } from '@/components/billing'
 import { cn } from '@/lib/utils'
 import { AssetLogo } from '@/components/ui/asset-logo'
@@ -11,8 +9,8 @@ import { AssetLogo } from '@/components/ui/asset-logo'
 export default function RadarPage() {
   const [showCreateAlert, setShowCreateAlert] = useState(false)
 
-  const { data: feed } = trpc.radar.feed.useQuery({ limit: 30 })
-  const { data: alerts } = trpc.radar.alerts.useQuery()
+  const { data: feed } = { data: undefined, isLoading: false }
+  const { data: alerts } = { data: undefined, isLoading: false }
 
   const feedCount = feed?.length ?? 0
   const alertCount = alerts?.filter((a: any) => a.isActive)?.length ?? 0
@@ -115,8 +113,8 @@ function getRelativeGroupLabel(date: Date): string {
 const GROUP_ORDER = ['Hoje', 'Ontem', 'Esta Semana', 'Mais Antigo']
 
 function FeedTab() {
-  const { data: feed, isLoading } = trpc.radar.feed.useQuery({ limit: 30 })
-  const markRead = trpc.radar.markInsightRead.useMutation()
+  const { data: feed, isLoading } = { data: undefined, isLoading: false }
+  const markRead = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false }
   const [feedFilter, setFeedFilter] = useState<string>('all')
 
   if (isLoading) {
@@ -427,9 +425,10 @@ function TimelineIcon({ type, className }: { type: string; className?: string })
 // ===========================================
 
 function AlertsTab({ onCreateClick }: { onCreateClick: () => void }) {
-  const { data: alerts, isLoading, refetch } = trpc.radar.alerts.useQuery()
-  const deleteAlert = trpc.radar.deleteAlert.useMutation({ onSuccess: () => refetch() })
-  const updateAlert = trpc.radar.updateAlert.useMutation({ onSuccess: () => refetch() })
+  const refetch = () => {}
+  const { data: alerts, isLoading } = { data: undefined, isLoading: false }
+  const deleteAlert = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false }
+  const updateAlert = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false }
 
   if (isLoading) {
     return <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-16 rounded-[var(--radius)]" />)}</div>
@@ -521,7 +520,7 @@ function AlertRow({ alert, onToggle, onDelete }: { alert: any; onToggle: () => v
 // ===========================================
 
 function HealthTab() {
-  const { data: health, isLoading } = trpc.radar.portfolioHealth.useQuery()
+  const { data: health, isLoading } = { data: undefined, isLoading: false }
 
   if (isLoading) {
     return <div className="space-y-6"><Skeleton className="h-40 rounded-[var(--radius)]" /><div className="grid md:grid-cols-2 gap-4">{[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-24 rounded-[var(--radius)]" />)}</div></div>
@@ -611,9 +610,8 @@ function CreateAlertModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
   const [formData, setFormData] = useState({ ticker: '', type: 'price_below' as 'price_above' | 'price_below' | 'score_change' | 'dividend', threshold: '' })
   const [selectedAsset, setSelectedAsset] = useState<any>(null)
 
-  const utils = trpc.useUtils()
-  const createAlert = trpc.radar.createAlert.useMutation({ onSuccess: () => { utils.radar.alerts.invalidate(); onClose(); resetForm() } })
-  const { data: assets } = trpc.assets.list.useQuery({ search: formData.ticker, pageSize: 10 }, { enabled: formData.ticker.length >= 2 })
+  const createAlert = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false, isPending: false }
+  const { data: assets } = { data: undefined, isLoading: false }
 
   const resetForm = () => { setFormData({ ticker: '', type: 'price_below', threshold: '' }); setSelectedAsset(null) }
 

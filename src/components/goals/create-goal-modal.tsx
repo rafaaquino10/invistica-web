@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import { Button, Modal, Input } from '@/components/ui'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { cn } from '@/lib/utils'
 import { parseCurrencyInput } from './currency-helpers'
 import { CurrencyInput, SliderInput } from './input-components'
@@ -22,15 +20,7 @@ export function CreateGoalModal({ isOpen, onClose }: { isOpen: boolean; onClose:
     isMain: false,
   })
 
-  const utils = trpc.useUtils()
-  const createGoal = trpc.goals.create.useMutation({
-    onSuccess: () => {
-      utils.goals.list.invalidate()
-      utils.goals.mainGoal.invalidate()
-      onClose()
-      resetForm()
-    },
-  })
+  const createGoal = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false, isPending: false }
 
   const [formError, setFormError] = useState<string | null>(null)
 

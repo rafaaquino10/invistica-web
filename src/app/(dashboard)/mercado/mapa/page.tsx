@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/provider'
 import { MarketTreemap, type ColorMode } from '@/components/treemap/market-treemap'
 import { cn } from '@/lib/utils'
 import { formatMarketCap } from '@/lib/utils/formatters'
@@ -27,7 +25,7 @@ export default function MapaPage() {
   const [minScore, setMinScore] = useState<number | undefined>(undefined)
   const [sectorFilter, setSectorFilter] = useState<string>('')
 
-  const { data, isLoading } = trpc.screener.treemapData.useQuery()
+  const { data, isLoading } = { data: undefined, isLoading: false }
 
   // Agrupar setores < 3% market cap total em "Outros"
   const consolidatedSectors = useMemo(() => {

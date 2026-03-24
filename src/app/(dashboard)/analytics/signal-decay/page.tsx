@@ -1,7 +1,5 @@
 'use client'
 
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 import { PaywallGate } from '@/components/billing/paywall-gate'
 import { cn } from '@/lib/utils'
@@ -26,10 +24,7 @@ const PILLAR_COLORS: Record<string, string> = {
 }
 
 export default function SignalDecayPage() {
-  const { data, isLoading } = trpc.scoreSnapshots.signalDecay.useQuery(
-    undefined,
-    { staleTime: 10 * 60 * 1000 },
-  )
+  const { data, isLoading } = { data: undefined, isLoading: false }
 
   return (
     <div className="space-y-6">

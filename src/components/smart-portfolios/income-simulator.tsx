@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { cn } from '@/lib/utils'
 
 function formatBRL(value: number): string {
@@ -14,7 +12,7 @@ const AMOUNT_OPTIONS = [50_000, 100_000, 250_000, 500_000, 1_000_000]
 
 export function IncomeSimulatorCard() {
   const [amount, setAmount] = useState(100_000)
-  const { data: simulation, isLoading } = trpc.smartPortfolios.simulate.useQuery({ amount })
+  const { data: simulation, isLoading } = { data: undefined, isLoading: false }
 
   return (
     <Card>

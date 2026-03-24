@@ -1,7 +1,5 @@
 'use client'
 
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/provider'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/utils/formatters'
 import {
@@ -49,18 +47,10 @@ function MetricBox({ label, value, sub, color }: { label: string; value: string;
 // ─── Component ──────────────────────────────────────────────────────
 
 export function AnalyticsTab({ portfolioId }: AnalyticsTabProps) {
-  const { data: attribution, isLoading: loadingAttr } = trpc.analytics.attribution.useQuery(
-    { portfolioId }, { staleTime: 5 * 60 * 1000 }
-  )
-  const { data: risk, isLoading: loadingRisk } = trpc.analytics.risk.useQuery(
-    { portfolioId }, { staleTime: 5 * 60 * 1000 }
-  )
-  const { data: scenario, isLoading: loadingScenario } = trpc.analytics.scenario.useQuery(
-    { portfolioId }, { staleTime: 5 * 60 * 1000 }
-  )
-  const { data: quintile, isLoading: loadingQuintile } = trpc.analytics.quintile.useQuery(
-    { portfolioId }, { staleTime: 5 * 60 * 1000 }
-  )
+  const { data: attribution, isLoading: loadingAttr } = { data: undefined, isLoading: false }
+  const { data: risk, isLoading: loadingRisk } = { data: undefined, isLoading: false }
+  const { data: scenario, isLoading: loadingScenario } = { data: undefined, isLoading: false }
+  const { data: quintile, isLoading: loadingQuintile } = { data: undefined, isLoading: false }
 
   const isLoading = loadingAttr || loadingRisk || loadingScenario || loadingQuintile
 

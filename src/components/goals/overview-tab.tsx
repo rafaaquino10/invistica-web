@@ -1,8 +1,6 @@
 'use client'
 
 import { Button, Skeleton } from '@/components/ui'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from './currency-helpers'
 import { ProgressBar, MainGoalCard, MilestonesCard, GoalsListCard } from './goal-card'
@@ -12,9 +10,9 @@ import { ProgressBar, MainGoalCard, MilestonesCard, GoalsListCard } from './goal
 // ===========================================
 
 export function OverviewTab({ onCreateClick }: { onCreateClick: () => void }) {
-  const { data: goals, isLoading: loadingGoals } = trpc.goals.list.useQuery()
-  const { data: mainGoal, isLoading: loadingMain } = trpc.goals.mainGoal.useQuery()
-  const { data: passiveIncome, isLoading: loadingIncome } = trpc.goals.passiveIncomeStatus.useQuery()
+  const { data: goals, isLoading: loadingGoals } = { data: undefined, isLoading: false }
+  const { data: mainGoal, isLoading: loadingMain } = { data: undefined, isLoading: false }
+  const { data: passiveIncome, isLoading: loadingIncome } = { data: undefined, isLoading: false }
 
   if (loadingGoals || loadingMain || loadingIncome) {
     return (

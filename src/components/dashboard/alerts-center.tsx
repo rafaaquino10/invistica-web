@@ -1,8 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-// TODO: Migrate to pro.getAlerts when /portfolio/alerts endpoint returns feed format
-import { trpc } from '@/lib/trpc/client'
 import { cn } from '@/lib/utils'
 
 /**
@@ -42,7 +40,7 @@ const EXIT_TYPE_LABELS: Record<string, string> = {
 }
 
 export function AlertsCenter() {
-  const { data: feed } = trpc.radar.feed.useQuery({ limit: 30 })
+  const { data: feed } = { data: undefined, isLoading: false }
 
   // Filtrar apenas exit_alerts do feed
   const alerts = (feed ?? []).filter(

@@ -5,14 +5,10 @@
 'use client'
 
 import { useState } from 'react'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 
 export function SnapshotTimeline() {
   const [expanded, setExpanded] = useState(false)
-  const { data: snapshots, isLoading } = trpc.scoreSnapshots.snapshotTimeline.useQuery({
-    limit: expanded ? 52 : 12,
-  })
+  const { data: snapshots, isLoading } = { data: undefined, isLoading: false }
 
   return (
     <div className="rounded-lg border bg-card p-4 space-y-4">

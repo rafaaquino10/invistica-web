@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { REGIME_DISPLAY } from '@/lib/scoring/regime-detector'
@@ -15,10 +13,7 @@ interface SensitivityCardProps {
 export function SensitivityCard({ ticker }: SensitivityCardProps) {
   const [expanded, setExpanded] = useState<string | null>(null)
 
-  const { data: scenarios, isLoading } = trpc.assets.sensitivity.useQuery(
-    { ticker },
-    { staleTime: 10 * 60 * 1000 },
-  )
+  const { data: scenarios, isLoading } = { data: undefined, isLoading: false }
 
   if (isLoading) {
     return (

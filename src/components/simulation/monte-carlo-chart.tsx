@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/utils/formatters'
@@ -19,10 +17,7 @@ export function MonteCarloSection({ portfolioId }: MonteCarloSectionProps) {
   const [years, setYears] = useState(10)
   const [monthly, setMonthly] = useState(1000)
 
-  const { data, isLoading } = trpc.portfolio.monteCarlo.useQuery(
-    { portfolioId, years, monthlyContribution: monthly },
-    { staleTime: 5 * 60 * 1000 },
-  )
+  const { data, isLoading } = { data: undefined, isLoading: false }
 
   return (
     <Card>

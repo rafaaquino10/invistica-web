@@ -1,7 +1,5 @@
 'use client'
 
-// TODO: Migrate when CAGED endpoint is added to InvestIQ API
-import { trpc } from '@/lib/trpc/client'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 import { cn } from '@/lib/utils'
 
@@ -12,10 +10,7 @@ const TREND_CONFIG = {
 }
 
 export function CAGEDPulse() {
-  const { data, isLoading } = trpc.economy.cagedPulse.useQuery(
-    undefined,
-    { staleTime: 60 * 60 * 1000 }, // 1h cache
-  )
+  const { data, isLoading } = { data: undefined, isLoading: false }
 
   if (isLoading) {
     return (

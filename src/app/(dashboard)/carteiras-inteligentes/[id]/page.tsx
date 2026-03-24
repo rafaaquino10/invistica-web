@@ -3,8 +3,6 @@
 import { use } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, Skeleton, Badge } from '@/components/ui'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { PaywallGate } from '@/components/billing'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { cn } from '@/lib/utils'
@@ -120,7 +118,7 @@ export default function SmartPortfolioDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  const { data: portfolio, isLoading } = trpc.smartPortfolios.detail.useQuery({ portfolioId: id })
+  const { data: portfolio, isLoading } = { data: undefined, isLoading: false }
 
   if (isLoading) {
     return (

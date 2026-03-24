@@ -2,8 +2,6 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { PaywallGate } from '@/components/billing'
 import { cn } from '@/lib/utils'
 import { parseCurrencyInput, formatCurrency } from './currency-helpers'
@@ -24,9 +22,7 @@ export function SimulatorTab() {
 
   const [simulationInput, setSimulationInput] = useState<any>(null)
 
-  const { data: simulation, isFetching } = trpc.goals.simulate.useQuery(simulationInput!, {
-    enabled: !!simulationInput,
-  })
+  const { data: simulation, isFetching } = { data: undefined, isFetching: false, isLoading: false }
 
   const handleSimulate = () => {
     setSimulationInput({

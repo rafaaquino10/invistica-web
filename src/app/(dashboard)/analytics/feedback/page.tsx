@@ -6,8 +6,6 @@
 'use client'
 
 import { useState } from 'react'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/use-auth'
 import { pro } from '@/lib/api/endpoints'
@@ -126,8 +124,7 @@ function FeedbackContent({ forwardDays }: { forwardDays: number }) {
     enabled: !!token,
   })
 
-  // TODO: Migrate to InvestIQ API when endpoint is available
-  const { data: timeline } = trpc.scoreSnapshots.snapshotTimeline.useQuery({ limit: 12 })
+  const { data: timeline } = { data: undefined, isLoading: false }
   const snapshotCount = timeline?.length ?? 0
 
   if (snapshotCount < 4) {

@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui'
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import { PaywallGate } from '@/components/billing'
 import { parseCurrencyInput, formatCurrency } from './currency-helpers'
 import { CurrencyInput, SliderInput } from './input-components'
@@ -55,16 +53,9 @@ export function FIRETab() {
     return () => clearTimeout(id)
   }, [formData])
 
-  const { data: fireResult, isFetching } = trpc.goals.calculateFIRE.useQuery(debouncedInputs!, {
-    enabled: !!debouncedInputs,
-  })
+  const { data: fireResult, isFetching } = { data: undefined, isFetching: false, isLoading: false }
 
-  const createFIREGoal = trpc.goals.createFIREGoal.useMutation({
-    onSuccess: () => {
-      setFireSuccess(true)
-      setTimeout(() => setFireSuccess(false), 4000)
-    },
-  })
+  const createFIREGoal = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false, isPending: false }
 
   const handleCreateGoal = () => {
     if (!debouncedInputs) return

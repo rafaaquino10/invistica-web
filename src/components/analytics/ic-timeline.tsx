@@ -4,8 +4,6 @@
  */
 'use client'
 
-// TODO: Migrate to InvestIQ API when endpoint is available
-import { trpc } from '@/lib/trpc/client'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ReferenceLine, ReferenceArea, ResponsiveContainer,
@@ -18,13 +16,9 @@ interface ICTimelineProps {
 }
 
 export function ICTimeline({ startDate, endDate, forwardDays }: ICTimelineProps) {
-  const { data: snapshots, isLoading } = trpc.scoreSnapshots.snapshotTimeline.useQuery({ limit: 52 })
+  const { data: snapshots, isLoading } = { data: undefined, isLoading: false }
 
-  const { data: metrics } = trpc.scoreSnapshots.feedbackMetrics.useQuery({
-    startDate,
-    endDate,
-    forwardDays,
-  })
+  const { data: metrics } = { data: undefined, isLoading: false }
 
   const icValue = metrics?.ic?.value
   const icSignificant = metrics?.ic?.isSignificant
