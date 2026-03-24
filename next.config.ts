@@ -1,5 +1,12 @@
 import type { NextConfig } from 'next'
-import { withSentryConfig } from '@sentry/nextjs'
+
+let withSentryConfig: ((config: NextConfig, opts: Record<string, unknown>) => NextConfig) | null = null
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  withSentryConfig = require('@sentry/nextjs').withSentryConfig
+} catch {
+  // Sentry not installed — skip
+}
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -62,4 +69,4 @@ const sentryConfig = {
   widenClientFileUpload: true,
 }
 
-export default withSentryConfig(nextConfig, sentryConfig)
+export default withSentryConfig ? withSentryConfig(nextConfig, sentryConfig) : nextConfig

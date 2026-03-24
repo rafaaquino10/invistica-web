@@ -1,6 +1,6 @@
 // ─── Data Source (Backward Compatibility) ────────────────────
-// Re-exports from the pipeline 3-layer architecture.
-// All consumers can import from here or directly from '@/lib/pipeline'.
+// Re-exports from the data module.
+// All consumers can import from here or directly from '@/lib/data'.
 
 export {
   getAssets,
@@ -8,8 +8,7 @@ export {
   getPreviousAssets,
   getDataSource,
   getCacheStatus,
-} from './pipeline'
+  getCurrentRegime,
+} from './data'
 
-export { getCurrentRegime } from './data'
-
-export type { AssetData } from './pipeline'
+export type { AssetData } from './data'

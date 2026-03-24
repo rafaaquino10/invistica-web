@@ -1,6 +1,12 @@
-import * as Sentry from '@sentry/nextjs'
+const prefix = '[investiq]'
 
-const prefix = '[aq-invest]'
+let Sentry: { captureException: (e: Error, ctx?: unknown) => void; captureMessage: (msg: string, level: string) => void } | null = null
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  Sentry = require('@sentry/nextjs')
+} catch {
+  // Sentry not installed — skip error reporting
+}
 
 export const logger = {
   info: (message: string, ...args: unknown[]) => {
@@ -13,7 +19,7 @@ export const logger = {
   },
   error: (message: string, ...args: unknown[]) => {
     console.error(`${prefix} ${message}`, ...args)
-    // Report errors to Sentry
+    if (!Sentry) return
     const error = args.find(a => a instanceof Error) as Error | undefined
     if (error) {
       Sentry.captureException(error, { extra: { message } })
