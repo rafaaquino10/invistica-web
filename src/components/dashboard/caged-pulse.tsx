@@ -1,5 +1,6 @@
 'use client'
 
+// TODO: Migrate when CAGED endpoint is added to InvestIQ API
 import { trpc } from '@/lib/trpc/client'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 import { cn } from '@/lib/utils'

@@ -11,7 +11,9 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts'
-import { trpc } from '@/lib/trpc/provider'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui'
 
@@ -56,10 +58,12 @@ export function ScoreEvolutionChart({ ticker, className }: ScoreEvolutionChartPr
   const [period, setPeriod] = useState<Period>('3M')
   const [showPillars, setShowPillars] = useState(false)
 
-  const { data, isLoading } = trpc.scoreHistory.history.useQuery(
-    { ticker, days: PERIOD_DAYS[period] },
-    { enabled: !!ticker }
-  )
+  const { token } = useAuth()
+  const { data, isLoading } = useQuery({
+    queryKey: ['score-history', ticker, period],
+    queryFn: () => pro.getHistory(ticker, Math.min(60, Math.ceil(PERIOD_DAYS[period] / 7)), token ?? undefined),
+    enabled: !!ticker && !!token,
+  })
 
   const chartData = useMemo(() => {
     if (!data?.history) return []

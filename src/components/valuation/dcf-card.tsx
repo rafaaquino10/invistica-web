@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { trpc } from '@/lib/trpc/provider'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/utils/formatters'
 import {
@@ -15,10 +17,13 @@ interface DCFCardProps {
 export function DCFCard({ ticker }: DCFCardProps) {
   const [expanded, setExpanded] = useState(false)
 
-  const { data, isLoading } = trpc.valuation.dcf.useQuery(
-    { ticker },
-    { staleTime: 10 * 60 * 1000 }
-  )
+  const { token } = useAuth()
+  const { data, isLoading } = useQuery({
+    queryKey: ['valuation', ticker],
+    queryFn: () => pro.getValuation(ticker, token ?? undefined),
+    enabled: !!ticker && !!token,
+    staleTime: 10 * 60 * 1000,
+  })
 
   if (isLoading) {
     return (

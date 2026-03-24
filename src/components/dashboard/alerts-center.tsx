@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+// TODO: Migrate to pro.getAlerts when /portfolio/alerts endpoint returns feed format
 import { trpc } from '@/lib/trpc/client'
 import { cn } from '@/lib/utils'
 
