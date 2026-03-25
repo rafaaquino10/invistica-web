@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 const DEMO_EMAIL = 'demo@investiq.com.br'
-const DEMO_PASSWORD = 'demo-investiq-2026'
+const DEMO_PASSWORD = 'Demo-InvestIQ-2026!'
 
 export default function DemoLoginWrapper() {
   return (
@@ -30,43 +30,16 @@ function DemoLoginPage() {
     async function loginDemo() {
       const supabase = createClient()
 
-      // Try sign in
+      // User was pre-created by /api/auth/demo (server-side).
+      // Just sign in client-side to set cookies correctly.
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: DEMO_EMAIL,
         password: DEMO_PASSWORD,
       })
 
       if (signInError) {
-        // User might not exist — try to sign up
-        if (signInError.message.includes('Invalid login') || signInError.message.includes('invalid')) {
-          setStatus('Criando conta demo...')
-          const { error: signUpError } = await supabase.auth.signUp({
-            email: DEMO_EMAIL,
-            password: DEMO_PASSWORD,
-            options: {
-              data: { full_name: 'Usuário Demo', plan: 'pro' },
-            },
-          })
-
-          if (signUpError) {
-            setError(`Erro ao criar demo: ${signUpError.message}`)
-            return
-          }
-
-          // Try sign in again after signup
-          const { error: retryError } = await supabase.auth.signInWithPassword({
-            email: DEMO_EMAIL,
-            password: DEMO_PASSWORD,
-          })
-
-          if (retryError) {
-            setError(`Erro no login demo: ${retryError.message}`)
-            return
-          }
-        } else {
-          setError(`Erro: ${signInError.message}`)
-          return
-        }
+        setError(`Erro no login demo: ${signInError.message}`)
+        return
       }
 
       setStatus('Redirecionando...')
