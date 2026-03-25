@@ -52,37 +52,31 @@ function MetricBox({ label, value, sub, color }: { label: string; value: string;
 export function AnalyticsTab({ portfolioId }: AnalyticsTabProps) {
   const { token } = useAuth()
 
-  const { data: attribution, isLoading: loadingAttr } = useQuery({
-    queryKey: ['portfolio-attribution'],
-    queryFn: () => pro.getPortfolioAttribution('default', token ?? undefined),
+  const { data: attrRaw, isLoading: loadingAttr } = useQuery({
+    queryKey: ['portfolio-attribution', portfolioId],
+    queryFn: () => pro.getPortfolioAttribution(portfolioId, token ?? undefined),
     enabled: !!token,
     staleTime: 5 * 60 * 1000,
   })
-  const { data: risk, isLoading: loadingRisk } = useQuery({
-    queryKey: ['portfolio-risk'],
-    queryFn: () => pro.getPortfolioRisk('default', token ?? undefined),
+  const { data: riskRaw, isLoading: loadingRisk } = useQuery({
+    queryKey: ['portfolio-risk', portfolioId],
+    queryFn: () => pro.getPortfolioRisk(portfolioId, token ?? undefined),
     enabled: !!token,
     staleTime: 5 * 60 * 1000,
   })
-  const { data: scenario, isLoading: loadingScenario } = useQuery({
+  const { data: scenarioRaw, isLoading: loadingScenario } = useQuery({
     queryKey: ['portfolio-scenario'],
     queryFn: () => pro.getSensitivity(token ?? undefined),
     enabled: !!token,
     staleTime: 5 * 60 * 1000,
   })
-  const { data: quintile, isLoading: loadingQuintile } = useQuery({
-    queryKey: ['portfolio-quintile'],
-    queryFn: () => pro.getSignalDecay(token ?? undefined),
-    enabled: !!token,
-    staleTime: 5 * 60 * 1000,
-  })
 
-  const isLoading = loadingAttr || loadingRisk || loadingScenario || loadingQuintile
+  const isLoading = loadingAttr || loadingRisk || loadingScenario
 
   if (isLoading) {
     return (
       <div className="space-y-4">
-        {Array.from({ length: 4 }).map((_, i) => (
+        {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="h-48 bg-[var(--surface-2)]/50 rounded-[var(--radius)] animate-pulse" />
         ))}
       </div>
@@ -92,30 +86,40 @@ export function AnalyticsTab({ portfolioId }: AnalyticsTabProps) {
   return (
     <div className="space-y-5">
       {/* ─── 1. Performance Attribution ──────────────────────── */}
-      {attribution && (
-        <Card title="Atribuição de Performance" badge="Elite">
-          <div className="grid grid-cols-3 sm:grid-cols-5 gap-4 mb-4">
-            <MetricBox label="Retorno Total" value={`${attribution.totalReturn.toFixed(1)}%`} color={attribution.totalReturn >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'} />
-            <MetricBox label="Benchmark" value={`${attribution.benchmarkReturn.toFixed(1)}%`} />
-            <MetricBox label="Alocação" value={`${attribution.allocationEffect >= 0 ? '+' : ''}${attribution.allocationEffect.toFixed(2)}pp`} color={attribution.allocationEffect >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'} />
-            <MetricBox label="Seleção" value={`${attribution.selectionEffect >= 0 ? '+' : ''}${attribution.selectionEffect.toFixed(2)}pp`} color={attribution.selectionEffect >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'} />
-            <MetricBox label="Interação" value={`${attribution.interactionEffect >= 0 ? '+' : ''}${attribution.interactionEffect.toFixed(2)}pp`} />
+      {attrRaw && (
+        <Card title="Atribuição de Performance" badge="Pro">
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <MetricBox
+              label="Investido"
+              value={formatCurrency(attrRaw.total_invested)}
+            />
+            <MetricBox
+              label="Valor Atual"
+              value={formatCurrency(attrRaw.total_current)}
+            />
+            <MetricBox
+              label="Retorno Total"
+              value={`${attrRaw.total_return_pct.toFixed(1)}%`}
+              color={attrRaw.total_return_pct >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'}
+            />
           </div>
 
-          {attribution.bySector.length > 0 && (
+          {attrRaw.by_sector.length > 0 && (
             <div className="h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={attribution.bySector.slice(0, 8)} layout="vertical" margin={{ left: 80, right: 20 }}>
+                <BarChart data={attrRaw.by_sector.slice(0, 8)} layout="vertical" margin={{ left: 80, right: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border-1)" opacity={0.3} />
-                  <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={v => `${v}pp`} />
-                  <YAxis type="category" dataKey="sector" tick={{ fontSize: 10 }} width={75} />
+                  <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={(v: any) => `${v}%`} />
+                  <YAxis type="category" dataKey={(d: any) => d.tickers?.join(', ') ?? `Cluster ${d.cluster_id}`} tick={{ fontSize: 10 }} width={75} />
                   <Tooltip
                     contentStyle={{ fontSize: 11, background: 'var(--surface-1)', border: '1px solid var(--border-1)' }}
-                    formatter={(v: number) => [`${v.toFixed(2)}pp`]}
+                    formatter={(v: any) => [`${Number(v).toFixed(1)}%`]}
                   />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="allocationEffect" name="Alocação" fill="#1A73E8" barSize={8} />
-                  <Bar dataKey="selectionEffect" name="Seleção" fill="#0D9488" barSize={8} />
+                  <Bar dataKey="return_pct" name="Retorno" fill="#1A73E8" barSize={10}>
+                    {attrRaw.by_sector.map((_: any, i: number) => (
+                      <Cell key={i} fill={_.return_pct >= 0 ? '#22C55E' : '#EF4444'} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -124,148 +128,82 @@ export function AnalyticsTab({ portfolioId }: AnalyticsTabProps) {
       )}
 
       {/* ─── 2. Risk Analytics ───────────────────────────────── */}
-      {risk && (
-        <Card title="Análise de Risco" badge="Elite">
+      {riskRaw && (
+        <Card title="Análise de Risco" badge="Pro">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
             <MetricBox
-              label="VaR 95%"
-              value={`${risk.var95.toFixed(1)}%`}
-              sub="Perda máxima estimada"
-              color="text-[var(--neg)]"
-            />
-            <MetricBox
-              label="Beta vs IBOV"
-              value={risk.beta.toFixed(2)}
-              sub={risk.beta > 1 ? 'Mais volátil que IBOV' : 'Menos volátil que IBOV'}
+              label="Posições"
+              value={riskRaw.positions.toString()}
             />
             <MetricBox
               label="HHI"
-              value={risk.hhi.toString()}
-              sub={risk.concentrationLevel === 'baixa' ? 'Baixa concentração' :
-                risk.concentrationLevel === 'moderada' ? 'Concentração moderada' :
-                risk.concentrationLevel === 'alta' ? 'Alta concentração' : 'Muito alta concentração'}
-              color={risk.hhi > 2500 ? 'text-[var(--neg)]' : risk.hhi > 1500 ? 'text-amber-500' : 'text-[var(--pos)]'}
+              value={riskRaw.hhi.toString()}
+              sub={riskRaw.concentration === 'baixa' ? 'Baixa concentração' :
+                riskRaw.concentration === 'moderada' ? 'Concentração moderada' : 'Alta concentração'}
+              color={riskRaw.hhi > 2500 ? 'text-[var(--neg)]' : riskRaw.hhi > 1500 ? 'text-amber-500' : 'text-[var(--pos)]'}
             />
             <MetricBox
-              label="Maior Posição"
-              value={risk.topConcentration[0] ? `${risk.topConcentration[0].weight.toFixed(1)}%` : '—'}
-              sub={risk.topConcentration[0]?.ticker ?? '—'}
+              label="Top 3"
+              value={`${riskRaw.top3_weight_pct.toFixed(1)}%`}
+              sub="Concentração top 3"
+            />
+            <MetricBox
+              label="Maior Setor"
+              value={`${riskRaw.max_sector_weight_pct.toFixed(1)}%`}
+              sub="Concentração setorial"
+              color={riskRaw.max_sector_weight_pct > 40 ? 'text-[var(--neg)]' : 'text-[var(--text-1)]'}
             />
           </div>
 
-          {/* Factor Exposure */}
-          <div className="mt-3">
-            <p className="text-[11px] text-[var(--text-3)] font-medium mb-2">Exposição a Fatores</p>
-            <div className="grid grid-cols-5 gap-2">
-              {[
-                { label: 'Value', value: risk.factorExposure.value, color: '#1A73E8' },
-                { label: 'Growth', value: risk.factorExposure.growth, color: '#0D9488' },
-                { label: 'Dividend', value: risk.factorExposure.dividend, color: '#EAB308' },
-                { label: 'Defensivo', value: risk.factorExposure.defensive, color: '#6366F1' },
-                { label: 'Cíclico', value: risk.factorExposure.cyclical, color: '#D97706' },
-              ].map(f => (
-                <div key={f.label} className="text-center">
-                  <div className="h-16 flex items-end justify-center mb-1">
-                    <div
-                      className="w-6 rounded-t-sm transition-all"
-                      style={{ height: `${Math.max(4, f.value)}%`, backgroundColor: f.color }}
-                    />
+          {/* Pesos */}
+          {riskRaw.weights.length > 0 && (
+            <div className="space-y-1.5 mt-3">
+              <p className="text-[11px] text-[var(--text-3)] font-medium mb-2">Distribuição de Pesos</p>
+              {riskRaw.weights.map((w: any) => (
+                <div key={w.ticker} className="flex items-center gap-2">
+                  <span className="text-[11px] font-mono w-14 text-[var(--text-1)]">{w.ticker}</span>
+                  <div className="flex-1 h-3 bg-[var(--surface-2)] rounded-full overflow-hidden">
+                    <div className="h-full bg-[var(--accent)] rounded-full" style={{ width: `${Math.min(100, w.weight)}%` }} />
                   </div>
-                  <p className="text-[10px] font-mono font-medium">{f.value.toFixed(0)}%</p>
-                  <p className="text-[10px] text-[var(--text-3)]">{f.label}</p>
+                  <span className="text-[10px] font-mono text-[var(--text-3)] w-10 text-right">{w.weight.toFixed(1)}%</span>
                 </div>
               ))}
             </div>
-          </div>
+          )}
         </Card>
       )}
 
       {/* ─── 3. Scenario Analysis ────────────────────────────── */}
-      {scenario && (
-        <Card title="Cenários Macro" badge="Elite">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[scenario.selicDown, scenario.selicUp, scenario.fxUp, scenario.fxDown].map((s) => (
-              <div key={s.description} className="border border-[var(--border-1)]/15 rounded-[var(--radius-sm)] p-3">
+      {scenarioRaw?.scenarios && (
+        <Card title="Cenários Macro" badge="Pro">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {scenarioRaw.scenarios.map((s: any) => (
+              <div key={s.name} className="border border-[var(--border-1)]/15 rounded-[var(--radius-sm)] p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-[12px] font-medium">{s.description}</p>
+                  <p className="text-[12px] font-medium">{s.name}</p>
                   <span className={cn(
                     'font-mono text-[13px] font-bold',
-                    s.totalImpactPercent >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'
+                    s.impact_score >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'
                   )}>
-                    {s.totalImpactPercent >= 0 ? '+' : ''}{s.totalImpactPercent.toFixed(2)}%
+                    {s.impact_score >= 0 ? '+' : ''}{s.impact_score.toFixed(1)} pts
                   </span>
                 </div>
-                <p className="text-[10px] text-[var(--text-3)] mb-2">
-                  Impacto estimado: {formatCurrency(Math.abs(s.totalImpactValue))} {s.totalImpactValue >= 0 ? 'ganho' : 'perda'}
-                </p>
-                <div className="space-y-1">
-                  {s.bySector.slice(0, 3).map(sec => (
-                    <div key={sec.sector} className="flex items-center justify-between text-[10px]">
-                      <span className="text-[var(--text-2)] truncate max-w-[120px]">{sec.sector}</span>
-                      <span className={cn('font-mono', sec.impactPercent >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
-                        {sec.impactPercent >= 0 ? '+' : ''}{sec.impactPercent.toFixed(1)}%
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-[10px] text-[var(--text-3)] mb-1">{s.description}</p>
+                {s.affected_sectors && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {s.affected_sectors.map((sec: string) => (
+                      <span key={sec} className="text-[9px] px-1.5 py-0.5 rounded bg-[var(--neg)]/10 text-[var(--neg)]">{sec}</span>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </Card>
       )}
 
-      {/* ─── 4. Portfolio Quintile ────────────────────────────── */}
-      {quintile && (
-        <Card title="Quintil da Carteira" badge="Pro">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="flex items-center gap-2">
-              <span className={cn(
-                'inline-flex items-center justify-center w-10 h-10 rounded-full font-mono text-lg font-bold text-white',
-                quintile.portfolioQuintile === 1 ? 'bg-[#1A73E8]' :
-                quintile.portfolioQuintile === 2 ? 'bg-[#0D9488]' :
-                quintile.portfolioQuintile === 3 ? 'bg-[#EAB308]' :
-                quintile.portfolioQuintile === 4 ? 'bg-[#D97706]' : 'bg-[#EF4444]'
-              )}>
-                Q{quintile.portfolioQuintile}
-              </span>
-              <div>
-                <p className="text-[13px] font-medium">Score Médio: {quintile.portfolioAvgScore.toFixed(1)}</p>
-                <p className="text-[11px] text-[var(--text-3)]">
-                  {quintile.portfolioQuintile === 1 ? 'Top 20% do mercado' :
-                   quintile.portfolioQuintile === 2 ? 'Acima da média' :
-                   quintile.portfolioQuintile === 3 ? 'Na média' :
-                   quintile.portfolioQuintile === 4 ? 'Abaixo da média' : 'Bottom 20%'}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Distribution comparison */}
-          <div className="h-[180px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={quintile.distribution} margin={{ left: 10, right: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-1)" opacity={0.3} />
-                <XAxis dataKey="label" tick={{ fontSize: 10 }} />
-                <YAxis tick={{ fontSize: 10 }} tickFormatter={v => `${v}%`} />
-                <Tooltip
-                  contentStyle={{ fontSize: 11, background: 'var(--surface-1)', border: '1px solid var(--border-1)' }}
-                  formatter={(v: number) => [`${v.toFixed(1)}%`]}
-                />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="portfolioWeight" name="Sua Carteira" barSize={14}>
-                  {quintile.distribution.map((d, i) => (
-                    <Cell key={i} fill={d.color} />
-                  ))}
-                </Bar>
-                <Bar dataKey="marketWeight" name="Mercado" fill="#94A3B8" barSize={14} opacity={0.5} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-      )}
-
       {/* Empty state */}
-      {!attribution && !risk && !scenario && !quintile && !isLoading && (
+      {!attrRaw && !riskRaw && !scenarioRaw && !isLoading && (
         <div className="py-12 text-center">
           <p className="text-sm text-[var(--text-2)]">Sem dados de analytics disponíveis</p>
           <p className="text-[11px] text-[var(--text-3)] mt-1">Adicione posições ao portfólio para ver análises detalhadas</p>

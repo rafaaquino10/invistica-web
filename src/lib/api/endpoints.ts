@@ -456,4 +456,83 @@ export const pro = {
       monthly_nav: Array<{ date: string; nav: number; return: number; n_positions: number }>
       metadata: { n_rebalances: number; config: any }
     }>('/backtest', { method: 'POST', body: JSON.stringify(params), token }),
+
+  // Score Breakdown (6 sub-scores)
+  getScoreBreakdown: (ticker: string, token?: string) =>
+    apiFetch<{
+      ticker: string; company_name: string; cluster_id: number
+      iq_score: number; score_quanti: number
+      sub_scores: Record<string, { score: number | null; detail: Record<string, any> }>
+      regime: { current: string; kill_switch: boolean } | null
+      reference_date: string
+    }>(`/scores/${ticker}/breakdown`, { token }),
+
+  // Risk Metrics
+  getRiskMetrics: (ticker: string, token?: string) =>
+    apiFetch<{
+      ticker: string; company_name: string; period: string
+      risk_metrics: {
+        altman_z: number | null; altman_z_label: string | null
+        merton_pd: number | null; dl_ebitda: number | null
+        icj: number | null; piotroski_score: number | null
+        beneish_score: number | null; liquidity_ratio: number | null
+      }
+      profitability: {
+        roe: number | null; roic: number | null; wacc: number | null
+        spread_roic_wacc: number | null; net_margin: number | null
+        gross_margin: number | null; fcf_yield: number | null
+      }
+    }>(`/scores/${ticker}/risk-metrics`, { token }),
+
+  // Macro Regime
+  getMacroRegime: (token?: string) =>
+    apiFetch<{
+      regime: string; label: string; description: string; color: string
+      kill_switch_active: boolean
+      macro: { selic: number; ipca: number; cambio_usd: number; brent: number }
+      weight_adjustments: Record<string, number>
+      sector_rotation: Record<string, { cluster_id: number; tilt_points: number; signal: string }>
+    }>('/analytics/regime', { token }),
+
+  // Sector Rotation Matrix
+  getSectorRotation: (token?: string) =>
+    apiFetch<{
+      matrix: Record<string, Record<string, number>>
+      clusters: Record<string, string>
+    }>('/analytics/sector-rotation', { token }),
+
+  // Dividend Trap Risk
+  getDividendTrapRisk: (ticker: string, token?: string) =>
+    apiFetch<{
+      ticker: string; company_name: string
+      is_dividend_trap: boolean; risk_level: string
+      reasons: string[]
+      metrics: {
+        dividend_safety: number | null; dividend_yield: number | null
+        cash_payout_ratio: number | null; dividend_cagr_5y: number | null
+        total_dividends_12m: number
+      }
+    }>(`/dividends/${ticker}/trap-risk`, { token }),
+
+  // Dossier (already exists as endpoint, adding typed function)
+  getDossier: (ticker: string, token?: string) =>
+    apiFetch<{
+      ticker: string; score_quali: number
+      dimensions: Array<{
+        name: string; veredito: string
+        narrative: string; evidencias: string[]
+        alertas: string[]
+      }>
+      veredito_geral: string
+    }>(`/scores/${ticker}/dossier`, { token }),
+
+  // Mandate Comparison
+  getScoreMandates: (ticker: string, token?: string) =>
+    apiFetch<{
+      ticker: string
+      mandates: Record<string, {
+        iq_score: number; rating: string
+        score_quanti: number; score_quali: number; score_valuation: number
+      }>
+    }>(`/scores/${ticker}/mandates`, { token }),
 }

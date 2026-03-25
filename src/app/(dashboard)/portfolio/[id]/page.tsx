@@ -46,9 +46,26 @@ export default function PortfolioDetailPage() {
     enabled: !!portfolioId && !!token,
   })
 
-  const { data: performance } = { data: undefined, isLoading: false }
+  const { data: attribution } = useQuery({
+    queryKey: ['portfolio-attribution', portfolioId],
+    queryFn: () => pro.getPortfolioAttribution(portfolioId, token ?? undefined),
+    enabled: !!portfolioId && !!token,
+  })
 
-  const { data: searchResults } = { data: undefined, isLoading: false }
+  const { data: riskData } = useQuery({
+    queryKey: ['portfolio-risk', portfolioId],
+    queryFn: () => pro.getPortfolioRisk(portfolioId, token ?? undefined),
+    enabled: !!portfolioId && !!token,
+  })
+
+  const performance = attribution ? {
+    totalReturn: attribution.total_return_pct,
+    totalInvested: attribution.total_invested,
+    totalCurrent: attribution.total_current,
+    bySector: attribution.by_sector,
+  } : undefined
+
+  const { data: searchResults } = { data: undefined as any, isLoading: false }
 
   const addTransaction = { mutate: (() => {}) as any, mutateAsync: (async () => undefined) as any, isLoading: false, isPending: false }
 
