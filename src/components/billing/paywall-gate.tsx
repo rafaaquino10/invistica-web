@@ -51,6 +51,11 @@ export function PaywallGate({
   showPreview = false,
   className,
 }: PaywallGateProps) {
+  // Billing desativado — acesso antecipado gratuito.
+  // Reativar paywall quando Mercado Pago estiver configurado.
+  return <>{children}</>
+
+  // eslint-disable-next-line no-unreachable
   const { user, status } = useAuth()
 
   // Demo mode: everything unlocked (no database configured)
