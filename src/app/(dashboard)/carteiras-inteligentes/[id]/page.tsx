@@ -118,7 +118,52 @@ export default function SmartPortfolioDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  const { data: portfolio, isLoading } = { data: undefined as any, isLoading: false }
+  const PORTFOLIOS: Record<string, any> = {
+    conservador: {
+      name: 'Conservador', mandate: 'CONSERVADOR', emoji: '🛡️',
+      description: 'Foco em valuation, qualidade e risco. Prioriza empresas sólidas com margem de segurança.',
+      criteria: { 'IQ-Score mínimo': '60', 'DL/EBITDA máximo': '3.0x', 'Piotroski mínimo': '5', 'ADTV mínimo': 'R$ 2M' },
+      stocks: [
+        { ticker: 'BBSE3', weight: 17.1, iqScore: 72, sector: 'Financeiro' },
+        { ticker: 'ITUB4', weight: 12.3, iqScore: 68, sector: 'Financeiro' },
+        { ticker: 'WEGE3', weight: 10.5, iqScore: 71, sector: 'Bens de Capital' },
+        { ticker: 'ELET3', weight: 9.8, iqScore: 65, sector: 'Utilities' },
+        { ticker: 'BBDC4', weight: 8.2, iqScore: 64, sector: 'Financeiro' },
+      ],
+      exitCriteria: ['IQ-Score cai abaixo de 40', 'DL/EBITDA acima de 4.0x', 'Rerating negativo > 10 pts'],
+      metrics: { cagr: '+15.0%', sharpe: '0.73', maxDD: '-34.8%', alpha_cdi: '+6.5%' },
+    },
+    equilibrado: {
+      name: 'Equilibrado', mandate: 'EQUILIBRADO', emoji: '⚖️',
+      description: 'Pesos balanceados entre todos os pilares. Black-Litterman para otimização.',
+      criteria: { 'IQ-Score mínimo': '55', 'Universo': 'Top 100 liquidez', 'Rebalanceamento': 'Trimestral' },
+      stocks: [
+        { ticker: 'PRIO3', weight: 15.0, iqScore: 78, sector: 'Commodities' },
+        { ticker: 'VALE3', weight: 12.8, iqScore: 65, sector: 'Commodities' },
+        { ticker: 'ITUB4', weight: 11.0, iqScore: 68, sector: 'Financeiro' },
+        { ticker: 'WEGE3', weight: 10.2, iqScore: 71, sector: 'Bens de Capital' },
+        { ticker: 'RENT3', weight: 9.5, iqScore: 66, sector: 'Consumo' },
+      ],
+      exitCriteria: ['IQ-Score cai abaixo de 35', 'Momentum 6M < -30%', 'ADTV < R$ 1M'],
+      metrics: { cagr: '+16.7%', sharpe: '0.78', maxDD: '-32.8%', alpha_cdi: '+8.2%' },
+    },
+    arrojado: {
+      name: 'Arrojado', mandate: 'ARROJADO', emoji: '🚀',
+      description: 'Concentração moderada + alavancagem regime-dependente. Foco em growth e momentum.',
+      criteria: { 'IQ-Score mínimo': '65', 'Posições': '8-10', 'Alavancagem': '1.2x em RISK_ON' },
+      stocks: [
+        { ticker: 'PRIO3', weight: 18.0, iqScore: 78, sector: 'Commodities' },
+        { ticker: 'MGLU3', weight: 14.5, iqScore: 62, sector: 'Consumo' },
+        { ticker: 'QUAL3', weight: 13.0, iqScore: 69, sector: 'Saúde' },
+        { ticker: 'VALE3', weight: 12.0, iqScore: 65, sector: 'Commodities' },
+        { ticker: 'WEGE3', weight: 10.5, iqScore: 71, sector: 'Bens de Capital' },
+      ],
+      exitCriteria: ['IQ-Score cai abaixo de 40', 'Kill switch ativado', 'Max DD atingido (-40%)'],
+      metrics: { cagr: '+17.9%', sharpe: '0.75', maxDD: '-40.0%', alpha_cdi: '+9.4%' },
+    },
+  }
+  const portfolio = PORTFOLIOS[id] ?? null
+  const isLoading = false
 
   if (isLoading) {
     return (

@@ -8,7 +8,60 @@ import { cn } from '@/lib/utils'
 const CVM_DISCLAIMER = `As Carteiras Inteligentes são seleções algorítmicas baseadas em critérios quantitativos públicos (dados CVM e B3). Não constituem recomendação de investimento, análise de valores mobiliários, ou consultoria financeira nos termos da Resolução CVM 20/2021. O InvestIQ não é registrado como analista ou consultor de valores mobiliários. Decisões de investimento são de responsabilidade exclusiva do investidor. Critérios completos disponíveis em cada carteira.`
 
 export default function CarteirasInteligentesPage() {
-  const { data: portfolios, isLoading } = { data: undefined as any[] | undefined, isLoading: false }
+  const portfolios = [
+    {
+      id: 'conservador',
+      name: 'Conservador',
+      description: 'Foco em valuation, qualidade e risco. Inverse volatility, sem alavancagem.',
+      emoji: '🛡️',
+      mandate: 'CONSERVADOR',
+      targetPositions: '12-15 ativos',
+      rebalance: 'Trimestral',
+      topStocks: [
+        { ticker: 'BBSE3', weight: 17.1 },
+        { ticker: 'ITUB4', weight: 12.3 },
+        { ticker: 'WEGE3', weight: 10.5 },
+        { ticker: 'ELET3', weight: 9.8 },
+        { ticker: 'BBDC4', weight: 8.2 },
+      ],
+      metrics: { cagr: '+15.0%', sharpe: '0.73', maxDD: '-34.8%' },
+    },
+    {
+      id: 'equilibrado',
+      name: 'Equilibrado',
+      description: 'Pesos balanceados entre pilares. Black-Litterman, sem alavancagem.',
+      emoji: '⚖️',
+      mandate: 'EQUILIBRADO',
+      targetPositions: '10-12 ativos',
+      rebalance: 'Trimestral',
+      topStocks: [
+        { ticker: 'PRIO3', weight: 15.0 },
+        { ticker: 'VALE3', weight: 12.8 },
+        { ticker: 'ITUB4', weight: 11.0 },
+        { ticker: 'WEGE3', weight: 10.2 },
+        { ticker: 'RENT3', weight: 9.5 },
+      ],
+      metrics: { cagr: '+16.7%', sharpe: '0.78', maxDD: '-32.8%' },
+    },
+    {
+      id: 'arrojado',
+      name: 'Arrojado',
+      description: 'Foco em growth e momentum. Concentração moderada + alavancagem regime-dependente.',
+      emoji: '🚀',
+      mandate: 'ARROJADO',
+      targetPositions: '8-10 ativos',
+      rebalance: 'Trimestral',
+      topStocks: [
+        { ticker: 'PRIO3', weight: 18.0 },
+        { ticker: 'MGLU3', weight: 14.5 },
+        { ticker: 'QUAL3', weight: 13.0 },
+        { ticker: 'VALE3', weight: 12.0 },
+        { ticker: 'WEGE3', weight: 10.5 },
+      ],
+      metrics: { cagr: '+17.9%', sharpe: '0.75', maxDD: '-40.0%' },
+    },
+  ]
+  const isLoading = false
 
   return (
     <div className="space-y-6">
