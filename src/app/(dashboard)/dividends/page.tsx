@@ -611,10 +611,49 @@ export default function DividendsPage() {
 
       {/* Passive Income Projection Tab */}
       {activeTab === 'projections' && projections && (
-        <PassiveIncomeSection
-          monthlyAverage={projections.monthlyAverage}
-          totalProjected={projections.totalProjected}
-        />
+        <>
+          {/* Projections cards */}
+          {projections.projections && projections.projections.length > 0 ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {projections.projections.map((p: any) => (
+                  <div key={p.ticker} className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <AssetLogo ticker={p.ticker} size={24} />
+                      <div>
+                        <p className="text-[var(--text-small)] font-semibold">{p.ticker}</p>
+                        <p className="text-[var(--text-caption)] text-[var(--text-2)] truncate">{p.company_name}</p>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div>
+                        <p className="text-[var(--text-caption)] text-[var(--text-3)]">Yield Proj.</p>
+                        <p className="font-mono font-bold text-[var(--accent-1)]">{((p.dividend_yield_proj ?? 0) * 100).toFixed(1)}%</p>
+                      </div>
+                      <div>
+                        <p className="text-[var(--text-caption)] text-[var(--text-3)]">Safety</p>
+                        <p className={cn('font-mono font-bold', (p.dividend_safety ?? 0) >= 70 ? 'text-[var(--pos)]' : (p.dividend_safety ?? 0) >= 50 ? 'text-amber-500' : 'text-[var(--neg)]')}>{p.dividend_safety ?? '-'}</p>
+                      </div>
+                      <div>
+                        <p className="text-[var(--text-caption)] text-[var(--text-3)]">CAGR 5a</p>
+                        <p className="font-mono text-[var(--text-1)]">{p.dividend_cagr_5y ? `${(p.dividend_cagr_5y * 100).toFixed(1)}%` : '-'}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <PassiveIncomeSection
+                monthlyAverage={0}
+                totalProjected={projections.projections.reduce((s: number, p: any) => s + ((p.dividend_yield_proj ?? 0) * 100), 0)}
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <p className="text-[var(--text-small)] text-[var(--text-2)]">Sem projeções de dividendos disponíveis</p>
+              <p className="text-[var(--text-caption)] text-[var(--text-3)] mt-1">Aguardando dados de dividend yield projetado</p>
+            </div>
+          )}
+        </>
       )}
 
       {/* Simulator Tab */}

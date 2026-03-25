@@ -553,13 +553,19 @@ function AlertRow({ alert, onToggle, onDelete }: { alert: any; onToggle: () => v
 // ===========================================
 
 function HealthTab() {
-  const { data: health, isLoading } = { data: undefined, isLoading: false }
+  const { token } = useAuth()
+
+  const { data: risk, isLoading } = useQuery({
+    queryKey: ['portfolio-health'],
+    queryFn: () => pro.getPortfolioRisk('default', token ?? undefined),
+    enabled: !!token,
+  })
 
   if (isLoading) {
     return <div className="space-y-6"><Skeleton className="h-40 rounded-[var(--radius)]" /><div className="grid md:grid-cols-2 gap-4">{[1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-24 rounded-[var(--radius)]" />)}</div></div>
   }
 
-  if (!health || health.overallScore === 0) {
+  if (!risk || risk.positions === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <h3 className="text-[var(--text-subheading)] font-semibold mb-2">Análise indisponível</h3>
@@ -568,8 +574,28 @@ function HealthTab() {
     )
   }
 
-  const scoreColor = health.overallScore >= 75 ? 'text-teal' : health.overallScore >= 50 ? 'text-amber' : 'text-red'
-  const barGradient = health.overallScore >= 75 ? 'from-teal to-teal/50' : health.overallScore >= 50 ? 'from-amber to-amber/50' : 'from-red to-red/50'
+  // Compute health score from risk metrics
+  const diversScore = risk.hhi < 1500 ? 90 : risk.hhi < 2500 ? 60 : 30
+  const concScore = risk.top3_weight_pct < 50 ? 85 : risk.top3_weight_pct < 70 ? 55 : 25
+  const sectorScore = risk.max_sector_weight_pct < 30 ? 90 : risk.max_sector_weight_pct < 50 ? 60 : 30
+  const posScore = risk.positions >= 8 ? 90 : risk.positions >= 5 ? 70 : 40
+  const overallScore = Math.round((diversScore + concScore + sectorScore + posScore) / 4)
+
+  const scoreColor = overallScore >= 75 ? 'text-teal' : overallScore >= 50 ? 'text-amber' : 'text-red'
+  const barGradient = overallScore >= 75 ? 'from-teal to-teal/50' : overallScore >= 50 ? 'from-amber to-amber/50' : 'from-red to-red/50'
+
+  const metrics = [
+    { title: 'Diversificação', score: diversScore, message: risk.hhi < 1500 ? 'Boa diversificação entre ativos' : risk.hhi < 2500 ? 'Concentração moderada — considere diversificar' : 'Alta concentração — risco elevado' },
+    { title: 'Concentração Top 3', score: concScore, message: `Top 3 posições representam ${risk.top3_weight_pct.toFixed(1)}% da carteira` },
+    { title: 'Setorial', score: sectorScore, message: `Maior setor: ${risk.max_sector_weight_pct.toFixed(1)}% da carteira` },
+    { title: 'Posições', score: posScore, message: `${risk.positions} posição${risk.positions > 1 ? 'ões' : ''} — ${risk.positions >= 8 ? 'diversificação adequada' : 'considere mais ativos'}` },
+  ]
+
+  const recommendations: string[] = []
+  if (risk.hhi > 2500) recommendations.push('Reduza a concentração — HHI acima de 2500 indica risco elevado')
+  if (risk.top3_weight_pct > 60) recommendations.push('As 3 maiores posições dominam a carteira — rebalanceie')
+  if (risk.max_sector_weight_pct > 40) recommendations.push('Exposição setorial acima de 40% — diversifique entre setores')
+  if (risk.positions < 5) recommendations.push('Menos de 5 posições — aumente a diversificação')
 
   return (
     <PaywallGate requiredPlan="pro" feature="Análise de Saúde da Carteira" showPreview>
@@ -580,19 +606,19 @@ function HealthTab() {
             <div>
               <p className="text-[var(--text-small)] text-[var(--text-2)] mb-1">Saúde Geral</p>
               <div className="flex items-baseline gap-2">
-                <span className={`text-[var(--text-display)] font-bold font-mono ${scoreColor}`}>{health.overallScore}</span>
+                <span className={`text-[var(--text-display)] font-bold font-mono ${scoreColor}`}>{overallScore}</span>
                 <span className="text-[var(--text-small)] text-[var(--text-2)]">/100</span>
               </div>
             </div>
             <div className="w-20 h-20 relative">
               <svg className="w-20 h-20 transform -rotate-90">
                 <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border-1)" strokeWidth="6" />
-                <circle cx="40" cy="40" r="32" fill="none" className={scoreColor.replace('text-', 'stroke-')} strokeWidth="6" strokeLinecap="round" strokeDasharray={`${(health.overallScore / 100) * 201} 201`} style={{ transition: 'stroke-dasharray 1s ease-out' }} />
+                <circle cx="40" cy="40" r="32" fill="none" className={scoreColor.replace('text-', 'stroke-')} strokeWidth="6" strokeLinecap="round" strokeDasharray={`${(overallScore / 100) * 201} 201`} style={{ transition: 'stroke-dasharray 1s ease-out' }} />
               </svg>
             </div>
           </div>
           <div className="h-2 rounded-full bg-[var(--border-1)] overflow-hidden">
-            <div className={`h-full rounded-full bg-gradient-to-r ${barGradient} transition-all duration-1000`} style={{ width: `${health.overallScore}%` }} />
+            <div className={`h-full rounded-full bg-gradient-to-r ${barGradient} transition-all duration-1000`} style={{ width: `${overallScore}%` }} />
           </div>
           <div className="flex justify-between mt-1.5 text-[var(--text-small)] text-[var(--text-2)]">
             <span>Crítico</span><span>Atenção</span><span>Saudável</span><span>Excepcional</span>
@@ -601,12 +627,7 @@ function HealthTab() {
 
         {/* Métricas */}
         <div className="grid md:grid-cols-2 gap-3">
-          {[
-            { title: 'Diversificação', ...health.diversification },
-            { title: 'Concentração', ...health.concentration },
-            { title: 'Qualidade', ...health.quality },
-            { title: 'Risco', ...health.risk },
-          ].map((m) => (
+          {metrics.map((m) => (
             <div key={m.title} className="p-4 rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] bg-[var(--surface-1)]">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-medium text-[var(--text-small)]">{m.title}</h4>
@@ -617,11 +638,11 @@ function HealthTab() {
           ))}
         </div>
 
-        {health.recommendations.length > 0 && (
+        {recommendations.length > 0 && (
           <div className="bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] overflow-hidden">
             <div className="px-4 py-2.5 border-b border-[var(--border-1)]"><h3 className="text-[var(--text-small)] font-semibold">Recomendações</h3></div>
             <div className="divide-y divide-[var(--border-1)]">
-              {health.recommendations.map((rec, i) => (
+              {recommendations.map((rec: any, i: number) => (
                 <div key={i} className="flex items-start gap-3 px-4 py-2.5">
                   <span className="text-[var(--text-caption)] text-[var(--text-2)] flex-shrink-0 mt-0.5">&bull;</span>
                   <p className="text-[var(--text-small)] text-[var(--text-2)]">{rec}</p>
