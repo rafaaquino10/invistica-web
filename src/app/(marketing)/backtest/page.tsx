@@ -306,10 +306,10 @@ export default function BacktestPage() {
               Criar conta grátis
             </Link>
             <Link
-              href="/pricing"
+              href="/register"
               className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-white/10 text-slate-300 hover:bg-white/5 transition-colors"
             >
-              Ver planos
+              Criar conta gratuita
             </Link>
           </div>
         </section>

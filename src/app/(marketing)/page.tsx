@@ -1261,72 +1261,29 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── Planos ────────────────────────────────────── */}
+      {/* ─── Acesso Antecipado ────────────────────────── */}
       <section className="py-20 md:py-28">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-14"
           >
-            <h2 className="text-3xl md:text-4xl font-bold">Planos</h2>
-            <p className="mt-3 text-[var(--text-2)]">Comece grátis. Evolua quando precisar.</p>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-500 text-sm font-medium mb-6">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Acesso Antecipado
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold">Tudo liberado. Grátis.</h2>
+            <p className="mt-3 text-lg text-[var(--text-2)] max-w-xl mx-auto">
+              Estamos em fase de acesso antecipado. Todas as funcionalidades do InvestIQ
+              estão disponíveis gratuitamente para os primeiros usuários.
+            </p>
+            <div className="mt-8">
+              <Link href="/register">
+                <Button size="lg">Criar conta gratuita</Button>
+              </Link>
+            </div>
           </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {[
-              {
-                name: 'Free',
-                price: 'R$ 0',
-                features: ['Explorer + IQ-Score', 'Até 5 ativos em detalhe', 'Dados em tempo real', 'Comparação básica'],
-                highlight: false,
-              },
-              {
-                name: 'Pro',
-                price: 'R$ 39/mês',
-                features: ['Tudo do Free +', 'Carteiras ilimitadas', 'Metas e FIRE', 'Dividendos completos', 'Radar de oportunidades'],
-                highlight: true,
-              },
-              {
-                name: 'Elite',
-                price: 'R$ 79/mês',
-                features: ['Tudo do Pro +', 'X-Ray do Score', 'Diagnóstico IA', 'Monte Carlo', 'Research Notes', 'Comunidade'],
-                highlight: false,
-              },
-            ].map((plan) => (
-              <motion.div
-                key={plan.name}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className={`rounded-[var(--radius)] p-6 border ${
-                  plan.highlight
-                    ? 'border-[var(--accent-1)]/50 bg-[var(--accent-1)]/5 ring-1 ring-[var(--accent-1)]/20'
-                    : 'border-[var(--border-1)]/30 bg-[var(--surface-1)]/50'
-                }`}
-              >
-                <h3 className="text-lg font-bold mb-1">{plan.name}</h3>
-                <p className="text-2xl font-bold font-mono mb-4">{plan.price}</p>
-                <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500 flex-shrink-0">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="text-center mt-6">
-            <Link href="/pricing" className="text-sm text-[var(--accent-1)] hover:text-[var(--accent-1)]/80 transition-colors">
-              Ver detalhes dos planos →
-            </Link>
-          </div>
         </div>
       </section>
 

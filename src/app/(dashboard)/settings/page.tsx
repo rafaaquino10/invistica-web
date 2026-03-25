@@ -403,21 +403,7 @@ function BillingTab() {
       <DataCard
         title="Plano Atual"
         action={
-          !isPaid ? (
-            <Link href="/pricing">
-              <Button variant="primary" size="sm" className="text-[var(--text-caption)]">Fazer Upgrade</Button>
-            </Link>
-          ) : (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleCancel}
-              disabled={cancelling}
-              className="text-[var(--text-caption)]"
-            >
-              {cancelling ? 'Cancelando...' : 'Cancelar'}
-            </Button>
-          )
+          <span className="text-[10px] px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">Acesso Antecipado</span>
         }
       >
         <div className="space-y-3">
@@ -428,15 +414,12 @@ function BillingTab() {
             </Badge>
           </div>
           <p className="text-[var(--text-caption)] text-[var(--text-2)]">
-            {isPaid ? 'Assinatura ativa' : 'Acesso limitado aos recursos básicos'}
+            Acesso antecipado — todas as funcionalidades liberadas
           </p>
           <div className="px-3 py-2 rounded-lg bg-[var(--surface-2)]">
             <p className="text-[var(--text-caption)] font-medium text-[var(--text-2)] mb-1.5">Recursos incluídos:</p>
             <div className="flex flex-wrap gap-x-4 gap-y-1">
-              {(isPaid
-                ? ['Explorer completo', 'IQ-Score ilimitado', 'Todas as funcionalidades']
-                : ['Até 3 portfólios', 'Explorer básico', 'Até 5 alertas']
-              ).map((f) => (
+              {['Todas as funcionalidades', 'IQ-Score ilimitado', 'Sem limites'].map((f) => (
                 <span key={f} className="flex items-center gap-1.5 text-[var(--text-caption)] text-[var(--text-2)]">
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--pos)] flex-shrink-0">
                     <polyline points="20 6 9 17 4 12" />
