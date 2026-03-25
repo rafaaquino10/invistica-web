@@ -30,15 +30,64 @@ function DemoLoginPage() {
     async function loginDemo() {
       const supabase = createClient()
 
-      // User was pre-created by /api/auth/demo (server-side).
-      // Just sign in client-side to set cookies correctly.
+      // Step 1: Try to sign in (user may already exist)
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: DEMO_EMAIL,
         password: DEMO_PASSWORD,
       })
 
-      if (signInError) {
-        setError(`Erro no login demo: ${signInError.message}`)
+      if (!signInError) {
+        // Success — redirect
+        setStatus('Redirecionando...')
+        router.push(callbackUrl)
+        return
+      }
+
+      // Step 2: User doesn't exist — create via signUp
+      setStatus('Criando conta demo...')
+
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: DEMO_EMAIL,
+        password: DEMO_PASSWORD,
+        options: {
+          data: { full_name: 'Usuário Demo', plan: 'pro' },
+        },
+      })
+
+      if (signUpError) {
+        // signUp failed — maybe user exists with different password, or email confirmation required
+        setError(
+          `Não foi possível criar conta demo. ` +
+          `Verifique se "Confirm email" está desligado no Supabase Dashboard → Authentication → Settings. ` +
+          `Erro: ${signUpError.message}`
+        )
+        return
+      }
+
+      // Step 3: Wait briefly for Supabase to propagate, then sign in
+      setStatus('Entrando...')
+      await new Promise(resolve => setTimeout(resolve, 1500))
+
+      const { error: retryError } = await supabase.auth.signInWithPassword({
+        email: DEMO_EMAIL,
+        password: DEMO_PASSWORD,
+      })
+
+      if (retryError) {
+        // If still fails, the signUp probably auto-signed-in already
+        // Check if we have a session
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session) {
+          setStatus('Redirecionando...')
+          router.push(callbackUrl)
+          return
+        }
+
+        setError(
+          `Conta criada mas login falhou. ` +
+          `Se "Confirm email" estiver ligado no Supabase, desative-o. ` +
+          `Erro: ${retryError.message}`
+        )
         return
       }
 
@@ -51,11 +100,11 @@ function DemoLoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
-      <div className="text-center">
+      <div className="text-center max-w-md px-4">
         {error ? (
           <div className="space-y-4">
-            <p className="text-[var(--neg)] text-sm">{error}</p>
-            <a href="/login" className="text-[var(--accent-1)] text-sm hover:underline">
+            <p className="text-red-400 text-sm leading-relaxed">{error}</p>
+            <a href="/login" className="text-[var(--accent-1)] text-sm hover:underline block">
               Voltar para login
             </a>
           </div>
