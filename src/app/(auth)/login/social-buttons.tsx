@@ -2,17 +2,28 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui'
+import { createClient } from '@/lib/supabase/client'
 
 export function SocialLoginButtons({ callbackUrl }: { callbackUrl: string }) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
 
-  const handleSocialLogin = (provider: 'google' | 'github') => {
+  const handleSocialLogin = async (provider: 'google' | 'github') => {
     setError(null)
     setLoading(provider)
-    // Redirect to our OAuth initiation route
-    const params = new URLSearchParams({ callbackUrl })
-    window.location.href = `/api/auth/${provider}?${params}`
+
+    const supabase = createClient()
+    const redirectTo = `${window.location.origin}${callbackUrl}`
+
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo },
+    })
+
+    if (oauthError) {
+      setError(oauthError.message)
+      setLoading(null)
+    }
   }
 
   return (
