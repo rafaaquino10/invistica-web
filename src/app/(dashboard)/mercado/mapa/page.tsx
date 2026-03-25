@@ -1,6 +1,9 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
 import { MarketTreemap, type ColorMode } from '@/components/treemap/market-treemap'
 import { cn } from '@/lib/utils'
 import { formatMarketCap } from '@/lib/utils/formatters'
@@ -25,7 +28,42 @@ export default function MapaPage() {
   const [minScore, setMinScore] = useState<number | undefined>(undefined)
   const [sectorFilter, setSectorFilter] = useState<string>('')
 
-  const { data, isLoading } = { data: undefined, isLoading: false }
+  const { token } = useAuth()
+  const { data: screenerData, isLoading } = useQuery({
+    queryKey: ['market-map-screener'],
+    queryFn: () => pro.getTopScores('EQUILIBRADO', {}, token ?? undefined),
+    enabled: !!token,
+    staleTime: 10 * 60 * 1000,
+  })
+
+  // Transformar dados do screener no formato esperado pelo heatmap
+  const data = useMemo(() => {
+    if (!screenerData?.results) return undefined
+    const CLUSTER_NAMES: Record<number, string> = {
+      1: 'Financeiro', 2: 'Commodities', 3: 'Consumo', 4: 'Utilities',
+      5: 'Saúde', 6: 'TMT', 7: 'Bens de Capital', 8: 'Real Estate', 9: 'Educação',
+    }
+    const byCluster: Record<string, any[]> = {}
+    for (const r of screenerData.results) {
+      const name = CLUSTER_NAMES[r.cluster_id] ?? `Cluster ${r.cluster_id}`
+      if (!byCluster[name]) byCluster[name] = []
+      byCluster[name].push({
+        ticker: r.ticker,
+        name: r.company_name,
+        aqScore: r.iq_score,
+        marketCap: 1, // placeholder (quote endpoint needed for real mkt cap)
+        changePercent: 0,
+      })
+    }
+    const sectors = Object.entries(byCluster).map(([sectorName, stocks]) => ({
+      name: sectorName,
+      stocks,
+      totalMarketCap: stocks.length,
+      avgScore: stocks.reduce((s: number, st: any) => s + (st.aqScore ?? 0), 0) / stocks.length,
+      avgChange: 0,
+    }))
+    return { sectors }
+  }, [screenerData])
 
   // Agrupar setores < 3% market cap total em "Outros"
   const consolidatedSectors = useMemo(() => {
