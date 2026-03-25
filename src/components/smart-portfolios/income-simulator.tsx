@@ -12,7 +12,21 @@ const AMOUNT_OPTIONS = [50_000, 100_000, 250_000, 500_000, 1_000_000]
 
 export function IncomeSimulatorCard() {
   const [amount, setAmount] = useState(100_000)
-  const { data: simulation, isLoading } = { data: undefined, isLoading: false }
+
+  // Simulação client-side
+  const avgYield = 7.5 // yield médio carteira dividendos (%)
+  const selicRate = 14.25
+  const savingsRate = 7.0
+  const monthlyIncome = (amount * avgYield / 100) / 12
+  const cdiMonthly = (amount * selicRate / 100 * 0.85) / 12 // IR 15%
+  const savingsMonthly = (amount * savingsRate / 100) / 12
+
+  const simulation = {
+    monthlyIncome,
+    portfolioAvgYield: avgYield,
+    comparisons: { cdi: cdiMonthly, savings: savingsMonthly, selicRate },
+  }
+  const isLoading = false
 
   return (
     <Card>

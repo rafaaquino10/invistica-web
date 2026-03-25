@@ -14,7 +14,7 @@ import { MonteCarloSection } from '@/components/simulation/monte-carlo-chart'
 import { IRPFCalculator } from '@/components/portfolio/irpf-calculator'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/use-auth'
-import { pro } from '@/lib/api/endpoints'
+import { free, pro } from '@/lib/api/endpoints'
 import { formatCurrency, formatDate } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -65,7 +65,13 @@ export default function PortfolioDetailPage() {
     bySector: attribution.by_sector,
   } : undefined
 
-  const { data: searchResults } = { data: undefined as any, isLoading: false }
+  const [searchQuery, setSearchQuery] = useState('')
+  const { data: searchResults } = useQuery({
+    queryKey: ['ticker-search', searchQuery],
+    queryFn: () => free.searchTickers(searchQuery),
+    enabled: searchQuery.length >= 2,
+    staleTime: 30 * 1000,
+  })
 
   const addTransaction = { mutate: (() => {}) as any, mutateAsync: (async () => undefined) as any, isLoading: false, isPending: false }
 

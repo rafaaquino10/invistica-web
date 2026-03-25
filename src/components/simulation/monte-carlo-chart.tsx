@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Card, CardContent, Skeleton } from '@/components/ui'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/utils/formatters'
@@ -17,7 +17,35 @@ export function MonteCarloSection({ portfolioId }: MonteCarloSectionProps) {
   const [years, setYears] = useState(10)
   const [monthly, setMonthly] = useState(1000)
 
-  const { data, isLoading } = { data: undefined, isLoading: false }
+  // Simulação Monte Carlo client-side simplificada
+  const data = useMemo(() => {
+    const annualReturn = 0.12 // 12% a.a. estimado
+    const annualVol = 0.20
+    const simulations = 1000
+    const finalValues: number[] = []
+    let initial = 10000 // placeholder
+
+    for (let s = 0; s < simulations; s++) {
+      let value = initial
+      for (let y = 0; y < years; y++) {
+        const r = annualReturn + annualVol * (Math.random() - 0.5) * 2
+        value = value * (1 + r) + monthly * 12
+      }
+      finalValues.push(value)
+    }
+    finalValues.sort((a, b) => a - b)
+
+    return {
+      p10: Math.round(finalValues[Math.floor(simulations * 0.1)] ?? 0),
+      p25: Math.round(finalValues[Math.floor(simulations * 0.25)] ?? 0),
+      p50: Math.round(finalValues[Math.floor(simulations * 0.5)] ?? 0),
+      p75: Math.round(finalValues[Math.floor(simulations * 0.75)] ?? 0),
+      p90: Math.round(finalValues[Math.floor(simulations * 0.9)] ?? 0),
+      simulations,
+      probPositive: finalValues.filter(v => v > initial + monthly * 12 * years).length / simulations,
+    }
+  }, [years, monthly])
+  const isLoading = false
 
   return (
     <Card>
