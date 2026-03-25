@@ -266,7 +266,7 @@ export const SMART_PORTFOLIOS: SmartPortfolio[] = [
       },
       {
         condition: 'score_below_40',
-        description: 'Score aQ abaixo de 40 — qualidade deteriorou',
+        description: 'IQ-Score abaixo de 40 — qualidade deteriorou',
       },
     ],
     thesisGuard: (a) => (a.aqScore?.scoreQualitativo ?? 0) > 40,

@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
                 justifyContent: 'center',
               }}
             >
-              <span style={{ color: 'white', fontSize: '36px', fontWeight: 'bold' }}>aQ</span>
+              <span style={{ color: 'white', fontSize: '36px', fontWeight: 'bold' }}>IQ</span>
             </div>
             <span style={{ color: 'white', fontSize: '60px', fontWeight: 'bold' }}>-Invest</span>
           </div>
@@ -130,7 +130,7 @@ export async function GET(request: NextRequest) {
                 justifyContent: 'center',
               }}
 >
-              <span style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>aQ</span>
+              <span style={{ color: 'white', fontSize: '18px', fontWeight: 'bold' }}>IQ</span>
             </div>
             <span style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>InvestIQ</span>
           </div>

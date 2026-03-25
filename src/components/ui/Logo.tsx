@@ -39,7 +39,7 @@ const FONT_SIZES: Record<string, number> = {
   lg: 48,
 };
 
-// Symbol component (the aQ badge)
+// Symbol component (the IQ badge)
 const Symbol: React.FC<{ size: number }> = ({ size }) => (
   <svg
     width={size}
@@ -59,7 +59,7 @@ const Symbol: React.FC<{ size: number }> = ({ size }) => (
       fill={COLORS.white}
       textAnchor="middle"
     >
-      aQ
+      IQ
     </text>
   </svg>
 );
@@ -77,8 +77,8 @@ const Wordmark: React.FC<{ fontSize: number; className?: string }> = ({ fontSize
       alignItems: 'baseline',
     }}
   >
-    <span style={{ color: COLORS.electricBlue }}>aQ</span>
-    <span style={{ color: 'var(--logo-text-color, #0F2B46)' }}>-Invest</span>
+    <span style={{ color: COLORS.electricBlue }}>Invest</span>
+    <span style={{ color: 'var(--logo-text-color, #0F2B46)' }}>IQ</span>
   </span>
 );
 

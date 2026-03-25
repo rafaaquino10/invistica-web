@@ -116,7 +116,7 @@ const navigationSections: NavSection[] = [
         ),
       },
       {
-        label: 'Radar aQ',
+        label: 'Radar',
         href: '/radar',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -132,7 +132,7 @@ const navigationSections: NavSection[] = [
     label: 'IQ-COGNIT',
     items: [
       {
-        label: 'Carteiras aQ',
+        label: 'Carteiras IQ',
         href: '/carteiras-inteligentes',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -143,12 +143,32 @@ const navigationSections: NavSection[] = [
         ),
       },
       {
+        label: 'Backtest Lab',
+        href: '/backtest-lab',
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 2v6l-2 4v4h10v-4l-2-4V2" />
+            <path d="M7 16h10" />
+            <path d="M8 22h8" />
+          </svg>
+        ),
+      },
+      {
         label: 'Feedback Loop',
         href: '/analytics/feedback',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M3 3v18h18" />
             <path d="m19 9-5 5-4-4-3 3" />
+          </svg>
+        ),
+      },
+      {
+        label: 'Signal Decay',
+        href: '/analytics/signal-decay',
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
           </svg>
         ),
       },

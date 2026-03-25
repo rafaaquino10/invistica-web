@@ -405,7 +405,7 @@ export function ScoreXRay({ breakdown, ticker }: ScoreXRayProps) {
       {/* ─── Diagnóstico (auto-generated insights) ─────── */}
       {diagnosis.length > 0 && (
         <div className="px-5 py-3 border-b border-[var(--border-1)]/20 bg-[var(--surface-2)]/20">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-3)] mb-2">Diagnóstico aQ</div>
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-3)] mb-2">Diagnóstico IQ</div>
           <div className="space-y-1.5">
             {diagnosis.map((d, i) => (
               <div key={i} className="flex items-start gap-2 text-[13px]">

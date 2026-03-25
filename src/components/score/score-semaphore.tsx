@@ -72,7 +72,7 @@ export function ResearchNote({ researchNote, highlights, className }: ResearchNo
   return (
     <div className={cn('border border-[var(--border-1)]/20 rounded-[var(--radius)] bg-[var(--surface-1)] p-4 space-y-3', className)}>
       <div className="flex items-center gap-2 mb-1">
-        <h3 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider">Diagnóstico aQ</h3>
+        <h3 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider">Diagnóstico IQ</h3>
         <span className="text-[10px] px-1.5 py-0.5 rounded-[var(--radius-sm)] bg-[var(--accent-1)]/10 text-[var(--accent-1)] font-medium">Pro</span>
       </div>
 

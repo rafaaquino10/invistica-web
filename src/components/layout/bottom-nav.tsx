@@ -58,8 +58,10 @@ const moreMenuItems = [
   { label: 'Dividendos', href: '/dividends', icon: '＄' },
   { label: 'Metas', href: '/goals', icon: '✓' },
   { label: 'Mapa de Mercado', href: '/mercado/mapa', icon: '▦' },
-  { label: 'Carteiras aQ', href: '/carteiras-inteligentes', icon: '💡' },
+  { label: 'Carteiras IQ', href: '/carteiras-inteligentes', icon: '💡' },
+  { label: 'Backtest Lab', href: '/backtest-lab', icon: '🧪' },
   { label: 'Feedback Loop', href: '/analytics/feedback', icon: '📊' },
+  { label: 'Signal Decay', href: '/analytics/signal-decay', icon: '📉' },
   { label: 'Glossário', href: '/glossario', icon: '📖' },
   { label: 'Configurações', href: '/settings', icon: '⚙' },
 ]

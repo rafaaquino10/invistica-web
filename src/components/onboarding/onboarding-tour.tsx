@@ -23,7 +23,7 @@ const steps: Step[] = [
       'Sua plataforma de análise fundamentalista inteligente. Avaliamos ações brasileiras de 0 a 100 com base em 6 pilares: Valuation, Qualidade, Risco, Dividendos, Crescimento e Qualitativo.',
     icon: (
       <div className="w-16 h-16 rounded-[var(--radius)] border border-[var(--border-1)] flex items-center justify-center">
-        <span className="text-[var(--text-1)] font-bold text-[var(--text-display)]">aQ</span>
+        <span className="text-[var(--text-1)] font-bold text-[var(--text-display)]">IQ</span>
       </div>
     ),
   },
