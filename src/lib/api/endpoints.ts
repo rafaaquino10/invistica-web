@@ -419,4 +419,41 @@ export const pro = {
       events: Array<{ id: string; title: string; summary: string | null; url: string | null; source: string; event_type: string; published_at: string; sentiment: string | null; sentiment_score: number | null; relevance_score: number | null }>
       count: number
     }>(`/news/${ticker}/investor-relations${qs({ limit })}`, { token }),
+
+  // Backtest
+  runBacktest: (params: {
+    start_date: string
+    end_date: string
+    rebalance_freq?: string
+    universe_size?: number
+    long_pct?: number
+    min_iq_score_buy?: number
+    benchmarks?: string[]
+    initial_capital?: number
+    transaction_cost_bps?: number
+  }, token?: string) =>
+    apiFetch<{
+      summary: string
+      performance: {
+        iq_score_total_return: string
+        iq_score_cagr: string
+        volatility: string | null
+        sharpe_ratio: number | null
+        sortino_ratio: number | null
+        max_drawdown: string
+        max_drawdown_date: string | null
+      }
+      vs_benchmarks: Record<string, {
+        total_return: string
+        cagr: string
+        alpha_total: string
+        alpha_ann: string
+        years_beaten: number
+      }>
+      signal_quality: { ic_spearman_avg: number | null; hit_rate: string | null }
+      yearly: Record<string, { iq_return: string; benchmarks: Record<string, string>; alpha_ibov: string; regime: string | null }>
+      regime_analysis: any
+      monthly_nav: Array<{ date: string; nav: number; return: number; n_positions: number }>
+      metadata: { n_rebalances: number; config: any }
+    }>('/backtest', { method: 'POST', body: JSON.stringify(params), token }),
 }
