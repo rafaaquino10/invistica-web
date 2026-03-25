@@ -48,7 +48,7 @@ export default function DividendsPage() {
     queryFn: () => pro.getDividendCalendar(90, token ?? undefined),
     enabled: !!token,
   })
-  const calendar = calendarData?.calendar ?? []
+  const calendar: any = calendarData?.calendar ?? []
 
   // Summary and projections from InvestIQ API
   const { data: summaryData } = useQuery({
@@ -74,25 +74,24 @@ export default function DividendsPage() {
     mutationFn: () => pro.simulateDividends(validTickers, validAmounts, token ?? undefined),
   })
 
-  const nextPayment = calendar?.entries.find((e) => {
-    const date = e.paymentDate ?? e.exDate
-    return date && date > new Date()
+  const nextPayment = calendar.find((e: any) => {
+    const exDate = e.ex_date
+    return exDate && new Date(exDate) > new Date()
   })
 
-  const daysUntilNext = nextPayment?.paymentDate
-    ? Math.ceil((new Date(nextPayment.paymentDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+  const daysUntilNext = nextPayment?.ex_date
+    ? Math.ceil((new Date(nextPayment.ex_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null
 
   // Barras stacked por ação — top 5 tickers + "Outros"
   const { stackedChartData, stackedTickers } = useMemo(() => {
-    if (!calendar?.byMonth) return { stackedChartData: [], stackedTickers: [] as string[] }
+    if (!calendar || calendar.length === 0) return { stackedChartData: [], stackedTickers: [] as string[] }
 
     // Descobrir top tickers por volume total
     const tickerTotals: Record<string, number> = {}
-    for (const m of calendar.byMonth) {
-      for (const e of m.entries) {
-        tickerTotals[e.ticker] = (tickerTotals[e.ticker] ?? 0) + e.totalValue
-      }
+    for (const e of calendar) {
+      const t = e.ticker ?? '?'
+      tickerTotals[t] = (tickerTotals[t] ?? 0) + (e.value_per_share ?? 0)
     }
     const sortedTickers = Object.entries(tickerTotals)
       .sort((a, b) => b[1] - a[1])
@@ -100,21 +99,27 @@ export default function DividendsPage() {
     const topTickers = sortedTickers.slice(0, 5)
     const hasOthers = sortedTickers.length > 5
 
+    // Group by month
+    const byMonth: Record<string, typeof calendar> = {}
+    for (const e of calendar) {
+      const monthKey = e.ex_date?.slice(0, 7) ?? ''
+      if (!byMonth[monthKey]) byMonth[monthKey] = []
+      byMonth[monthKey].push(e)
+    }
+
     const data = MONTHS_PT.map((label, i) => {
-      const monthData = calendar.byMonth.find(m => {
-        const d = new Date(m.month + '-01')
-        return d.getMonth() === i
-      })
+      const monthKey = Object.keys(byMonth).find(k => new Date(k + '-01').getMonth() === i)
+      const monthEntries = monthKey ? byMonth[monthKey] ?? [] : []
       const row: Record<string, number | string> = { month: label }
       for (const ticker of topTickers) {
-        row[ticker] = monthData?.entries
+        row[ticker] = monthEntries
           .filter(e => e.ticker === ticker)
-          .reduce((sum, e) => sum + e.totalValue, 0) ?? 0
+          .reduce((sum, e) => sum + (e.value_per_share ?? 0), 0)
       }
       if (hasOthers) {
-        row['Outros'] = monthData?.entries
-          .filter(e => !topTickers.includes(e.ticker))
-          .reduce((sum, e) => sum + e.totalValue, 0) ?? 0
+        row['Outros'] = monthEntries
+          .filter(e => !topTickers.includes(e.ticker ?? ''))
+          .reduce((sum, e) => sum + (e.value_per_share ?? 0), 0)
       }
       return row
     })
@@ -125,19 +130,15 @@ export default function DividendsPage() {
 
   // Próximos dividendos (forward calendar)
   const forwardDividends = useMemo(() => {
-    if (!calendar?.entries) return []
+    if (!calendar || calendar.length === 0) return []
     const now = new Date()
     const threeMonthsLater = new Date(now.getFullYear(), now.getMonth() + 3, now.getDate())
-    return calendar.entries
+    return calendar
       .filter(e => {
-        const date = e.exDate ?? e.paymentDate
+        const date = e.ex_date
         return date && new Date(date) >= now && new Date(date) <= threeMonthsLater
       })
-      .sort((a, b) => {
-        const da = new Date(a.exDate ?? a.paymentDate ?? 0).getTime()
-        const db = new Date(b.exDate ?? b.paymentDate ?? 0).getTime()
-        return da - db
-      })
+      .sort((a, b) => new Date(a.ex_date).getTime() - new Date(b.ex_date).getTime())
       .slice(0, 20)
   }, [calendar])
 
@@ -161,17 +162,17 @@ export default function DividendsPage() {
         <div className="flex items-center gap-8 pb-1">
           <div>
             <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-0.5">Recebido ({period})</p>
-            <p className="text-[var(--text-heading)] font-bold font-mono text-[var(--pos)]">{formatCurrency(summary?.totalReceived ?? 0)}</p>
+            <p className="text-[var(--text-heading)] font-bold font-mono text-[var(--pos)]">{formatCurrency(summary?.total ?? 0)}</p>
           </div>
           <div className="w-px h-10 bg-[var(--border-1)]/30 flex-shrink-0" />
           <div>
             <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-0.5">Projeção Anual</p>
-            <p className="text-[var(--text-heading)] font-bold font-mono">{formatCurrency(projections?.totalProjected ?? 0)}</p>
+            <p className="text-[var(--text-heading)] font-bold font-mono">{formatCurrency(projections?.projections?.reduce((s: number, p: any) => s + (p.dividend_yield_proj ?? 0), 0) ?? 0)}</p>
           </div>
           <div className="w-px h-10 bg-[var(--border-1)]/30 flex-shrink-0" />
           <div>
             <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-0.5">Yield on Cost</p>
-            <p className="text-[var(--text-heading)] font-bold font-mono text-[var(--accent-1)]">{(summary?.overallYoC ?? 0).toFixed(2)}%</p>
+            <p className="text-[var(--text-heading)] font-bold font-mono text-[var(--accent-1)]">{(0).toFixed(2)}%</p>
           </div>
           <div className="w-px h-10 bg-[var(--border-1)]/30 flex-shrink-0" />
           <div>
@@ -435,7 +436,7 @@ export default function DividendsPage() {
                 {[
                   { label: 'Total Recebido', value: formatCurrency(summary?.totalReceived ?? 0), color: 'text-teal' },
                   { label: 'Custo Total', value: formatCurrency(summary?.totalCost ?? 0) },
-                  { label: 'Yield on Cost', value: `${(summary?.overallYoC ?? 0).toFixed(2)}%`, color: 'text-[var(--accent-1)]' },
+                  { label: 'Yield on Cost', value: `${(0).toFixed(2)}%`, color: 'text-[var(--accent-1)]' },
                   { label: 'Yield Atual', value: `${(summary?.overallYield ?? 0).toFixed(2)}%` },
                 ].map((stat) => (
                   <div key={stat.label} className="flex items-center justify-between px-4 py-3">
@@ -518,7 +519,7 @@ export default function DividendsPage() {
           <div className="flex items-center gap-6 px-4 py-3 bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm">
             <div>
               <span className="text-[var(--text-small)] text-[var(--text-2)]">Total 12 meses</span>
-              <p className="text-[var(--text-heading)] font-bold font-mono text-teal">{formatCurrency(projections?.totalProjected ?? 0)}</p>
+              <p className="text-[var(--text-heading)] font-bold font-mono text-teal">{formatCurrency(projections?.projections?.reduce((s: number, p: any) => s + (p.dividend_yield_proj ?? 0), 0) ?? 0)}</p>
             </div>
             <div className="w-px h-8 bg-[var(--border-1)]" />
             <div>

@@ -128,14 +128,15 @@ export default function ComparisonPage() {
     if (!allLoaded) return []
 
     const seriesByTicker = selectedTickers.map((ticker, i) => {
-      const data = historyQueries[i]?.data ?? []
+      const raw = historyQueries[i]?.data
+      const data: Array<{ date: string; close: number }> = Array.isArray(raw) ? raw : (raw?.data ?? [])
       return { ticker, data }
     })
 
     const ref = seriesByTicker[0]
     if (!ref || ref.data.length === 0) return []
 
-    return ref.data.map((point, dateIdx) => {
+    return ref.data.map((point: any, dateIdx: number) => {
       const entry: Record<string, number | string> = {
         date: new Date(point.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
         fullDate: new Date(point.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
@@ -239,7 +240,7 @@ export default function ComparisonPage() {
             className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--surface-2)]"
             style={{ borderLeft: `4px solid ${COMPARISON_COLORS[index]}` }}
           >
-            <AssetLogo ticker={ticker} logo={assetData?.logo} size={22} />
+            <AssetLogo ticker={ticker} size={22} />
             <span className="font-mono font-medium text-[var(--text-small)]">{ticker}</span>
             <button
               onClick={() => removeAsset(ticker)}

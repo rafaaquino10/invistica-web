@@ -11,8 +11,8 @@ try {
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   typescript: {
-    // TODO: Set to false once all tRPC stub components are migrated to API
-    // 162 remaining errors are all in stub-dependent components (not runtime critical)
+    // 291 remaining errors are implicit-any in page components (not runtime critical)
+    // tRPC/Prisma stubs deleted — these are strict-mode issues only
     ignoreBuildErrors: true,
   },
   env: {

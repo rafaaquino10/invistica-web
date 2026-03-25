@@ -117,6 +117,8 @@ function EarlyAccessState({ snapshotCount }: { snapshotCount: number }) {
 
 function FeedbackContent({ forwardDays }: { forwardDays: number }) {
   const { token } = useAuth()
+  const endDate = new Date()
+  const startDate = new Date(endDate.getTime() - 365 * 24 * 60 * 60 * 1000)
 
   const { data: metrics, isLoading: metricsLoading } = useQuery({
     queryKey: ['performance', forwardDays],
@@ -130,7 +132,7 @@ function FeedbackContent({ forwardDays }: { forwardDays: number }) {
     enabled: !!token,
     staleTime: 5 * 60 * 1000,
   })
-  const snapshotCount = timeline?.length ?? 0
+  const snapshotCount = timeline?.snapshots?.length ?? 0
 
   if (snapshotCount < 4) {
     return <EarlyAccessState snapshotCount={snapshotCount} />
@@ -148,11 +150,11 @@ function FeedbackContent({ forwardDays }: { forwardDays: number }) {
       {/* IC Timeline + Retorno por Classificação */}
       <div className="grid gap-6 lg:grid-cols-2">
         <ICTimeline startDate={startDate} endDate={endDate} forwardDays={forwardDays} />
-        <ReturnByClassification metrics={metrics ?? null} forwardDays={forwardDays} isLoading={metricsLoading} />
+        <ReturnByClassification metrics={metrics as any} forwardDays={forwardDays} isLoading={metricsLoading} />
       </div>
 
       {/* Quintile Spread */}
-      <QuintileSpread metrics={metrics ?? null} forwardDays={forwardDays} isLoading={metricsLoading} />
+      <QuintileSpread metrics={metrics as any} forwardDays={forwardDays} isLoading={metricsLoading} />
 
       {/* Timeline de Snapshots */}
       <SnapshotTimeline />

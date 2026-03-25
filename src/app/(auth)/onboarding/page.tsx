@@ -122,7 +122,7 @@ const STEP_LABELS = ['Perfil', 'Setores', 'Meta']
 
 // ─── Component ───────────────────────────────────────────────────────
 export default function OnboardingPage() {
-  const { update } = useAuth()
+  const {} = useAuth()
   const router = useRouter()
 
   const [step, setStep] = useState(0)
@@ -173,9 +173,6 @@ export default function OnboardingPage() {
       if (!res.ok) {
         throw new Error('Failed to complete onboarding')
       }
-
-      // Update local session state
-      update({ onboardingCompleted: true })
 
       router.push('/dashboard')
     } catch (err) {

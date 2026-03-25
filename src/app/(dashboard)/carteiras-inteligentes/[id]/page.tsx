@@ -118,7 +118,7 @@ export default function SmartPortfolioDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = use(params)
-  const { data: portfolio, isLoading } = { data: undefined, isLoading: false }
+  const { data: portfolio, isLoading } = { data: undefined as any, isLoading: false }
 
   if (isLoading) {
     return (
@@ -287,7 +287,7 @@ export default function SmartPortfolioDetailPage({
                       </td>
                     </tr>
                   ) : (
-                    portfolio.stocks.map(stock => (
+                    portfolio.stocks.map((stock: any) => (
                       <tr
                         key={stock.ticker}
                         className="border-b border-[var(--border-1)] hover:bg-[var(--surface-2)]/30 transition-colors"
@@ -363,7 +363,7 @@ export default function SmartPortfolioDetailPage({
                 Sinais que indicam quando reavaliar ou sair de uma posição desta carteira:
               </p>
               <ul className="space-y-2">
-                {portfolio.exitCriteria.map((ec, i) => (
+                {portfolio.exitCriteria.map((ec: any, i: number) => (
                   <li key={i} className="flex items-start gap-2">
                     <span className="text-amber-500 mt-0.5">
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

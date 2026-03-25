@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 const CVM_DISCLAIMER = `As Carteiras Inteligentes são seleções algorítmicas baseadas em critérios quantitativos públicos (dados CVM e B3). Não constituem recomendação de investimento, análise de valores mobiliários, ou consultoria financeira nos termos da Resolução CVM 20/2021. O InvestIQ não é registrado como analista ou consultor de valores mobiliários. Decisões de investimento são de responsabilidade exclusiva do investidor. Critérios completos disponíveis em cada carteira.`
 
 export default function CarteirasInteligentesPage() {
-  const { data: portfolios, isLoading } = { data: undefined, isLoading: false }
+  const { data: portfolios, isLoading } = { data: undefined as any[] | undefined, isLoading: false }
 
   return (
     <div className="space-y-6">
@@ -60,7 +60,7 @@ export default function CarteirasInteligentesPage() {
                     {/* Top Stocks Preview */}
                     {portfolio.topStocks.length > 0 ? (
                       <div className="flex flex-wrap gap-1.5">
-                        {portfolio.topStocks.map(stock => (
+                        {portfolio.topStocks.map((stock: any) => (
                           <span
                             key={stock.ticker}
                             className={cn(

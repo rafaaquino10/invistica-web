@@ -254,7 +254,12 @@ export const pro = {
   ),
 
   getPerformance: (token?: string) =>
-    apiFetch<Record<string, unknown>>('/scores/performance', { token }),
+    apiFetch<{
+      hitRate: { excepcional: number | null; saudavel: number | null; atencao: number | null; critico: number | null; overall: number | null } | null
+      ic: { value: number | null; pValue: number | null; isSignificant: boolean } | null
+      avgReturn: { excepcional: number | null; saudavel: number | null; atencao: number | null; critico: number | null } | null
+      quintileSpread: { q1AvgReturn: number | null; q5AvgReturn: number | null; spreadPositive: boolean } | null
+    }>('/scores/performance', { token }),
 
   // Valuation
   getValuation: (ticker: string, token?: string) =>

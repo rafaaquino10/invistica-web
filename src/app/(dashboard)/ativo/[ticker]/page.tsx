@@ -52,7 +52,7 @@ const RATING_LABELS: Record<string, string> = {
 // ─── Main Page ──────────────────────────────────────────────
 export default function AtivoPage() {
   const params = useParams()
-  const ticker = (params.ticker as string)?.toUpperCase()
+  const ticker = (params['ticker'] as string)?.toUpperCase()
   const { token } = useAuth()
 
   // API calls
@@ -162,7 +162,7 @@ export default function AtivoPage() {
               <h1 className="text-2xl font-bold text-[var(--text-1)]">{ticker}</h1>
               <span className={cn(
                 'text-xs font-semibold px-3 py-1 rounded-full border',
-                RATING_STYLES[iq.rating] ?? RATING_STYLES.HOLD
+                RATING_STYLES[iq.rating] ?? RATING_STYLES['HOLD']
               )}>
                 {RATING_LABELS[iq.rating] ?? iq.rating}
               </span>

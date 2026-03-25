@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { prisma, isDemoMode } from '@/lib/prisma'
 import { getAssetByTicker } from '@/lib/data-source'
 import { getScoreLabel } from '@/lib/utils/formatters'
 
@@ -11,7 +10,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { ticker } = await params
   const upperTicker = ticker.toUpperCase()
 
-  // Demo mode - use mock data
   let asset: {
     ticker: string
     name: string
@@ -21,42 +19,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     quotes: Array<{ close: number }>
   } | null = null
 
-  if (isDemoMode) {
-    const liveAsset = await getAssetByTicker(upperTicker)
-    if (liveAsset) {
-      asset = {
-        ticker: liveAsset.ticker,
-        name: liveAsset.name,
-        type: liveAsset.type,
-        sector: liveAsset.sector,
-        aqScores: liveAsset.aqScore ? [{ scoreTotal: liveAsset.aqScore.scoreTotal }] : [],
-        quotes: [{ close: liveAsset.price }],
-      }
-    }
-  } else {
-    const dbAsset = await prisma.asset.findUnique({
-      where: { ticker: upperTicker },
-      include: {
-        aqScores: {
-          where: { version: 'v1' },
-          take: 1,
-          orderBy: { calculatedAt: 'desc' },
-        },
-        quotes: {
-          take: 1,
-          orderBy: { date: 'desc' },
-        },
-      },
-    })
-    if (dbAsset) {
-      asset = {
-        ticker: dbAsset.ticker,
-        name: dbAsset.name,
-        type: dbAsset.type,
-        sector: dbAsset.sector,
-        aqScores: dbAsset.aqScores.map((s) => ({ scoreTotal: Number(s.scoreTotal) })),
-        quotes: dbAsset.quotes.map((q) => ({ close: Number(q.close) })),
-      }
+  const liveAsset = await getAssetByTicker(upperTicker)
+  if (liveAsset) {
+    asset = {
+      ticker: liveAsset.ticker,
+      name: liveAsset.name,
+      type: liveAsset.type,
+      sector: liveAsset.sector,
+      aqScores: liveAsset.aqScore ? [{ scoreTotal: liveAsset.aqScore.scoreTotal }] : [],
+      quotes: [{ close: liveAsset.price }],
     }
   }
 
