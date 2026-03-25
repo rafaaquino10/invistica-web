@@ -383,4 +383,35 @@ export const pro = {
     apiFetch<{ positions: number; hhi: number; concentration: string; top3_weight_pct: number; max_sector_weight_pct: number; weights: Array<{ ticker: string; weight: number; cluster_id: number }> }>(
       `/analytics/portfolio/${portfolioId}/risk`, { token },
     ),
+
+  // Dividend Simulator
+  simulateDividends: (tickers: string[], amounts: number[], token?: string) =>
+    apiFetch<{
+      totals: { annualDividend: number; monthlyDividend: number; avgYield: number }
+      results: Array<{ ticker: string; found: boolean; name: string | null; shares: number; currentPrice: number; dividendYield: number; annualDividend: number; monthlyDividend: number }>
+    }>('/dividends/simulate', { method: 'POST', body: JSON.stringify({ tickers, amounts }), token }),
+
+  // Custom Alerts
+  getAlerts: (token?: string) =>
+    apiFetch<{ alerts: Array<{ id: string; ticker: string; type: string; threshold: number | null; is_active: boolean; created_at: string }>; count: number }>(
+      '/radar/alerts', { token },
+    ),
+
+  createAlert: (assetId: string, type: string, threshold?: number, token?: string) =>
+    apiFetch<{ id: string; ticker: string; type: string; threshold: number | null; is_active: boolean; created_at: string }>(
+      '/radar/alerts', { method: 'POST', body: JSON.stringify({ asset_id: assetId, type, threshold }), token },
+    ),
+
+  deleteAlert: (alertId: string, token?: string) =>
+    apiFetch<{ success: boolean }>(
+      `/radar/alerts/${alertId}`, { method: 'DELETE', token },
+    ),
+
+  // Investor Relations
+  getInvestorRelations: (ticker: string, limit = 20, token?: string) =>
+    apiFetch<{
+      ticker: string
+      events: Array<{ id: string; title: string; summary: string | null; url: string | null; source: string; event_type: string; published_at: string; sentiment: string | null; sentiment_score: number | null; relevance_score: number | null }>
+      count: number
+    }>(`/news/${ticker}/investor-relations${qs({ limit })}`, { token }),
 }

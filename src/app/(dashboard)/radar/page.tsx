@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button, Modal, Input, Skeleton, Tabs, TabPanel, ScrollableStrip } from '@/components/ui'
 import { PaywallGate } from '@/components/billing'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/use-auth'
 import { pro } from '@/lib/api/endpoints'
 import { cn } from '@/lib/utils'
@@ -20,10 +20,23 @@ export default function RadarPage() {
     staleTime: 5 * 60 * 1000,
   })
   const feed = feedData?.feed ?? undefined
-  const alerts: unknown[] | undefined = undefined // Alerts management not yet available
+
+  const queryClient = useQueryClient()
+
+  const { data: alertsData } = useQuery({
+    queryKey: ['radar-alerts'],
+    queryFn: () => pro.getAlerts(token ?? undefined),
+    enabled: !!token,
+  })
+  const alerts = alertsData?.alerts ?? undefined
+
+  const { mutate: deleteAlert } = useMutation({
+    mutationFn: (alertId: string) => pro.deleteAlert(alertId, token ?? undefined),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['radar-alerts'] }),
+  })
 
   const feedCount = feed?.length ?? 0
-  const alertCount = alerts?.filter((a: any) => a.isActive)?.length ?? 0
+  const alertCount = alerts?.filter((a) => a.is_active)?.length ?? 0
 
   const radarTabs = [
     {
@@ -435,10 +448,20 @@ function TimelineIcon({ type, className }: { type: string; className?: string })
 // ===========================================
 
 function AlertsTab({ onCreateClick }: { onCreateClick: () => void }) {
-  const refetch = () => {}
-  const { data: alerts, isLoading } = { data: undefined, isLoading: false }
-  const deleteAlert = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false }
-  const updateAlert = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false }
+  const { token } = useAuth()
+  const queryClient = useQueryClient()
+
+  const { data: alertsData, isLoading } = useQuery({
+    queryKey: ['radar-alerts'],
+    queryFn: () => pro.getAlerts(token ?? undefined),
+    enabled: !!token,
+  })
+  const alerts = alertsData?.alerts
+
+  const deleteAlertMut = useMutation({
+    mutationFn: (alertId: string) => pro.deleteAlert(alertId, token ?? undefined),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['radar-alerts'] }),
+  })
 
   if (isLoading) {
     return <div className="space-y-3">{[1, 2, 3].map((i) => <Skeleton key={i} className="h-16 rounded-[var(--radius)]" />)}</div>
@@ -456,8 +479,8 @@ function AlertsTab({ onCreateClick }: { onCreateClick: () => void }) {
     )
   }
 
-  const activeAlerts = alerts.filter((a) => a.isActive)
-  const inactiveAlerts = alerts.filter((a) => !a.isActive)
+  const activeAlerts = alerts.filter((a: any) => a.is_active)
+  const inactiveAlerts = alerts.filter((a: any) => !a.is_active)
 
   return (
     <div className="space-y-6">
@@ -471,8 +494,8 @@ function AlertsTab({ onCreateClick }: { onCreateClick: () => void }) {
         <div>
           <h3 className="text-[var(--text-small)] font-semibold uppercase tracking-wider text-[var(--text-3)] mb-3">Alertas Ativos</h3>
           <div className="bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] divide-y divide-[var(--border-1)]">
-            {activeAlerts.map((alert) => (
-              <AlertRow key={alert.id} alert={alert} onToggle={() => updateAlert.mutate({ id: alert.id, isActive: !alert.isActive })} onDelete={() => deleteAlert.mutate({ id: alert.id })} />
+            {activeAlerts.map((alert: any) => (
+              <AlertRow key={alert.id} alert={alert} onToggle={() => {}} onDelete={() => deleteAlertMut.mutate(alert.id)} />
             ))}
           </div>
         </div>
@@ -482,8 +505,8 @@ function AlertsTab({ onCreateClick }: { onCreateClick: () => void }) {
         <div>
           <h3 className="text-[var(--text-small)] font-semibold uppercase tracking-wider text-[var(--text-3)] mb-3">Alertas Inativos</h3>
           <div className="bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] divide-y divide-[var(--border-1)] opacity-60">
-            {inactiveAlerts.map((alert) => (
-              <AlertRow key={alert.id} alert={alert} onToggle={() => updateAlert.mutate({ id: alert.id, isActive: !alert.isActive })} onDelete={() => deleteAlert.mutate({ id: alert.id })} />
+            {inactiveAlerts.map((alert: any) => (
+              <AlertRow key={alert.id} alert={alert} onToggle={() => {}} onDelete={() => deleteAlertMut.mutate(alert.id)} />
             ))}
           </div>
         </div>
@@ -506,7 +529,7 @@ function AlertRow({ alert, onToggle, onDelete }: { alert: any; onToggle: () => v
     <div className="flex items-center gap-4 px-4 py-3 group hover:bg-[var(--surface-2)] transition-colors">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-mono font-semibold text-[var(--text-small)]">{alert.asset.ticker}</span>
+          <span className="font-mono font-semibold text-[var(--text-small)]">{alert.ticker}</span>
         </div>
         <p className="text-[var(--text-small)] text-[var(--text-2)]">
           {config.label}{' '}
@@ -514,8 +537,8 @@ function AlertRow({ alert, onToggle, onDelete }: { alert: any; onToggle: () => v
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <button onClick={onToggle} className={cn('relative w-11 h-6 rounded-full transition-colors', alert.isActive ? 'bg-teal' : 'bg-[var(--border-1)]')}>
-          <span className={cn('absolute top-1 w-4 h-4 rounded-full bg-white transition-transform', alert.isActive ? 'left-6' : 'left-1')} />
+        <button onClick={onToggle} className={cn('relative w-11 h-6 rounded-full transition-colors', alert.is_active ? 'bg-teal' : 'bg-[var(--border-1)]')}>
+          <span className={cn('absolute top-1 w-4 h-4 rounded-full bg-white transition-transform', alert.is_active ? 'left-6' : 'left-1')} />
         </button>
         <button onClick={onDelete} className="p-2 text-[var(--text-2)] hover:text-red hover:bg-red/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
@@ -618,16 +641,24 @@ function HealthTab() {
 
 function CreateAlertModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [formData, setFormData] = useState({ ticker: '', type: 'price_below' as 'price_above' | 'price_below' | 'score_change' | 'dividend', threshold: '' })
-  const [selectedAsset, setSelectedAsset] = useState<any>(null)
+  const { token } = useAuth()
+  const queryClient = useQueryClient()
 
-  const createAlert = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false, isPending: false }
-  const { data: assets } = { data: undefined, isLoading: false }
+  const createAlertMut = useMutation({
+    mutationFn: (params: { assetId: string; type: string; threshold?: number }) =>
+      pro.createAlert(params.assetId, params.type, params.threshold, token ?? undefined),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['radar-alerts'] })
+      resetForm()
+      onClose()
+    },
+  })
 
-  const resetForm = () => { setFormData({ ticker: '', type: 'price_below', threshold: '' }); setSelectedAsset(null) }
+  const resetForm = () => { setFormData({ ticker: '', type: 'price_below', threshold: '' }) }
 
   const handleSubmit = () => {
-    if (!selectedAsset) return
-    createAlert.mutate({ assetId: selectedAsset.id, type: formData.type, threshold: formData.threshold ? parseFloat(formData.threshold) : undefined })
+    if (!formData.ticker.trim()) return
+    createAlertMut.mutate({ assetId: formData.ticker, type: formData.type, threshold: formData.threshold ? parseFloat(formData.threshold) : undefined })
   }
 
   const alertTypes = [
@@ -644,34 +675,7 @@ function CreateAlertModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
       <div className="space-y-5">
         <div>
           <label className="block text-[var(--text-small)] font-medium mb-2">Ativo</label>
-          {selectedAsset ? (
-            <div className="flex items-center justify-between p-3 bg-[var(--surface-2)] rounded-[var(--radius)] border border-[var(--border-1)]">
-              <div className="flex items-center gap-3">
-                <AssetLogo ticker={selectedAsset.ticker} logo={selectedAsset.logo} size={40} />
-                <div>
-                  <span className="font-semibold">{selectedAsset.ticker}</span>
-                  <p className="text-[var(--text-small)] text-[var(--text-2)]">{selectedAsset.name}</p>
-                </div>
-              </div>
-              <button onClick={() => setSelectedAsset(null)} className="p-2 text-[var(--text-2)] hover:text-[var(--text-1)] rounded-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-              </button>
-            </div>
-          ) : (
-            <div className="relative">
-              <Input placeholder="Buscar ativo (ex: PETR4)" value={formData.ticker} onChange={(e) => setFormData({ ...formData, ticker: e.target.value.toUpperCase() })} />
-              {assets && assets.assets.length > 0 && formData.ticker.length >= 2 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm shadow-[var(--shadow-overlay)] z-10 max-h-48 overflow-y-auto">
-                  {assets.assets.map((asset) => (
-                    <button key={asset.id} onClick={() => { setSelectedAsset(asset); setFormData({ ...formData, ticker: '' }) }} className="w-full px-4 py-3 text-left hover:bg-[var(--surface-2)] flex items-center gap-3 transition-colors">
-                      <span className="font-semibold">{asset.ticker}</span>
-                      <span className="text-[var(--text-small)] text-[var(--text-2)] truncate">{asset.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+          <Input placeholder="Ex: PETR4" value={formData.ticker} onChange={(e) => setFormData({ ...formData, ticker: e.target.value.toUpperCase() })} className="font-mono" />
         </div>
 
         <div>
@@ -694,8 +698,8 @@ function CreateAlertModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
 
         <div className="flex gap-3 pt-2">
           <Button variant="secondary" onClick={onClose} className="flex-1">Cancelar</Button>
-          <Button variant="primary" onClick={handleSubmit} disabled={!selectedAsset || (needsThreshold && !formData.threshold) || createAlert.isPending} className="flex-1">
-            {createAlert.isPending ? 'Criando...' : 'Criar Alerta'}
+          <Button variant="primary" onClick={handleSubmit} disabled={!formData.ticker.trim() || (needsThreshold && !formData.threshold) || createAlertMut.isPending} className="flex-1">
+            {createAlertMut.isPending ? 'Criando...' : 'Criar Alerta'}
           </Button>
         </div>
       </div>

@@ -4,8 +4,7 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input, Button, ScrollableStrip } from '@/components/ui'
-// summary, projections, simulate tabs use placeholder data (endpoints not yet available)
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/use-auth'
 import { free, pro } from '@/lib/api/endpoints'
 import { formatCurrency } from '@/lib/utils/formatters'
@@ -66,12 +65,14 @@ export default function DividendsPage() {
   })
   const projections = projectionsData ?? null
 
-  const simulation = null // Simulator endpoint not yet available
-
   const validTickers = simulatorTickers.filter(t => t.trim().length >= 4)
   const validAmounts = simulatorAmounts
     .filter((_, i) => (simulatorTickers[i] ?? '').trim().length >= 4)
     .map(a => parseFloat(a) || 0)
+
+  const { data: simulation, mutate: runSimulation, isPending: simulating } = useMutation({
+    mutationFn: () => pro.simulateDividends(validTickers, validAmounts, token ?? undefined),
+  })
 
   const nextPayment = calendar?.entries.find((e) => {
     const date = e.paymentDate ?? e.exDate
@@ -654,6 +655,15 @@ export default function DividendsPage() {
                 </div>
               ))}
             </div>
+            <Button
+              variant="primary"
+              className="w-full mt-3 text-xs"
+              size="sm"
+              disabled={validTickers.length === 0 || simulating}
+              onClick={() => runSimulation()}
+            >
+              {simulating ? 'Simulando...' : 'Simular Dividendos'}
+            </Button>
           </div>
 
           {simulation && (

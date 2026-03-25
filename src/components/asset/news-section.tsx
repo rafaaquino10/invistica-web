@@ -53,11 +53,24 @@ export function NewsSection({ ticker, companyName }: NewsSectionProps) {
     staleTime: 5 * 60 * 1000,
   })
 
+  const { data: riData, isLoading: riLoading } = useQuery({
+    queryKey: ['ri-events', ticker],
+    queryFn: () => pro.getInvestorRelations(ticker, 10, token ?? undefined),
+    enabled: !!ticker && !!token,
+    staleTime: 10 * 60 * 1000,
+  })
+
   const news = newsData?.news ?? []
-  const isLoading = newsLoading
+  const isLoading = newsLoading || riLoading
   const hasNews = news.length > 0
-  const hasRi = false // RI events endpoint not yet available
-  const riEvents: unknown[] = []
+  const riEvents: any[] = (riData?.events ?? []).map(e => ({
+    id: e.id,
+    title: e.title,
+    type: e.event_type || 'fato_relevante',
+    date: e.published_at,
+    documentUrl: e.url,
+  }))
+  const hasRi = riEvents.length > 0
 
   if (isLoading) {
     return (
