@@ -136,8 +136,14 @@ function getRelativeGroupLabel(date: Date): string {
 const GROUP_ORDER = ['Hoje', 'Ontem', 'Esta Semana', 'Mais Antigo']
 
 function FeedTab() {
-  const { data: feed, isLoading } = { data: undefined, isLoading: false }
-  const markRead = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false }
+  const { token } = useAuth()
+  const { data: feedData, isLoading } = useQuery({
+    queryKey: ['radar-feed-tab'],
+    queryFn: () => pro.getRadarFeed(30, 'all', token ?? undefined),
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
+  })
+  const feed = feedData?.feed
   const [feedFilter, setFeedFilter] = useState<string>('all')
 
   if (isLoading) {

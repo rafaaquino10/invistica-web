@@ -53,7 +53,38 @@ export function FIRETab() {
     return () => clearTimeout(id)
   }, [formData])
 
-  const { data: fireResult, isFetching } = { data: undefined, isFetching: false, isLoading: false }
+  // FIRE calculator — client-side (sem backend)
+  const fireResult = useMemo(() => {
+    if (!debouncedInputs) return undefined
+    const { monthlyExpenses, monthlyContribution, annualReturn, safeWithdrawalRate } = debouncedInputs
+    if (!monthlyExpenses || !monthlyContribution || !annualReturn || !safeWithdrawalRate) return undefined
+
+    const fireNumber = (monthlyExpenses * 12) / (safeWithdrawalRate / 100)
+    const monthlyRate = annualReturn / 100 / 12
+    let accumulated = 0
+    let months = 0
+    const maxMonths = 50 * 12
+
+    while (accumulated < fireNumber && months < maxMonths) {
+      accumulated = accumulated * (1 + monthlyRate) + monthlyContribution
+      months++
+    }
+
+    const years = Math.floor(months / 12)
+    const remainingMonths = months % 12
+
+    return {
+      fireNumber,
+      monthsToFire: months,
+      yearsToFire: years,
+      remainingMonths,
+      totalContributed: monthlyContribution * months,
+      totalReturns: accumulated - (monthlyContribution * months),
+      finalValue: accumulated,
+      monthlyPassiveIncome: accumulated * (safeWithdrawalRate / 100) / 12,
+    }
+  }, [debouncedInputs])
+  const isFetching = false
 
   const createFIREGoal = { mutate: () => {}, mutateAsync: async () => undefined, isLoading: false, isPending: false }
 

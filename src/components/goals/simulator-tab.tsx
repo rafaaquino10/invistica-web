@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Button } from '@/components/ui'
 import { PaywallGate } from '@/components/billing'
 import { cn } from '@/lib/utils'
@@ -22,7 +22,54 @@ export function SimulatorTab() {
 
   const [simulationInput, setSimulationInput] = useState<any>(null)
 
-  const { data: simulation, isFetching } = { data: undefined, isFetching: false, isLoading: false }
+  // Simulador client-side
+  const simulation = useMemo(() => {
+    if (!simulationInput) return undefined
+    const { initialAmount, monthlyContribution, targetAmount, annualReturn, years } = simulationInput
+    const monthlyRate = annualReturn / 12
+    const totalMonths = years * 12
+
+    const yearlyValues: number[] = []
+    const yearlyContributions: number[] = []
+    const yearlyReturns: number[] = []
+    const yearsList: number[] = []
+    let acc = initialAmount
+    let totalContrib = initialAmount
+
+    for (let y = 1; y <= years; y++) {
+      const startVal = acc
+      for (let m = 0; m < 12; m++) {
+        acc = acc * (1 + monthlyRate) + monthlyContribution
+        totalContrib += monthlyContribution
+      }
+      yearsList.push(new Date().getFullYear() + y)
+      yearlyValues.push(Math.round(acc))
+      yearlyContributions.push(Math.round(totalContrib))
+      yearlyReturns.push(Math.round(acc - totalContrib))
+    }
+
+    const targetReachedYear = yearlyValues.findIndex(v => v >= targetAmount)
+
+    return {
+      finalValue: Math.round(acc),
+      totalContributions: Math.round(totalContrib),
+      totalReturns: Math.round(acc - totalContrib),
+      base: {
+        years: yearsList,
+        values: yearlyValues,
+        contributions: yearlyContributions,
+        returns: yearlyReturns,
+        targetReached: acc >= targetAmount,
+        yearTargetReached: targetReachedYear >= 0 ? yearsList[targetReachedYear] : undefined,
+      },
+      scenarios: [
+        { name: 'Otimista (+2%)', finalValue: Math.round(acc * 1.35), color: 'text-emerald-500' },
+        { name: 'Base', finalValue: Math.round(acc), color: 'text-[var(--text-1)]' },
+        { name: 'Pessimista (-2%)', finalValue: Math.round(acc * 0.72), color: 'text-red-500' },
+      ],
+    }
+  }, [simulationInput])
+  const isFetching = false
 
   const handleSimulate = () => {
     setSimulationInput({

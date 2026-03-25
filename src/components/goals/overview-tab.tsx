@@ -10,9 +10,10 @@ import { ProgressBar, MainGoalCard, MilestonesCard, GoalsListCard } from './goal
 // ===========================================
 
 export function OverviewTab({ onCreateClick }: { onCreateClick: () => void }) {
-  const { data: goals, isLoading: loadingGoals } = { data: undefined, isLoading: false }
-  const { data: mainGoal, isLoading: loadingMain } = { data: undefined, isLoading: false }
-  const { data: passiveIncome, isLoading: loadingIncome } = { data: undefined, isLoading: false }
+  const goals: any = undefined
+  const mainGoal: any = undefined
+  const passiveIncome: any = undefined
+  const loadingGoals = false, loadingMain = false, loadingIncome = false
 
   if (loadingGoals || loadingMain || loadingIncome) {
     return (
