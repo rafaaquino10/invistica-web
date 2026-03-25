@@ -13,7 +13,7 @@ export function SocialLoginButtons({ callbackUrl }: { callbackUrl: string }) {
     setLoading(provider)
 
     const supabase = createClient()
-    const redirectTo = `${window.location.origin}${callbackUrl}`
+    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(callbackUrl)}`
 
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider,
