@@ -27,75 +27,63 @@ function DemoLoginPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    async function loginDemo() {
-      const supabase = createClient()
+    let cancelled = false
 
-      // Step 1: Try to sign in (user may already exist)
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+    async function trySignIn(supabase: ReturnType<typeof createClient>): Promise<boolean> {
+      const { error } = await supabase.auth.signInWithPassword({
         email: DEMO_EMAIL,
         password: DEMO_PASSWORD,
       })
+      return !error
+    }
 
-      if (!signInError) {
-        // Success — redirect
-        setStatus('Redirecionando...')
-        router.push(callbackUrl)
+    async function loginDemo() {
+      const supabase = createClient()
+
+      // 1. Try sign in (user may already exist with correct password)
+      if (await trySignIn(supabase)) {
+        if (!cancelled) { setStatus('Redirecionando...'); router.push(callbackUrl) }
         return
       }
 
-      // Step 2: User doesn't exist — create via signUp
-      setStatus('Criando conta demo...')
+      // 2. Sign in failed — try to create the user
+      if (!cancelled) setStatus('Configurando acesso demo...')
 
       const { error: signUpError } = await supabase.auth.signUp({
         email: DEMO_EMAIL,
         password: DEMO_PASSWORD,
-        options: {
-          data: { full_name: 'Usuário Demo', plan: 'pro' },
-        },
+        options: { data: { full_name: 'Usuário Demo', plan: 'pro' } },
       })
 
-      if (signUpError) {
-        // signUp failed — maybe user exists with different password, or email confirmation required
-        setError(
-          `Não foi possível criar conta demo. ` +
-          `Verifique se "Confirm email" está desligado no Supabase Dashboard → Authentication → Settings. ` +
-          `Erro: ${signUpError.message}`
-        )
-        return
-      }
+      // 3. If signUp succeeded OR user already exists — try sign in again
+      if (!signUpError || signUpError.message.includes('already') || signUpError.message.includes('registered')) {
+        await new Promise(r => setTimeout(r, 1000))
 
-      // Step 3: Wait briefly for Supabase to propagate, then sign in
-      setStatus('Entrando...')
-      await new Promise(resolve => setTimeout(resolve, 1500))
-
-      const { error: retryError } = await supabase.auth.signInWithPassword({
-        email: DEMO_EMAIL,
-        password: DEMO_PASSWORD,
-      })
-
-      if (retryError) {
-        // If still fails, the signUp probably auto-signed-in already
-        // Check if we have a session
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session) {
-          setStatus('Redirecionando...')
-          router.push(callbackUrl)
+        if (await trySignIn(supabase)) {
+          if (!cancelled) { setStatus('Redirecionando...'); router.push(callbackUrl) }
           return
         }
+      }
 
-        setError(
-          `Conta criada mas login falhou. ` +
-          `Se "Confirm email" estiver ligado no Supabase, desative-o. ` +
-          `Erro: ${retryError.message}`
-        )
+      // 4. Check if signUp auto-logged us in (some Supabase configs do this)
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        if (!cancelled) { setStatus('Redirecionando...'); router.push(callbackUrl) }
         return
       }
 
-      setStatus('Redirecionando...')
-      router.push(callbackUrl)
+      // 5. Nothing worked
+      if (!cancelled) {
+        setError(
+          signUpError
+            ? `Erro: ${signUpError.message}. Verifique no Supabase: Email provider habilitado, "Confirm email" desligado.`
+            : 'Não foi possível fazer login demo. Tente novamente.'
+        )
+      }
     }
 
     loginDemo()
+    return () => { cancelled = true }
   }, [callbackUrl, router])
 
   return (
