@@ -162,7 +162,7 @@ export function BottomNav() {
                   animate={{ scale: isActive ? 1.1 : 1 }}
                   transition={{ duration: 0.15 }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d={item.icon} /></svg>
+                  {item.icon}
                 </motion.span>
                 <span className="text-[10px] font-medium mt-1">{item.label}</span>
               </Link>

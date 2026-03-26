@@ -2,7 +2,7 @@
 // Server-side HTTP client for the AQInvest Gateway.
 // Used by tRPC routers to fetch live quotes, fundamentals, etc.
 
-const GATEWAY_URL = process.env['GATEWAY_URL'] ?? 'http://localhost:4000'
+const GATEWAY_URL = process.env['GATEWAY_URL'] ?? process.env['NEXT_PUBLIC_API_URL'] ?? 'https://investiqbackend-production.up.railway.app'
 
 // ─── Types ──────────────────────────────────────────────────
 

@@ -2,10 +2,10 @@
  * HTTP client for InvestIQ API (FastAPI backend).
  *
  * All frontend data flows through this client.
- * Backend runs on NEXT_PUBLIC_API_URL (default http://localhost:8000).
+ * Backend runs on NEXT_PUBLIC_API_URL (default https://investiqbackend-production.up.railway.app).
  */
 
-const API_BASE = process.env['NEXT_PUBLIC_API_URL'] || 'http://localhost:8000'
+const API_BASE = process.env['NEXT_PUBLIC_API_URL'] || 'https://investiqbackend-production.up.railway.app'
 
 export class ApiError extends Error {
   constructor(
