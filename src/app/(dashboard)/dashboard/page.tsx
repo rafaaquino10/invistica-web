@@ -60,19 +60,22 @@ export default function DashboardPage() {
   const { token } = useAuth()
 
   // API queries
-  const { data: topPicks, isLoading: loadingTop } = useQuery({
+  const { data: topPicks, isLoading: loadingTop, isError: errorTop } = useQuery({
     queryKey: ['scores-top'],
     queryFn: () => pro.getTop({ limit: 12, mandate: 'EQUILIBRADO' }, token ?? undefined),
+    retry: 1,
   })
 
-  const { data: rawPortfolio, isLoading: loadingPortfolio } = useQuery({
+  const { data: rawPortfolio, isLoading: loadingPortfolio, isError: errorPortfolio } = useQuery({
     queryKey: ['portfolio'],
     queryFn: () => pro.getPortfolio(token ?? undefined),
+    retry: 1,
   })
 
   const { data: clusters } = useQuery({
     queryKey: ['clusters'],
     queryFn: () => free.getClusters(),
+    retry: 1,
   })
 
   const portfolio = useMemo(() => {
@@ -113,7 +116,14 @@ export default function DashboardPage() {
 
   return (
     <motion.div className="space-y-6" {...staggerContainer}>
-      {/* ─── Hero: Patrimonio ──────────────────────────── */}
+      {/* ─── Error Banner ──────────────────────────────── */}
+      {(errorTop || errorPortfolio) && (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-400">
+          Alguns dados não puderam ser carregados. Verifique sua conexão e tente novamente.
+        </div>
+      )}
+
+      {/* ─── Hero: Patrimônio ──────────────────────────── */}
       {portfolio && portfolio.positionsCount > 0 && (
         <motion.div {...fadeInUp} className="rounded-[var(--radius)] border border-[var(--border-1)] p-6 bg-gradient-to-br from-[var(--surface-1)] via-[var(--surface-1)] to-[var(--accent-2)]">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">

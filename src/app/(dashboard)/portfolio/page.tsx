@@ -55,9 +55,10 @@ export default function PortfolioPage() {
   const [editPrice, setEditPrice] = useState('')
 
   // API
-  const { data: rawPortfolio, isLoading } = useQuery({
+  const { data: rawPortfolio, isLoading, isError } = useQuery({
     queryKey: ['portfolio'],
     queryFn: () => pro.getPortfolio(token ?? undefined),
+    retry: 1,
   })
 
   const portfolio = useMemo(() => {
@@ -105,6 +106,13 @@ export default function PortfolioPage() {
 
   return (
     <motion.div className="space-y-6" {...staggerContainer}>
+      {/* ─── Error Banner ─────────────────────────────── */}
+      {isError && (
+        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-700 dark:text-amber-400">
+          Erro ao carregar portfólio. Verifique sua conexão e tente novamente.
+        </div>
+      )}
+
       {/* ─── Header ──────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
