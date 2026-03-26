@@ -97,7 +97,7 @@ export function DCFCard({ ticker }: DCFCardProps) {
         {/* Intrinsic value + upside */}
         <div className="flex items-end justify-between mb-4">
           <div>
-            <p className="text-[var(--text-caption)] text-[var(--text-3)] mb-0.5">Valor Intrinseco</p>
+            <p className="text-[var(--text-caption)] text-[var(--text-3)] mb-0.5">Valor Intrínseco</p>
             <p className="text-[var(--text-heading)] font-bold font-mono">{formatCurrency(d.intrinsicValue)}</p>
           </div>
           <div className="text-right">
@@ -115,12 +115,12 @@ export function DCFCard({ ticker }: DCFCardProps) {
           <div
             className="absolute top-0 bottom-0 w-0.5 bg-[var(--pos)]/40 z-10"
             style={{ left: `${buyPos}%` }}
-            title={`Preco de compra: ${formatCurrency(d.buyPrice)}`}
+            title={`Preço de compra: ${formatCurrency(d.buyPrice)}`}
           />
           <div
             className="absolute top-0 bottom-0 w-0.5 bg-[var(--accent-1)] z-10"
             style={{ left: `${fairPos}%` }}
-            title={`Valor Intrinseco: ${formatCurrency(d.intrinsicValue)}`}
+            title={`Valor Intrínseco: ${formatCurrency(d.intrinsicValue)}`}
           />
           <div
             className={cn(
@@ -128,14 +128,14 @@ export function DCFCard({ ticker }: DCFCardProps) {
               isBelowFairValue ? 'bg-[var(--pos)]' : 'bg-[var(--neg)]'
             )}
             style={{ left: `${pricePos}%`, marginLeft: '-6px' }}
-            title={`Preco atual: ${formatCurrency(d.currentPrice)}`}
+            title={`Preço atual: ${formatCurrency(d.currentPrice)}`}
           />
         </div>
 
         {/* Assumptions grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4 p-3 bg-[var(--surface-2)]/50 rounded-lg">
           <div>
-            <p className="text-[var(--text-caption)] text-[var(--text-3)]">Preco compra</p>
+            <p className="text-[var(--text-caption)] text-[var(--text-3)]">Preço compra</p>
             <p className="text-[var(--text-small)] font-mono font-semibold">{formatCurrency(d.buyPrice)}</p>
           </div>
           <div>
@@ -201,15 +201,15 @@ export function DCFCard({ ticker }: DCFCardProps) {
         <div className="px-4 pb-4 border-t border-[var(--border-1)]/10">
           <div className="mt-3 space-y-2 text-[var(--text-caption)]">
             <div className="flex justify-between">
-              <span className="text-[var(--text-3)]">Preco Atual</span>
+              <span className="text-[var(--text-3)]">Preço Atual</span>
               <span className="font-mono">{formatCurrency(d.currentPrice)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[var(--text-3)]">Valor Intrinseco</span>
+              <span className="text-[var(--text-3)]">Valor Intrínseco</span>
               <span className="font-mono font-semibold">{formatCurrency(d.intrinsicValue)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[var(--text-3)]">Preco de Compra (MS 20%)</span>
+              <span className="text-[var(--text-3)]">Preço de Compra (MS 20%)</span>
               <span className="font-mono">{formatCurrency(d.buyPrice)}</span>
             </div>
             <div className="flex justify-between">

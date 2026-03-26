@@ -86,7 +86,7 @@ export default function BacktestPage() {
       <div>
         <h1 className="font-display text-[var(--text-title)] font-bold tracking-tight">Backtest IQ-Score</h1>
         <p className="text-[var(--text-small)] text-[var(--text-2)] mt-0.5">
-          Simule o desempenho historico do motor IQ-Cognit com parametros customizaveis.
+          Simule o desempenho histórico do motor IQ-Cognit com parâmetros customizáveis.
         </p>
       </div>
 
@@ -96,11 +96,11 @@ export default function BacktestPage() {
           {/* Sidebar — Parameters */}
           <Card className="lg:col-span-1">
             <CardContent className="p-4 space-y-4">
-              <h3 className="text-[var(--text-small)] font-semibold text-[var(--text-1)]">Parametros</h3>
+              <h3 className="text-[var(--text-small)] font-semibold text-[var(--text-1)]">Parâmetros</h3>
 
               <div className="space-y-3">
                 <div>
-                  <label className="text-[var(--text-caption)] text-[var(--text-3)] mb-1 block">Inicio</label>
+                  <label className="text-[var(--text-caption)] text-[var(--text-3)] mb-1 block">Início</label>
                   <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="text-xs" />
                 </div>
                 <div>
@@ -127,7 +127,7 @@ export default function BacktestPage() {
                   <input type="range" min={5} max={50} value={longPct * 100} onChange={e => setLongPct(Number(e.target.value) / 100)} className="w-full" />
                 </div>
                 <div>
-                  <label className="text-[var(--text-caption)] text-[var(--text-3)] mb-1 block">IQ-Score Minimo</label>
+                  <label className="text-[var(--text-caption)] text-[var(--text-3)] mb-1 block">IQ-Score Mínimo</label>
                   <Input type="number" min={50} max={95} value={minScore} onChange={e => setMinScore(Number(e.target.value))} className="text-xs" />
                 </div>
                 <div>
@@ -194,7 +194,7 @@ export default function BacktestPage() {
                   <div className="text-4xl mb-3 opacity-30">&#x1f4ca;</div>
                   <h3 className="text-[var(--text-body)] font-semibold text-[var(--text-2)]">Configure e execute</h3>
                   <p className="text-[var(--text-caption)] text-[var(--text-3)] mt-1 max-w-sm mx-auto">
-                    Ajuste os parametros no painel lateral e clique em "Executar Backtest" para ver os resultados.
+                    Ajuste os parâmetros no painel lateral e clique em "Executar Backtest" para ver os resultados.
                   </p>
                 </CardContent>
               </Card>
@@ -244,7 +244,7 @@ export default function BacktestPage() {
                 {navData.length > 0 && (
                   <Card>
                     <CardContent className="p-5">
-                      <h3 className="text-[var(--text-small)] font-semibold text-[var(--text-1)] mb-4">Evolucao do NAV</h3>
+                      <h3 className="text-[var(--text-small)] font-semibold text-[var(--text-1)] mb-4">Evolução do NAV</h3>
                       <div className="h-72">
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={navData}>
@@ -259,7 +259,7 @@ export default function BacktestPage() {
                                   <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg p-3 shadow-lg text-[var(--text-caption)]">
                                     <p className="font-semibold text-[var(--text-1)]">{d.date}</p>
                                     <p>NAV: <span className="font-mono font-bold">R$ {d.NAV?.toLocaleString('pt-BR')}</span></p>
-                                    <p>Posicoes: <span className="font-mono">{d.positions}</span></p>
+                                    <p>Posições: <span className="font-mono">{d.positions}</span></p>
                                   </div>
                                 )
                               }}

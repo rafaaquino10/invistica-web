@@ -254,7 +254,7 @@ export default function AtivoPage() {
             <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
               <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Valuation</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <ValuationMetric label="Preco Justo" value={fmtR$(dcf.intrinsicValue)} highlight />
+                <ValuationMetric label="Preço Justo" value={fmtR$(dcf.intrinsicValue)} highlight />
                 <ValuationMetric label="DCF" value={fmtR$(dcf.fairValueDCF)} />
                 <ValuationMetric label="Gordon DDM" value={fmtR$(dcf.fairValueGordon)} />
                 <ValuationMetric label="Multiplos" value={fmtR$(dcf.fairValueMult)} />
@@ -443,7 +443,7 @@ export default function AtivoPage() {
       {/* ─── Row 7: Dividends History ──────────────────── */}
       {dividendsData?.dividends && dividendsData.dividends.length > 0 && (
         <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Historico de Dividendos</h3>
+          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Histórico de Dividendos</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

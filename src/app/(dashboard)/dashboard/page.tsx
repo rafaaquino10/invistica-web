@@ -118,7 +118,7 @@ export default function DashboardPage() {
         <motion.div {...fadeInUp} className="rounded-[var(--radius)] border border-[var(--border-1)] p-6 bg-gradient-to-br from-[var(--surface-1)] via-[var(--surface-1)] to-[var(--accent-2)]">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
-              <p className="text-[var(--text-caption)] font-medium text-[var(--text-2)] uppercase tracking-wider mb-1">Patrimonio Total</p>
+              <p className="text-[var(--text-caption)] font-medium text-[var(--text-2)] uppercase tracking-wider mb-1">Patrimônio Total</p>
               <p className="font-mono text-3xl md:text-4xl font-bold text-[var(--text-1)] leading-none">
                 {fmt(portfolio.totalValue)}
               </p>
@@ -144,14 +144,14 @@ export default function DashboardPage() {
       {/* ─── KPI Strip ───────────────────────────────────── */}
       <motion.div {...fadeInUp} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPI
-          label="Patrimonio"
+          label="Patrimônio"
           value={portfolio ? fmt(portfolio.totalValue) : '--'}
           sub={portfolio ? `${portfolio.positionsCount} posições` : undefined}
           trend={portfolio?.gainLossPercent}
           loading={loadingPortfolio}
         />
         <KPI
-          label="IQ-Score Medio"
+          label="IQ-Score Médio"
           value={portfolio?.avgAqScore ? portfolio.avgAqScore.toFixed(0) : '--'}
           valueColor={getScoreColor(portfolio?.avgAqScore ?? 0)}
           sub={portfolio?.avgAqScore
@@ -179,7 +179,7 @@ export default function DashboardPage() {
         <motion.div {...fadeInUp} className="lg:col-span-7 bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--border-1)] flex items-center justify-between">
             <div>
-              <h2 className="text-[var(--text-body)] font-semibold">Evolucao do Patrimonio</h2>
+              <h2 className="text-[var(--text-body)] font-semibold">Evolução do Patrimônio</h2>
               <p className="text-[var(--text-small)] text-[var(--text-2)]">12 meses vs CDI</p>
             </div>
             <Link href="/portfolio" className="text-[var(--text-small)] font-medium text-[var(--accent-1)] hover:underline">
@@ -204,7 +204,7 @@ export default function DashboardPage() {
                   <Tooltip
                     contentStyle={{ backgroundColor: 'var(--surface-1)', border: '1px solid var(--border-1)', borderRadius: '8px', fontSize: '12px' }}
                     formatter={(value: number, name: string) => {
-                      const labels: Record<string, string> = { valor: 'Patrimonio', custo: 'Custo', cdi: 'CDI' }
+                      const labels: Record<string, string> = { valor: 'Patrimônio', custo: 'Custo', cdi: 'CDI' }
                       return [fmt(value), labels[name] ?? name]
                     }}
                   />
@@ -217,9 +217,9 @@ export default function DashboardPage() {
               <EmptyState
                 compact
                 icon={<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>}
-                title="Crie seu portfolio"
-                description="Adicione acoes para acompanhar a evolucao do patrimonio vs CDI."
-                actions={[{ label: 'Criar Portfolio', onClick: () => router.push('/portfolio') }]}
+                title="Crie seu portfólio"
+                description="Adicione ações para acompanhar a evolução do patrimônio vs CDI."
+                actions={[{ label: 'Criar Portfólio', onClick: () => router.push('/portfolio') }]}
                 className="h-[200px] border-0"
               />
             )}
@@ -229,7 +229,7 @@ export default function DashboardPage() {
         {/* Cluster Distribution */}
         <motion.div {...fadeInUp} className="lg:col-span-5 bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--border-1)]">
-            <h2 className="text-[var(--text-body)] font-semibold">Distribuicao Setorial</h2>
+            <h2 className="text-[var(--text-body)] font-semibold">Distribuição Setorial</h2>
             <p className="text-[var(--text-small)] text-[var(--text-2)]">Top picks por setor</p>
           </div>
           <div className="p-3">

@@ -117,14 +117,14 @@ export default function PortfolioPage() {
           onClick={() => setShowAddForm(true)}
           className="px-5 py-2.5 bg-[var(--accent-1)] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-sm"
         >
-          + Adicionar Acao
+          + Adicionar Ação
         </button>
       </div>
 
       {/* ─── Summary Cards ───────────────────────────── */}
       {portfolio && positions.length > 0 && (
         <motion.div {...fadeInUp} className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-          <SummaryCard label="Patrimonio" value={fmtR$(portfolio.totalValue)} />
+          <SummaryCard label="Patrimônio" value={fmtR$(portfolio.totalValue)} />
           <SummaryCard label="Custo Total" value={fmtCompact(portfolio.totalCost)} />
           <SummaryCard
             label="Ganho/Perda"
@@ -137,7 +137,7 @@ export default function PortfolioPage() {
             valueColor={portfolio.gainLossPercent >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'}
           />
           <SummaryCard
-            label="IQ-Score Medio"
+            label="IQ-Score Médio"
             value={portfolio.avgAqScore.toFixed(0)}
             valueColor={portfolio.avgAqScore >= 65 ? 'text-[var(--pos)]' : 'text-[var(--text-1)]'}
           />
@@ -147,7 +147,7 @@ export default function PortfolioPage() {
       {/* ─── Add Form ────────────────────────────────── */}
       {showAddForm && (
         <motion.div {...fadeInUp} className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--accent-1)]/30 p-5 shadow-sm">
-          <h3 className="font-semibold text-[var(--text-1)] mb-4">Nova Posicao</h3>
+          <h3 className="font-semibold text-[var(--text-1)] mb-4">Nova Posição</h3>
           <div className="flex flex-wrap gap-4 items-end">
             <div>
               <label className="text-[var(--text-caption)] text-[var(--text-2)] font-medium block mb-1.5">Ticker</label>
@@ -169,7 +169,7 @@ export default function PortfolioPage() {
               />
             </div>
             <div>
-              <label className="text-[var(--text-caption)] text-[var(--text-2)] font-medium block mb-1.5">Preco Medio (R$)</label>
+              <label className="text-[var(--text-caption)] text-[var(--text-2)] font-medium block mb-1.5">Preço Médio (R$)</label>
               <input
                 type="number"
                 step="0.01"
@@ -306,7 +306,7 @@ export default function PortfolioPage() {
                           <line x1="12" y1="22" x2="12" y2="12" />
                         </svg>
                         <p className="text-lg font-medium">Portfolio vazio</p>
-                        <p className="text-sm max-w-xs">Clique em &quot;+ Adicionar Acao&quot; para comecar a construir sua carteira.</p>
+                        <p className="text-sm max-w-xs">Clique em &quot;+ Adicionar Ação&quot; para comecar a construir sua carteira.</p>
                       </div>
                     </td>
                   </tr>
@@ -319,7 +319,7 @@ export default function PortfolioPage() {
         {/* Allocation Chart */}
         {allocationData.length > 0 && (
           <motion.div {...fadeInUp} className="lg:col-span-4 bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] p-5">
-            <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Alocacao</h3>
+            <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Alocação</h3>
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie
