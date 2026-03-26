@@ -294,7 +294,7 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
           )}
 
           {/* No results + quick actions fallback */}
-          {isSearchOpen && debouncedQuery.length >= 1 && results.length === 0 && searchResults !== undefined && !isSearchLoading && (
+          {isSearchOpen && debouncedQuery.length >= 1 && results.length === 0 && !isSearchLoading && (
             <div className="absolute top-full left-0 right-0 mt-1.5 bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-[var(--shadow-overlay)] overflow-hidden z-50">
               {filteredActions.length > 0 ? (
                 <>
@@ -560,7 +560,7 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
               )}
 
               {/* No results */}
-              {debouncedQuery.length >= 1 && results.length === 0 && searchResults !== undefined && !isSearchLoading && filteredActions.length === 0 && (
+              {debouncedQuery.length >= 1 && results.length === 0 && !isSearchLoading && filteredActions.length === 0 && (
                 <div className="py-8 text-center">
                   <p className="text-sm text-[var(--text-2)]">Nenhum resultado encontrado</p>
                 </div>
