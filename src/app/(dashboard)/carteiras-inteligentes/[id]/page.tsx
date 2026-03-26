@@ -134,7 +134,7 @@ export default function SmartPortfolioDetailPage({
       metrics: { cagr: '+15.0%', sharpe: '0.73', maxDD: '-34.8%', alpha_cdi: '+6.5%' },
     },
     equilibrado: {
-      name: 'Equilibrado', mandate: 'EQUILIBRADO', emoji: '⚖️',
+      name: 'Equilibrado', mandate: 'EQUILIBRADO', badge: 'E',
       description: 'Pesos balanceados entre todos os pilares. Black-Litterman para otimização.',
       criteria: { 'IQ-Score mínimo': '55', 'Universo': 'Top 100 liquidez', 'Rebalanceamento': 'Trimestral' },
       stocks: [

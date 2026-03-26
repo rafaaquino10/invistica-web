@@ -146,7 +146,7 @@ export default function AtivoPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <p className="text-lg text-[var(--text-2)]">Dados indisponiveis para {ticker}</p>
-        <p className="text-sm text-[var(--text-2)] mt-2">Verifique se a API InvestIQ esta rodando e se o ticker e valido.</p>
+        <p className="text-sm text-[var(--text-2)] mt-2">Verifique se a API InvestIQ está rodando e se o ticker é válido.</p>
       </div>
     )
   }

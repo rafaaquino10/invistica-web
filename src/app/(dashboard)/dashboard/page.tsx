@@ -146,7 +146,7 @@ export default function DashboardPage() {
         <KPI
           label="Patrimonio"
           value={portfolio ? fmt(portfolio.totalValue) : '--'}
-          sub={portfolio ? `${portfolio.positionsCount} posicoes` : undefined}
+          sub={portfolio ? `${portfolio.positionsCount} posições` : undefined}
           trend={portfolio?.gainLossPercent}
           loading={loadingPortfolio}
         />
@@ -317,7 +317,7 @@ export default function DashboardPage() {
             <EmptyState
               compact
               title="API indisponivel"
-              description="Verifique se o backend InvestIQ esta rodando em localhost:8000."
+              description="Verifique se o backend InvestIQ está rodando em investiqbackend-production.up.railway.app."
               className="py-10"
             />
           )}

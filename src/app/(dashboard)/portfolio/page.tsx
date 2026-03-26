@@ -110,7 +110,7 @@ export default function PortfolioPage() {
         <div>
           <h1 className="text-xl font-bold text-[var(--text-1)]">Portfolio</h1>
           <p className="text-[var(--text-small)] text-[var(--text-2)]">
-            {positions.length} posicoes | Mandato: EQUILIBRADO
+            {positions.length} posições | Mandato: EQUILIBRADO
           </p>
         </div>
         <button

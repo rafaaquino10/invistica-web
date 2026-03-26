@@ -292,7 +292,7 @@ export default function ExplorerPage() {
               ) : (
                 <tr>
                   <td className="px-5 py-12 text-center text-[var(--text-2)]" colSpan={11}>
-                    Nenhum resultado. Verifique se a API InvestIQ esta rodando.
+                    Nenhum resultado. Verifique se a API InvestIQ está rodando.
                   </td>
                 </tr>
               )}

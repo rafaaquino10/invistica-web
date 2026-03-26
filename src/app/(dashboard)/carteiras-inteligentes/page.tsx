@@ -30,7 +30,7 @@ export default function CarteirasInteligentesPage() {
       id: 'equilibrado',
       name: 'Equilibrado',
       description: 'Pesos balanceados entre pilares. Black-Litterman, sem alavancagem.',
-      emoji: '⚖️',
+      badge: 'E',
       mandate: 'EQUILIBRADO',
       targetPositions: '10-12 ativos',
       rebalance: 'Trimestral',
