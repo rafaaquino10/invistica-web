@@ -56,16 +56,18 @@ export default function AtivoPage() {
   const { token } = useAuth()
 
   // API calls
-  const { data: score, isLoading: loadingScore } = useQuery({
+  const { data: score, isLoading: loadingScore, isError: errorScore } = useQuery({
     queryKey: ['score', ticker],
     queryFn: () => pro.getScore(ticker, { mandate: 'EQUILIBRADO' }, token ?? undefined),
     enabled: !!ticker,
+    retry: 1,
   })
 
   const { data: valuation, isLoading: loadingVal } = useQuery({
     queryKey: ['valuation', ticker],
     queryFn: () => pro.getValuation(ticker, token ?? undefined),
     enabled: !!ticker,
+    retry: 1,
   })
 
   const { data: tickerData } = useQuery({
@@ -142,11 +144,21 @@ export default function AtivoPage() {
     )
   }
 
+  if (errorScore) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <p className="text-lg text-[var(--text-1)] font-semibold">Erro ao carregar {ticker}</p>
+        <p className="text-sm text-[var(--text-2)] mt-2">O backend pode estar indisponível. Tente novamente em alguns minutos.</p>
+        <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-[var(--accent-1)] text-white rounded-lg text-sm">Tentar novamente</button>
+      </div>
+    )
+  }
+
   if (!score || !iq) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-lg text-[var(--text-2)]">Dados indisponiveis para {ticker}</p>
-        <p className="text-sm text-[var(--text-2)] mt-2">Verifique se a API InvestIQ está rodando e se o ticker é válido.</p>
+        <p className="text-lg text-[var(--text-2)]">Dados indisponíveis para {ticker}</p>
+        <p className="text-sm text-[var(--text-2)] mt-2">Verifique se o ticker é válido.</p>
       </div>
     )
   }
