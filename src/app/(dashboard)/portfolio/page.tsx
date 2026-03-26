@@ -262,7 +262,7 @@ export default function PortfolioPage() {
                           <td className="px-3 py-3 text-right font-mono text-[var(--text-1)]">{fmtR$(pos.avgPrice)}</td>
                           <td className="px-3 py-3 text-right font-mono text-[var(--text-1)]">{fmtR$(pos.currentPrice)}</td>
                           <td className="px-3 py-3 text-right font-mono text-[var(--text-1)]">{fmtCompact(pos.totalValue)}</td>
-                          <td className="px-3 py-3 text-right font-mono text-[var(--text-2)]">{pos.weight.toFixed(1)}%</td>
+                          <td className="px-3 py-3 text-right font-mono text-[var(--text-2)]">{(pos.weight ?? 0).toFixed(1)}%</td>
                           <td className="px-3 py-3 text-right">
                             <span className={cn('font-mono text-sm', pos.gainLossPercent >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
                               {pct(pos.gainLossPercent)}
@@ -348,7 +348,7 @@ export default function PortfolioPage() {
                     <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
                     <span className="font-medium text-[var(--text-1)]">{item.name}</span>
                   </div>
-                  <span className="font-mono text-[var(--text-2)]">{item.weight.toFixed(1)}%</span>
+                  <span className="font-mono text-[var(--text-2)]">{(item.weight ?? 0).toFixed(1)}%</span>
                 </div>
               ))}
             </div>

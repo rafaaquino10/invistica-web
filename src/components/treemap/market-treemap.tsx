@@ -130,7 +130,7 @@ function Tooltip({ data }: { data: TooltipData }) {
           <div>
             <span className="text-[var(--text-3)]">Preço</span>
             <span className="ml-1 font-mono text-[var(--text-1)]">
-              R$ {stock.price.toFixed(2)}
+              R$ {(stock.price ?? 0).toFixed(2)}
             </span>
           </div>
           <div>
@@ -139,7 +139,7 @@ function Tooltip({ data }: { data: TooltipData }) {
               'ml-1 font-mono font-medium',
               stock.changePercent >= 0 ? 'text-teal' : 'text-red'
             )}>
-              {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+              {(stock.changePercent ?? 0) >= 0 ? '+' : ''}{(stock.changePercent ?? 0).toFixed(2)}%
             </span>
           </div>
           <div>

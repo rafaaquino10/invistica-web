@@ -102,7 +102,7 @@ export function DCFCard({ ticker }: DCFCardProps) {
           </div>
           <div className="text-right">
             <span className={cn('text-[var(--text-subheading)] font-bold font-mono', upsideColor)}>
-              {d.upside >= 0 ? '+' : ''}{d.upside.toFixed(1)}%
+              {(d.upside ?? 0) >= 0 ? '+' : ''}{(d.upside ?? 0).toFixed(1)}%
             </span>
             <p className={cn('text-[var(--text-caption)] font-medium px-2 py-0.5 rounded mt-1 inline-block', upsideBg, upsideColor)}>
               {upsideLabel}
@@ -215,7 +215,7 @@ export function DCFCard({ ticker }: DCFCardProps) {
             <div className="flex justify-between">
               <span className="text-[var(--text-3)]">Upside</span>
               <span className={cn('font-mono font-semibold', upsideColor)}>
-                {d.upside >= 0 ? '+' : ''}{d.upside.toFixed(1)}%
+                {(d.upside ?? 0) >= 0 ? '+' : ''}{(d.upside ?? 0).toFixed(1)}%
               </span>
             </div>
           </div>

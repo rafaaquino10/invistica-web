@@ -71,7 +71,7 @@ export function CAGEDPulse() {
                     {sector.b3Sector}
                   </p>
                   <p className={cn('text-[var(--text-caption)]', trend.color)}>
-                    {sector.netBalance > 0 ? '+' : ''}{sector.netBalance.toLocaleString('pt-BR')}
+                    {(sector.netBalance ?? 0) > 0 ? '+' : ''}{(sector.netBalance ?? 0).toLocaleString('pt-BR')}
                   </p>
                 </div>
               </div>

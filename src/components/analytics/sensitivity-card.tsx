@@ -94,7 +94,7 @@ export function SensitivityCard({ ticker }: SensitivityCardProps) {
                         barWidth > 50 ? 'text-white left-0' : 'left-0 ml-1',
                         isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400',
                       )}>
-                        {isPositive ? '+' : ''}{scenario.scoreImpact.toFixed(1)}pts
+                        {isPositive ? '+' : ''}{(scenario.scoreImpact ?? 0).toFixed(1)}pts
                       </span>
                     </div>
 
@@ -137,7 +137,7 @@ export function SensitivityCard({ ticker }: SensitivityCardProps) {
                             'text-[var(--text-caption)] font-mono font-medium',
                             p.delta > 0 ? 'text-green-500' : p.delta < 0 ? 'text-red-500' : 'text-[var(--text-3)]',
                           )}>
-                            {p.delta > 0 ? '+' : ''}{p.delta.toFixed(1)}
+                            {(p.delta ?? 0) > 0 ? '+' : ''}{(p.delta ?? 0).toFixed(1)}
                           </span>
                         </div>
                       ))}
