@@ -8,8 +8,8 @@ import { free } from '@/lib/api/endpoints'
 
 const MARQUEE_TICKERS = [
   'PETR4', 'VALE3', 'ITUB4', 'BBAS3', 'WEGE3', 'ABEV3', 'RENT3', 'SUZB3',
-  'BBSE3', 'EQTL3', 'B3SA3', 'GGBR4', 'JBSS3', 'RADL3', 'VIVT3', 'TOTS3',
-  'LREN3', 'PRIO3', 'CSAN3', 'ELET3', 'TAEE11', 'SBSP3', 'ENEV3', 'RDOR3',
+  'BBSE3', 'EQTL3', 'BBDC4', 'GGBR4', 'HAPV3', 'RADL3', 'VIVT3', 'TOTS3',
+  'LREN3', 'PRIO3', 'CSAN3', 'MGLU3', 'TAEE11', 'SBSP3', 'ENEV3', 'RDOR3',
 ]
 
 interface TickerQuote {
