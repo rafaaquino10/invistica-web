@@ -94,13 +94,13 @@ export default function CarteirasInteligentesPage() {
                   <CardContent className="p-5 flex flex-col h-full">
                     {/* Icon + Name */}
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="text-[var(--text-heading)]">{portfolio.icon}</span>
+                      <span className="text-[var(--text-heading)]">{portfolio.emoji ?? portfolio.badge ?? '●'}</span>
                       <div>
                         <h3 className="font-semibold text-[var(--text-1)]">
                           {portfolio.name}
                         </h3>
                         <span className="text-[var(--text-caption)] text-[var(--text-3)]">
-                          {portfolio.stockCount}/{portfolio.maxStocks} ações
+                          {portfolio.targetPositions}
                         </span>
                       </div>
                     </div>
@@ -123,13 +123,13 @@ export default function CarteirasInteligentesPage() {
                           >
                             <span className="font-medium">{stock.ticker}</span>
                             <span className="text-[var(--text-3)]">
-                              {stock.lensScore.toFixed(0)}
+                              {stock.weight.toFixed(1)}%
                             </span>
                           </span>
                         ))}
-                        {portfolio.stockCount > 3 && (
+                        {portfolio.topStocks.length > 3 && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[var(--text-caption)] text-[var(--text-3)]">
-                            +{portfolio.stockCount - 3}
+                            +{portfolio.topStocks.length - 3}
                           </span>
                         )}
                       </div>

@@ -67,9 +67,9 @@ function QuaseQualificadosSection({ ativos }: { ativos: AlmostQualified[] }) {
                 <div className="text-right shrink-0">
                   <span className={cn(
                     'text-[var(--text-small)] font-semibold',
-                    ativo.score >= 70 ? 'text-green-500' : ativo.score >= 50 ? 'text-amber-500' : 'text-red-500'
+                    (ativo.score ?? 0) >= 70 ? 'text-green-500' : (ativo.score ?? 0) >= 50 ? 'text-amber-500' : 'text-red-500'
                   )}>
-                    {ativo.score.toFixed(0)}
+                    {(ativo.score ?? 0).toFixed(0)}
                   </span>
                   <span className="text-[var(--text-caption)] text-[var(--text-3)] block">score</span>
                 </div>
@@ -358,18 +358,18 @@ export default function SmartPortfolioDetailPage({
                           {stock.sector}
                         </td>
                         <td className="py-3 px-2 text-right font-mono text-[var(--text-1)]">
-                          R$ {stock.price.toFixed(2)}
+                          R$ {(stock.price ?? 0).toFixed(2)}
                         </td>
                         <td className="py-3 px-2 text-right">
                           <span className={cn(
                             'font-semibold',
-                            stock.score >= 70 ? 'text-green-500' : stock.score >= 50 ? 'text-amber-500' : 'text-red-500'
+                            (stock.score ?? 0) >= 70 ? 'text-green-500' : (stock.score ?? 0) >= 50 ? 'text-amber-500' : 'text-red-500'
                           )}>
-                            {stock.score.toFixed(1)}
+                            {(stock.score ?? 0).toFixed(1)}
                           </span>
                         </td>
                         <td className="py-3 px-2 text-right font-mono text-[var(--text-2)]">
-                          {stock.lensScore.toFixed(1)}
+                          {(stock.lensScore ?? stock.weight ?? 0).toFixed(1)}
                         </td>
                         <td className="py-3 px-2 text-right font-mono text-[var(--text-2)]">
                           {stock.dy != null ? `${stock.dy.toFixed(1)}%` : '—'}
