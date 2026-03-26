@@ -92,11 +92,11 @@ export function adaptScoreToAsset(
 
   // Map rating to badge
   const ratingBadges: Record<string, { label: string; color: string; emoji: string }> = {
-    STRONG_BUY: { label: 'Compra Forte', color: 'green', emoji: '🟢' },
-    BUY: { label: 'Acumular', color: 'blue', emoji: '🔵' },
-    HOLD: { label: 'Neutro', color: 'yellow', emoji: '🟡' },
-    REDUCE: { label: 'Reduzir', color: 'orange', emoji: '🟠' },
-    AVOID: { label: 'Evitar', color: 'red', emoji: '🔴' },
+    STRONG_BUY: { label: 'Compra Forte', color: 'green', emoji: '' },
+    BUY: { label: 'Acumular', color: 'blue', emoji: '' },
+    HOLD: { label: 'Neutro', color: 'yellow', emoji: '' },
+    REDUCE: { label: 'Reduzir', color: 'orange', emoji: '' },
+    AVOID: { label: 'Evitar', color: 'red', emoji: '' },
   }
 
   // Build evidence-based drivers
