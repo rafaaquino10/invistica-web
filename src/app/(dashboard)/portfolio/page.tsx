@@ -77,6 +77,22 @@ export default function PortfolioPage() {
     staleTime: 10 * 60 * 1000,
   })
 
+  // Portfolio Attribution — P&L decomposition by sector
+  const { data: attribution } = useQuery({
+    queryKey: ['portfolio-attribution', 'default'],
+    queryFn: () => pro.getPortfolioAttribution('default', token ?? undefined),
+    enabled: !!token && (portfolio?.positions.length ?? 0) > 0,
+    staleTime: 10 * 60 * 1000,
+  })
+
+  // Portfolio Risk — concentration analysis
+  const { data: riskAnalysis } = useQuery({
+    queryKey: ['portfolio-risk', 'default'],
+    queryFn: () => pro.getPortfolioRisk('default', token ?? undefined),
+    enabled: !!token && (portfolio?.positions.length ?? 0) > 0,
+    staleTime: 10 * 60 * 1000,
+  })
+
   const addMutation = useMutation({
     mutationFn: (data: { ticker: string; qty: number; avg_price: number }) =>
       pro.addPosition(data, token ?? undefined),
@@ -192,6 +208,70 @@ export default function PortfolioPage() {
             valueColor={portfolio.avgIqScore >= 65 ? 'text-[var(--pos)]' : 'text-[var(--text-1)]'}
           />
         </motion.div>
+      )}
+
+      {/* ─── Portfolio Analytics (Attribution + Risk) ──── */}
+      {(attribution || riskAnalysis) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Attribution by Sector */}
+          {attribution?.by_sector && attribution.by_sector.length > 0 && (
+            <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-5">
+              <h3 className="text-sm font-semibold text-[var(--text-1)] mb-3">Retorno por Setor</h3>
+              <div className="space-y-2">
+                {attribution.by_sector.map((s) => (
+                  <div key={s.cluster_id} className="flex items-center gap-3">
+                    <span className="text-[var(--text-caption)] text-[var(--text-2)] w-20 truncate">
+                      {s.tickers.slice(0, 2).join(', ')}{s.tickers.length > 2 ? ` +${s.tickers.length - 2}` : ''}
+                    </span>
+                    <div className="flex-1 h-2 bg-[var(--bg)] rounded-full overflow-hidden">
+                      <div
+                        className={cn('h-full rounded-full', s.return_pct >= 0 ? 'bg-[var(--pos)]' : 'bg-[var(--neg)]')}
+                        style={{ width: `${Math.min(Math.abs(s.return_pct) * 2, 100)}%` }}
+                      />
+                    </div>
+                    <span className={cn('font-mono text-xs font-bold w-14 text-right', s.return_pct >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
+                      {s.return_pct >= 0 ? '+' : ''}{s.return_pct.toFixed(1)}%
+                    </span>
+                    <span className="font-mono text-[10px] text-[var(--text-3)] w-10 text-right">{s.weight_pct.toFixed(0)}%</span>
+                  </div>
+                ))}
+              </div>
+              {attribution.total_return_pct != null && (
+                <div className="mt-3 pt-3 border-t border-[var(--border-1)]/30 flex items-center justify-between">
+                  <span className="text-sm text-[var(--text-2)]">Retorno Total</span>
+                  <span className={cn('font-mono font-bold', attribution.total_return_pct >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
+                    {attribution.total_return_pct >= 0 ? '+' : ''}{attribution.total_return_pct.toFixed(1)}%
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Risk Concentration */}
+          {riskAnalysis && (
+            <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-5">
+              <h3 className="text-sm font-semibold text-[var(--text-1)] mb-3">Risco & Concentração</h3>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="text-center p-3 rounded-lg bg-[var(--bg)]">
+                  <p className="text-[var(--text-caption)] text-[var(--text-2)]">Herfindahl (HHI)</p>
+                  <p className={cn('font-mono text-lg font-bold', riskAnalysis.hhi < 0.15 ? 'text-[var(--pos)]' : riskAnalysis.hhi < 0.25 ? 'text-amber-500' : 'text-[var(--neg)]')}>
+                    {(riskAnalysis.hhi * 100).toFixed(0)}%
+                  </p>
+                  <p className="text-[10px] text-[var(--text-3)]">{riskAnalysis.concentration}</p>
+                </div>
+                <div className="text-center p-3 rounded-lg bg-[var(--bg)]">
+                  <p className="text-[var(--text-caption)] text-[var(--text-2)]">Top 3 Peso</p>
+                  <p className={cn('font-mono text-lg font-bold', riskAnalysis.top3_weight_pct < 50 ? 'text-[var(--pos)]' : 'text-amber-500')}>
+                    {riskAnalysis.top3_weight_pct.toFixed(0)}%
+                  </p>
+                </div>
+              </div>
+              <div className="text-[var(--text-caption)] text-[var(--text-2)]">
+                {riskAnalysis.positions} posições | Maior setor: {riskAnalysis.max_sector_weight_pct.toFixed(0)}%
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       {/* ─── Add Form ────────────────────────────────── */}

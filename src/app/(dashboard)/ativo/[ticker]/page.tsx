@@ -115,6 +115,13 @@ export default function AtivoPage() {
     staleTime: 5 * 60 * 1000,
   })
 
+  const { data: investorRelations } = useQuery({
+    queryKey: ['investor-relations', ticker],
+    queryFn: () => pro.getInvestorRelations(ticker, 10, token ?? undefined),
+    enabled: !!ticker,
+    staleTime: 10 * 60 * 1000,
+  })
+
   const { data: riskMetrics } = useQuery({
     queryKey: ['risk-metrics', ticker],
     queryFn: () => pro.getRiskMetrics(ticker, token ?? undefined),
@@ -559,6 +566,37 @@ export default function AtivoPage() {
                     )}
                   </div>
                 </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── Row 4d: Investor Relations (CVM filings) ──── */}
+      {investorRelations?.events && investorRelations.events.length > 0 && (
+        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
+          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Documentos & Relações com Investidores</h3>
+          <div className="space-y-2">
+            {investorRelations.events.slice(0, 8).map((ev) => (
+              <a
+                key={ev.id}
+                href={ev.url ?? '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-[var(--surface-2)] transition-colors"
+              >
+                <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[var(--surface-2)] text-[var(--text-3)] shrink-0">
+                  {ev.event_type}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-[var(--text-1)] truncate">{ev.title}</p>
+                  <p className="text-[var(--text-caption)] text-[var(--text-2)]">
+                    {ev.source} · {new Date(ev.published_at).toLocaleDateString('pt-BR')}
+                  </p>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-3)] shrink-0">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
               </a>
             ))}
           </div>
