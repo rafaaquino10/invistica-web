@@ -287,7 +287,7 @@ function NotificationsTab() {
             </div>
           )}
 
-          {!session?.user?.email && (
+          {false && (
             <div className="px-3 py-2 rounded-lg bg-[var(--warn)]/10 border border-[var(--warn)]/20">
               <p className="text-[var(--text-caption)] text-[var(--warn)]">
                 Cadastre um email na sua conta para receber relatórios.
