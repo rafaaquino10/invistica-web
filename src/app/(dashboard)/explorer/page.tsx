@@ -51,10 +51,12 @@ export default function ExplorerPage() {
   const [sortAsc, setSortAsc] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   const [selectedIdx, setSelectedIdx] = useState(-1)
+  const [page, setPage] = useState(0)
+  const PAGE_SIZE = 30
   const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map())
 
-  // Reset selection when mandate or filters change
-  useEffect(() => { setSelectedIdx(-1) }, [mandate, minScore, ratingFilter, clusterId])
+  // Reset selection and page when mandate or filters change
+  useEffect(() => { setSelectedIdx(-1); setPage(0) }, [mandate, minScore, ratingFilter, clusterId, sortBy, sortAsc])
 
   const { data: clusters } = useQuery({
     queryKey: ['clusters'],
@@ -89,6 +91,9 @@ export default function ExplorerPage() {
     })
     return results
   }, [screenerData, sortBy, sortAsc])
+
+  const totalPages = Math.ceil(sorted.length / PAGE_SIZE)
+  const paged = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
 
   const clusterNames = useMemo(() => {
     return clusters?.clusters?.reduce((acc, c) => ({ ...acc, [c.cluster_id]: c.name }), {} as Record<number, string>) ?? {}
@@ -127,7 +132,7 @@ export default function ExplorerPage() {
         <div>
           <h1 className="text-xl font-bold text-[var(--text-1)]">Explorer</h1>
           <p className="text-[var(--text-small)] text-[var(--text-2)]">
-            {sorted.length} acoes ranqueadas por IQ-Score | Mandato: {mandate}
+            {sorted.length} ações ranqueadas por IQ-Score | Mandato: {mandate} | Página {page + 1}/{totalPages || 1}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -247,8 +252,8 @@ export default function ExplorerPage() {
                     <td className="px-5 py-3.5" colSpan={11}><Skeleton className="h-8" /></td>
                   </tr>
                 ))
-              ) : sorted.length > 0 ? (
-                sorted.map((r, idx) => (
+              ) : paged.length > 0 ? (
+                paged.map((r, idx) => (
                   <tr
                     key={r.ticker}
                     ref={(el) => { if (el) rowRefs.current.set(idx, el); else rowRefs.current.delete(idx) }}
@@ -263,7 +268,7 @@ export default function ExplorerPage() {
                       idx === selectedIdx ? 'bg-[var(--accent-1)]/5 ring-1 ring-[var(--accent-1)]/20' : 'hover:bg-[var(--surface-2)]'
                     )}
                   >
-                    <td className="px-5 py-3 text-[var(--text-2)] font-mono text-xs">{idx + 1}</td>
+                    <td className="px-5 py-3 text-[var(--text-2)] font-mono text-xs">{page * PAGE_SIZE + idx + 1}</td>
                     <td className="px-3 py-3">
                       <div className="flex items-center gap-3">
                         <AssetLogo ticker={r.ticker} size={32} />
@@ -331,6 +336,48 @@ export default function ExplorerPage() {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-2">
+          <span className="text-[var(--text-caption)] text-[var(--text-2)]">
+            {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, sorted.length)} de {sorted.length}
+          </span>
+          <div className="flex gap-1">
+            <button
+              onClick={() => setPage(p => Math.max(0, p - 1))}
+              disabled={page === 0}
+              className={cn('px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors', page === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--surface-2)]')}
+              aria-label="Página anterior"
+            >
+              Anterior
+            </button>
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+              const p = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i
+              return (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={cn(
+                    'w-8 h-8 text-xs font-mono rounded-lg transition-colors',
+                    page === p ? 'bg-[var(--accent-1)] text-white' : 'hover:bg-[var(--surface-2)] text-[var(--text-2)]'
+                  )}
+                >
+                  {p + 1}
+                </button>
+              )
+            })}
+            <button
+              onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+              disabled={page >= totalPages - 1}
+              className={cn('px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors', page >= totalPages - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--surface-2)]')}
+              aria-label="Próxima página"
+            >
+              Próxima
+            </button>
+          </div>
+        </div>
+      )}
 
       <Disclaimer variant="footer" />
     </div>

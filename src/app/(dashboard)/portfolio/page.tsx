@@ -80,6 +80,14 @@ export default function PortfolioPage() {
     staleTime: 10 * 60 * 1000,
   })
 
+  // Macro regime (for CDI/SELIC benchmark)
+  const { data: macroRegime } = useQuery({
+    queryKey: ['macro-regime'],
+    queryFn: () => pro.getMacroRegime(token ?? undefined),
+    enabled: !!token,
+    staleTime: 10 * 60 * 1000,
+  })
+
   // Portfolio Attribution — P&L decomposition by sector
   const { data: attribution } = useQuery({
     queryKey: ['portfolio-attribution', 'default'],
@@ -220,6 +228,52 @@ export default function PortfolioPage() {
             valueColor={portfolio.avgIqScore >= 65 ? 'text-[var(--pos)]' : 'text-[var(--text-1)]'}
           />
         </motion.div>
+      )}
+
+      {/* ─── Benchmark Comparison ──────────────────────── */}
+      {portfolio && positions.length > 0 && macroRegime && (
+        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-5">
+          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-3">vs Benchmarks</h3>
+          <div className="grid grid-cols-3 gap-4">
+            {/* Portfolio Return */}
+            <div className="text-center p-3 rounded-lg bg-[var(--accent-1)]/5">
+              <p className="text-[var(--text-caption)] text-[var(--text-2)]">Sua Carteira</p>
+              <p className={cn('font-mono text-xl font-bold', portfolio.gainLossPercent >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
+                {portfolio.gainLossPercent >= 0 ? '+' : ''}{portfolio.gainLossPercent.toFixed(1)}%
+              </p>
+            </div>
+            {/* CDI proxy (SELIC annual → approximate) */}
+            <div className="text-center p-3 rounded-lg bg-[var(--bg)]">
+              <p className="text-[var(--text-caption)] text-[var(--text-2)]">CDI (SELIC)</p>
+              <p className="font-mono text-xl font-bold text-[var(--text-1)]">
+                {macroRegime.macro.selic.toFixed(1)}% a.a.
+              </p>
+              {(() => {
+                const alpha = portfolio.gainLossPercent - macroRegime.macro.selic
+                return (
+                  <p className={cn('text-[10px] font-mono font-bold mt-0.5', alpha >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
+                    Alpha: {alpha >= 0 ? '+' : ''}{alpha.toFixed(1)}pp
+                  </p>
+                )
+              })()}
+            </div>
+            {/* IPCA */}
+            <div className="text-center p-3 rounded-lg bg-[var(--bg)]">
+              <p className="text-[var(--text-caption)] text-[var(--text-2)]">IPCA</p>
+              <p className="font-mono text-xl font-bold text-[var(--text-1)]">
+                {macroRegime.macro.ipca.toFixed(1)}% a.a.
+              </p>
+              {(() => {
+                const realReturn = portfolio.gainLossPercent - macroRegime.macro.ipca
+                return (
+                  <p className={cn('text-[10px] font-mono font-bold mt-0.5', realReturn >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
+                    Real: {realReturn >= 0 ? '+' : ''}{realReturn.toFixed(1)}pp
+                  </p>
+                )
+              })()}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* ─── Portfolio Analytics (Attribution + Risk) ──── */}
