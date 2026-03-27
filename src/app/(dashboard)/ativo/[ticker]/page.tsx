@@ -108,6 +108,20 @@ export default function AtivoPage() {
     enabled: !!ticker,
   })
 
+  const { data: newsData } = useQuery({
+    queryKey: ['news', ticker],
+    queryFn: () => pro.getNews(ticker, 8, token ?? undefined),
+    enabled: !!ticker,
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const { data: riskMetrics } = useQuery({
+    queryKey: ['risk-metrics', ticker],
+    queryFn: () => pro.getRiskMetrics(ticker, token ?? undefined),
+    enabled: !!ticker,
+    staleTime: 10 * 60 * 1000,
+  })
+
   // Adapt data
   const asset = useMemo(() => {
     if (!score) return null
@@ -387,6 +401,105 @@ export default function AtivoPage() {
         </div>
       )}
 
+      {/* ─── Row 4b: Risk Metrics (Merton PD, Piotroski, etc) ── */}
+      {riskMetrics && (
+        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
+          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Risk Lab</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {riskMetrics.risk_metrics.merton_pd != null && (
+              <RiskMetricCard
+                label="Merton PD"
+                value={`${(riskMetrics.risk_metrics.merton_pd * 100).toFixed(2)}%`}
+                description="Prob. default estrutural"
+                color={riskMetrics.risk_metrics.merton_pd < 0.05 ? 'pos' : riskMetrics.risk_metrics.merton_pd < 0.15 ? 'warn' : 'neg'}
+              />
+            )}
+            {riskMetrics.risk_metrics.piotroski_score != null && (
+              <RiskMetricCard
+                label="Piotroski"
+                value={`${riskMetrics.risk_metrics.piotroski_score}/9`}
+                description="Saúde financeira"
+                color={riskMetrics.risk_metrics.piotroski_score >= 7 ? 'pos' : riskMetrics.risk_metrics.piotroski_score >= 5 ? 'warn' : 'neg'}
+              />
+            )}
+            {riskMetrics.risk_metrics.altman_z != null && (
+              <RiskMetricCard
+                label="Altman Z"
+                value={riskMetrics.risk_metrics.altman_z.toFixed(2)}
+                description={riskMetrics.risk_metrics.altman_z_label ?? ''}
+                color={riskMetrics.risk_metrics.altman_z > 2.99 ? 'pos' : riskMetrics.risk_metrics.altman_z > 1.81 ? 'warn' : 'neg'}
+              />
+            )}
+            {riskMetrics.risk_metrics.dl_ebitda != null && (
+              <RiskMetricCard
+                label="DL/EBITDA"
+                value={riskMetrics.risk_metrics.dl_ebitda.toFixed(1) + 'x'}
+                description="Alavancagem"
+                color={riskMetrics.risk_metrics.dl_ebitda < 2 ? 'pos' : riskMetrics.risk_metrics.dl_ebitda < 3.5 ? 'warn' : 'neg'}
+              />
+            )}
+            {riskMetrics.risk_metrics.icj != null && (
+              <RiskMetricCard
+                label="Cobertura Juros"
+                value={riskMetrics.risk_metrics.icj.toFixed(1) + 'x'}
+                description="EBIT / Juros"
+                color={riskMetrics.risk_metrics.icj > 5 ? 'pos' : riskMetrics.risk_metrics.icj > 2 ? 'warn' : 'neg'}
+              />
+            )}
+            {riskMetrics.profitability.spread_roic_wacc != null && (
+              <RiskMetricCard
+                label="ROIC - WACC"
+                value={`${(riskMetrics.profitability.spread_roic_wacc * 100).toFixed(1)}pp`}
+                description="Criação de valor"
+                color={riskMetrics.profitability.spread_roic_wacc > 0 ? 'pos' : 'neg'}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ─── Row 4c: News with Sentiment ─────────────────── */}
+      {newsData?.news && newsData.news.length > 0 && (
+        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
+          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Notícias Recentes</h3>
+          <div className="space-y-3">
+            {newsData.news.slice(0, 6).map((n) => (
+              <a
+                key={n.id}
+                href={n.url ?? '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-3 p-3 rounded-lg hover:bg-[var(--surface-2)] transition-colors"
+              >
+                <span className={cn(
+                  'mt-0.5 w-2 h-2 rounded-full flex-shrink-0',
+                  n.sentiment === 'positive' ? 'bg-[var(--pos)]' :
+                  n.sentiment === 'negative' ? 'bg-[var(--neg)]' :
+                  'bg-[var(--text-3)]'
+                )} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm text-[var(--text-1)] font-medium line-clamp-2">{n.title}</p>
+                  <div className="flex items-center gap-2 mt-1 text-[var(--text-caption)] text-[var(--text-2)]">
+                    {n.source && <span>{n.source}</span>}
+                    <span>{new Date(n.published_at).toLocaleDateString('pt-BR')}</span>
+                    {n.sentiment_score != null && (
+                      <span className={cn(
+                        'font-mono text-[10px] px-1.5 py-0.5 rounded',
+                        n.sentiment === 'positive' ? 'bg-[var(--pos)]/10 text-[var(--pos)]' :
+                        n.sentiment === 'negative' ? 'bg-[var(--neg)]/10 text-[var(--neg)]' :
+                        'bg-[var(--surface-2)] text-[var(--text-3)]'
+                      )}>
+                        {n.sentiment === 'positive' ? '+' : ''}{(n.sentiment_score * 100).toFixed(0)}%
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ─── Row 5: Fundamentals Table ──────────────────── */}
       {financialsData?.financials && financialsData.financials.length > 0 && (
         <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
@@ -498,6 +611,22 @@ export default function AtivoPage() {
 }
 
 // ─── Sub-Components ─────────────────────────────────────────
+
+function RiskMetricCard({ label, value, description, color }: { label: string; value: string; description: string; color: 'pos' | 'warn' | 'neg' }) {
+  const colors = {
+    pos: 'border-[var(--pos)]/20 bg-[var(--pos)]/5',
+    warn: 'border-amber-500/20 bg-amber-500/5',
+    neg: 'border-[var(--neg)]/20 bg-[var(--neg)]/5',
+  }
+  const textColors = { pos: 'text-[var(--pos)]', warn: 'text-amber-500', neg: 'text-[var(--neg)]' }
+  return (
+    <div className={cn('rounded-lg border p-3 text-center', colors[color])}>
+      <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-1">{label}</p>
+      <p className={cn('font-mono text-lg font-bold', textColors[color])}>{value}</p>
+      {description && <p className="text-[10px] text-[var(--text-3)] mt-0.5">{description}</p>}
+    </div>
+  )
+}
 
 function PillarCard({ label, value, icon }: { label: string; value: number; icon: string }) {
   const color = value >= 65 ? 'text-[var(--pos)] bg-[var(--pos)]/8 border-[var(--pos)]/20' :
