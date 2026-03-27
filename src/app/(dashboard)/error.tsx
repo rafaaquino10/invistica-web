@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 export default function DashboardError({
   error,
   reset,
@@ -7,6 +9,10 @@ export default function DashboardError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  useEffect(() => {
+    import('@sentry/nextjs').then(Sentry => Sentry.captureException(error)).catch(() => {})
+  }, [error])
+
   return (
     <div className="flex flex-col items-center justify-center py-20 px-4">
       <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mb-6">
