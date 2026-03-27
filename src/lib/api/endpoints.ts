@@ -126,6 +126,18 @@ export interface Valuation {
   upside_prob: number | null
   loss_prob: number | null
   score_valuation: number | null
+  implied_growth: number | null
+  implied_growth_pct: string | null
+  dupont: {
+    margin: number | null
+    turnover: number | null
+    leverage: number | null
+    driver: string | null
+  } | null
+  interest_coverage: number | null
+  merton_pd: number | null
+  roa: number | null
+  ebitda_margin: number | null
   _disclaimer: string
 }
 

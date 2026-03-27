@@ -129,6 +129,13 @@ export default function AtivoPage() {
     staleTime: 10 * 60 * 1000,
   })
 
+  const { data: scenarios } = useQuery({
+    queryKey: ['valuation-scenarios', ticker],
+    queryFn: () => pro.getScenarios(ticker, token ?? undefined),
+    enabled: !!ticker,
+    staleTime: 10 * 60 * 1000,
+  })
+
   const { data: dividendSafety } = useQuery({
     queryKey: ['dividend-safety', ticker],
     queryFn: () => pro.getDividendSafety(ticker, token ?? undefined),
@@ -405,6 +412,125 @@ export default function AtivoPage() {
                   <p className="font-mono text-lg font-bold text-[var(--neg)]">{fmtPct(dcf.lossProb)}</p>
                 </div>
               </div>
+
+              {/* ─── Monte Carlo Range Visual ──────── */}
+              {dcf.p25 != null && dcf.p75 != null && (
+                <div className="mt-6 p-4 rounded-lg bg-[var(--bg)]">
+                  <h4 className="text-xs font-semibold text-[var(--text-2)] mb-3 uppercase tracking-wider">Monte Carlo — 10.000 Simulações</h4>
+                  <div className="relative h-12 flex items-center">
+                    {/* Range bar */}
+                    <div className="absolute inset-x-0 h-3 bg-[var(--surface-2)] rounded-full" />
+                    {(() => {
+                      const min = dcf.p25! * 0.85
+                      const max = dcf.p75! * 1.15
+                      const range = max - min || 1
+                      const p25Pos = ((dcf.p25! - min) / range) * 100
+                      const p75Pos = ((dcf.p75! - min) / range) * 100
+                      const pricePos = Math.max(0, Math.min(100, ((dcf.currentPrice - min) / range) * 100))
+                      const fairPos = dcf.intrinsicValue ? Math.max(0, Math.min(100, ((dcf.intrinsicValue - min) / range) * 100)) : null
+                      return (
+                        <>
+                          {/* Monte Carlo range */}
+                          <div className="absolute h-3 bg-[var(--accent-1)]/30 rounded-full" style={{ left: `${p25Pos}%`, width: `${p75Pos - p25Pos}%` }} />
+                          {/* Current price marker */}
+                          <div className="absolute w-0.5 h-8 bg-[var(--text-1)]" style={{ left: `${pricePos}%` }} />
+                          <div className="absolute -top-1 text-[10px] font-mono font-bold text-[var(--text-1)] -translate-x-1/2" style={{ left: `${pricePos}%` }}>
+                            Atual
+                          </div>
+                          {/* Fair value marker */}
+                          {fairPos != null && (
+                            <>
+                              <div className="absolute w-0.5 h-8 bg-[var(--accent-1)]" style={{ left: `${fairPos}%` }} />
+                              <div className="absolute top-8 text-[10px] font-mono font-bold text-[var(--accent-1)] -translate-x-1/2" style={{ left: `${fairPos}%` }}>
+                                Justo
+                              </div>
+                            </>
+                          )}
+                        </>
+                      )
+                    })()}
+                  </div>
+                  <div className="flex justify-between mt-2 text-[10px] font-mono text-[var(--text-3)]">
+                    <span>Pessimista {fmtR$(dcf.p25)}</span>
+                    <span>Otimista {fmtR$(dcf.p75)}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* ─── DCF Reverso (Implied Growth) ──── */}
+              {valuation?.implied_growth != null && (
+                <div className="mt-4 p-4 rounded-lg border border-[var(--accent-1)]/20 bg-[var(--accent-1)]/5">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xs font-semibold text-[var(--accent-1)] uppercase tracking-wider">DCF Reverso</h4>
+                      <p className="text-[var(--text-caption)] text-[var(--text-2)] mt-0.5">
+                        O mercado está precificando um crescimento de
+                      </p>
+                    </div>
+                    <span className="font-mono text-2xl font-bold text-[var(--accent-1)]">
+                      {valuation.implied_growth_pct ?? `${(valuation.implied_growth * 100).toFixed(1)}%`}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-[var(--text-3)] mt-2">
+                    Se você acredita que a empresa crescerá mais que {valuation.implied_growth_pct ?? `${(valuation.implied_growth * 100).toFixed(1)}%`} ao ano, o preço atual pode estar barato.
+                  </p>
+                </div>
+              )}
+
+              {/* ─── Scenarios (Bull / Base / Bear) ── */}
+              {scenarios && scenarios.scenarios && (
+                <div className="mt-4">
+                  <h4 className="text-xs font-semibold text-[var(--text-2)] mb-3 uppercase tracking-wider">Cenários</h4>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { key: 'bear', label: 'Pessimista', emoji: '', data: scenarios.scenarios['bear'], color: 'neg' },
+                      { key: 'base', label: 'Base', emoji: '', data: scenarios.scenarios['base'], color: 'accent-1' },
+                      { key: 'bull', label: 'Otimista', emoji: '', data: scenarios.scenarios['bull'], color: 'pos' },
+                    ].map(s => {
+                      const fv = (s.data as any)?.fair_value
+                      const upside = fv && dcf.currentPrice ? ((fv - dcf.currentPrice) / dcf.currentPrice * 100) : null
+                      return (
+                        <div key={s.key} className={cn('p-3 rounded-lg border text-center', `border-[var(--${s.color})]/20 bg-[var(--${s.color})]/5`)}>
+                          <span className="text-lg">{s.emoji}</span>
+                          <p className="text-[10px] font-semibold text-[var(--text-2)] mt-1">{s.label}</p>
+                          <p className="font-mono text-sm font-bold text-[var(--text-1)]">{fv ? fmtR$(fv) : '-'}</p>
+                          {upside != null && (
+                            <p className={cn('font-mono text-[10px] font-bold', upside >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
+                              {upside >= 0 ? '+' : ''}{upside.toFixed(1)}%
+                            </p>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ─── DuPont Decomposition ─────────── */}
+              {valuation?.dupont && (
+                <div className="mt-4 p-4 rounded-lg bg-[var(--bg)]">
+                  <h4 className="text-xs font-semibold text-[var(--text-2)] mb-3 uppercase tracking-wider">DuPont — Decomposição do ROE</h4>
+                  <div className="grid grid-cols-3 gap-3 text-center">
+                    <div>
+                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">Margem</p>
+                      <p className="font-mono font-bold text-[var(--text-1)]">{valuation.dupont.margin != null ? (valuation.dupont.margin * 100).toFixed(1) + '%' : '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">Giro</p>
+                      <p className="font-mono font-bold text-[var(--text-1)]">{valuation.dupont.turnover?.toFixed(2) ?? '-'}x</p>
+                    </div>
+                    <div>
+                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">Alavancagem</p>
+                      <p className="font-mono font-bold text-[var(--text-1)]">{valuation.dupont.leverage?.toFixed(2) ?? '-'}x</p>
+                    </div>
+                  </div>
+                  {valuation.dupont.driver && (
+                    <p className="text-[10px] text-[var(--text-3)] text-center mt-2">
+                      Driver principal: <span className="font-semibold text-[var(--accent-1)]">{valuation.dupont.driver}</span>
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
