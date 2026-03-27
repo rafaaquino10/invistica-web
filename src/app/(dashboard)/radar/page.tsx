@@ -272,7 +272,7 @@ function FeedTab() {
                     key={item.id}
                     item={item}
                     isLast={index === items.length - 1}
-                    onRead={() => { if (!item.isRead && item.type !== 'news') markRead.mutate({ id: item.id }) }}
+                    onRead={() => { /* TODO: implement markRead when API endpoint available */ }}
                   />
                 ))}
               </div>

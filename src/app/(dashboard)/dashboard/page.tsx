@@ -13,7 +13,6 @@ import { adaptPortfolio } from '@/lib/api/adapters'
 import { useAuth } from '@/hooks/use-auth'
 import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
 import {
-  AreaChart, Area,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
   BarChart, Bar,
 } from 'recharts'
@@ -83,22 +82,18 @@ export default function DashboardPage() {
     return adaptPortfolio(rawPortfolio.positions)
   }, [rawPortfolio])
 
-  // Portfolio evolution mock (12 months)
-  const evolutionData = useMemo(() => {
-    if (!portfolio || portfolio.totalValue === 0) return []
-    const now = new Date()
-    const months: string[] = []
-    for (let i = 11; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-      months.push(d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''))
-    }
-    const totalReturn = portfolio.totalValue - portfolio.totalCost
-    return months.map((m, i) => {
-      const progress = (i + 1) / months.length
-      const value = portfolio.totalCost + totalReturn * progress
-      const cdi = portfolio.totalCost * Math.pow(1.1315, (i + 1) / 12)
-      return { month: m, valor: Math.round(value), custo: Math.round(portfolio.totalCost), cdi: Math.round(cdi) }
-    })
+  // Portfolio allocation breakdown (real data, not mock evolution)
+  const allocationData = useMemo(() => {
+    if (!portfolio || portfolio.positions.length === 0) return []
+    return portfolio.positions
+      .sort((a, b) => b.totalValue - a.totalValue)
+      .slice(0, 10)
+      .map(p => ({
+        ticker: p.ticker,
+        valor: Math.round(p.totalValue),
+        custo: Math.round(p.totalCost),
+        retorno: p.gainLossPercent,
+      }))
   }, [portfolio])
 
   // Cluster distribution from top picks
@@ -199,29 +194,22 @@ export default function DashboardPage() {
           <div className="px-3 py-3">
             {loadingPortfolio ? (
               <Skeleton className="h-[200px]" />
-            ) : evolutionData.length > 0 ? (
+            ) : allocationData.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={evolutionData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="gradValor" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--accent-1)" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="var(--accent-1)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
+                <BarChart data={allocationData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border-1)" opacity={0.4} />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} width={42} />
+                  <XAxis dataKey="ticker" tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} tickFormatter={(v: number) => `${(v/1000).toFixed(0)}k`} width={42} />
                   <Tooltip
                     contentStyle={{ backgroundColor: 'var(--surface-1)', border: '1px solid var(--border-1)', borderRadius: '8px', fontSize: '12px' }}
                     formatter={(value: number, name: string) => {
-                      const labels: Record<string, string> = { valor: 'Patrimônio', custo: 'Custo', cdi: 'CDI' }
+                      const labels: Record<string, string> = { valor: 'Valor Atual', custo: 'Custo' }
                       return [fmt(value), labels[name] ?? name]
                     }}
                   />
-                  <Area type="monotone" dataKey="custo" stroke="#6B7280" strokeWidth={1} strokeDasharray="4 4" fill="none" />
-                  <Area type="monotone" dataKey="cdi" stroke="#9CA3AF" strokeWidth={1} strokeDasharray="2 2" fill="none" />
-                  <Area type="monotone" dataKey="valor" stroke="var(--accent-1)" strokeWidth={2.5} fill="url(#gradValor)" />
-                </AreaChart>
+                  <Bar dataKey="custo" fill="#6B7280" opacity={0.4} radius={[2, 2, 0, 0]} />
+                  <Bar dataKey="valor" fill="var(--accent-1)" opacity={0.85} radius={[4, 4, 0, 0]} />
+                </BarChart>
               </ResponsiveContainer>
             ) : (
               <EmptyState

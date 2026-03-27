@@ -67,7 +67,8 @@ export default function SettingsPage() {
 // ===========================================
 
 function ProfileTab({ session }: { session: any }) {
-  const { update, logout } = useAuth()
+  const { logout } = useAuth()
+  const update = async () => { /* TODO: implement profile update */ }
   const user = session?.user
 
   const [editName, setEditName] = useState(user?.name ?? '')
@@ -100,7 +101,7 @@ function ProfileTab({ session }: { session: any }) {
     } finally {
       setIsSaving(false)
     }
-  }, [editName, hasChanged, isSaving, update, updateProfile])
+  }, [editName, hasChanged, isSaving, update])
 
   const initials = user?.name
     ? user.name.split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()
@@ -253,7 +254,7 @@ function NotificationsTab() {
             </div>
             <button
               onClick={handleToggle}
-              disabled={updateNotifications.isPending}
+              disabled={false}
               className={cn(
                 'relative w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--accent-1)]',
                 emailEnabled ? 'bg-[var(--accent-1)]' : 'bg-[var(--surface-3)]'
@@ -286,7 +287,7 @@ function NotificationsTab() {
             </div>
           )}
 
-          {!prefs?.hasEmail && (
+          {!session?.user?.email && (
             <div className="px-3 py-2 rounded-lg bg-[var(--warn)]/10 border border-[var(--warn)]/20">
               <p className="text-[var(--text-caption)] text-[var(--warn)]">
                 Cadastre um email na sua conta para receber relatórios.
