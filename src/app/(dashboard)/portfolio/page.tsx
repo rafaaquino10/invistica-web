@@ -75,33 +75,33 @@ export default function PortfolioPage() {
   // Smart Contribution — AI recommendation on where to invest next
   const { data: smartContrib } = useQuery({
     queryKey: ['smart-contribution'],
-    queryFn: () => pro.getSmartContribution(1000, token ?? undefined),
+    queryFn: () => pro.getSmartContribution(1000, token ?? undefined).catch(() => null),
     enabled: !!token && (portfolio?.positions.length ?? 0) > 0,
-    staleTime: 10 * 60 * 1000,
+    retry: 0,
   })
 
   // Macro regime (for CDI/SELIC benchmark)
   const { data: macroRegime } = useQuery({
     queryKey: ['macro-regime'],
-    queryFn: () => pro.getMacroRegime(token ?? undefined),
+    queryFn: () => pro.getMacroRegime(token ?? undefined).catch(() => null),
     enabled: !!token,
-    staleTime: 10 * 60 * 1000,
+    retry: 0,
   })
 
   // Portfolio Attribution — P&L decomposition by sector
   const { data: attribution } = useQuery({
     queryKey: ['portfolio-attribution', 'default'],
-    queryFn: () => pro.getPortfolioAttribution('default', token ?? undefined),
+    queryFn: () => pro.getPortfolioAttribution('default', token ?? undefined).catch(() => null),
     enabled: !!token && (portfolio?.positions.length ?? 0) > 0,
-    staleTime: 10 * 60 * 1000,
+    retry: 0,
   })
 
   // Portfolio Risk — concentration analysis
   const { data: riskAnalysis } = useQuery({
     queryKey: ['portfolio-risk', 'default'],
-    queryFn: () => pro.getPortfolioRisk('default', token ?? undefined),
+    queryFn: () => pro.getPortfolioRisk('default', token ?? undefined).catch(() => null),
     enabled: !!token && (portfolio?.positions.length ?? 0) > 0,
-    staleTime: 10 * 60 * 1000,
+    retry: 0,
   })
 
   const addMutation = useMutation({

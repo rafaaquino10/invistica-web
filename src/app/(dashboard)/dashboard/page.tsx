@@ -63,20 +63,20 @@ export default function DashboardPage() {
   // API queries
   const { data: topPicks, isLoading: loadingTop, isError: errorTop } = useQuery({
     queryKey: ['scores-top', mandate],
-    queryFn: () => pro.getTop({ limit: 12, mandate }, token ?? undefined),
+    queryFn: () => pro.getTop({ limit: 12, mandate }, token ?? undefined).catch(() => null),
     retry: 1,
   })
 
   const { data: rawPortfolio, isLoading: loadingPortfolio, isError: errorPortfolio } = useQuery({
     queryKey: ['portfolio'],
-    queryFn: () => pro.getPortfolio(token ?? undefined),
+    queryFn: () => pro.getPortfolio(token ?? undefined).catch(() => null),
     retry: 1,
   })
 
   const { data: clusters } = useQuery({
     queryKey: ['clusters'],
-    queryFn: () => free.getClusters(),
-    retry: 1,
+    queryFn: () => free.getClusters().catch(() => null),
+    retry: 0,
   })
 
   const portfolio = useMemo(() => {
