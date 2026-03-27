@@ -8,12 +8,8 @@ import { Badge, Skeleton, Disclaimer } from '@/components/ui'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { DriversList } from '@/components/ui/drivers-list'
 import { ScoreGauge } from '@/components/score/score-gauge'
-import { ScoreXRay } from '@/components/score/score-xray'
-import { QualitativeCards } from '@/components/score/qualitative-cards'
-import { IndicatorGrid } from '@/components/score/indicator-grid'
+import { IQCognitXRay } from '@/components/score/iq-cognit-xray'
 import { PaywallGate } from '@/components/billing/paywall-gate'
-import { DividendSummary } from '@/components/asset/dividend-summary'
-import { NewsSection } from '@/components/asset/news-section'
 import { cn } from '@/lib/utils'
 import { pro, free } from '@/lib/api/endpoints'
 import { adaptScoreToAsset, adaptEvidenceToDrivers, adaptValuation } from '@/lib/api/adapters'
@@ -566,16 +562,14 @@ export default function AtivoPage() {
         </div>
       )}
 
-      {/* ─── Row 3: Evidence Cards ──────────────────────── */}
+      {/* ─── Row 3: Score X-Ray (radar + criteria expandível) ── */}
       {score.evidences && score.evidences.length > 0 && (
-        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Evidencias Detalhadas</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {score.evidences.map((ev) => (
-              <EvidenceCard key={ev.criterion_id} evidence={ev} />
-            ))}
-          </div>
-        </div>
+        <IQCognitXRay
+          evidences={score.evidences}
+          iqScore={iq.iq_score}
+          rating={iq.rating}
+          ratingLabel={iq.rating_label}
+        />
       )}
 
       {/* ─── Row 4: Dossier Qualitativo ─────────────────── */}
@@ -883,45 +877,6 @@ function ValuationMetric({ label, value, highlight }: { label: string; value: st
   )
 }
 
-function EvidenceCard({ evidence }: { evidence: Evidence }) {
-  const scoreColor = evidence.score >= 65 ? 'text-[var(--pos)]' :
-                     evidence.score >= 45 ? 'text-[var(--accent-1)]' :
-                     'text-[var(--neg)]'
-  return (
-    <div className="border border-[var(--border-1)]/50 rounded-lg p-4 hover:border-[var(--border-1)] transition-colors">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-semibold text-[var(--text-1)]">{evidence.criterion_name}</span>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-[var(--text-2)]">Peso: {(evidence.weight * 100).toFixed(0)}%</span>
-          <span className={cn('font-mono text-sm font-bold', scoreColor)}>{evidence.score}</span>
-        </div>
-      </div>
-      <p className="text-xs text-[var(--text-2)] mb-3 leading-relaxed">{evidence.evidence_text}</p>
-      <div className="flex gap-4">
-        {evidence.bull_points.length > 0 && (
-          <div className="flex-1 space-y-1">
-            <p className="text-[10px] font-semibold text-[var(--pos)] uppercase tracking-wider">Positivo</p>
-            {evidence.bull_points.slice(0, 3).map((p, i) => (
-              <p key={i} className="text-[11px] text-[var(--text-2)] flex items-start gap-1">
-                <span className="text-[var(--pos)] mt-0.5">+</span> {p}
-              </p>
-            ))}
-          </div>
-        )}
-        {evidence.bear_points.length > 0 && (
-          <div className="flex-1 space-y-1">
-            <p className="text-[10px] font-semibold text-[var(--neg)] uppercase tracking-wider">Risco</p>
-            {evidence.bear_points.slice(0, 3).map((p, i) => (
-              <p key={i} className="text-[11px] text-[var(--text-2)] flex items-start gap-1">
-                <span className="text-[var(--neg)] mt-0.5">-</span> {p}
-              </p>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  )
-}
 
 function DossierDimensionCard({ dimension }: { dimension: { name: string; veredito: string; narrative: string; evidencias: string[]; alertas: string[] } }) {
   const veredict = dimension.veredito
