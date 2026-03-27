@@ -9,6 +9,7 @@ import { AssetLogo } from '@/components/ui/asset-logo'
 import { DriversList } from '@/components/ui/drivers-list'
 import { ScoreGauge } from '@/components/score/score-gauge'
 import { IQCognitXRay } from '@/components/score/iq-cognit-xray'
+import { ScenarioBuilder } from '@/components/valuation/scenario-builder'
 import { PaywallGate } from '@/components/billing/paywall-gate'
 import { cn } from '@/lib/utils'
 import { pro, free } from '@/lib/api/endpoints'
@@ -528,6 +529,19 @@ export default function AtivoPage() {
                 </div>
               )}
             </div>
+          )}
+
+          {/* Scenario Builder — interactive valuation */}
+          {dcf && dcf.available && (
+            <ScenarioBuilder
+              currentPrice={dcf.currentPrice}
+              fairValueDCF={dcf.fairValueDCF}
+              fairValueGordon={dcf.fairValueGordon}
+              fairValueMult={dcf.fairValueMult}
+              fairValueFinal={dcf.intrinsicValue}
+              safetyMargin={dcf.safetyMargin}
+              impliedGrowth={valuation?.implied_growth ?? null}
+            />
           )}
 
           {/* Thesis */}
