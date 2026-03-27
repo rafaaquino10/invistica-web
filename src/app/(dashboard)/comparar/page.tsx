@@ -51,7 +51,17 @@ export default function ComparisonPage() {
             free.getTicker(ticker),
             pro.getScore(ticker, {}, token ?? undefined).catch(() => null),
           ])
-          return { ...tickerData, aqScore: scoreData?.iq_cognit ?? null }
+          const iq = scoreData?.iq_cognit ?? null
+          return {
+            ...tickerData,
+            iqScore: iq ? {
+              scoreTotal: iq.iq_score,
+              scoreQuanti: iq.score_quanti,
+              scoreQuali: iq.score_quali,
+              scoreValuation: iq.score_valuation,
+              scoreOperational: iq.score_operational,
+            } : null,
+          }
         })
       )
       return results
@@ -329,7 +339,7 @@ export default function ComparisonPage() {
             comparisonData.length === 4 && "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
           )}>
             {comparisonData.map((asset: any, index: number) => {
-              const score = asset.aqScore ? Number(asset.aqScore.scoreTotal) : null
+              const score = asset.iqScore ? Number(asset.iqScore.scoreTotal) : null
               const scoreColor = score !== null ? getScoreHex(score) : 'var(--border-1)'
               return (
                 <div
@@ -369,19 +379,18 @@ export default function ComparisonPage() {
           </div>
 
           {/* Pillar Comparison — Horizontal Bars (primary) */}
-          {comparisonData.some((a: any) => a.aqScore) && (
+          {comparisonData.some((a: any) => a.iqScore) && (
             <div>
               <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Pilares IQ-Cognit</h2>
               <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-5">
                 <div className="space-y-5">
                   {[
+                    { label: 'Quantitativo', key: 'scoreQuanti' },
+                    { label: 'Qualitativo', key: 'scoreQuali' },
                     { label: 'Valuation', key: 'scoreValuation' },
-                    { label: 'Qualidade', key: 'scoreQuality' },
-                    { label: 'Risco', key: 'scoreRisk' },
-                    { label: 'Dividendos', key: 'scoreDividends' },
-                    { label: 'Crescimento', key: 'scoreGrowth' },
+                    { label: 'Operacional', key: 'scoreOperational' },
                   ].map(({ label, key }) => {
-                    const values = comparisonData.map((a: any) => a.aqScore ? Number(a.aqScore[key as keyof typeof a.aqScore]) : 0)
+                    const values = comparisonData.map((a: any) => a.iqScore ? Number(a.iqScore[key as keyof typeof a.iqScore]) : 0)
                     const bestIdx = findBest(values)
                     return (
                       <div key={label}>
@@ -417,20 +426,19 @@ export default function ComparisonPage() {
           )}
 
           {/* Radar Overlay (secundário — visão complementar) */}
-          {comparisonData.some((a: any) => a.aqScore) && comparisonData.length >= 2 && (
+          {comparisonData.some((a: any) => a.iqScore) && comparisonData.length >= 2 && (
             <div>
               <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Radar de Pilares</h2>
               <div>
                 <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4 max-w-lg">
                   <ComparisonRadarChart
-                    datasets={comparisonData.filter((a: any) => a.aqScore).map((a: any, i: number) => ({
+                    datasets={comparisonData.filter((a: any) => a.iqScore).map((a: any, i: number) => ({
                       ticker: a.ticker,
                       color: COMPARISON_COLORS[i] ?? '#888',
-                      valuation: Number(a.aqScore!.scoreValuation),
-                      quality: Number(a.aqScore!.scoreQuality),
-                      growth: Number(a.aqScore!.scoreGrowth),
-                      dividends: Number(a.aqScore!.scoreDividends),
-                      risk: Number(a.aqScore!.scoreRisk),
+                      quanti: Number(a.iqScore!.scoreQuanti),
+                      quali: Number(a.iqScore!.scoreQuali),
+                      valuation: Number(a.iqScore!.scoreValuation),
+                      operational: Number(a.iqScore!.scoreOperational),
                     }))}
                   />
                 </div>

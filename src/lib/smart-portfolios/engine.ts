@@ -47,7 +47,7 @@ function getSortValue(asset: AssetData, sortBy: string): number {
     return getLensScore(asset.lensScores, lens) ?? 0
   }
   if (sortBy === 'scoreTotal') {
-    return asset.aqScore?.scoreTotal ?? 0
+    return asset.iqScore?.scoreTotal ?? 0
   }
   if (sortBy.startsWith('fundamentals.')) {
     const field = sortBy.split('.')[1]! as keyof AssetData['fundamentals']
@@ -119,7 +119,7 @@ function fallbackTopN(portfolio: SmartPortfolio, assets: AssetData[]): Qualified
 
   const scored = assets
     .filter(a => {
-      if (!a.aqScore || !a.hasFundamentals || a.aqScore.scoreTotal <= 0) return false
+      if (!a.iqScore || !a.hasFundamentals || a.iqScore.scoreTotal <= 0) return false
       if (portfolio.thesisGuard && !portfolio.thesisGuard(a)) return false
       return true
     })
@@ -133,13 +133,13 @@ function fallbackTopN(portfolio: SmartPortfolio, assets: AssetData[]): Qualified
     name: a.name,
     sector: a.sector,
     price: a.price,
-    score: a.aqScore!.scoreTotal,
-    lensScore: getLensScore(a.lensScores, lensKey) ?? a.aqScore!.scoreTotal,
+    score: a.iqScore!.scoreTotal,
+    lensScore: getLensScore(a.lensScores, lensKey) ?? a.iqScore!.scoreTotal,
     dy: a.fundamentals.dividendYield,
     peRatio: a.fundamentals.peRatio,
     roe: a.fundamentals.roe,
     divEbitda: a.fundamentals.netDebtEbitda,
-    confidence: a.aqScore!.confidence,
+    confidence: a.iqScore!.confidence,
     rank: i + 1,
   }))
 }
@@ -180,9 +180,9 @@ function runFilter(
     const minScore = effectiveMinScore ?? 0
 
     let candidates = assets.filter(a => {
-      if (!a.aqScore || !a.hasFundamentals) return false
-      if (a.aqScore.confidence < minConf) return false
-      if (a.aqScore.scoreTotal < minScore) return false
+      if (!a.iqScore || !a.hasFundamentals) return false
+      if (a.iqScore.confidence < minConf) return false
+      if (a.iqScore.scoreTotal < minScore) return false
       if (getEffectiveLiquidity(a) < minLiq) return false
       return true
     })
@@ -215,7 +215,7 @@ function runFilter(
 
     // Weight calculation: score-weighted or equal
     const totalScore = criteria.balanceRule === 'score_weight'
-      ? result.reduce((s, a) => s + a.aqScore!.scoreTotal, 0)
+      ? result.reduce((s, a) => s + a.iqScore!.scoreTotal, 0)
       : 0
 
     return result.map((a, i) => ({
@@ -223,16 +223,16 @@ function runFilter(
       name: a.name,
       sector: a.sector,
       price: a.price,
-      score: a.aqScore!.scoreTotal,
-      lensScore: a.aqScore!.scoreTotal,
+      score: a.iqScore!.scoreTotal,
+      lensScore: a.iqScore!.scoreTotal,
       dy: a.fundamentals.dividendYield,
       peRatio: a.fundamentals.peRatio,
       roe: a.fundamentals.roe,
       divEbitda: a.fundamentals.netDebtEbitda,
-      confidence: a.aqScore!.confidence,
+      confidence: a.iqScore!.confidence,
       rank: i + 1,
       weight: criteria.balanceRule === 'score_weight' && totalScore > 0
-        ? Math.round((a.aqScore!.scoreTotal / totalScore) * 1000) / 10
+        ? Math.round((a.iqScore!.scoreTotal / totalScore) * 1000) / 10
         : criteria.balanceRule === 'equal_weight'
           ? 100 / topN
           : undefined,
@@ -245,14 +245,14 @@ function runFilter(
     const momThreshold = relaxation.skipLensScore ? 40 : 60
 
     for (const asset of assets) {
-      if (!asset.aqScore || !asset.hasFundamentals) continue
+      if (!asset.iqScore || !asset.hasFundamentals) continue
       if (!asset.lensScores || asset.lensScores.momentum == null) continue
       if (asset.lensScores.momentum < momThreshold) continue
 
       // Basic quality gate (regime-adjusted)
       const momMinScore = effectiveMinScore ?? 0
-      if (momMinScore > 0 && asset.aqScore.scoreTotal < momMinScore) continue
-      if (!relaxation.skipConfidence && criteria.minConfidence != null && asset.aqScore.confidence < criteria.minConfidence) continue
+      if (momMinScore > 0 && asset.iqScore.scoreTotal < momMinScore) continue
+      if (!relaxation.skipConfidence && criteria.minConfidence != null && asset.iqScore.confidence < criteria.minConfidence) continue
 
       // Liquidity filter
       if (getEffectiveLiquidity(asset) < MIN_LIQUIDITY_VOLUME) continue
@@ -278,13 +278,13 @@ function runFilter(
         name: asset.name,
         sector: asset.sector,
         price: asset.price,
-        score: asset.aqScore.scoreTotal,
+        score: asset.iqScore.scoreTotal,
         lensScore: asset.lensScores.momentum,
         dy: asset.fundamentals.dividendYield,
         peRatio: asset.fundamentals.peRatio,
         roe: asset.fundamentals.roe,
         divEbitda: asset.fundamentals.netDebtEbitda,
-        confidence: asset.aqScore.confidence,
+        confidence: asset.iqScore.confidence,
         rank: 0,
       })
     }
@@ -301,16 +301,16 @@ function runFilter(
   const qualified: QualifiedStock[] = []
 
   for (const asset of assets) {
-    if (!asset.aqScore || !asset.hasFundamentals) continue
+    if (!asset.iqScore || !asset.hasFundamentals) continue
 
     // Thesis guard: hard filter that is NEVER relaxed
     if (portfolio.thesisGuard && !portfolio.thesisGuard(asset)) continue
 
-    const { aqScore, fundamentals, lensScores } = asset
+    const { iqScore, fundamentals, lensScores } = asset
 
     // ─── AND filters (regime-adjusted) ────────────────────
-    if (effectiveMinScore != null && aqScore.scoreTotal < effectiveMinScore) continue
-    if (!relaxation.skipConfidence && criteria.minConfidence != null && aqScore.confidence < criteria.minConfidence) continue
+    if (effectiveMinScore != null && iqScore?.scoreTotal < effectiveMinScore) continue
+    if (!relaxation.skipConfidence && criteria.minConfidence != null && iqScore?.confidence < criteria.minConfidence) continue
 
     // Lens score filter
     if (!relaxation.skipLensScore && criteria.minLensScore) {
@@ -345,16 +345,16 @@ function runFilter(
       if ((fundamentals as any).payout != null && (fundamentals as any).payout > criteria.maxPayout) continue
     }
     if (criteria.minScoreRisk != null) {
-      if ((aqScore as any).scoreRisk == null || (aqScore as any).scoreRisk < criteria.minScoreRisk) continue
+      if ((iqScore as any).scoreQuanti == null || (iqScore as any).scoreQuanti < criteria.minScoreRisk) continue
     }
     if (criteria.minScoreQuality != null) {
-      if ((aqScore as any).scoreQuality == null || (aqScore as any).scoreQuality < criteria.minScoreQuality) continue
+      if ((iqScore as any).scoreQuanti == null || (iqScore as any).scoreQuanti < criteria.minScoreQuality) continue
     }
     if (criteria.minCrescRec5a != null) {
       if (fundamentals.crescimentoReceita5a == null || fundamentals.crescimentoReceita5a < criteria.minCrescRec5a) continue
     }
     if (criteria.maxBeta != null) {
-      // Beta não está em fundamentals mas no scoreBreakdown — usar proxy do aqScore
+      // Beta não está em fundamentals mas no scoreBreakdown — usar proxy do iqScore?
       // Se beta indisponível, não filtrar (dar o benefício da dúvida)
     }
     if (criteria.minMarketCap != null) {
@@ -400,13 +400,13 @@ function runFilter(
       name: asset.name,
       sector: asset.sector,
       price: asset.price,
-      score: aqScore.scoreTotal,
-      lensScore: getLensScore(lensScores, lensKey) ?? aqScore.scoreTotal,
+      score: iqScore?.scoreTotal,
+      lensScore: getLensScore(lensScores, lensKey) ?? iqScore?.scoreTotal,
       dy: fundamentals.dividendYield,
       peRatio: fundamentals.peRatio,
       roe: fundamentals.roe,
       divEbitda: fundamentals.netDebtEbitda,
-      confidence: aqScore.confidence,
+      confidence: iqScore?.confidence,
       rank: 0, // assigned after sort
     })
   }
@@ -464,9 +464,9 @@ export function getClosestToQualifying(
   const isMomentum = criteria.customFilter === 'momentum_bull'
 
   for (const asset of assets) {
-    if (!asset.aqScore || !asset.hasFundamentals) continue
+    if (!asset.iqScore || !asset.hasFundamentals) continue
 
-    const { aqScore, fundamentals, lensScores } = asset
+    const { iqScore, fundamentals, lensScores } = asset
     const faltando: string[] = []
 
     if (isMomentum) {
@@ -476,22 +476,22 @@ export function getClosestToQualifying(
         faltando.push(`Momentum: ${atual} (precisa >60)`)
       }
       // Score mínimo
-      if (criteria.minScore != null && aqScore.scoreTotal < criteria.minScore) {
-        faltando.push(`Score: ${aqScore.scoreTotal.toFixed(0)} (precisa ${criteria.minScore})`)
+      if (criteria.minScore != null && iqScore?.scoreTotal < criteria.minScore) {
+        faltando.push(`Score: ${iqScore?.scoreTotal.toFixed(0)} (precisa ${criteria.minScore})`)
       }
       // Confiança
-      if (criteria.minConfidence != null && aqScore.confidence < criteria.minConfidence) {
-        faltando.push(`Confiança: ${aqScore.confidence.toFixed(0)}% (precisa ${criteria.minConfidence}%)`)
+      if (criteria.minConfidence != null && iqScore?.confidence < criteria.minConfidence) {
+        faltando.push(`Confiança: ${iqScore?.confidence.toFixed(0)}% (precisa ${criteria.minConfidence}%)`)
       }
     } else {
       // Score mínimo
-      if (criteria.minScore != null && aqScore.scoreTotal < criteria.minScore) {
-        faltando.push(`Score: ${aqScore.scoreTotal.toFixed(0)} (precisa ${criteria.minScore})`)
+      if (criteria.minScore != null && iqScore?.scoreTotal < criteria.minScore) {
+        faltando.push(`Score: ${iqScore?.scoreTotal.toFixed(0)} (precisa ${criteria.minScore})`)
       }
 
       // Confiança mínima
-      if (criteria.minConfidence != null && aqScore.confidence < criteria.minConfidence) {
-        faltando.push(`Confiança: ${aqScore.confidence.toFixed(0)}% (precisa ${criteria.minConfidence}%)`)
+      if (criteria.minConfidence != null && iqScore?.confidence < criteria.minConfidence) {
+        faltando.push(`Confiança: ${iqScore?.confidence.toFixed(0)}% (precisa ${criteria.minConfidence}%)`)
       }
 
       // Lens score
@@ -581,13 +581,13 @@ export function getClosestToQualifying(
       name: asset.name,
       sector: asset.sector,
       price: asset.price,
-      score: aqScore.scoreTotal,
-      lensScore: getLensScore(lensScores, lensKey) ?? aqScore.scoreTotal,
+      score: iqScore?.scoreTotal,
+      lensScore: getLensScore(lensScores, lensKey) ?? iqScore?.scoreTotal,
       dy: fundamentals.dividendYield,
       peRatio: fundamentals.peRatio,
       roe: fundamentals.roe,
       divEbitda: fundamentals.netDebtEbitda,
-      confidence: aqScore.confidence,
+      confidence: iqScore?.confidence,
       criteriosFaltando: faltando,
     })
   }

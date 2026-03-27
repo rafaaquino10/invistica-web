@@ -15,7 +15,7 @@ export interface RiskPosition {
   ticker: string
   sector: string | null
   currentValue: number
-  aqScore: number | null
+  iqScore: number | null
   dividendYield: number | null
   gainLossPercent: number
 }
@@ -127,7 +127,7 @@ export function calculateRisk(positions: RiskPosition[]): RiskResult {
     const p = positions[i]!
     const w = weights[i]!
     const sector = mapearSetor(p.sector ?? 'outros')
-    const score = p.aqScore ?? 50
+    const score = p.iqScore ?? 50
 
     // Value: score alto + DY
     if (score >= 60 && (p.dividendYield ?? 0) > 4) factorExposure.value += w

@@ -37,7 +37,7 @@ export function calculateSectorAverages(assets: AssetData[]): Record<string, Sec
   const result: Record<string, SectorStats> = {}
   for (const [sector, stocks] of Object.entries(bySetor)) {
     const scores = stocks
-      .map(s => s.aqScore?.scoreTotal)
+      .map(s => s.iqScore?.scoreTotal)
       .filter((s): s is number => s != null)
     const dys = stocks
       .map(s => s.fundamentals?.dividendYield)

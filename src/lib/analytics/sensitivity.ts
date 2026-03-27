@@ -114,7 +114,7 @@ export function calculateSensitivity(
   asset: AssetData,
   macro: MacroInput,
 ): SensitivityScenario[] {
-  if (!asset.aqScore || !asset.hasFundamentals) return []
+  if (!asset.iqScore || !asset.hasFundamentals) return []
 
   const dados = buildDados(asset)
   const currentRegime = detectRegime(macro.selic, macro.ipca)

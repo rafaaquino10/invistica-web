@@ -88,18 +88,16 @@ export interface Fundamental {
   netDebtEbitda: number | null
 }
 
-// IQ-Score™ Types
+// IQ-Cognit Score Types
 export interface AqScore {
   id: string
   assetId: string
   calculatedAt: Date
   scoreTotal: number
+  scoreQuanti: number
+  scoreQuali: number
   scoreValuation: number
-  scoreQuality: number
-  scoreGrowth: number
-  scoreDividends: number
-  scoreRisk: number
-  scoreQualitativo: number
+  scoreOperational: number
   breakdown: AqScoreBreakdown
   version: string
 }

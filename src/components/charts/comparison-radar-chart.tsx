@@ -15,11 +15,10 @@ import { cn } from '@/lib/utils'
 interface DatasetEntry {
   ticker: string
   color: string
+  quanti: number
+  quali: number
   valuation: number
-  quality: number
-  growth: number
-  dividends: number
-  risk: number
+  operational: number
 }
 
 interface ComparisonRadarChartProps {
@@ -46,8 +45,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export function ComparisonRadarChart({ datasets, className }: ComparisonRadarChartProps) {
-  const subjects = ['Valuation', 'Qualidade', 'Crescimento', 'Dividendos', 'Risco']
-  const keys = ['valuation', 'quality', 'growth', 'dividends', 'risk'] as const
+  const subjects = ['Quantitativo', 'Qualitativo', 'Valuation', 'Operacional']
+  const keys = ['quanti', 'quali', 'valuation', 'operational'] as const
 
   const data = subjects.map((subject, i) => {
     const entry: Record<string, any> = { subject }

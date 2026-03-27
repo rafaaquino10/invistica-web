@@ -162,10 +162,10 @@ export default function DashboardPage() {
         />
         <KPI
           label="IQ-Score Médio"
-          value={portfolio?.avgAqScore ? portfolio.avgAqScore.toFixed(0) : '--'}
-          valueColor={getScoreColor(portfolio?.avgAqScore ?? 0)}
-          sub={portfolio?.avgAqScore
-            ? (portfolio.avgAqScore >= 75 ? 'Excelente' : portfolio.avgAqScore >= 62 ? 'Bom' : portfolio.avgAqScore >= 42 ? 'Neutro' : 'Atencao')
+          value={portfolio?.avgIqScore ? portfolio.avgIqScore.toFixed(0) : '--'}
+          valueColor={getScoreColor(portfolio?.avgIqScore ?? 0)}
+          sub={portfolio?.avgIqScore
+            ? (portfolio.avgIqScore >= 75 ? 'Excelente' : portfolio.avgIqScore >= 62 ? 'Bom' : portfolio.avgIqScore >= 42 ? 'Neutro' : 'Atencao')
             : undefined}
           loading={loadingPortfolio}
         />
@@ -366,12 +366,12 @@ export default function DashboardPage() {
                       {pct(pos.gainLossPercent)}
                     </p>
                   </div>
-                  {pos.aqScore != null && (
+                  {pos.iqScore != null && (
                     <div className={cn(
                       'w-9 h-9 rounded-lg flex items-center justify-center font-mono text-xs font-bold',
-                      pos.aqScore >= 65 ? 'bg-[var(--pos)]/10 text-[var(--pos)]' : 'bg-[var(--bg)] text-[var(--text-2)]'
+                      pos.iqScore >= 65 ? 'bg-[var(--pos)]/10 text-[var(--pos)]' : 'bg-[var(--bg)] text-[var(--text-2)]'
                     )}>
-                      {pos.aqScore}
+                      {pos.iqScore}
                     </div>
                   )}
                 </div>

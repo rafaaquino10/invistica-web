@@ -88,7 +88,7 @@ export const SMART_PORTFOLIOS: SmartPortfolio[] = [
     ],
     thesisGuard: (a) => {
       // Qualidade mínima: pilar qualidade precisa ser decente
-      return (a.aqScore?.scoreQuality ?? 0) >= 55
+      return (a.iqScore?.scoreQuanti ?? 0) >= 55
     },
   },
 
@@ -241,7 +241,7 @@ export const SMART_PORTFOLIOS: SmartPortfolio[] = [
   // ═══ 6. ESG SUSTENTÁVEL ═══
   // Tese: proxy ESG via qualidade de gestão + governança + transparência contábil.
   // Sem filtro de setor (ESG não é função do setor).
-  // Usa scoreQualitativo como proxy principal.
+  // Usa scoreQuali como proxy principal.
   {
     id: 'esg-sustentavel',
     name: 'ESG Sustentável',
@@ -269,7 +269,7 @@ export const SMART_PORTFOLIOS: SmartPortfolio[] = [
         description: 'IQ-Score abaixo de 40 — qualidade deteriorou',
       },
     ],
-    thesisGuard: (a) => (a.aqScore?.scoreQualitativo ?? 0) > 40,
+    thesisGuard: (a) => (a.iqScore?.scoreQuali ?? 0) > 40,
   },
 
   // ═══ 7. QUANT PURO (dados puros, sem viés) ═══

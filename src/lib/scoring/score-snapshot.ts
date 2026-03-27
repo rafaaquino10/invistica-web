@@ -10,11 +10,11 @@ export interface ScoreSnapshotData {
   snapshotDate: Date
   scoreTotal: number
   scoreValuation: number
-  scoreQuality: number
-  scoreRisk: number
-  scoreDividends: number
-  scoreGrowth: number
-  scoreQualitativo: number
+  scoreQuanti: number
+  scoreQuanti: number
+  scoreQuali: number
+  scoreOperational: number
+  scoreQuali: number
   scoreMomentum: number | null
   classificacao: string
   regime: string | null
@@ -54,11 +54,11 @@ export function toSnapshotData(
     snapshotDate: context.date ?? new Date(),
     scoreTotal: score.scoreTotal,
     scoreValuation: score.valuation,
-    scoreQuality: score.quality,
-    scoreRisk: score.risk,
-    scoreDividends: score.dividends,
-    scoreGrowth: score.growth,
-    scoreQualitativo: score.qualitativo ?? 0,
+    scoreQuanti: score.quality,
+    scoreQuanti: score.risk,
+    scoreQuali: score.dividends,
+    scoreOperational: score.growth,
+    scoreQuali: score.qualitativo ?? 0,
     scoreMomentum: score.momentum ?? null,
     classificacao: score.classificacao,
     regime: context.regime ?? null,

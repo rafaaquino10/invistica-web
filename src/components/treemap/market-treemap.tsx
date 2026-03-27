@@ -15,7 +15,7 @@ interface TreemapStock {
   name: string
   marketCap: number
   changePercent: number
-  aqScore: number | null
+  iqScore: number | null
   price: number
   logo: string | null
 }
@@ -71,7 +71,7 @@ function getSectorColor(sectorIndex: number): string {
 function getCellColor(stock: TreemapStock, colorMode: ColorMode, sectorIndex: number): string {
   switch (colorMode) {
     case 'change': return getChangeColor(stock.changePercent)
-    case 'score': return getScoreColor(stock.aqScore)
+    case 'score': return getScoreColor(stock.iqScore)
     case 'sector': return getSectorColor(sectorIndex)
   }
 }
@@ -83,7 +83,7 @@ function getTextForMode(stock: TreemapStock, colorMode: ColorMode): string {
       return `${sign}${stock.changePercent.toFixed(1)}%`
     }
     case 'score':
-      return stock.aqScore !== null ? String(Math.round(stock.aqScore)) : '--'
+      return stock.iqScore !== null ? String(Math.round(stock.iqScore)) : '--'
     case 'sector': {
       const sign = stock.changePercent >= 0 ? '+' : ''
       return `${sign}${stock.changePercent.toFixed(1)}%`
@@ -144,8 +144,8 @@ function Tooltip({ data }: { data: TooltipData }) {
           </div>
           <div>
             <span className="text-[var(--text-3)]">IQ-Score</span>
-            <span className="ml-1 font-mono font-bold" style={{ color: getScoreColor(stock.aqScore) }}>
-              {stock.aqScore !== null ? Math.round(stock.aqScore) : '--'}
+            <span className="ml-1 font-mono font-bold" style={{ color: getScoreColor(stock.iqScore) }}>
+              {stock.iqScore !== null ? Math.round(stock.iqScore) : '--'}
             </span>
           </div>
           <div>
@@ -163,7 +163,7 @@ function Tooltip({ data }: { data: TooltipData }) {
 function SectorTooltipComponent({ data }: { data: SectorTooltipData }) {
   const { sector, x, y } = data
   const topStocks = [...sector.stocks]
-    .sort((a, b) => (b.aqScore ?? 0) - (a.aqScore ?? 0))
+    .sort((a, b) => (b.iqScore ?? 0) - (a.iqScore ?? 0))
     .slice(0, 3)
 
   return (
@@ -201,7 +201,7 @@ function SectorTooltipComponent({ data }: { data: SectorTooltipData }) {
         </div>
         {topStocks.length > 0 && (
           <div className="border-t border-[var(--border-1)]/30 pt-1.5 text-xs text-[var(--text-3)]">
-            Top: {topStocks.map(s => `${s.ticker} (${s.aqScore !== null ? Math.round(s.aqScore) : '--'})`).join(', ')}
+            Top: {topStocks.map(s => `${s.ticker} (${s.iqScore !== null ? Math.round(s.iqScore) : '--'})`).join(', ')}
           </div>
         )}
       </div>
@@ -249,7 +249,7 @@ export function MarketTreemap({
       ...sector,
       stocks: sector.stocks.filter(stock => {
         if (minMarketCap > 0 && stock.marketCap < minMarketCap) return false
-        if (minScore !== undefined && (stock.aqScore === null || stock.aqScore < minScore)) return false
+        if (minScore !== undefined && (stock.iqScore === null || stock.iqScore < minScore)) return false
         return true
       }),
     })).filter(s => s.stocks.length > 0)

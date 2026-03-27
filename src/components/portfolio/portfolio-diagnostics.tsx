@@ -13,14 +13,14 @@ interface Position {
   name: string
   sector: string | null
   currentValue: number
-  aqScore: number | null
+  iqScore: number | null
   gainLossPercent: number
 }
 
 interface PortfolioDiagnosticsProps {
   positions: Position[]
   totalValue: number
-  avgAqScore: number
+  avgIqScore: number
   className?: string
 }
 
@@ -35,8 +35,8 @@ function classifyScore(score: number): string {
 
 function getDiagnosticPhrase(avgScore: number, positions: Position[]): string {
   const classification = classifyScore(avgScore)
-  const weakCount = positions.filter(p => (p.aqScore ?? 0) > 0 && (p.aqScore ?? 0) < 40).length
-  const strongCount = positions.filter(p => (p.aqScore ?? 0) >= 70).length
+  const weakCount = positions.filter(p => (p.iqScore ?? 0) > 0 && (p.iqScore ?? 0) < 40).length
+  const strongCount = positions.filter(p => (p.iqScore ?? 0) >= 70).length
 
   if (classification === 'Excepcional') {
     return 'Sua carteira está excepcional — qualidade acima da média do mercado.'
@@ -60,23 +60,23 @@ interface PillarAvgs {
 
 // ─── Component ──────────────────────────────────────────────────────
 
-export function PortfolioDiagnostics({ positions, totalValue, avgAqScore, className }: PortfolioDiagnosticsProps) {
-  if (positions.length === 0 || avgAqScore <= 0) return null
+export function PortfolioDiagnostics({ positions, totalValue, avgIqScore, className }: PortfolioDiagnosticsProps) {
+  if (positions.length === 0 || avgIqScore <= 0) return null
 
-  const badge = getScoreBadge(avgAqScore)
+  const badge = getScoreBadge(avgIqScore)
 
   // Alertas
   const alerts: Array<{ type: 'warning' | 'info'; message: string; ticker?: string }> = []
 
   // Ativos com score < 40
   const weakPositions = positions
-    .filter(p => (p.aqScore ?? 0) > 0 && (p.aqScore ?? 0) < 40)
-    .sort((a, b) => (a.aqScore ?? 0) - (b.aqScore ?? 0))
+    .filter(p => (p.iqScore ?? 0) > 0 && (p.iqScore ?? 0) < 40)
+    .sort((a, b) => (a.iqScore ?? 0) - (b.iqScore ?? 0))
 
   for (const p of weakPositions.slice(0, 3)) {
     alerts.push({
       type: 'warning',
-      message: `${p.ticker} tem score ${Math.round(p.aqScore!)} — considere revisar a posição`,
+      message: `${p.ticker} tem score ${Math.round(p.iqScore!)} — considere revisar a posição`,
       ticker: p.ticker,
     })
   }
@@ -110,10 +110,10 @@ export function PortfolioDiagnostics({ positions, totalValue, avgAqScore, classN
 
       {/* Score + Semáforo + Frase */}
       <div className="flex items-center gap-3 mb-3">
-        <ScoreBadge score={avgAqScore} size="lg" showBar />
+        <ScoreBadge score={avgIqScore} size="lg" showBar />
         <SemaphoreBadge label={badge.label} color={badge.color} size="md" />
       </div>
-      <p className="text-[13px] text-[var(--text-2)] mb-3">{getDiagnosticPhrase(avgAqScore, positions)}</p>
+      <p className="text-[13px] text-[var(--text-2)] mb-3">{getDiagnosticPhrase(avgIqScore, positions)}</p>
       <Disclaimer variant="inline" className="mb-3" />
 
       {/* Alertas / Oportunidades */}

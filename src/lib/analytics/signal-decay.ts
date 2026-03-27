@@ -24,10 +24,10 @@ interface ScoreSnapshotEntry {
   date: Date
   scoreTotal: number
   scoreValuation: number
-  scoreQuality: number
-  scoreRisk: number
-  scoreDividends: number
-  scoreGrowth: number
+  scoreQuanti: number
+  scoreQuanti: number
+  scoreQuali: number
+  scoreOperational: number
   scoreMomentum: number | null
   price: number | null
 }
@@ -53,10 +53,10 @@ const PILLAR_LABELS: Record<string, string> = {
 
 const PILLAR_SCORE_MAP: Record<string, keyof ScoreSnapshotEntry> = {
   valuation: 'scoreValuation',
-  quality: 'scoreQuality',
-  risk: 'scoreRisk',
-  dividends: 'scoreDividends',
-  growth: 'scoreGrowth',
+  quality: 'scoreQuanti',
+  risk: 'scoreQuanti',
+  dividends: 'scoreQuali',
+  growth: 'scoreOperational',
   momentum: 'scoreMomentum',
 }
 

@@ -50,7 +50,7 @@ export default function MapaPage() {
       byCluster[name].push({
         ticker: r.ticker,
         name: r.company_name,
-        aqScore: r.iq_score,
+        iqScore: r.iq_score,
         marketCap: 1, // placeholder (quote endpoint needed for real mkt cap)
         changePercent: 0,
       })
@@ -59,7 +59,7 @@ export default function MapaPage() {
       name: sectorName,
       stocks,
       totalMarketCap: stocks.length,
-      avgScore: stocks.reduce((s: number, st: any) => s + (st.aqScore ?? 0), 0) / stocks.length,
+      avgScore: stocks.reduce((s: number, st: any) => s + (st.iqScore ?? 0), 0) / stocks.length,
       avgChange: 0,
     }))
     return { sectors }
@@ -79,7 +79,7 @@ export default function MapaPage() {
     const otherStocks = small.flatMap(s => s.stocks)
     const otherMktCap = small.reduce((sum, s) => sum + s.totalMarketCap, 0)
     const otherAvgScore = otherStocks.length > 0
-      ? otherStocks.reduce((s, st) => s + (st.aqScore ?? 0), 0) / otherStocks.length
+      ? otherStocks.reduce((s, st) => s + (st.iqScore ?? 0), 0) / otherStocks.length
       : null
     const otherAvgChange = otherStocks.length > 0
       ? otherStocks.reduce((s, st) => s + st.changePercent * st.marketCap, 0) / otherMktCap
@@ -108,7 +108,7 @@ export default function MapaPage() {
     const allStocks = consolidatedSectors.flatMap(s => s.stocks)
     const validStocks = allStocks.filter(s => {
       if (minMarketCap > 0 && s.marketCap < minMarketCap) return false
-      if (minScore !== undefined && (s.aqScore === null || s.aqScore < minScore)) return false
+      if (minScore !== undefined && (s.iqScore === null || s.iqScore < minScore)) return false
       if (sectorFilter && !consolidatedSectors.find(sec => sec.name === sectorFilter)?.stocks.includes(s)) return false
       return true
     })

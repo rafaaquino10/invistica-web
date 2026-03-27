@@ -1,10 +1,36 @@
 /**
- * Adapters — transform InvestIQ API responses into shapes that
- * aQInvest components expect. This preserves all original components
- * without rewriting their interfaces.
+ * Adapters — transform IQ-Cognit Engine API responses into
+ * frontend component shapes.
+ *
+ * IQ-Cognit has 3 main pillars + 1 operational score:
+ *   - score_quanti    (0-100): Quantitative (profitability, solvency, cashflow, forensics, momentum)
+ *   - score_quali     (0-100): Qualitative (governance, track_record, political, culture, moat)
+ *   - score_valuation (0-100): Valuation (DCF, Gordon, Multiples, Monte Carlo)
+ *   - score_operational (0-100): Operational excellence
+ *   - iq_score        (0-100): Weighted composite of the above
  */
 
 import type { IQScore, ScreenerResult, Position, Valuation, Evidence } from './endpoints'
+
+// ════════════════════════════════════════════════════════════
+// IQ-Cognit Score (shared across all pages)
+// ════════════════════════════════════════════════════════════
+
+export interface IQCognitScore {
+  scoreTotal: number
+  scoreQuanti: number
+  scoreQuali: number
+  scoreValuation: number
+  scoreOperational: number
+}
+
+/** Pillar metadata for rendering labels, colors, descriptions */
+export const IQ_PILLARS = [
+  { key: 'scoreQuanti' as const, label: 'Quantitativo', short: 'Quanti', description: 'Rentabilidade, solvência, fluxo de caixa, forensics, momentum' },
+  { key: 'scoreQuali' as const, label: 'Qualitativo', short: 'Quali', description: 'Governança, track record, risco político, cultura, moat' },
+  { key: 'scoreValuation' as const, label: 'Valuation', short: 'Valuation', description: 'DCF, Gordon, Múltiplos, Monte Carlo' },
+  { key: 'scoreOperational' as const, label: 'Operacional', short: 'Oper.', description: 'Excelência operacional do setor' },
+] as const
 
 // ════════════════════════════════════════════════════════════
 // Asset Detail (for /ativo/[ticker] page)
@@ -21,15 +47,7 @@ export interface AdaptedAsset {
   changePercent?: number
   marketCap: number
   fundamentals: AdaptedFundamental[]
-  aqScore?: {
-    scoreTotal: number
-    scoreValuation: number
-    scoreQuality: number
-    scoreGrowth: number
-    scoreDividends: number
-    scoreRisk: number
-    scoreQualitativo?: number
-  }
+  iqScore?: IQCognitScore
   scoreBreakdown?: {
     classificacao: string
     pilares: Record<string, { subNotas: SubNota[] }>
@@ -110,14 +128,13 @@ export function adaptScoreToAsset(
   // Build scoreBreakdown pilares from evidences
   const pilares: Record<string, { subNotas: SubNota[] }> = {}
   for (const ev of score.evidences ?? []) {
-    const pillarName = ev.source_type === 'quanti' ? 'valuation' :
+    const pillarName = ev.source_type === 'quanti' ? 'quantitativo' :
                        ev.source_type === 'quali' ? 'qualitativo' :
                        ev.criterion_name.toLowerCase().includes('valuation') ? 'valuation' :
-                       ev.criterion_name.toLowerCase().includes('qualit') ? 'qualidade' :
-                       ev.criterion_name.toLowerCase().includes('risk') ? 'risco' :
-                       ev.criterion_name.toLowerCase().includes('divid') ? 'dividendos' :
-                       ev.criterion_name.toLowerCase().includes('growth') ? 'crescimento' :
-                       'valuation'
+                       ev.criterion_name.toLowerCase().includes('qualit') ? 'qualitativo' :
+                       ev.criterion_name.toLowerCase().includes('govern') ? 'qualitativo' :
+                       ev.criterion_name.toLowerCase().includes('opera') ? 'operacional' :
+                       'quantitativo'
     if (!pilares[pillarName]) pilares[pillarName] = { subNotas: [] }
     pilares[pillarName].subNotas.push({
       indicador: ev.criterion_name,
@@ -146,14 +163,12 @@ export function adaptScoreToAsset(
     price: val.current_price,
     marketCap: tickerData?.quote?.market_cap ?? 0,
     fundamentals: adaptedFundamentals,
-    aqScore: {
+    iqScore: {
       scoreTotal: iq.iq_score,
+      scoreQuanti: iq.score_quanti,
+      scoreQuali: iq.score_quali,
       scoreValuation: iq.score_valuation,
-      scoreQuality: iq.score_quanti,
-      scoreGrowth: iq.score_operational,
-      scoreDividends: iq.score_quali,
-      scoreRisk: iq.score_quanti,
-      scoreQualitativo: iq.score_quali,
+      scoreOperational: iq.score_operational,
     },
     scoreBreakdown: {
       classificacao: iq.rating,
@@ -187,14 +202,7 @@ export interface AdaptedScreenerRow {
   type: string
   sector: string | null
   logo?: string | null
-  aqScore?: {
-    scoreTotal: number
-    scoreValuation: number
-    scoreQuality: number
-    scoreGrowth: number
-    scoreDividends: number
-    scoreRisk: number
-  } | null
+  iqScore?: IQCognitScore | null
   fundamental?: {
     dividendYield?: number
     peRatio?: number
@@ -221,13 +229,12 @@ export function adaptScreenerResults(results: ScreenerResult[], clusterNames?: R
     name: r.company_name,
     type: 'stock',
     sector: clusterNames?.[r.cluster_id] ?? `Cluster ${r.cluster_id}`,
-    aqScore: {
+    iqScore: {
       scoreTotal: r.iq_score,
+      scoreQuanti: r.score_quanti,
+      scoreQuali: r.score_quali,
       scoreValuation: r.score_valuation,
-      scoreQuality: r.score_quanti,
-      scoreGrowth: r.score_quanti,
-      scoreDividends: r.score_quali,
-      scoreRisk: r.score_quanti,
+      scoreOperational: 0, // Not available in screener results
     },
     fundamental: {
       dividendYield: r.dividend_yield_proj ?? undefined,
@@ -249,7 +256,7 @@ export interface AdaptedPortfolio {
   totalCost: number
   gainLoss: number
   gainLossPercent: number
-  avgAqScore: number
+  avgIqScore: number
   positionsCount: number
   positions: AdaptedPosition[]
   topPositions?: Array<{ ticker: string; name: string }>
@@ -267,7 +274,7 @@ export interface AdaptedPosition {
   totalCost: number
   gainLoss: number
   gainLossPercent: number
-  aqScore: number | null
+  iqScore: number | null
   rating: string | null
   weight: number
 }
@@ -289,7 +296,7 @@ export function adaptPortfolio(positions: Position[]): AdaptedPortfolio {
       totalCost,
       gainLoss,
       gainLossPercent,
-      aqScore: p.iq_score,
+      iqScore: p.iq_score,
       rating: p.rating,
       weight: 0, // calculated below
     }
@@ -304,7 +311,7 @@ export function adaptPortfolio(positions: Position[]): AdaptedPortfolio {
   }
 
   const avgScore = adapted.length > 0
-    ? adapted.reduce((s, p) => s + (p.aqScore ?? 0), 0) / adapted.length
+    ? adapted.reduce((s, p) => s + (p.iqScore ?? 0), 0) / adapted.length
     : 0
 
   return {
@@ -315,7 +322,7 @@ export function adaptPortfolio(positions: Position[]): AdaptedPortfolio {
     totalCost,
     gainLoss: totalValue - totalCost,
     gainLossPercent: totalCost > 0 ? ((totalValue - totalCost) / totalCost) * 100 : 0,
-    avgAqScore: avgScore,
+    avgIqScore: avgScore,
     positionsCount: adapted.length,
     positions: adapted,
     topPositions: adapted.slice(0, 3).map(p => ({ ticker: p.ticker, name: p.name })),

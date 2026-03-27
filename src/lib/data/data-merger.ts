@@ -37,8 +37,8 @@ function translateBrapiSector(englishSector: string): string {
 
 // ─── Types ──────────────────────────────────────────────────
 
-/** Pre-scored asset (all fields except aqScore, lensScores, scoreBreakdown, killSwitch) */
-export type MergedAsset = Omit<AssetData, 'aqScore' | 'lensScores' | 'scoreBreakdown' | 'killSwitch'>
+/** Pre-scored asset (all fields except iqScore?, lensScores, scoreBreakdown, killSwitch) */
+export type MergedAsset = Omit<AssetData, 'iqScore?' | 'lensScores' | 'scoreBreakdown' | 'killSwitch'>
 
 // ─── Merge Logic ────────────────────────────────────────────
 

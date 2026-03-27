@@ -85,15 +85,15 @@ export function saveScoreSnapshot(assets: AssetData[]): void {
   let count = 0
 
   for (const asset of assets) {
-    if (!asset.aqScore) continue
+    if (!asset.iqScore) continue
     scores[asset.ticker] = {
-      score: asset.aqScore.scoreTotal,
-      valuation: asset.aqScore.scoreValuation,
-      quality: asset.aqScore.scoreQuality,
-      risk: asset.aqScore.scoreRisk,
-      dividends: asset.aqScore.scoreDividends,
-      growth: asset.aqScore.scoreGrowth,
-      confidence: asset.aqScore.confidence,
+      score: asset.iqScore.scoreTotal,
+      valuation: asset.iqScore.scoreValuation,
+      quality: asset.iqScore.scoreQuanti,
+      risk: asset.iqScore.scoreQuanti,
+      dividends: asset.iqScore.scoreQuali,
+      growth: asset.iqScore.scoreOperational,
+      confidence: asset.iqScore.confidence,
     }
     count++
   }

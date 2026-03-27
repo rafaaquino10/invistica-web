@@ -25,7 +25,7 @@ export function generateExitAlerts(
 
   for (const position of positions) {
     const asset = assetMap.get(position.ticker)
-    if (!asset || !asset.aqScore) continue
+    if (!asset || !asset.iqScore) continue
 
     // 1. THESIS BROKEN: Score dropped > 15 pts in 30 days
     const history = getScoreHistory(position.ticker, HISTORY_WINDOW_DAYS)
@@ -76,14 +76,14 @@ export function generateExitAlerts(
     }
 
     // 4. RISING RISK: Risk pillar below critical threshold
-    if (asset.aqScore.scoreRisk < RISK_CRITICAL_THRESHOLD) {
+    if (asset.iqScore.scoreQuanti < RISK_CRITICAL_THRESHOLD) {
       alerts.push({
         ticker: position.ticker,
         type: 'monitorar',
         severity: 'warning',
         title: `${position.ticker} com risco elevado`,
-        description: `Score de Risco em ${asset.aqScore.scoreRisk.toFixed(0)}/100. Alavancagem ou liquidez podem estar deteriorando.`,
-        data: { riskScore: asset.aqScore.scoreRisk },
+        description: `Score de Risco em ${asset.iqScore.scoreQuanti.toFixed(0)}/100. Alavancagem ou liquidez podem estar deteriorando.`,
+        data: { riskScore: asset.iqScore.scoreQuanti },
       })
     }
   }

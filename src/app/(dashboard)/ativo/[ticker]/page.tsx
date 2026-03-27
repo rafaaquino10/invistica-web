@@ -365,7 +365,7 @@ export default function AtivoPage() {
       )}
 
       {/* ─── Row 4: Dossier Qualitativo ─────────────────── */}
-      {dossier && dossier.dimensoes && dossier.dimensoes.length > 0 && (
+      {dossier && dossier.dimensions && dossier.dimensions.length > 0 && (
         <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-[var(--text-1)]">Dossier Qualitativo</h3>
@@ -378,8 +378,8 @@ export default function AtivoPage() {
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {dossier.dimensoes.map((dim) => (
-              <DossierDimensionCard key={dim.nome} dimension={dim} />
+            {dossier.dimensions.map((dim) => (
+              <DossierDimensionCard key={dim.name} dimension={dim} />
             ))}
           </div>
         </div>
@@ -563,7 +563,7 @@ function EvidenceCard({ evidence }: { evidence: Evidence }) {
   )
 }
 
-function DossierDimensionCard({ dimension }: { dimension: { nome: string; veredito: string; narrativa: string; evidencias: string[]; alertas: string[] } }) {
+function DossierDimensionCard({ dimension }: { dimension: { name: string; veredito: string; narrative: string; evidencias: string[]; alertas: string[] } }) {
   const veredict = dimension.veredito
   const color = veredict === 'FORTE' ? 'border-[var(--pos)]/30 bg-[var(--pos)]/5' :
                 veredict === 'MODERADO' ? 'border-[var(--warn)]/30 bg-[var(--warn)]/5' :
@@ -577,10 +577,10 @@ function DossierDimensionCard({ dimension }: { dimension: { nome: string; veredi
   return (
     <div className={cn('rounded-lg border p-4', color)}>
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-xs font-semibold text-[var(--text-1)]">{dimension.nome}</h4>
+        <h4 className="text-xs font-semibold text-[var(--text-1)]">{dimension.name}</h4>
         <span className={cn('text-[10px] font-bold uppercase', badgeColor)}>{veredict}</span>
       </div>
-      <p className="text-[11px] text-[var(--text-2)] leading-relaxed line-clamp-3">{dimension.narrativa}</p>
+      <p className="text-[11px] text-[var(--text-2)] leading-relaxed line-clamp-3">{dimension.narrative}</p>
       {dimension.alertas.length > 0 && (
         <div className="mt-2 space-y-0.5">
           {dimension.alertas.slice(0, 2).map((a, i) => (

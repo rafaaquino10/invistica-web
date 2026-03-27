@@ -68,7 +68,7 @@ export interface InsightRule {
 /**
  * Rule 1: Undervalued Quality
  * High quality company with good valuation score but low total score.
- * scoreQuality >= 75 AND scoreValuation >= 65 AND scoreTotal < 65
+ * scoreQuanti >= 75 AND scoreValuation >= 65 AND scoreTotal < 65
  */
 const undervaluedQualityRule: InsightRule = {
   name: 'undervalued_quality',
@@ -76,9 +76,9 @@ const undervaluedQualityRule: InsightRule = {
   detect(ctx) {
     const results: Partial<Insight>[] = []
     for (const a of ctx.assets) {
-      if (!a.aqScore) continue
-      const { scoreQuality, scoreValuation, scoreTotal } = a.aqScore
-      if (scoreQuality >= 75 && scoreValuation >= 65 && scoreTotal < 65) {
+      if (!a.iqScore) continue
+      const { scoreQuanti, scoreValuation, scoreTotal } = a.iqScore
+      if (scoreQuanti >= 75 && scoreValuation >= 65 && scoreTotal < 65) {
         results.push({
           type: 'undervalued_quality',
           category: 'opportunity',
@@ -86,8 +86,8 @@ const undervaluedQualityRule: InsightRule = {
           ticker: a.ticker,
           sector: a.sector,
           title: `${a.ticker} pode estar subvalorizada`,
-          description: `Qualidade ${scoreQuality.toFixed(0)} e valuation ${scoreValuation.toFixed(0)} elevados, mas score total de apenas ${scoreTotal.toFixed(0)}. Pode representar uma oportunidade.`,
-          data: { scoreQuality, scoreValuation, scoreTotal },
+          description: `Qualidade ${scoreQuanti.toFixed(0)} e valuation ${scoreValuation.toFixed(0)} elevados, mas score total de apenas ${scoreTotal.toFixed(0)}. Pode representar uma oportunidade.`,
+          data: { scoreQuanti, scoreValuation, scoreTotal },
           actionable: true,
           action: `Analisar ${a.ticker}`,
         })
@@ -99,7 +99,7 @@ const undervaluedQualityRule: InsightRule = {
 
 /**
  * Rule 2: Dividend Opportunity
- * DY > 2x sector median AND scoreRisk >= 55
+ * DY > 2x sector median AND scoreQuanti >= 55
  */
 const dividendOpportunityRule: InsightRule = {
   name: 'dividend_opportunity',
@@ -107,11 +107,11 @@ const dividendOpportunityRule: InsightRule = {
   detect(ctx) {
     const results: Partial<Insight>[] = []
     for (const a of ctx.assets) {
-      if (!a.aqScore || !a.fundamentals?.dividendYield) continue
+      if (!a.iqScore || !a.fundamentals?.dividendYield) continue
       const sectorStats = ctx.sectorAverages[a.sector]
       if (!sectorStats || sectorStats.medianDY <= 0) continue
       const dy = a.fundamentals.dividendYield
-      if (dy > 2 * sectorStats.medianDY && a.aqScore.scoreRisk >= 55) {
+      if (dy > 2 * sectorStats.medianDY && a.iqScore.scoreQuanti >= 55) {
         results.push({
           type: 'dividend_opportunity',
           category: 'opportunity',
@@ -119,8 +119,8 @@ const dividendOpportunityRule: InsightRule = {
           ticker: a.ticker,
           sector: a.sector,
           title: `${a.ticker}: DY de ${dy.toFixed(1)}% destaca no setor`,
-          description: `Dividend Yield ${(dy / sectorStats.medianDY).toFixed(1)}x acima da mediana do setor (${sectorStats.medianDY.toFixed(1)}%) com risco controlado (${a.aqScore.scoreRisk.toFixed(0)}).`,
-          data: { dy, sectorMedianDY: sectorStats.medianDY, scoreRisk: a.aqScore.scoreRisk },
+          description: `Dividend Yield ${(dy / sectorStats.medianDY).toFixed(1)}x acima da mediana do setor (${sectorStats.medianDY.toFixed(1)}%) com risco controlado (${a.iqScore.scoreQuanti.toFixed(0)}).`,
+          data: { dy, sectorMedianDY: sectorStats.medianDY, scoreQuanti: a.iqScore.scoreQuanti },
           actionable: true,
           action: `Ver dividendos de ${a.ticker}`,
         })
@@ -142,16 +142,16 @@ const sectorLeaderRule: InsightRule = {
     // Group by sector
     const bySector: Record<string, AssetData[]> = {}
     for (const a of ctx.assets) {
-      if (!a.aqScore) continue
+      if (!a.iqScore) continue
       const sector = a.sector || 'Outros'
       if (!bySector[sector]) bySector[sector] = []
       bySector[sector]!.push(a)
     }
     for (const [sector, stocks] of Object.entries(bySector)) {
       if (stocks.length < 2) continue
-      const sorted = [...stocks].sort((a, b) => (b.aqScore?.scoreTotal ?? 0) - (a.aqScore?.scoreTotal ?? 0))
+      const sorted = [...stocks].sort((a, b) => (b.iqScore?.scoreTotal ?? 0) - (a.iqScore?.scoreTotal ?? 0))
       const leader = sorted[0]!
-      if (leader.aqScore && leader.aqScore.scoreTotal > 70) {
+      if (leader.iqScore && leader.iqScore.scoreTotal > 70) {
         results.push({
           type: 'sector_leader',
           category: 'info',
@@ -159,8 +159,8 @@ const sectorLeaderRule: InsightRule = {
           ticker: leader.ticker,
           sector,
           title: `${leader.ticker} lidera o setor ${sector}`,
-          description: `Com score ${leader.aqScore.scoreTotal.toFixed(0)}, ${leader.ticker} é a melhor avaliada entre ${stocks.length} ações do setor.`,
-          data: { scoreTotal: leader.aqScore.scoreTotal, sectorCount: stocks.length },
+          description: `Com score ${leader.iqScore.scoreTotal.toFixed(0)}, ${leader.ticker} é a melhor avaliada entre ${stocks.length} ações do setor.`,
+          data: { scoreTotal: leader.iqScore.scoreTotal, sectorCount: stocks.length },
           actionable: true,
           action: `Ver ${leader.ticker}`,
         })
@@ -220,7 +220,7 @@ const sectorRotationRule: InsightRule = {
 
 /**
  * Rule 5: High Leverage
- * divBrutPatrim > 2x sector median AND scoreRisk < 40
+ * divBrutPatrim > 2x sector median AND scoreQuanti < 40
  */
 const highLeverageRule: InsightRule = {
   name: 'high_leverage',
@@ -228,11 +228,11 @@ const highLeverageRule: InsightRule = {
   detect(ctx) {
     const results: Partial<Insight>[] = []
     for (const a of ctx.assets) {
-      if (!a.aqScore || !a.fundamentals?.divBrutPatrim) continue
+      if (!a.iqScore || !a.fundamentals?.divBrutPatrim) continue
       const sectorStats = ctx.sectorAverages[a.sector]
       if (!sectorStats || sectorStats.medianDivBrutPatrim <= 0) continue
       const dbp = a.fundamentals.divBrutPatrim
-      if (dbp > 2 * sectorStats.medianDivBrutPatrim && a.aqScore.scoreRisk < 40) {
+      if (dbp > 2 * sectorStats.medianDivBrutPatrim && a.iqScore.scoreQuanti < 40) {
         results.push({
           type: 'high_leverage',
           category: 'risk',
@@ -240,8 +240,8 @@ const highLeverageRule: InsightRule = {
           ticker: a.ticker,
           sector: a.sector,
           title: `${a.ticker}: alavancagem elevada`,
-          description: `Div. Bruta/Patrim. de ${dbp.toFixed(1)} e ${(dbp / sectorStats.medianDivBrutPatrim).toFixed(1)}x a mediana do setor. Score de risco baixo (${a.aqScore.scoreRisk.toFixed(0)}).`,
-          data: { divBrutPatrim: dbp, sectorMedian: sectorStats.medianDivBrutPatrim, scoreRisk: a.aqScore.scoreRisk },
+          description: `Div. Bruta/Patrim. de ${dbp.toFixed(1)} e ${(dbp / sectorStats.medianDivBrutPatrim).toFixed(1)}x a mediana do setor. Score de risco baixo (${a.iqScore.scoreQuanti.toFixed(0)}).`,
+          data: { divBrutPatrim: dbp, sectorMedian: sectorStats.medianDivBrutPatrim, scoreQuanti: a.iqScore.scoreQuanti },
           actionable: true,
           action: `Avaliar risco de ${a.ticker}`,
         })
@@ -261,7 +261,7 @@ const marketExtremeRule: InsightRule = {
   detect(ctx) {
     const results: Partial<Insight>[] = []
     const scores = ctx.assets
-      .map(a => a.aqScore?.scoreTotal)
+      .map(a => a.iqScore?.scoreTotal)
       .filter((s): s is number => s != null)
     if (scores.length === 0) return results
     const avg = scores.reduce((a, b) => a + b, 0) / scores.length
@@ -300,9 +300,9 @@ const liquidityWarningRule: InsightRule = {
   detect(ctx) {
     const results: Partial<Insight>[] = []
     for (const a of ctx.assets) {
-      if (!a.aqScore || a.fundamentals?.liq2meses == null) continue
+      if (!a.iqScore || a.fundamentals?.liq2meses == null) continue
       const liq = a.fundamentals.liq2meses
-      if (liq < 100000 && a.aqScore.scoreTotal > 60) {
+      if (liq < 100000 && a.iqScore.scoreTotal > 60) {
         results.push({
           type: 'liquidity_warning',
           category: 'risk',
@@ -310,8 +310,8 @@ const liquidityWarningRule: InsightRule = {
           ticker: a.ticker,
           sector: a.sector,
           title: `${a.ticker}: baixa liquidez`,
-          description: `Score de ${a.aqScore.scoreTotal.toFixed(0)} mas liquidez de apenas R$ ${(liq / 1000).toFixed(0)}k/dia. Dificuldade para entrar/sair da posição.`,
-          data: { liq2meses: liq, scoreTotal: a.aqScore.scoreTotal },
+          description: `Score de ${a.iqScore.scoreTotal.toFixed(0)} mas liquidez de apenas R$ ${(liq / 1000).toFixed(0)}k/dia. Dificuldade para entrar/sair da posição.`,
+          data: { liq2meses: liq, scoreTotal: a.iqScore.scoreTotal },
           actionable: true,
           action: `Ver ${a.ticker}`,
         })
@@ -331,17 +331,17 @@ const scoreMilestoneRule: InsightRule = {
   detect(ctx) {
     const results: Partial<Insight>[] = []
     for (const a of ctx.assets) {
-      if (!a.aqScore) continue
-      if (a.aqScore.scoreTotal >= 85) {
+      if (!a.iqScore) continue
+      if (a.iqScore.scoreTotal >= 85) {
         results.push({
           type: 'score_milestone',
           category: 'milestone',
           severity: 'low',
           ticker: a.ticker,
           sector: a.sector,
-          title: `${a.ticker} é Excepcional (${a.aqScore.scoreTotal.toFixed(0)})`,
-          description: `${a.name} atingiu score ${a.aqScore.scoreTotal.toFixed(0)}, classificação Excepcional. Uma das melhores ações avaliadas pelo IQ-Score.`,
-          data: { scoreTotal: a.aqScore.scoreTotal },
+          title: `${a.ticker} é Excepcional (${a.iqScore.scoreTotal.toFixed(0)})`,
+          description: `${a.name} atingiu score ${a.iqScore.scoreTotal.toFixed(0)}, classificação Excepcional. Uma das melhores ações avaliadas pelo IQ-Score.`,
+          data: { scoreTotal: a.iqScore.scoreTotal },
           actionable: true,
           action: `Analisar ${a.ticker}`,
         })
@@ -389,9 +389,9 @@ const momentumShiftRule: InsightRule = {
   detect(ctx) {
     const results: Partial<Insight>[] = []
     for (const a of ctx.assets) {
-      if (!a.lensScores?.momentum || !a.aqScore) continue
+      if (!a.lensScores?.momentum || !a.iqScore) continue
       const mom = a.lensScores.momentum
-      if (mom >= 70 && a.aqScore.scoreTotal >= 55) {
+      if (mom >= 70 && a.iqScore.scoreTotal >= 55) {
         results.push({
           type: 'momentum_shift',
           category: 'opportunity',
@@ -399,12 +399,12 @@ const momentumShiftRule: InsightRule = {
           ticker: a.ticker,
           sector: a.sector,
           title: `${a.ticker}: momento favorável`,
-          description: `Momento forte (${mom.toFixed(0)}) combinado com score ${a.aqScore.scoreTotal.toFixed(0)}. Sinal positivo para entrada.`,
-          data: { momentum: mom, scoreTotal: a.aqScore.scoreTotal },
+          description: `Momento forte (${mom.toFixed(0)}) combinado com score ${a.iqScore.scoreTotal.toFixed(0)}. Sinal positivo para entrada.`,
+          data: { momentum: mom, scoreTotal: a.iqScore.scoreTotal },
           actionable: true,
           action: `Ver ${a.ticker}`,
         })
-      } else if (mom <= 25 && a.aqScore.scoreTotal >= 50) {
+      } else if (mom <= 25 && a.iqScore.scoreTotal >= 50) {
         results.push({
           type: 'momentum_shift',
           category: 'risk',
@@ -412,8 +412,8 @@ const momentumShiftRule: InsightRule = {
           ticker: a.ticker,
           sector: a.sector,
           title: `${a.ticker}: momento desfavorável`,
-          description: `Momento fraco (${mom.toFixed(0)}) apesar de score ${a.aqScore.scoreTotal.toFixed(0)}. Cautela com novas posições.`,
-          data: { momentum: mom, scoreTotal: a.aqScore.scoreTotal },
+          description: `Momento fraco (${mom.toFixed(0)}) apesar de score ${a.iqScore.scoreTotal.toFixed(0)}. Cautela com novas posições.`,
+          data: { momentum: mom, scoreTotal: a.iqScore.scoreTotal },
           actionable: true,
           action: `Avaliar ${a.ticker}`,
         })

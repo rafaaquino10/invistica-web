@@ -20,15 +20,15 @@ function makeAsset(overrides: Partial<AssetData> & { ticker: string }): AssetDat
     fiftyTwoWeekHigh: 30,
     fiftyTwoWeekLow: 20,
     hasFundamentals: true,
-    aqScore: overrides.aqScore || {
+    iqScore: overrides.iqScore || {
       scoreTotal: 65,
       scoreBruto: 65,
       scoreValuation: 60,
-      scoreQuality: 70,
-      scoreGrowth: 50,
-      scoreDividends: 45,
-      scoreRisk: 55,
-      scoreQualitativo: 0,
+      scoreQuanti: 70,
+      scoreOperational: 50,
+      scoreQuali: 45,
+      scoreQuanti: 55,
+      scoreQuali: 0,
       confidence: 100,
     },
     lensScores: overrides.lensScores || null,
@@ -70,8 +70,8 @@ describe('Insights Engine', () => {
   describe('calculateSectorAverages', () => {
     it('calculates correct sector statistics', () => {
       const assets = [
-        makeAsset({ ticker: 'A1', sector: 'Financeiro', aqScore: { scoreTotal: 60, scoreBruto: 60, scoreValuation: 50, scoreQuality: 60, scoreGrowth: 50, scoreDividends: 50, scoreRisk: 50, scoreQualitativo: 0, confidence: 100 }, fundamentals: { peRatio: 10, pbRatio: 1.5, psr: 2, pEbit: 8, evEbit: 10, evEbitda: 8, roe: 15, roic: 12, margemEbit: 20, margemLiquida: 15, liquidezCorrente: 1.5, divBrutPatrim: 0.5, pCapGiro: 5, pAtivCircLiq: -2, pAtivo: 0.5, patrimLiquido: 5e9, dividendYield: 4, netDebtEbitda: 2, crescimentoReceita5a: 10, liq2meses: 500000, freeCashflow: null, netDebt: null, ebitda: null, fcfGrowthRate: null, debtCostEstimate: null, totalDebt: null } }),
-        makeAsset({ ticker: 'A2', sector: 'Financeiro', aqScore: { scoreTotal: 80, scoreBruto: 80, scoreValuation: 70, scoreQuality: 80, scoreGrowth: 60, scoreDividends: 70, scoreRisk: 60, scoreQualitativo: 0, confidence: 100 }, fundamentals: { peRatio: 10, pbRatio: 1.5, psr: 2, pEbit: 8, evEbit: 10, evEbitda: 8, roe: 15, roic: 12, margemEbit: 20, margemLiquida: 15, liquidezCorrente: 1.5, divBrutPatrim: 1.0, pCapGiro: 5, pAtivCircLiq: -2, pAtivo: 0.5, patrimLiquido: 5e9, dividendYield: 8, netDebtEbitda: 2, crescimentoReceita5a: 10, liq2meses: 500000, freeCashflow: null, netDebt: null, ebitda: null, fcfGrowthRate: null, debtCostEstimate: null, totalDebt: null } }),
+        makeAsset({ ticker: 'A1', sector: 'Financeiro', iqScore: { scoreTotal: 60, scoreBruto: 60, scoreValuation: 50, scoreQuanti: 60, scoreOperational: 50, scoreQuali: 50, scoreQuanti: 50, scoreQuali: 0, confidence: 100 }, fundamentals: { peRatio: 10, pbRatio: 1.5, psr: 2, pEbit: 8, evEbit: 10, evEbitda: 8, roe: 15, roic: 12, margemEbit: 20, margemLiquida: 15, liquidezCorrente: 1.5, divBrutPatrim: 0.5, pCapGiro: 5, pAtivCircLiq: -2, pAtivo: 0.5, patrimLiquido: 5e9, dividendYield: 4, netDebtEbitda: 2, crescimentoReceita5a: 10, liq2meses: 500000, freeCashflow: null, netDebt: null, ebitda: null, fcfGrowthRate: null, debtCostEstimate: null, totalDebt: null } }),
+        makeAsset({ ticker: 'A2', sector: 'Financeiro', iqScore: { scoreTotal: 80, scoreBruto: 80, scoreValuation: 70, scoreQuanti: 80, scoreOperational: 60, scoreQuali: 70, scoreQuanti: 60, scoreQuali: 0, confidence: 100 }, fundamentals: { peRatio: 10, pbRatio: 1.5, psr: 2, pEbit: 8, evEbit: 10, evEbitda: 8, roe: 15, roic: 12, margemEbit: 20, margemLiquida: 15, liquidezCorrente: 1.5, divBrutPatrim: 1.0, pCapGiro: 5, pAtivCircLiq: -2, pAtivo: 0.5, patrimLiquido: 5e9, dividendYield: 8, netDebtEbitda: 2, crescimentoReceita5a: 10, liq2meses: 500000, freeCashflow: null, netDebt: null, ebitda: null, fcfGrowthRate: null, debtCostEstimate: null, totalDebt: null } }),
       ]
       const stats = calculateSectorAverages(assets)
       expect(stats['Financeiro']).toBeDefined()
@@ -87,15 +87,15 @@ describe('Insights Engine', () => {
         makeAsset({
           ticker: 'TEST3',
           sector: 'Outros',
-          aqScore: {
+          iqScore: {
             scoreTotal: 60,
             scoreBruto: 60,
             scoreValuation: 70,
-            scoreQuality: 80,
-            scoreGrowth: 30,
-            scoreDividends: 20,
-            scoreRisk: 40,
-            scoreQualitativo: 0,
+            scoreQuanti: 80,
+            scoreOperational: 30,
+            scoreQuali: 20,
+            scoreQuanti: 40,
+            scoreQuali: 0,
             confidence: 100,
           },
         }),
@@ -112,15 +112,15 @@ describe('Insights Engine', () => {
         makeAsset({
           ticker: 'TEST3',
           sector: 'Outros',
-          aqScore: {
+          iqScore: {
             scoreTotal: 75,
             scoreBruto: 75,
             scoreValuation: 70,
-            scoreQuality: 80,
-            scoreGrowth: 60,
-            scoreDividends: 60,
-            scoreRisk: 60,
-            scoreQualitativo: 0,
+            scoreQuanti: 80,
+            scoreOperational: 60,
+            scoreQuali: 60,
+            scoreQuanti: 60,
+            scoreQuali: 0,
             confidence: 100,
           },
         }),
@@ -139,7 +139,7 @@ describe('Insights Engine', () => {
         makeAsset({
           ticker: 'HIGH_DY',
           sector: 'Energia',
-          aqScore: { scoreTotal: 65, scoreBruto: 65, scoreValuation: 60, scoreQuality: 60, scoreGrowth: 50, scoreDividends: 80, scoreRisk: 60, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 65, scoreBruto: 65, scoreValuation: 60, scoreQuanti: 60, scoreOperational: 50, scoreQuali: 80, scoreQuanti: 60, scoreQuali: 0, confidence: 100 },
           fundamentals: { peRatio: 10, pbRatio: 1.5, psr: 2, pEbit: 8, evEbit: 10, evEbitda: 8, roe: 15, roic: 12, margemEbit: 20, margemLiquida: 15, liquidezCorrente: 1.5, divBrutPatrim: 0.8, pCapGiro: 5, pAtivCircLiq: -2, pAtivo: 0.5, patrimLiquido: 5e9, dividendYield: 12, netDebtEbitda: 2, crescimentoReceita5a: 10, liq2meses: 500000, freeCashflow: null, netDebt: null, ebitda: null, fcfGrowthRate: null, debtCostEstimate: null, totalDebt: null },
         }),
       ]
@@ -156,7 +156,7 @@ describe('Insights Engine', () => {
         makeAsset({
           ticker: 'RISKY',
           sector: 'Energia',
-          aqScore: { scoreTotal: 40, scoreBruto: 40, scoreValuation: 30, scoreQuality: 30, scoreGrowth: 30, scoreDividends: 80, scoreRisk: 20, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 40, scoreBruto: 40, scoreValuation: 30, scoreQuanti: 30, scoreOperational: 30, scoreQuali: 80, scoreQuanti: 20, scoreQuali: 0, confidence: 100 },
           fundamentals: { peRatio: 10, pbRatio: 1.5, psr: 2, pEbit: 8, evEbit: 10, evEbitda: 8, roe: 15, roic: 12, margemEbit: 20, margemLiquida: 15, liquidezCorrente: 1.5, divBrutPatrim: 0.8, pCapGiro: 5, pAtivCircLiq: -2, pAtivo: 0.5, patrimLiquido: 5e9, dividendYield: 12, netDebtEbitda: 2, crescimentoReceita5a: 10, liq2meses: 500000, freeCashflow: null, netDebt: null, ebitda: null, fcfGrowthRate: null, debtCostEstimate: null, totalDebt: null },
         }),
       ]
@@ -169,8 +169,8 @@ describe('Insights Engine', () => {
   describe('sector_leader rule', () => {
     it('generates insight for top scorer >70 per sector', () => {
       const assets = [
-        makeAsset({ ticker: 'LEAD3', sector: 'Tecnologia', aqScore: { scoreTotal: 85, scoreBruto: 85, scoreValuation: 70, scoreQuality: 80, scoreGrowth: 80, scoreDividends: 50, scoreRisk: 70, scoreQualitativo: 0, confidence: 100 } }),
-        makeAsset({ ticker: 'FOL3', sector: 'Tecnologia', aqScore: { scoreTotal: 60, scoreBruto: 60, scoreValuation: 50, scoreQuality: 60, scoreGrowth: 50, scoreDividends: 40, scoreRisk: 50, scoreQualitativo: 0, confidence: 100 } }),
+        makeAsset({ ticker: 'LEAD3', sector: 'Tecnologia', iqScore: { scoreTotal: 85, scoreBruto: 85, scoreValuation: 70, scoreQuanti: 80, scoreOperational: 80, scoreQuali: 50, scoreQuanti: 70, scoreQuali: 0, confidence: 100 } }),
+        makeAsset({ ticker: 'FOL3', sector: 'Tecnologia', iqScore: { scoreTotal: 60, scoreBruto: 60, scoreValuation: 50, scoreQuanti: 60, scoreOperational: 50, scoreQuali: 40, scoreQuanti: 50, scoreQuali: 0, confidence: 100 } }),
       ]
       const insights = generateInsights(assets)
       const found = insights.find(i => i.type === 'sector_leader' && i.ticker === 'LEAD3')
@@ -216,7 +216,7 @@ describe('Insights Engine', () => {
         makeAsset({
           ticker: 'DEBT3',
           sector: 'Industrial',
-          aqScore: { scoreTotal: 35, scoreBruto: 35, scoreValuation: 40, scoreQuality: 40, scoreGrowth: 30, scoreDividends: 20, scoreRisk: 25, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 35, scoreBruto: 35, scoreValuation: 40, scoreQuanti: 40, scoreOperational: 30, scoreQuali: 20, scoreQuanti: 25, scoreQuali: 0, confidence: 100 },
           fundamentals: { peRatio: 10, pbRatio: 1.5, psr: 2, pEbit: 8, evEbit: 10, evEbitda: 8, roe: 15, roic: 12, margemEbit: 20, margemLiquida: 15, liquidezCorrente: 1.5, divBrutPatrim: 4.0, pCapGiro: 5, pAtivCircLiq: -2, pAtivo: 0.5, patrimLiquido: 5e9, dividendYield: 5, netDebtEbitda: 2, crescimentoReceita5a: 10, liq2meses: 500000, freeCashflow: null, netDebt: null, ebitda: null, fcfGrowthRate: null, debtCostEstimate: null, totalDebt: null },
         }),
       ]
@@ -233,7 +233,7 @@ describe('Insights Engine', () => {
       const assets = Array.from({ length: 5 }, (_, i) =>
         makeAsset({
           ticker: `LOW${i}`,
-          aqScore: { scoreTotal: 30 + i, scoreBruto: 30 + i, scoreValuation: 30, scoreQuality: 30, scoreGrowth: 30, scoreDividends: 30, scoreRisk: 30, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 30 + i, scoreBruto: 30 + i, scoreValuation: 30, scoreQuanti: 30, scoreOperational: 30, scoreQuali: 30, scoreQuanti: 30, scoreQuali: 0, confidence: 100 },
         })
       )
       const insights = generateInsights(assets)
@@ -246,7 +246,7 @@ describe('Insights Engine', () => {
       const assets = Array.from({ length: 5 }, (_, i) =>
         makeAsset({
           ticker: `MID${i}`,
-          aqScore: { scoreTotal: 53 + i, scoreBruto: 53 + i, scoreValuation: 50, scoreQuality: 50, scoreGrowth: 50, scoreDividends: 50, scoreRisk: 50, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 53 + i, scoreBruto: 53 + i, scoreValuation: 50, scoreQuanti: 50, scoreOperational: 50, scoreQuali: 50, scoreQuanti: 50, scoreQuali: 0, confidence: 100 },
         })
       )
       const insights = generateInsights(assets)
@@ -260,7 +260,7 @@ describe('Insights Engine', () => {
       const assets = [
         makeAsset({
           ticker: 'ILLIQ3',
-          aqScore: { scoreTotal: 72, scoreBruto: 72, scoreValuation: 70, scoreQuality: 75, scoreGrowth: 60, scoreDividends: 50, scoreRisk: 60, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 72, scoreBruto: 72, scoreValuation: 70, scoreQuanti: 75, scoreOperational: 60, scoreQuali: 50, scoreQuanti: 60, scoreQuali: 0, confidence: 100 },
           fundamentals: { peRatio: 10, pbRatio: 1.5, psr: 2, pEbit: 8, evEbit: 10, evEbitda: 8, roe: 15, roic: 12, margemEbit: 20, margemLiquida: 15, liquidezCorrente: 1.5, divBrutPatrim: 0.8, pCapGiro: 5, pAtivCircLiq: -2, pAtivo: 0.5, patrimLiquido: 5e9, dividendYield: 5, netDebtEbitda: 2, crescimentoReceita5a: 10, liq2meses: 50000, freeCashflow: null, netDebt: null, ebitda: null, fcfGrowthRate: null, debtCostEstimate: null, totalDebt: null },
         }),
       ]
@@ -277,7 +277,7 @@ describe('Insights Engine', () => {
         makeAsset({
           ticker: 'STAR3',
           name: 'Star Corp',
-          aqScore: { scoreTotal: 88, scoreBruto: 88, scoreValuation: 85, scoreQuality: 90, scoreGrowth: 80, scoreDividends: 75, scoreRisk: 85, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 88, scoreBruto: 88, scoreValuation: 85, scoreQuanti: 90, scoreOperational: 80, scoreQuali: 75, scoreQuanti: 85, scoreQuali: 0, confidence: 100 },
         }),
       ]
       const insights = generateInsights(assets)
@@ -296,7 +296,7 @@ describe('Insights Engine', () => {
       const assets = [
         makeAsset({
           ticker: 'DUP3',
-          aqScore: { scoreTotal: 88, scoreBruto: 88, scoreValuation: 85, scoreQuality: 90, scoreGrowth: 80, scoreDividends: 75, scoreRisk: 85, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 88, scoreBruto: 88, scoreValuation: 85, scoreQuanti: 90, scoreOperational: 80, scoreQuali: 75, scoreQuanti: 85, scoreQuali: 0, confidence: 100 },
         }),
       ]
       const insights = generateInsights(assets)
@@ -312,13 +312,13 @@ describe('Insights Engine', () => {
         makeAsset({
           ticker: 'MILE3',
           sector: 'Outros',
-          aqScore: { scoreTotal: 90, scoreBruto: 90, scoreValuation: 85, scoreQuality: 90, scoreGrowth: 80, scoreDividends: 75, scoreRisk: 85, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 90, scoreBruto: 90, scoreValuation: 85, scoreQuanti: 90, scoreOperational: 80, scoreQuali: 75, scoreQuanti: 85, scoreQuali: 0, confidence: 100 },
         }),
         // This will trigger undervalued_quality (high severity)
         makeAsset({
           ticker: 'UVAL3',
           sector: 'Outros',
-          aqScore: { scoreTotal: 60, scoreBruto: 60, scoreValuation: 70, scoreQuality: 80, scoreGrowth: 30, scoreDividends: 20, scoreRisk: 40, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 60, scoreBruto: 60, scoreValuation: 70, scoreQuanti: 80, scoreOperational: 30, scoreQuali: 20, scoreQuanti: 40, scoreQuali: 0, confidence: 100 },
         }),
       ]
       const insights = generateInsights(assets)
@@ -345,7 +345,7 @@ describe('Insights Engine', () => {
       const assets = [
         makeAsset({
           ticker: 'OK3',
-          aqScore: { scoreTotal: 90, scoreBruto: 90, scoreValuation: 85, scoreQuality: 90, scoreGrowth: 80, scoreDividends: 75, scoreRisk: 85, scoreQualitativo: 0, confidence: 100 },
+          iqScore: { scoreTotal: 90, scoreBruto: 90, scoreValuation: 85, scoreQuanti: 90, scoreOperational: 80, scoreQuali: 75, scoreQuanti: 85, scoreQuali: 0, confidence: 100 },
         }),
       ]
       const insights = generateInsights(assets)
@@ -388,7 +388,7 @@ describe('Insights Engine', () => {
       const target = makeAsset({
         ticker: 'MULTI3',
         sector: 'TestSector',
-        aqScore: { scoreTotal: 62, scoreBruto: 62, scoreValuation: 70, scoreQuality: 80, scoreGrowth: 30, scoreDividends: 60, scoreRisk: 55, scoreQualitativo: 0, confidence: 100 },
+        iqScore: { scoreTotal: 62, scoreBruto: 62, scoreValuation: 70, scoreQuanti: 80, scoreOperational: 30, scoreQuali: 60, scoreQuanti: 55, scoreQuali: 0, confidence: 100 },
         fundamentals: {
           peRatio: 10, pbRatio: 1.5, psr: 2, pEbit: 8, evEbit: 10, evEbitda: 8,
           roe: 15, roic: 12, margemEbit: 20, margemLiquida: 15,

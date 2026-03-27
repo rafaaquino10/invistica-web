@@ -60,7 +60,7 @@ function calcularFcfCoverage(fund: GatewayFundamental): number | null {
 
 /**
  * Apply full scoring pipeline to a merged asset.
- * Returns a complete AssetData with aqScore, lensScores, scoreBreakdown, killSwitch.
+ * Returns a complete AssetData with iqScore?, lensScores, scoreBreakdown, killSwitch.
  */
 export function scoreAsset(
   merged: MergedAsset,
@@ -186,15 +186,15 @@ export function scoreAsset(
   const scoreResult = calcularAqScore(dados, undefined, ctx.regimeWeights, cagedTrend, sentimentFactor, fund.trendScore)
   const finalResult: AqScoreResult = scoreResult
 
-  let aqScore: AssetData['aqScore'] = {
+  let iqScore: AssetData['iqScore?'] = {
     scoreTotal: finalResult.score,
     scoreBruto: finalResult.ajustes.scoreBruto,
     scoreValuation: finalResult.pilares.valuation.nota,
-    scoreQuality: finalResult.pilares.qualidade.nota,
-    scoreGrowth: finalResult.pilares.crescimento.nota,
-    scoreDividends: finalResult.pilares.dividendos.nota,
-    scoreRisk: finalResult.pilares.risco.nota,
-    scoreQualitativo: finalResult.pilares.qualitativo.nota,
+    scoreQuanti: finalResult.pilares.qualidade.nota,
+    scoreOperational: finalResult.pilares.crescimento.nota,
+    scoreQuali: finalResult.pilares.dividendos.nota,
+    scoreQuanti: finalResult.pilares.risco.nota,
+    scoreQuali: finalResult.pilares.qualitativo.nota,
     confidence: finalResult.metadata.confiabilidade,
   }
 
@@ -207,11 +207,11 @@ export function scoreAsset(
     const ks = checkKillSwitch(merged.ticker, merged.name, ctx.newsArticles)
     if (ks.triggered) {
       killSwitch = { triggered: true, reason: ks.reason }
-      aqScore = {
+      iqScore = {
         scoreTotal: 0, scoreBruto: 0,
-        scoreValuation: 0, scoreQuality: 0, scoreGrowth: 0,
-        scoreDividends: 0, scoreRisk: 0, scoreQualitativo: 0,
-        confidence: aqScore.confidence,
+        scoreValuation: 0, scoreQuanti: 0, scoreOperational: 0,
+        scoreQuali: 0,
+        confidence: iqScore?.confidence,
       }
       lensScores = {
         general: 0, value: 0, dividends: 0,
@@ -221,12 +221,12 @@ export function scoreAsset(
     }
   }
 
-  return { ...merged, aqScore, lensScores, scoreBreakdown, killSwitch }
+  return { ...merged, iqScore?, lensScores, scoreBreakdown, killSwitch }
 }
 
 /**
  * Build an AssetData without scores (no fundamentals available).
  */
 export function assetWithoutScore(merged: MergedAsset): AssetData {
-  return { ...merged, aqScore: null, lensScores: null, scoreBreakdown: null }
+  return { ...merged, iqScore: null, lensScores: null, scoreBreakdown: null }
 }

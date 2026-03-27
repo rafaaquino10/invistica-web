@@ -37,15 +37,15 @@ function makeAsset(ticker: string, overrides: Partial<{
     fiftyTwoWeekHigh: 30,
     fiftyTwoWeekLow: 20,
     hasFundamentals: true,
-    aqScore: {
+    iqScore: {
       scoreTotal: score,
       scoreBruto: score,
       scoreValuation: 60,
-      scoreQuality: 70,
-      scoreGrowth: 50,
-      scoreDividends: 45,
-      scoreRisk: 55,
-      scoreQualitativo: 0,
+      scoreQuanti: 70,
+      scoreOperational: 50,
+      scoreQuali: 45,
+      scoreQuanti: 55,
+      scoreQuali: 0,
       confidence: overrides.confidence ?? 85,
     },
     lensScores: {
@@ -257,13 +257,13 @@ describe('filterAndRankPortfolio', () => {
     expect(result.length).toBe(0)
   })
 
-  it('skips assets without aqScore', () => {
+  it('skips assets without iqScore?', () => {
     const portfolio: SmartPortfolio = {
       ...SMART_PORTFOLIOS[0]!,
       criteria: {},
       maxStocks: 10,
     }
-    const noScore: AssetData = { ...makeAsset('XPTO3'), aqScore: null }
+    const noScore: AssetData = { ...makeAsset('XPTO3'), iqScore: null }
     const assets = [makeAsset('PETR4'), noScore]
 
     const result = filterAndRankPortfolio(portfolio, assets)

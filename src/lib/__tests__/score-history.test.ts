@@ -41,15 +41,15 @@ function makeAsset(ticker: string, scoreTotal: number, overrides: Partial<{
     fiftyTwoWeekHigh: 30,
     fiftyTwoWeekLow: 20,
     hasFundamentals: true,
-    aqScore: {
+    iqScore: {
       scoreTotal,
       scoreBruto: scoreTotal,
       scoreValuation: overrides.valuation ?? 60,
-      scoreQuality: overrides.quality ?? 70,
-      scoreGrowth: overrides.growth ?? 50,
-      scoreDividends: overrides.dividends ?? 45,
-      scoreRisk: overrides.risk ?? 55,
-      scoreQualitativo: 0,
+      scoreQuanti: overrides.quality ?? 70,
+      scoreOperational: overrides.growth ?? 50,
+      scoreQuali: overrides.dividends ?? 45,
+      scoreQuanti: overrides.risk ?? 55,
+      scoreQuali: 0,
       confidence: 100,
     },
     lensScores: null,
@@ -179,10 +179,10 @@ describe('score-history', () => {
       if (fs.existsSync(todayPath)) fs.unlinkSync(todayPath)
     })
 
-    it('skips assets without aqScore', () => {
+    it('skips assets without iqScore?', () => {
       const assetNoScore: AssetData = {
         ...makeAsset('XPTO3', 50),
-        aqScore: null,
+        iqScore: null,
       }
       const assets = [makeAsset('PETR4', 70), assetNoScore]
 

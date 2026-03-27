@@ -146,8 +146,8 @@ export default function PortfolioPage() {
           />
           <SummaryCard
             label="IQ-Score Médio"
-            value={portfolio.avgAqScore.toFixed(0)}
-            valueColor={portfolio.avgAqScore >= 65 ? 'text-[var(--pos)]' : 'text-[var(--text-1)]'}
+            value={portfolio.avgIqScore.toFixed(0)}
+            valueColor={portfolio.avgIqScore >= 65 ? 'text-[var(--pos)]' : 'text-[var(--text-1)]'}
           />
         </motion.div>
       )}
@@ -277,14 +277,14 @@ export default function PortfolioPage() {
                             </span>
                           </td>
                           <td className="px-3 py-3 text-center">
-                            {pos.aqScore != null && (
+                            {pos.iqScore != null && (
                               <span className={cn(
                                 'inline-flex items-center justify-center w-9 h-9 rounded-lg font-mono text-xs font-bold',
-                                pos.aqScore >= 75 ? 'bg-[var(--pos)]/10 text-[var(--pos)]' :
-                                pos.aqScore >= 62 ? 'bg-[var(--accent-1)]/10 text-[var(--accent-1)]' :
+                                pos.iqScore >= 75 ? 'bg-[var(--pos)]/10 text-[var(--pos)]' :
+                                pos.iqScore >= 62 ? 'bg-[var(--accent-1)]/10 text-[var(--accent-1)]' :
                                 'bg-[var(--bg)] text-[var(--text-2)]'
                               )}>
-                                {pos.aqScore}
+                                {pos.iqScore}
                               </span>
                             )}
                           </td>

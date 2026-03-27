@@ -22,15 +22,15 @@ export interface AssetData {
   fiftyTwoWeekHigh: number | null
   fiftyTwoWeekLow: number | null
   hasFundamentals: boolean
-  aqScore: {
+  iqScore: {
     scoreTotal: number
     scoreBruto: number
     scoreValuation: number
-    scoreQuality: number
-    scoreGrowth: number
-    scoreDividends: number
-    scoreRisk: number
-    scoreQualitativo: number
+    scoreQuanti: number
+    scoreOperational: number
+    scoreQuali: number
+    scoreQuanti: number
+    scoreQuali: number
     confidence: number
   } | null
   lensScores: MultiLensScores | null

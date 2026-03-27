@@ -20,7 +20,7 @@ import { getSectorBenchmarks } from '../../scoring/aq-score'
 
 function makeAsset(ticker: string, overrides: Partial<{
   score: number
-  scoreRisk: number
+  scoreQuanti: number
   peRatio: number | null
   sector: string
 }> = {}): AssetData {
@@ -40,15 +40,15 @@ function makeAsset(ticker: string, overrides: Partial<{
     fiftyTwoWeekHigh: 30,
     fiftyTwoWeekLow: 20,
     hasFundamentals: true,
-    aqScore: {
+    iqScore: {
       scoreTotal: score,
       scoreBruto: score,
       scoreValuation: 60,
-      scoreQuality: 70,
-      scoreGrowth: 50,
-      scoreDividends: 45,
-      scoreRisk: overrides.scoreRisk ?? 55,
-      scoreQualitativo: 0,
+      scoreQuanti: 70,
+      scoreOperational: 50,
+      scoreQuali: 45,
+      scoreQuanti: overrides.scoreQuanti ?? 55,
+      scoreQuali: 0,
       confidence: 85,
     },
     lensScores: null,
@@ -153,7 +153,7 @@ describe('generateExitAlerts', () => {
 
     const alerts = generateExitAlerts(
       [{ ticker: 'PETR4', quantity: 100 }],
-      [makeAsset('PETR4', { scoreRisk: 20, peRatio: 5 })],
+      [makeAsset('PETR4', { scoreQuanti: 20, peRatio: 5 })],
     )
 
     const risk = alerts.find(a => a.type === 'monitorar')
@@ -170,7 +170,7 @@ describe('generateExitAlerts', () => {
 
     const alerts = generateExitAlerts(
       [{ ticker: 'PETR4', quantity: 100 }],
-      [makeAsset('PETR4', { score: 60, scoreRisk: 20, peRatio: 10 })],
+      [makeAsset('PETR4', { score: 60, scoreQuanti: 20, peRatio: 10 })],
     )
 
     // Should have critical alerts before warnings

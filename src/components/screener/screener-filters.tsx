@@ -37,11 +37,10 @@ const sortOptions = [
   { value: 'dividendYield', label: 'Dividend Yield' },
   { value: 'peRatio', label: 'P/L' },
   { value: 'roe', label: 'ROE' },
+  { value: 'scoreQuanti', label: 'Quantitativo' },
+  { value: 'scoreQuali', label: 'Qualitativo' },
   { value: 'scoreValuation', label: 'Valuation' },
-  { value: 'scoreQuality', label: 'Qualidade' },
-  { value: 'scoreGrowth', label: 'Crescimento' },
-  { value: 'scoreDividends', label: 'Dividendos' },
-  { value: 'scoreRisk', label: 'Risco' },
+  { value: 'scoreOperational', label: 'Operacional' },
 ]
 
 export function ScreenerFilters({

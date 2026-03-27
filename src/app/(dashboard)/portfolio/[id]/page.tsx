@@ -223,7 +223,7 @@ export default function PortfolioDetailPage() {
           <div className="w-px h-10 bg-[var(--border-1)]/30 flex-shrink-0" />
           <div>
             <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-0.5">Score Médio</p>
-            <ScoreBadge score={portfolio.summary.avgAqScore} size="lg" showBar showLabel />
+            <ScoreBadge score={portfolio.summary.avgIqScore} size="lg" showBar showLabel />
           </div>
           {performance?.benchmarks && (
             <>
@@ -289,7 +289,7 @@ export default function PortfolioDetailPage() {
         <PortfolioDiagnostics
           positions={portfolio.positions}
           totalValue={portfolio.summary.totalValue}
-          avgAqScore={portfolio.summary.avgAqScore}
+          avgIqScore={portfolio.summary.avgIqScore}
         />
       )}
 
@@ -378,7 +378,7 @@ export default function PortfolioDetailPage() {
                       <ChangeIndicator value={pos.gainLossPercent} size="sm" />
                     </td>
                     <td className="py-3 pr-1 text-center">
-                      <ScoreBadge score={pos.aqScore} size="sm" />
+                      <ScoreBadge score={pos.iqScore} size="sm" />
                     </td>
                   </tr>
                 ))}

@@ -14,13 +14,12 @@ interface AssetRow {
   type: string
   sector: string | null
   logo?: string | null
-  aqScore: {
+  iqScore: {
     scoreTotal: number | string
+    scoreQuanti: number | string
+    scoreQuali: number | string
     scoreValuation: number | string
-    scoreQuality: number | string
-    scoreGrowth: number | string
-    scoreDividends: number | string
-    scoreRisk: number | string
+    scoreOperational: number | string
   } | null
   fundamental: {
     dividendYield: number | string | null
@@ -179,7 +178,7 @@ export function ScreenerTable({
         </thead>
         <tbody>
           {assets.map((asset) => {
-            const score = asset.aqScore ? Number(asset.aqScore.scoreTotal) : null
+            const score = asset.iqScore ? Number(asset.iqScore.scoreTotal) : null
             const price = asset.latestQuote ? Number(asset.latestQuote.close) : null
             const change = asset.latestQuote?.changePercent ? Number(asset.latestQuote.changePercent) : null
             // Values are already in percentage format (8.81 = 8.81%), no need to multiply by 100

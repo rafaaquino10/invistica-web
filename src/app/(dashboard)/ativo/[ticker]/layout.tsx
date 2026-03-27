@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     name: string
     type: string
     sector: string | null
-    aqScores: Array<{ scoreTotal: number }>
+    iqScores: Array<{ scoreTotal: number }>
     quotes: Array<{ close: number }>
   } | null = null
 
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       name: liveAsset.name,
       type: liveAsset.type,
       sector: liveAsset.sector,
-      aqScores: liveAsset.aqScore ? [{ scoreTotal: liveAsset.aqScore.scoreTotal }] : [],
+      iqScores: liveAsset.iqScore ? [{ scoreTotal: liveAsset.iqScore.scoreTotal }] : [],
       quotes: [{ close: liveAsset.price }],
     }
   }
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
   }
 
-  const score = asset.aqScores[0] ? Number(asset.aqScores[0].scoreTotal) : null
+  const score = asset.iqScores[0] ? Number(asset.iqScores[0].scoreTotal) : null
   const price = asset.quotes[0] ? Number(asset.quotes[0].close) : null
   const scoreLabel = score !== null ? getScoreLabel(score) : null
 

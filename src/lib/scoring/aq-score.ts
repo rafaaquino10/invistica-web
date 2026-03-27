@@ -219,10 +219,10 @@ export interface FundamentalData {
 export interface AQScoreResult {
   scoreTotal: number
   scoreValuation: number
-  scoreQuality: number
-  scoreGrowth: number
-  scoreDividends: number
-  scoreRisk: number
+  scoreQuanti: number
+  scoreOperational: number
+  scoreQuali: number
+  scoreQuanti: number
   breakdown: {
     valuation: Record<string, { value: number | null; score: number; weight: number }>
     quality: Record<string, { value: number | null; score: number; weight: number }>
@@ -1146,10 +1146,10 @@ export function calculateAQScore(data: FundamentalData): AQScoreResult {
   return {
     scoreTotal: result.score,
     scoreValuation: p.valuation.nota,
-    scoreQuality: p.qualidade.nota,
-    scoreGrowth: p.crescimento.nota,
-    scoreDividends: p.dividendos.nota,
-    scoreRisk: p.risco.nota,
+    scoreQuanti: p.qualidade.nota,
+    scoreOperational: p.crescimento.nota,
+    scoreQuali: p.dividendos.nota,
+    scoreQuanti: p.risco.nota,
     breakdown: {
       valuation: toMetricScores(p.valuation.subNotas),
       quality: toMetricScores(p.qualidade.subNotas),

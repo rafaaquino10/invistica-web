@@ -8,7 +8,7 @@
 export interface QuintilePosition {
   ticker: string
   currentValue: number
-  aqScore: number | null
+  iqScore: number | null
 }
 
 export interface MarketAsset {
@@ -46,12 +46,12 @@ export function calculateQuintile(
   marketAssets: MarketAsset[],
 ): QuintileResult {
   // Filtrar posições com score
-  const scoredPositions = positions.filter(p => p.aqScore != null && p.aqScore > 0)
+  const scoredPositions = positions.filter(p => p.iqScore != null && p.iqScore > 0)
   const totalValue = scoredPositions.reduce((sum, p) => sum + p.currentValue, 0)
 
   // Calcular score médio ponderado
   const portfolioAvgScore = totalValue > 0
-    ? scoredPositions.reduce((sum, p) => sum + (p.aqScore! * p.currentValue / totalValue), 0)
+    ? scoredPositions.reduce((sum, p) => sum + (p.iqScore! * p.currentValue / totalValue), 0)
     : 0
 
   // Calcular thresholds de quintil do mercado
@@ -80,9 +80,9 @@ export function calculateQuintile(
   }
 
   for (const p of scoredPositions) {
-    const q = getQuintile(p.aqScore!, thresholds)
+    const q = getQuintile(p.iqScore!, thresholds)
     const weight = totalValue > 0 ? Math.round((p.currentValue / totalValue) * 10000) / 100 : 0
-    positionsByQuintile[q]!.push({ ticker: p.ticker, score: Math.round(p.aqScore!), weight })
+    positionsByQuintile[q]!.push({ ticker: p.ticker, score: Math.round(p.iqScore!), weight })
   }
 
   const marketByQuintile = [0, 0, 0, 0, 0]
