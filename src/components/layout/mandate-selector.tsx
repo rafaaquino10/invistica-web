@@ -18,6 +18,8 @@ export function MandateSelector({ size = 'sm', className }: MandateSelectorProps
           key={m}
           onClick={() => setMandate(m)}
           title={meta[m].description}
+          aria-label={`Mandato ${meta[m].label}: ${meta[m].description}`}
+          aria-pressed={mandate === m}
           className={cn(
             'transition-all font-medium rounded-md',
             size === 'sm' ? 'px-2 py-1 text-[10px]' : 'px-3 py-1.5 text-xs',

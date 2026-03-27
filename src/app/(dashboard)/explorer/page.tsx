@@ -133,6 +133,8 @@ export default function ExplorerPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowFilters(!showFilters)}
+            aria-label="Alternar painel de filtros"
+            aria-expanded={showFilters}
             className={cn(
               'px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors',
               showFilters ? 'bg-[var(--accent-1)] text-white border-[var(--accent-1)]' : 'bg-[var(--surface-1)] text-[var(--text-2)] border-[var(--border-1)]'
@@ -251,7 +253,11 @@ export default function ExplorerPage() {
                     key={r.ticker}
                     ref={(el) => { if (el) rowRefs.current.set(idx, el); else rowRefs.current.delete(idx) }}
                     onClick={() => router.push(`/ativo/${r.ticker}`)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/ativo/${r.ticker}`) }}
+                    tabIndex={0}
+                    role="row"
                     aria-selected={idx === selectedIdx}
+                    aria-label={`${r.ticker} — IQ-Score ${r.iq_score}, ${r.rating}`}
                     className={cn(
                       'border-b border-[var(--border-1)]/20 cursor-pointer transition-colors',
                       idx === selectedIdx ? 'bg-[var(--accent-1)]/5 ring-1 ring-[var(--accent-1)]/20' : 'hover:bg-[var(--surface-2)]'
@@ -340,6 +346,10 @@ function SortHeader({ label, sortKey, current, asc, onSort }: {
     <th
       className="text-right px-3 py-3.5 text-[var(--text-2)] font-medium cursor-pointer hover:text-[var(--text-1)] transition-colors select-none"
       onClick={() => onSort(sortKey)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSort(sortKey) } }}
+      tabIndex={0}
+      role="columnheader"
+      aria-sort={active ? (asc ? 'ascending' : 'descending') : 'none'}
     >
       {label} {active ? (asc ? '↑' : '↓') : ''}
     </th>

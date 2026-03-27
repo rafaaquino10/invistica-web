@@ -84,7 +84,7 @@ export function IQCognitXRay({ evidences, iqScore, rating, ratingLabel }: IQCogn
 
       {/* Radar Chart */}
       <div className="px-4 py-3">
-        <ResponsiveContainer width="100%" height={320}>
+        <ResponsiveContainer width="100%" height={280}>
           <RadarChart cx="50%" cy="50%" outerRadius="65%" data={radarData}>
             <PolarGrid stroke="var(--border-1)" strokeDasharray="3 3" />
             <PolarAngleAxis
@@ -114,6 +114,8 @@ export function IQCognitXRay({ evidences, iqScore, rating, ratingLabel }: IQCogn
             <div key={ev.criterion_id} className="border-b border-[var(--border-1)]/20 last:border-0">
               <button
                 onClick={() => setExpandedId(isExpanded ? null : ev.criterion_id)}
+                aria-expanded={isExpanded}
+                aria-controls={`criteria-${ev.criterion_id}`}
                 className="w-full flex items-center gap-3 px-5 py-3 hover:bg-[var(--surface-2)] transition-colors text-left"
               >
                 {/* Score badge */}
@@ -155,7 +157,7 @@ export function IQCognitXRay({ evidences, iqScore, rating, ratingLabel }: IQCogn
 
               {/* Expanded content */}
               {isExpanded && (
-                <div className="px-5 pb-4 space-y-3">
+                <div id={`criteria-${ev.criterion_id}`} className="px-5 pb-4 space-y-3">
                   {/* Evidence text */}
                   {ev.evidence_text && (
                     <p className="text-[var(--text-caption)] text-[var(--text-2)] leading-relaxed">{ev.evidence_text}</p>

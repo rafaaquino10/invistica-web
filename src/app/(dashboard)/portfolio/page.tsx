@@ -154,6 +154,7 @@ export default function PortfolioPage() {
         <div className="flex gap-2">
           <button
             onClick={() => setShowCSVImport(true)}
+            aria-label="Importar posições de arquivo CSV"
             className="px-4 py-2.5 bg-[var(--surface-1)] text-[var(--text-2)] text-sm font-medium rounded-xl border border-[var(--border-1)] hover:bg-[var(--surface-2)] transition-colors"
           >
             CSV

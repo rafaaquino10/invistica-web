@@ -341,7 +341,7 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
       {/* ─── Actions (regime badge + theme toggle + user) ── */}
       <div className="flex items-center gap-1.5">
         {/* Mandate Selector */}
-        <MandateSelector size="sm" className="hidden sm:flex" />
+        <MandateSelector size="sm" />
         {/* Macro Regime Badge */}
         <RegimeBadge />
         {/* Mobile Search Button */}
