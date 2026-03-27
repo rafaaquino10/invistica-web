@@ -526,17 +526,7 @@ export const pro = {
       }
     }>(`/dividends/${ticker}/trap-risk`, { token }),
 
-  // Dossier (already exists as endpoint, adding typed function)
-  getDossier: (ticker: string, token?: string) =>
-    apiFetch<{
-      ticker: string; score_quali: number
-      dimensions: Array<{
-        name: string; veredito: string
-        narrative: string; evidencias: string[]
-        alertas: string[]
-      }>
-      veredito_geral: string
-    }>(`/scores/${ticker}/dossier`, { token }),
+  // Dossier — NOTE: duplicate removed, using the one at line ~231 with correct field name "dimensoes"
 
   // Mandate Comparison
   getScoreMandates: (ticker: string, token?: string) =>

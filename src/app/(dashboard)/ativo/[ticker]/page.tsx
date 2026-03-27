@@ -62,96 +62,104 @@ export default function AtivoPage() {
     retry: 1,
   })
 
-  const { data: valuation, isLoading: loadingVal } = useQuery({
+  // Secondary queries — all have .catch(() => null) so a 500 on any
+  // endpoint doesn't break the entire page. Only the score query is critical.
+  const { data: valuation } = useQuery({
     queryKey: ['valuation', ticker],
-    queryFn: () => pro.getValuation(ticker, token ?? undefined),
+    queryFn: () => pro.getValuation(ticker, token ?? undefined).catch(() => null),
     enabled: !!ticker,
-    retry: 1,
+    retry: 0,
   })
 
   const { data: tickerData } = useQuery({
     queryKey: ['ticker-detail', ticker],
-    queryFn: () => free.getTicker(ticker),
+    queryFn: () => free.getTicker(ticker).catch(() => null),
     enabled: !!ticker,
+    retry: 0,
   })
 
   const { data: financialsData } = useQuery({
     queryKey: ['financials', ticker],
-    queryFn: () => free.getFinancials(ticker, 6),
+    queryFn: () => free.getFinancials(ticker, 6).catch(() => null),
     enabled: !!ticker,
+    retry: 0,
   })
 
   const { data: peersData } = useQuery({
     queryKey: ['peers', ticker],
-    queryFn: () => free.getPeers(ticker),
+    queryFn: () => free.getPeers(ticker).catch(() => null),
     enabled: !!ticker,
+    retry: 0,
   })
 
   const { data: dividendsData } = useQuery({
     queryKey: ['dividends', ticker],
-    queryFn: () => free.getDividends(ticker),
+    queryFn: () => free.getDividends(ticker).catch(() => null),
     enabled: !!ticker,
+    retry: 0,
   })
 
   const { data: dossier } = useQuery({
     queryKey: ['dossier', ticker],
-    queryFn: () => pro.getDossier(ticker, token ?? undefined),
+    queryFn: () => pro.getDossier(ticker, token ?? undefined).catch(() => null),
     enabled: !!ticker,
+    retry: 0,
   })
 
   const { data: thesis } = useQuery({
     queryKey: ['thesis', ticker],
-    queryFn: () => pro.getThesis(ticker, token ?? undefined),
+    queryFn: () => pro.getThesis(ticker, token ?? undefined).catch(() => null),
     enabled: !!ticker,
+    retry: 0,
   })
 
   const { data: newsData } = useQuery({
     queryKey: ['news', ticker],
-    queryFn: () => pro.getNews(ticker, 8, token ?? undefined),
+    queryFn: () => pro.getNews(ticker, 8, token ?? undefined).catch(() => null),
     enabled: !!ticker,
-    staleTime: 5 * 60 * 1000,
+    retry: 0,
   })
 
   const { data: investorRelations } = useQuery({
     queryKey: ['investor-relations', ticker],
-    queryFn: () => pro.getInvestorRelations(ticker, 10, token ?? undefined),
+    queryFn: () => pro.getInvestorRelations(ticker, 10, token ?? undefined).catch(() => null),
     enabled: !!ticker,
-    staleTime: 10 * 60 * 1000,
+    retry: 0,
   })
 
   const { data: riskMetrics } = useQuery({
     queryKey: ['risk-metrics', ticker],
-    queryFn: () => pro.getRiskMetrics(ticker, token ?? undefined),
+    queryFn: () => pro.getRiskMetrics(ticker, token ?? undefined).catch(() => null),
     enabled: !!ticker,
-    staleTime: 10 * 60 * 1000,
+    retry: 0,
   })
 
   const { data: scenarios } = useQuery({
     queryKey: ['valuation-scenarios', ticker],
-    queryFn: () => pro.getScenarios(ticker, token ?? undefined),
+    queryFn: () => pro.getScenarios(ticker, token ?? undefined).catch(() => null),
     enabled: !!ticker,
-    staleTime: 10 * 60 * 1000,
+    retry: 0,
   })
 
   const { data: dividendSafety } = useQuery({
     queryKey: ['dividend-safety', ticker],
-    queryFn: () => pro.getDividendSafety(ticker, token ?? undefined),
+    queryFn: () => pro.getDividendSafety(ticker, token ?? undefined).catch(() => null),
     enabled: !!ticker,
-    staleTime: 10 * 60 * 1000,
+    retry: 0,
   })
 
   const { data: trapRisk } = useQuery({
     queryKey: ['trap-risk', ticker],
-    queryFn: () => pro.getDividendTrapRisk(ticker, token ?? undefined),
+    queryFn: () => pro.getDividendTrapRisk(ticker, token ?? undefined).catch(() => null),
     enabled: !!ticker,
     staleTime: 10 * 60 * 1000,
   })
 
   const { data: mandatesData } = useQuery({
     queryKey: ['mandates', ticker],
-    queryFn: () => pro.getScoreMandates(ticker, token ?? undefined),
+    queryFn: () => pro.getScoreMandates(ticker, token ?? undefined).catch(() => null),
     enabled: !!ticker,
-    staleTime: 10 * 60 * 1000,
+    retry: 0,
   })
 
   // Adapt data
@@ -587,7 +595,7 @@ export default function AtivoPage() {
       )}
 
       {/* ─── Row 4: Dossier Qualitativo ─────────────────── */}
-      {dossier && dossier.dimensions && dossier.dimensions.length > 0 && (
+      {dossier && dossier.dimensoes && dossier.dimensoes.length > 0 && (
         <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-[var(--text-1)]">Dossier Qualitativo</h3>
@@ -600,8 +608,8 @@ export default function AtivoPage() {
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {dossier.dimensions.map((dim) => (
-              <DossierDimensionCard key={dim.name} dimension={dim} />
+            {dossier.dimensoes.map((dim) => (
+              <DossierDimensionCard key={dim.nome} dimension={dim} />
             ))}
           </div>
         </div>
@@ -892,7 +900,7 @@ function ValuationMetric({ label, value, highlight }: { label: string; value: st
 }
 
 
-function DossierDimensionCard({ dimension }: { dimension: { name: string; veredito: string; narrative: string; evidencias: string[]; alertas: string[] } }) {
+function DossierDimensionCard({ dimension }: { dimension: { nome: string; veredito: string; narrativa: string; evidencias: string[]; alertas: string[] } }) {
   const veredict = dimension.veredito
   const color = veredict === 'FORTE' ? 'border-[var(--pos)]/30 bg-[var(--pos)]/5' :
                 veredict === 'MODERADO' ? 'border-[var(--warn)]/30 bg-[var(--warn)]/5' :
@@ -906,10 +914,10 @@ function DossierDimensionCard({ dimension }: { dimension: { name: string; veredi
   return (
     <div className={cn('rounded-lg border p-4', color)}>
       <div className="flex items-center justify-between mb-2">
-        <h4 className="text-xs font-semibold text-[var(--text-1)]">{dimension.name}</h4>
+        <h4 className="text-xs font-semibold text-[var(--text-1)]">{dimension.nome}</h4>
         <span className={cn('text-[10px] font-bold uppercase', badgeColor)}>{veredict}</span>
       </div>
-      <p className="text-[11px] text-[var(--text-2)] leading-relaxed line-clamp-3">{dimension.narrative}</p>
+      <p className="text-[11px] text-[var(--text-2)] leading-relaxed line-clamp-3">{dimension.narrativa}</p>
       {dimension.alertas.length > 0 && (
         <div className="mt-2 space-y-0.5">
           {dimension.alertas.slice(0, 2).map((a, i) => (
