@@ -1,67 +1,108 @@
 'use client'
 
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, Skeleton, Disclaimer } from '@/components/ui'
 import { PaywallGate } from '@/components/billing'
 import { cn } from '@/lib/utils'
+import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/hooks/use-auth'
+import { pro } from '@/lib/api/endpoints'
+import { AssetLogo } from '@/components/ui/asset-logo'
+import { formatCurrency } from '@/lib/utils/formatters'
 
 const CVM_DISCLAIMER = `As Carteiras Inteligentes são seleções algorítmicas baseadas em critérios quantitativos públicos (dados CVM e B3). Não constituem recomendação de investimento, análise de valores mobiliários, ou consultoria financeira nos termos da Resolução CVM 20/2021. O InvestIQ não é registrado como analista ou consultor de valores mobiliários. Decisões de investimento são de responsabilidade exclusiva do investidor. Critérios completos disponíveis em cada carteira.`
 
+const MANDATE_META: Record<string, { emoji: string; description: string; targetPositions: string; sizing: string }> = {
+  CONSERVADOR: {
+    emoji: '🛡️',
+    description: 'Foco em valuation, qualidade e baixo risco. Inverse volatility, sem alavancagem.',
+    targetPositions: '12-15 ativos',
+    sizing: 'Inverse Volatility',
+  },
+  EQUILIBRADO: {
+    emoji: '⚖️',
+    description: 'Pesos balanceados entre pilares quantitativo, qualitativo e valuation. Black-Litterman.',
+    targetPositions: '10-12 ativos',
+    sizing: 'Black-Litterman',
+  },
+  ARROJADO: {
+    emoji: '🚀',
+    description: 'Foco em growth e momentum. Concentração moderada, alavancagem regime-dependente.',
+    targetPositions: '8-10 ativos',
+    sizing: 'Conviction-Weighted',
+  },
+}
+
 export default function CarteirasInteligentesPage() {
-  const portfolios = [
-    {
-      id: 'conservador',
-      name: 'Conservador',
-      description: 'Foco em valuation, qualidade e risco. Inverse volatility, sem alavancagem.',
-      emoji: '🛡️',
-      mandate: 'CONSERVADOR',
-      targetPositions: '12-15 ativos',
-      rebalance: 'Trimestral',
-      topStocks: [
-        { ticker: 'BBSE3', weight: 17.1 },
-        { ticker: 'ITUB4', weight: 12.3 },
-        { ticker: 'WEGE3', weight: 10.5 },
-        { ticker: 'ELET3', weight: 9.8 },
-        { ticker: 'BBDC4', weight: 8.2 },
-      ],
-      metrics: { cagr: '+15.0%', sharpe: '0.73', maxDD: '-34.8%' },
-    },
-    {
-      id: 'equilibrado',
-      name: 'Equilibrado',
-      description: 'Pesos balanceados entre pilares. Black-Litterman, sem alavancagem.',
-      badge: 'E',
-      mandate: 'EQUILIBRADO',
-      targetPositions: '10-12 ativos',
-      rebalance: 'Trimestral',
-      topStocks: [
-        { ticker: 'PRIO3', weight: 15.0 },
-        { ticker: 'VALE3', weight: 12.8 },
-        { ticker: 'ITUB4', weight: 11.0 },
-        { ticker: 'WEGE3', weight: 10.2 },
-        { ticker: 'RENT3', weight: 9.5 },
-      ],
-      metrics: { cagr: '+16.7%', sharpe: '0.78', maxDD: '-32.8%' },
-    },
-    {
-      id: 'arrojado',
-      name: 'Arrojado',
-      description: 'Foco em growth e momentum. Concentração moderada + alavancagem regime-dependente.',
-      emoji: '🚀',
-      mandate: 'ARROJADO',
-      targetPositions: '8-10 ativos',
-      rebalance: 'Trimestral',
-      topStocks: [
-        { ticker: 'PRIO3', weight: 18.0 },
-        { ticker: 'MGLU3', weight: 14.5 },
-        { ticker: 'QUAL3', weight: 13.0 },
-        { ticker: 'VALE3', weight: 12.0 },
-        { ticker: 'WEGE3', weight: 10.5 },
-      ],
-      metrics: { cagr: '+17.9%', sharpe: '0.75', maxDD: '-40.0%' },
-    },
-  ]
-  const isLoading = false
+  const { token } = useAuth()
+
+  // Fetch top picks for each mandate from the real IQ-Cognit engine
+  const { data: conservador, isLoading: loadC } = useQuery({
+    queryKey: ['smart-portfolio', 'CONSERVADOR'],
+    queryFn: () => pro.getScreener({ mandate: 'CONSERVADOR', min_score: 60, limit: 15 }, token ?? undefined),
+    enabled: !!token,
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const { data: equilibrado, isLoading: loadE } = useQuery({
+    queryKey: ['smart-portfolio', 'EQUILIBRADO'],
+    queryFn: () => pro.getScreener({ mandate: 'EQUILIBRADO', min_score: 60, limit: 12 }, token ?? undefined),
+    enabled: !!token,
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const { data: arrojado, isLoading: loadA } = useQuery({
+    queryKey: ['smart-portfolio', 'ARROJADO'],
+    queryFn: () => pro.getScreener({ mandate: 'ARROJADO', min_score: 60, limit: 10 }, token ?? undefined),
+    enabled: !!token,
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const isLoading = loadC || loadE || loadA
+
+  const portfolios = useMemo(() => {
+    const mandates = [
+      { key: 'CONSERVADOR', label: 'Conservador', data: conservador },
+      { key: 'EQUILIBRADO', label: 'Equilibrado', data: equilibrado },
+      { key: 'ARROJADO', label: 'Arrojado', data: arrojado },
+    ] as const
+
+    return mandates.map(m => {
+      const results = m.data?.results ?? []
+      const meta = MANDATE_META[m.key]!
+      const avgScore = results.length > 0
+        ? Math.round(results.reduce((s, r) => s + r.iq_score, 0) / results.length)
+        : 0
+      const avgMargin = results.length > 0
+        ? (results.reduce((s, r) => s + (r.safety_margin ?? 0), 0) / results.length)
+        : 0
+      const avgDY = results.length > 0
+        ? (results.reduce((s, r) => s + (r.dividend_yield_proj ?? 0), 0) / results.length)
+        : 0
+
+      return {
+        id: m.key.toLowerCase(),
+        name: m.label,
+        mandate: m.key,
+        emoji: meta.emoji,
+        description: meta.description,
+        targetPositions: meta.targetPositions,
+        sizing: meta.sizing,
+        stockCount: results.length,
+        topStocks: results.slice(0, 5).map(r => ({
+          ticker: r.ticker,
+          score: r.iq_score,
+          rating: r.rating_label,
+        })),
+        metrics: {
+          avgScore,
+          avgMargin: avgMargin.toFixed(1),
+          avgDY: (avgDY * 100).toFixed(1),
+        },
+      }
+    })
+  }, [conservador, equilibrado, arrojado])
 
   return (
     <div className="space-y-6">
@@ -71,76 +112,87 @@ export default function CarteirasInteligentesPage() {
           Carteiras Inteligentes
         </h1>
         <p className="text-[var(--text-small)] text-[var(--text-2)] mt-0.5">
-          Seleções algorítmicas com critérios 100% transparentes e quantitativos
+          Seleções algorítmicas do IQ-Cognit com critérios 100% transparentes e quantitativos
         </p>
       </div>
 
       <PaywallGate requiredPlan="pro" feature="Carteiras Inteligentes" showPreview>
-        {/* Portfolio Grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3, 4, 5].map(i => (
-              <Skeleton key={i} className="h-52 rounded-[var(--radius)]" />
+            {[1, 2, 3].map(i => (
+              <Skeleton key={i} className="h-72 rounded-[var(--radius)]" />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {portfolios?.map(portfolio => (
-              <Link
-                key={portfolio.id}
-                href={`/carteiras-inteligentes/${portfolio.id}` as any}
-              >
-                <Card hover className="h-full">
-                  <CardContent className="p-5 flex flex-col h-full">
-                    {/* Icon + Name */}
-                    <div className="flex items-center gap-3 mb-3">
-                      <span className="text-[var(--text-heading)]">{portfolio.emoji ?? portfolio.badge ?? '●'}</span>
-                      <div>
-                        <h3 className="font-semibold text-[var(--text-1)]">
-                          {portfolio.name}
-                        </h3>
-                        <span className="text-[var(--text-caption)] text-[var(--text-3)]">
-                          {portfolio.targetPositions}
-                        </span>
-                      </div>
+            {portfolios.map(portfolio => (
+              <Card key={portfolio.id} hover className="h-full">
+                <CardContent className="p-5 flex flex-col h-full">
+                  {/* Icon + Name */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-[var(--text-heading)]">{portfolio.emoji}</span>
+                    <div>
+                      <h3 className="font-semibold text-[var(--text-1)]">
+                        {portfolio.name}
+                      </h3>
+                      <span className="text-[var(--text-caption)] text-[var(--text-3)]">
+                        {portfolio.stockCount} ativos qualificados · {portfolio.sizing}
+                      </span>
                     </div>
+                  </div>
 
-                    {/* Description */}
-                    <p className="text-[var(--text-caption)] text-[var(--text-2)] leading-relaxed mb-4 flex-1">
-                      {portfolio.description}
-                    </p>
+                  {/* Description */}
+                  <p className="text-[var(--text-caption)] text-[var(--text-2)] leading-relaxed mb-3 flex-1">
+                    {portfolio.description}
+                  </p>
 
-                    {/* Top Stocks Preview */}
-                    {portfolio.topStocks.length > 0 ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {portfolio.topStocks.map((stock: any) => (
-                          <span
-                            key={stock.ticker}
-                            className={cn(
-                              'inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[var(--text-caption)]',
-                              'bg-[var(--surface-2)] text-[var(--text-2)]',
-                            )}
-                          >
-                            <span className="font-medium">{stock.ticker}</span>
-                            <span className="text-[var(--text-3)]">
-                              {stock.weight.toFixed(1)}%
-                            </span>
-                          </span>
-                        ))}
-                        {portfolio.topStocks.length > 3 && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[var(--text-caption)] text-[var(--text-3)]">
-                            +{portfolio.topStocks.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-[var(--text-caption)] text-[var(--text-3)] italic">
-                        Nenhuma ação qualificada
+                  {/* Real Metrics */}
+                  <div className="grid grid-cols-3 gap-2 mb-3 py-2 border-y border-[var(--border-1)]/30">
+                    <div className="text-center">
+                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">IQ Médio</p>
+                      <p className={cn('font-mono font-bold', portfolio.metrics.avgScore >= 65 ? 'text-[var(--pos)]' : 'text-[var(--text-1)]')}>
+                        {portfolio.metrics.avgScore}
                       </p>
-                    )}
-                  </CardContent>
-                </Card>
-              </Link>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">Margem</p>
+                      <p className="font-mono font-bold text-[var(--accent-1)]">{portfolio.metrics.avgMargin}%</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">DY Proj.</p>
+                      <p className="font-mono font-bold text-[var(--text-1)]">{portfolio.metrics.avgDY}%</p>
+                    </div>
+                  </div>
+
+                  {/* Top Stocks (real data) */}
+                  {portfolio.topStocks.length > 0 ? (
+                    <div className="space-y-1.5">
+                      {portfolio.topStocks.map(stock => (
+                        <Link
+                          key={stock.ticker}
+                          href={`/ativo/${stock.ticker}`}
+                          className="flex items-center gap-2 py-1 hover:bg-[var(--surface-2)] rounded px-1.5 -mx-1.5 transition-colors"
+                        >
+                          <AssetLogo ticker={stock.ticker} size={20} />
+                          <span className="font-mono font-medium text-[var(--text-small)]">{stock.ticker}</span>
+                          <span className="flex-1" />
+                          <span className={cn(
+                            'font-mono text-[var(--text-caption)] font-bold',
+                            stock.score >= 75 ? 'text-[var(--pos)]' : stock.score >= 60 ? 'text-[var(--accent-1)]' : 'text-[var(--text-2)]'
+                          )}>
+                            {stock.score}
+                          </span>
+                          <span className="text-[var(--text-caption)] text-[var(--text-3)]">{stock.rating}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-[var(--text-caption)] text-[var(--text-3)] italic">
+                      Nenhuma ação qualificada neste mandato
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
