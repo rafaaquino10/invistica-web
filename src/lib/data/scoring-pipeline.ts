@@ -221,7 +221,7 @@ export function scoreAsset(
     }
   }
 
-  return { ...merged, iqScore?, lensScores, scoreBreakdown, killSwitch }
+  return { ...merged, iqScore, lensScores, scoreBreakdown, killSwitch }
 }
 
 /**
