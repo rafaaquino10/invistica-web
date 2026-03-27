@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils'
 import { pro, free } from '@/lib/api/endpoints'
 import { adaptScoreToAsset, adaptEvidenceToDrivers, adaptValuation } from '@/lib/api/adapters'
 import { useAuth } from '@/hooks/use-auth'
+import { useMandate } from '@/hooks/use-mandate'
 import type { Evidence } from '@/lib/api/endpoints'
 
 // ─── Formatters ──────────────────────────────────────────────
@@ -54,11 +55,12 @@ export default function AtivoPage() {
   const params = useParams()
   const ticker = (params['ticker'] as string)?.toUpperCase()
   const { token } = useAuth()
+  const { mandate } = useMandate()
 
   // API calls
   const { data: score, isLoading: loadingScore, isError: errorScore } = useQuery({
-    queryKey: ['score', ticker],
-    queryFn: () => pro.getScore(ticker, { mandate: 'EQUILIBRADO' }, token ?? undefined),
+    queryKey: ['score', ticker, mandate],
+    queryFn: () => pro.getScore(ticker, { mandate }, token ?? undefined),
     enabled: !!ticker,
     retry: 1,
   })

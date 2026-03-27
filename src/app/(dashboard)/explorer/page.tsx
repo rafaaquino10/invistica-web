@@ -9,6 +9,7 @@ import { AssetLogo } from '@/components/ui/asset-logo'
 import { cn } from '@/lib/utils'
 import { pro, free } from '@/lib/api/endpoints'
 import { useAuth } from '@/hooks/use-auth'
+import { useMandate, type Mandate } from '@/hooks/use-mandate'
 import { fadeInUp } from '@/lib/utils/motion'
 
 // ─── Constants ──────────────────────────────────────────────
@@ -41,8 +42,8 @@ export default function ExplorerPage() {
   const router = useRouter()
   const { token } = useAuth()
 
-  // Filter state
-  const [mandate, setMandate] = useState<string>('EQUILIBRADO')
+  // Mandate from global selector (synced with header)
+  const { mandate, setMandate } = useMandate()
   const [minScore, setMinScore] = useState<number>(0)
   const [ratingFilter, setRatingFilter] = useState<string>('')
   const [clusterId, setClusterId] = useState<number | undefined>()
@@ -147,10 +148,10 @@ export default function ExplorerPage() {
 
       {/* ─── Mandate Tabs ────────────────────────────── */}
       <div className="flex gap-1 p-1 bg-[var(--bg)] rounded-xl border border-[var(--border-1)]">
-        {MANDATES.map((m) => (
+        {(['CONSERVADOR', 'EQUILIBRADO', 'ARROJADO'] as const).map((m) => (
           <button
             key={m}
-            onClick={() => setMandate(m)}
+            onClick={() => setMandate(m as Mandate)}
             className={cn(
               'flex-1 px-4 py-2 text-xs font-semibold rounded-lg transition-all',
               mandate === m

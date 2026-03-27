@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/use-auth'
 import { pro } from '@/lib/api/endpoints'
+import { useMandate } from '@/hooks/use-mandate'
 import { MarketTreemap, type ColorMode } from '@/components/treemap/market-treemap'
 import { cn } from '@/lib/utils'
 import { formatMarketCap } from '@/lib/utils/formatters'
@@ -29,9 +30,10 @@ export default function MapaPage() {
   const [sectorFilter, setSectorFilter] = useState<string>('')
 
   const { token } = useAuth()
+  const { mandate } = useMandate()
   const { data: screenerData, isLoading } = useQuery({
-    queryKey: ['market-map-screener'],
-    queryFn: () => pro.getScreener({ mandate: 'EQUILIBRADO', limit: 300 }, token ?? undefined),
+    queryKey: ['market-map-screener', mandate],
+    queryFn: () => pro.getScreener({ mandate, limit: 300 }, token ?? undefined),
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
   })
