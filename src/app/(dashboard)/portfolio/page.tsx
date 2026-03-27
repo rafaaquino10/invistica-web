@@ -13,7 +13,9 @@ import { pro } from '@/lib/api/endpoints'
 import { adaptPortfolio } from '@/lib/api/adapters'
 import { useAuth } from '@/hooks/use-auth'
 import { useMandate } from '@/hooks/use-mandate'
+import { CSVImport } from '@/components/portfolio/csv-import'
 import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
+import { toast } from 'sonner'
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
 } from 'recharts'
@@ -50,6 +52,7 @@ export default function PortfolioPage() {
 
   // UI state
   const [showAddForm, setShowAddForm] = useState(false)
+  const [showCSVImport, setShowCSVImport] = useState(false)
   const [newTicker, setNewTicker] = useState('')
   const [newQty, setNewQty] = useState('')
   const [newPrice, setNewPrice] = useState('')
@@ -148,12 +151,20 @@ export default function PortfolioPage() {
             {positions.length} posições | Mandato: {currentMeta.label}
           </p>
         </div>
-        <button
-          onClick={() => setShowAddForm(true)}
-          className="px-5 py-2.5 bg-[var(--accent-1)] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-sm"
-        >
-          + Adicionar Ação
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowCSVImport(true)}
+            className="px-4 py-2.5 bg-[var(--surface-1)] text-[var(--text-2)] text-sm font-medium rounded-xl border border-[var(--border-1)] hover:bg-[var(--surface-2)] transition-colors"
+          >
+            CSV
+          </button>
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="px-5 py-2.5 bg-[var(--accent-1)] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-sm"
+          >
+            + Adicionar Ação
+          </button>
+        </div>
       </div>
 
       {/* ─── Smart Contribution — AI recommendation ─── */}
@@ -487,6 +498,34 @@ export default function PortfolioPage() {
       </div>
 
       <Disclaimer variant="footer" />
+
+      {/* CSV Import Modal */}
+      <CSVImport
+        isOpen={showCSVImport}
+        onClose={() => setShowCSVImport(false)}
+        portfolioId="default"
+        onImport={async (transactions) => {
+          let imported = 0
+          let errors = 0
+          for (const tx of transactions) {
+            try {
+              await pro.addPosition(
+                { ticker: tx.ticker, qty: tx.quantity, avg_price: tx.price },
+                token ?? undefined,
+              )
+              imported++
+            } catch {
+              errors++
+            }
+          }
+          queryClient.invalidateQueries({ queryKey: ['portfolio'] })
+          if (errors === 0) {
+            toast.success(`${imported} posições importadas com sucesso`)
+          } else {
+            toast.warning(`${imported} importadas, ${errors} com erro`)
+          }
+        }}
+      />
     </motion.div>
   )
 }

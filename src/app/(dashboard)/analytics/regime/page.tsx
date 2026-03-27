@@ -8,10 +8,10 @@ import { PaywallGate } from '@/components/billing/paywall-gate'
 import { cn } from '@/lib/utils'
 
 const REGIME_ICONS: Record<string, string> = {
-  RISK_ON: '&#x1f4c8;',
-  RISK_OFF: '&#x1f6e1;',
-  STAGFLATION: '&#x26a0;',
-  RECOVERY: '&#x1f331;',
+  RISK_ON: '\u{1F4C8}',
+  RISK_OFF: '\u{1F6E1}',
+  STAGFLATION: '\u{26A0}',
+  RECOVERY: '\u{1F331}',
 }
 
 export default function RegimePage() {
@@ -57,8 +57,9 @@ export default function RegimePage() {
                   <div
                     className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl"
                     style={{ backgroundColor: `${regime.color}20` }}
-                    dangerouslySetInnerHTML={{ __html: REGIME_ICONS[regime.regime] ?? '&#x1f4ca;' }}
-                  />
+                  >
+                    {REGIME_ICONS[regime.regime] ?? '\u{1F4CA}'}
+                  </div>
                   <div>
                     <h2 className="text-[var(--text-heading)] font-bold" style={{ color: regime.color }}>
                       {regime.label}
