@@ -42,15 +42,16 @@ export default function ComparisonPage() {
 
   const { token } = useAuth()
 
-  const { data: comparisonData, isLoading } = useQuery({
+  const { data: comparisonData, isLoading, isError } = useQuery({
     queryKey: ['comparison', selectedTickers],
     queryFn: async () => {
       const results = await Promise.all(
         selectedTickers.map(async (ticker) => {
           const [tickerData, scoreData] = await Promise.all([
-            free.getTicker(ticker),
+            free.getTicker(ticker).catch(() => null),
             pro.getScore(ticker, {}, token ?? undefined).catch(() => null),
           ])
+          if (!tickerData) return null
           const iq = scoreData?.iq_cognit ?? null
           return {
             ...tickerData,
@@ -64,9 +65,10 @@ export default function ComparisonPage() {
           }
         })
       )
-      return results
+      return results.filter(Boolean)
     },
     enabled: selectedTickers.length > 0,
+    retry: 2,
   })
 
   const addAsset = useCallback((ticker: string) => {
@@ -298,6 +300,13 @@ export default function ComparisonPage() {
           </div>
         ))}
       </div>
+
+      {/* Error state */}
+      {isError && selectedTickers.length > 0 && (
+        <div className="flex items-center gap-2 px-4 py-3 bg-red-500/5 border border-red-500/20 rounded-[var(--radius)] text-[var(--text-small)]">
+          <span className="text-red-400">Erro ao carregar dados de alguns ativos. Verifique sua conexão.</span>
+        </div>
+      )}
 
       {/* Cross-sector warning */}
       {hasCrossSector && (

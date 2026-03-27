@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
@@ -50,6 +50,10 @@ export default function ExplorerPage() {
   const [sortAsc, setSortAsc] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   const [selectedIdx, setSelectedIdx] = useState(-1)
+  const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map())
+
+  // Reset selection when mandate or filters change
+  useEffect(() => { setSelectedIdx(-1) }, [mandate, minScore, ratingFilter, clusterId])
 
   const { data: clusters } = useQuery({
     queryKey: ['clusters'],
@@ -89,10 +93,26 @@ export default function ExplorerPage() {
     return clusters?.clusters?.reduce((acc, c) => ({ ...acc, [c.cluster_id]: c.name }), {} as Record<number, string>) ?? {}
   }, [clusters])
 
-  // Keyboard navigation
+  // Keyboard navigation with auto-scroll
+  const scrollToRow = useCallback((idx: number) => {
+    const row = rowRefs.current.get(idx)
+    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }, [])
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'j' && selectedIdx < sorted.length - 1) { setSelectedIdx(i => i + 1); e.preventDefault() }
-    if (e.key === 'k' && selectedIdx > 0) { setSelectedIdx(i => i - 1); e.preventDefault() }
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return
+    if (e.key === 'j' && selectedIdx < sorted.length - 1) {
+      const next = selectedIdx + 1
+      setSelectedIdx(next)
+      scrollToRow(next)
+      e.preventDefault()
+    }
+    if (e.key === 'k' && selectedIdx > 0) {
+      const prev = selectedIdx - 1
+      setSelectedIdx(prev)
+      scrollToRow(prev)
+      e.preventDefault()
+    }
     if (e.key === 'Enter' && selectedIdx >= 0 && sorted[selectedIdx]) {
       router.push(`/ativo/${sorted[selectedIdx].ticker}`)
       e.preventDefault()
@@ -228,7 +248,9 @@ export default function ExplorerPage() {
                 sorted.map((r, idx) => (
                   <tr
                     key={r.ticker}
+                    ref={(el) => { if (el) rowRefs.current.set(idx, el); else rowRefs.current.delete(idx) }}
                     onClick={() => router.push(`/ativo/${r.ticker}`)}
+                    aria-selected={idx === selectedIdx}
                     className={cn(
                       'border-b border-[var(--border-1)]/20 cursor-pointer transition-colors',
                       idx === selectedIdx ? 'bg-[var(--accent-1)]/5 ring-1 ring-[var(--accent-1)]/20' : 'hover:bg-[var(--surface-2)]'
@@ -282,7 +304,7 @@ export default function ExplorerPage() {
                       {r.dividend_safety != null ? (
                         <span className={
                           r.dividend_safety >= 70 ? 'text-[var(--pos)]' :
-                          r.dividend_safety >= 50 ? 'text-[var(--warn)]' :
+                          r.dividend_safety >= 50 ? 'text-amber-500' :
                           'text-[var(--neg)]'
                         }>{r.dividend_safety}</span>
                       ) : <span className="text-[var(--text-2)]">--</span>}
@@ -292,7 +314,9 @@ export default function ExplorerPage() {
               ) : (
                 <tr>
                   <td className="px-5 py-12 text-center text-[var(--text-2)]" colSpan={11}>
-                    Nenhum resultado. Verifique se a API InvestIQ está rodando.
+                    {screenerData?.results !== undefined
+                      ? 'Nenhum ativo encontrado com esses filtros. Tente ajustar o IQ-Score mínimo ou o setor.'
+                      : 'Erro ao carregar dados. Verifique sua conexão ou tente novamente.'}
                   </td>
                 </tr>
               )}
