@@ -31,7 +31,7 @@ export default function MapaPage() {
   const { token } = useAuth()
   const { data: screenerData, isLoading } = useQuery({
     queryKey: ['market-map-screener'],
-    queryFn: () => pro.getTopScores('EQUILIBRADO', {}, token ?? undefined),
+    queryFn: () => pro.getScreener({ mandate: 'EQUILIBRADO', limit: 300 }, token ?? undefined),
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
   })
@@ -51,18 +51,27 @@ export default function MapaPage() {
         ticker: r.ticker,
         name: r.company_name,
         iqScore: r.iq_score,
-        marketCap: 1, // placeholder (quote endpoint needed for real mkt cap)
+        marketCap: r.iq_score ?? 1, // Use IQ-Score as size proxy until real marketCap available
         changePercent: 0,
       })
     }
     const sectors = Object.entries(byCluster).map(([sectorName, stocks]) => ({
       name: sectorName,
       stocks,
-      totalMarketCap: stocks.length,
-      avgScore: stocks.reduce((s: number, st: any) => s + (st.iqScore ?? 0), 0) / stocks.length,
-      avgChange: 0,
+      totalMarketCap: stocks.reduce((s: number, st: any) => s + (st.marketCap ?? 1), 0),
+      averageScore: stocks.length > 0 ? stocks.reduce((s: number, st: any) => s + (st.iqScore ?? 0), 0) / stocks.length : null,
+      averageChange: 0,
+      stockCount: stocks.length,
     }))
-    return { sectors }
+    const allStocks = sectors.flatMap(s => s.stocks)
+    const totals = {
+      stockCount: allStocks.length,
+      marketCap: allStocks.reduce((s: number, st: any) => s + (st.marketCap ?? 0), 0),
+      averageScore: allStocks.length > 0
+        ? Math.round(allStocks.reduce((s: number, st: any) => s + (st.iqScore ?? 0), 0) / allStocks.length)
+        : null,
+    }
+    return { sectors, totals }
   }, [screenerData])
 
   // Agrupar setores < 3% market cap total em "Outros"
@@ -71,8 +80,8 @@ export default function MapaPage() {
     const totalMktCap = data.sectors.reduce((sum, s) => sum + s.totalMarketCap, 0)
     const threshold = totalMktCap * 0.03
 
-    const main = data.sectors.filter(s => s.totalMarketCap >= threshold)
-    const small = data.sectors.filter(s => s.totalMarketCap < threshold)
+    const main = data.sectors.filter((s: any) => s.totalMarketCap >= threshold)
+    const small = data.sectors.filter((s: any) => s.totalMarketCap < threshold)
 
     if (small.length === 0) return data.sectors
 
@@ -327,9 +336,7 @@ export default function MapaPage() {
           <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg shadow-sm px-4 py-3">
             <p className="text-[var(--text-caption)] text-[var(--text-3)] uppercase tracking-wider mb-1">Setores</p>
             <div className="flex items-center gap-3 text-[var(--text-small)]">
-              <span className="text-teal font-mono font-medium">{data.totals.sectorsUp} em alta</span>
-              <span className="text-[var(--text-3)]">/</span>
-              <span className="text-red font-mono font-medium">{data.totals.sectorsDown} em queda</span>
+              <span className="font-mono font-medium text-[var(--text-1)]">{data.sectors.length} setores</span>
             </div>
           </div>
         </div>
