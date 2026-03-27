@@ -122,6 +122,27 @@ export default function AtivoPage() {
     staleTime: 10 * 60 * 1000,
   })
 
+  const { data: dividendSafety } = useQuery({
+    queryKey: ['dividend-safety', ticker],
+    queryFn: () => pro.getDividendSafety(ticker, token ?? undefined),
+    enabled: !!ticker,
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const { data: trapRisk } = useQuery({
+    queryKey: ['trap-risk', ticker],
+    queryFn: () => pro.getDividendTrapRisk(ticker, token ?? undefined),
+    enabled: !!ticker,
+    staleTime: 10 * 60 * 1000,
+  })
+
+  const { data: mandatesData } = useQuery({
+    queryKey: ['mandates', ticker],
+    queryFn: () => pro.getScoreMandates(ticker, token ?? undefined),
+    enabled: !!ticker,
+    staleTime: 10 * 60 * 1000,
+  })
+
   // Adapt data
   const asset = useMemo(() => {
     if (!score) return null
@@ -233,6 +254,50 @@ export default function AtivoPage() {
               <PillarCard label="Operacional" value={iq.score_operational} icon="O" />
             </div>
           </div>
+
+          {/* Mandate Compare — how this asset scores across 3 profiles */}
+          {mandatesData?.mandates && (
+            <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-5">
+              <h3 className="text-sm font-semibold text-[var(--text-1)] mb-3">Score por Mandato</h3>
+              <div className="space-y-2">
+                {(['CONSERVADOR', 'EQUILIBRADO', 'ARROJADO'] as const).map((m) => {
+                  const s = mandatesData.mandates[m]
+                  if (!s) return null
+                  const isActive = m === mandate
+                  return (
+                    <div key={m} className={cn('flex items-center gap-3 p-2 rounded-lg transition-colors', isActive && 'bg-[var(--accent-1)]/5 ring-1 ring-[var(--accent-1)]/20')}>
+                      <span className="text-[10px] font-bold w-6 text-center text-[var(--text-2)]">{m.charAt(0)}</span>
+                      <div className="flex-1 h-2 bg-[var(--bg)] rounded-full overflow-hidden">
+                        <div className="h-full bg-[var(--accent-1)] rounded-full transition-all" style={{ width: `${s.iq_score}%` }} />
+                      </div>
+                      <span className={cn('font-mono text-sm font-bold w-8 text-right', s.iq_score >= 75 ? 'text-[var(--pos)]' : s.iq_score >= 60 ? 'text-[var(--accent-1)]' : 'text-[var(--text-2)]')}>
+                        {s.iq_score}
+                      </span>
+                      <span className="text-[10px] text-[var(--text-3)] w-16 truncate">{s.rating}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Dividend Trap Risk Alert */}
+          {trapRisk?.is_dividend_trap && (
+            <div className="rounded-[var(--radius)] border border-[var(--neg)]/30 bg-[var(--neg)]/5 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--neg)]">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                  <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                <span className="text-sm font-semibold text-[var(--neg)]">Armadilha de Dividendo — Risco {trapRisk.risk_level}</span>
+              </div>
+              <ul className="space-y-0.5">
+                {trapRisk.reasons.map((r, i) => (
+                  <li key={i} className="text-[var(--text-caption)] text-[var(--neg)]/80">• {r}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Dividend Safety */}
           {div && div.dividend_safety != null && (

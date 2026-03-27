@@ -8,6 +8,7 @@ import { motion } from 'framer-motion'
 import { Skeleton, Disclaimer } from '@/components/ui'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { cn } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils/formatters'
 import { pro } from '@/lib/api/endpoints'
 import { adaptPortfolio } from '@/lib/api/adapters'
 import { useAuth } from '@/hooks/use-auth'
@@ -67,6 +68,14 @@ export default function PortfolioPage() {
     if (!rawPortfolio?.positions) return null
     return adaptPortfolio(rawPortfolio.positions)
   }, [rawPortfolio])
+
+  // Smart Contribution — AI recommendation on where to invest next
+  const { data: smartContrib } = useQuery({
+    queryKey: ['smart-contribution'],
+    queryFn: () => pro.getSmartContribution(1000, token ?? undefined),
+    enabled: !!token && (portfolio?.positions.length ?? 0) > 0,
+    staleTime: 10 * 60 * 1000,
+  })
 
   const addMutation = useMutation({
     mutationFn: (data: { ticker: string; qty: number; avg_price: number }) =>
@@ -130,6 +139,37 @@ export default function PortfolioPage() {
           + Adicionar Ação
         </button>
       </div>
+
+      {/* ─── Smart Contribution — AI recommendation ─── */}
+      {smartContrib?.suggestions && smartContrib.suggestions.length > 0 && (
+        <div className="bg-gradient-to-r from-[var(--accent-1)]/5 to-transparent border border-[var(--accent-1)]/20 rounded-[var(--radius)] p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--accent-1)]">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+            <h3 className="text-sm font-semibold text-[var(--accent-1)]">Próximo Aporte Inteligente</h3>
+            <span className="text-[var(--text-caption)] text-[var(--text-2)] ml-auto">Aporte: {formatCurrency(smartContrib.aporte_total)}</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {smartContrib.suggestions.slice(0, 3).map((s) => (
+              <Link
+                key={s.ticker}
+                href={`/ativo/${s.ticker}`}
+                className="flex items-center gap-3 p-3 rounded-lg bg-[var(--surface-1)] border border-[var(--border-1)]/50 hover:border-[var(--accent-1)]/50 transition-colors"
+              >
+                <AssetLogo ticker={s.ticker} size={28} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono font-semibold text-sm">{s.ticker}</span>
+                    <span className="font-mono text-sm font-bold text-[var(--accent-1)]">{formatCurrency(s.valor_recomendado)}</span>
+                  </div>
+                  <p className="text-[var(--text-caption)] text-[var(--text-2)] truncate">{s.motivo}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ─── Summary Cards ───────────────────────────── */}
       {portfolio && positions.length > 0 && (
