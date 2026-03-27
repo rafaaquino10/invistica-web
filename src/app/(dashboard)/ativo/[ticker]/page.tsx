@@ -159,9 +159,9 @@ export default function AtivoPage() {
     if (!score) return null
     return adaptScoreToAsset(
       score,
-      tickerData as any,
-      financialsData?.financials as any,
-      peersData?.peers,
+      tickerData ?? undefined,
+      (financialsData?.financials as Array<Record<string, unknown>>) ?? undefined,
+      peersData?.peers ?? undefined,
     )
   }, [score, tickerData, financialsData, peersData])
 

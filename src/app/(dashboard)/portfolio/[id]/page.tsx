@@ -74,23 +74,19 @@ export default function PortfolioDetailPage() {
     staleTime: 30 * 1000,
   })
 
-  const addTransaction = { mutate: (() => {}) as any, mutateAsync: (async () => undefined) as any, isLoading: false, isPending: false }
-
-  const deleteTransaction = { mutate: (() => {}) as any, mutateAsync: (async () => undefined) as any, isLoading: false, isPending: false }
-
-  const handleAddTransaction = () => {
+  // Transaction mutations — use real portfolio API (addPosition)
+  const handleAddTransaction = async () => {
     if (!transactionForm.ticker || !transactionForm.quantity || !transactionForm.price) return
-
-    addTransaction.mutate({
-      portfolioId,
-      ticker: transactionForm.ticker,
-      type: transactionForm.type,
-      date: new Date(transactionForm.date || Date.now()),
-      quantity: parseFloat(transactionForm.quantity),
-      price: parseFloat(transactionForm.price),
-      fees: parseFloat(transactionForm.fees) || 0,
-      notes: transactionForm.notes || undefined,
-    })
+    try {
+      await pro.addPosition(
+        { ticker: transactionForm.ticker, qty: parseFloat(transactionForm.quantity), avg_price: parseFloat(transactionForm.price) },
+        token ?? undefined,
+      )
+      setIsAddTransactionOpen(false)
+      toast.success(`${transactionForm.ticker} adicionado ao portfólio`)
+    } catch {
+      toast.error('Erro ao adicionar posição')
+    }
   }
 
   const handleCSVImport = async (transactions: Array<{ ticker: string; type: 'BUY' | 'SELL'; date: Date; quantity: number; price: number; fees: number }>) => {
@@ -98,22 +94,17 @@ export default function PortfolioDetailPage() {
     let errors = 0
     for (const tx of transactions) {
       try {
-        await addTransaction.mutateAsync({
-          portfolioId,
-          ticker: tx.ticker,
-          type: tx.type,
-          date: tx.date,
-          quantity: tx.quantity,
-          price: tx.price,
-          fees: tx.fees,
-        })
+        await pro.addPosition(
+          { ticker: tx.ticker, qty: tx.quantity, avg_price: tx.price },
+          token ?? undefined,
+        )
         imported++
       } catch {
         errors++
       }
     }
     if (errors === 0) {
-      toast.success(`${imported} operações importadas com sucesso`)
+      toast.success(`${imported} posições importadas com sucesso`)
     } else {
       toast.warning(`${imported} importadas, ${errors} com erro`)
     }
