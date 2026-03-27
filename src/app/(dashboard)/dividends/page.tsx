@@ -171,8 +171,12 @@ export default function DividendsPage() {
           </div>
           <div className="w-px h-10 bg-[var(--border-1)]/30 flex-shrink-0" />
           <div>
-            <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-0.5">Yield on Cost</p>
-            <p className="text-[var(--text-heading)] font-bold font-mono text-[var(--accent-1)]">{(0).toFixed(2)}%</p>
+            <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-0.5">Média DY Proj.</p>
+            <p className="text-[var(--text-heading)] font-bold font-mono text-[var(--accent-1)]">
+              {projections?.projections?.length
+                ? ((projections.projections.reduce((s: number, p: any) => s + (p.dividend_yield_proj ?? 0), 0) / projections.projections.length) * 100).toFixed(2)
+                : '0.00'}%
+            </p>
           </div>
           <div className="w-px h-10 bg-[var(--border-1)]/30 flex-shrink-0" />
           <div>
@@ -426,6 +430,23 @@ export default function DividendsPage() {
             ))}
           </div>
 
+          {(() => {
+            // Derive byAsset from summary months
+            const byAsset: Array<{ ticker: string; total: number }> = []
+            if (summary?.summary) {
+              const tickerTotals: Record<string, number> = {}
+              for (const month of summary.summary) {
+                for (const entry of month.entries) {
+                  tickerTotals[entry.ticker] = (tickerTotals[entry.ticker] ?? 0) + entry.value
+                }
+              }
+              for (const [ticker, total] of Object.entries(tickerTotals)) {
+                byAsset.push({ ticker, total })
+              }
+              byAsset.sort((a, b) => b.total - a.total)
+            }
+            const totalReceived = summary?.total ?? 0
+            return (
           <div className="grid lg:grid-cols-2 gap-4">
             {/* Summary Stats */}
             <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm overflow-hidden">
@@ -434,10 +455,10 @@ export default function DividendsPage() {
               </div>
               <div className="divide-y divide-[var(--border-1)]">
                 {[
-                  { label: 'Total Recebido', value: formatCurrency(summary?.totalReceived ?? 0), color: 'text-teal' },
-                  { label: 'Custo Total', value: formatCurrency(summary?.totalCost ?? 0) },
-                  { label: 'Yield on Cost', value: `${(0).toFixed(2)}%`, color: 'text-[var(--accent-1)]' },
-                  { label: 'Yield Atual', value: `${(summary?.overallYield ?? 0).toFixed(2)}%` },
+                  { label: 'Total Recebido', value: formatCurrency(totalReceived), color: 'text-teal' },
+                  { label: 'Meses', value: `${summary?.summary?.length ?? 0} meses` },
+                  { label: 'Ativos Pagadores', value: `${byAsset.length}` },
+                  { label: 'Média Mensal', value: formatCurrency(summary?.summary?.length ? totalReceived / summary.summary.length : 0) },
                 ].map((stat) => (
                   <div key={stat.label} className="flex items-center justify-between px-4 py-3">
                     <span className="text-[var(--text-small)] text-[var(--text-2)]">{stat.label}</span>
@@ -453,9 +474,9 @@ export default function DividendsPage() {
                 <h3 className="text-[var(--text-small)] font-semibold">Top Pagadores</h3>
               </div>
               <div className="divide-y divide-[var(--border-1)]">
-                {summary?.byAsset.slice(0, 6).map((asset, index) => {
-                  const maxReceived = summary.byAsset[0]?.dividendsReceived ?? 1
-                  const pct = (asset.dividendsReceived / maxReceived) * 100
+                {byAsset.slice(0, 6).map((asset, index) => {
+                  const maxReceived = byAsset[0]?.total ?? 1
+                  const pct = (asset.total / maxReceived) * 100
                   return (
                     <Link
                       key={asset.ticker}
@@ -467,43 +488,44 @@ export default function DividendsPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
                           <span className="font-semibold text-[var(--text-small)]">{asset.ticker}</span>
-                          <span className="font-mono text-[var(--text-small)] font-bold text-teal">{formatCurrency(asset.dividendsReceived)}</span>
+                          <span className="font-mono text-[var(--text-small)] font-bold text-teal">{formatCurrency(asset.total)}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-1.5 bg-[var(--bg)] rounded-full overflow-hidden">
                             <div className="h-full bg-teal/70 rounded-full" style={{ width: `${pct}%` }} />
                           </div>
-                          <span className="text-[var(--text-caption)] text-[var(--text-2)] font-mono shrink-0">YoC {asset.yieldOnCost.toFixed(1)}%</span>
                         </div>
                       </div>
                     </Link>
                   )
                 })}
-                {(!summary?.byAsset || summary.byAsset.length === 0) && (
+                {byAsset.length === 0 && (
                   <div className="p-6 text-center text-[var(--text-small)] text-[var(--text-2)]">Nenhum dividendo no período</div>
                 )}
               </div>
             </div>
           </div>
+            )
+          })()}
 
           {/* DY Contribution Chart */}
-          {summary?.byAsset && summary.byAsset.length > 0 && (
+          {summary?.summary && summary.summary.length > 0 && (
             <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm overflow-hidden">
               <div className="px-4 py-3 border-b border-[var(--border-1)]">
-                <h2 className="text-[var(--text-small)] font-semibold">Contribuição por Ativo</h2>
-                <p className="text-[var(--text-small)] text-[var(--text-2)]">Dividendos recebidos por ativo no período</p>
+                <h2 className="text-[var(--text-small)] font-semibold">Dividendos por Mês</h2>
+                <p className="text-[var(--text-small)] text-[var(--text-2)]">Dividendos recebidos mês a mês</p>
               </div>
               <div className="px-2 py-3">
-                <ResponsiveContainer width="100%" height={Math.max(180, summary.byAsset.length * 36)}>
-                  <BarChart data={summary.byAsset.slice(0, 10)} layout="vertical" margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-1)" opacity={0.2} horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} tickFormatter={(v) => formatCurrency(v)} />
-                    <YAxis type="category" dataKey="ticker" tick={{ fontSize: 13, fill: 'var(--text-1)', fontWeight: 600 }} axisLine={false} tickLine={false} width={60} />
+                <ResponsiveContainer width="100%" height={250}>
+                  <BarChart data={summary.summary.map((m: any) => ({ month: m.month, total: m.subtotal }))} margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-1)" opacity={0.2} />
+                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} tickFormatter={(v: number) => formatCurrency(v)} />
                     <Tooltip
                       contentStyle={{ backgroundColor: 'var(--surface-1)', border: '1px solid var(--border-1)', borderRadius: '8px', fontSize: '13px' }}
                       formatter={(value: number) => [formatCurrency(value), 'Recebido']}
                     />
-                    <Bar dataKey="dividendsReceived" fill="#0D9488" radius={[0, 4, 4, 0]} opacity={0.85} />
+                    <Bar dataKey="total" fill="#0D9488" radius={[4, 4, 0, 0]} opacity={0.85} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -518,89 +540,49 @@ export default function DividendsPage() {
           {/* Summary strip */}
           <div className="flex items-center gap-6 px-4 py-3 bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm">
             <div>
-              <span className="text-[var(--text-small)] text-[var(--text-2)]">Total 12 meses</span>
-              <p className="text-[var(--text-heading)] font-bold font-mono text-teal">{formatCurrency(projections?.projections?.reduce((s: number, p: any) => s + (p.dividend_yield_proj ?? 0), 0) ?? 0)}</p>
-            </div>
-            <div className="w-px h-8 bg-[var(--border-1)]" />
-            <div>
-              <span className="text-[var(--text-small)] text-[var(--text-2)]">Média/mês</span>
-              <p className="text-[var(--text-heading)] font-bold font-mono">{formatCurrency(projections?.monthlyAverage ?? 0)}</p>
+              <span className="text-[var(--text-small)] text-[var(--text-2)]">Ativos com projeção</span>
+              <p className="text-[var(--text-heading)] font-bold font-mono text-teal">{projections?.projections?.length ?? 0}</p>
             </div>
           </div>
 
-          {/* Projections Chart — Recharts AreaChart */}
-          <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm overflow-hidden">
-            <div className="px-4 py-3 border-b border-[var(--border-1)]">
-              <h3 className="text-[var(--text-small)] font-semibold">Projeção Mensal</h3>
-              <p className="text-[var(--text-small)] text-[var(--text-2)]">Estimativa de dividendos nos próximos 12 meses</p>
-            </div>
-            <div className="px-2 py-3">
-              {projections?.projections ? (
-                <ResponsiveContainer width="100%" height={220}>
-                  <AreaChart
-                    data={projections.projections.map(m => ({
-                      month: new Date(m.date).toLocaleDateString('pt-BR', { month: 'short' }),
-                      valor: m.projected,
-                    }))}
-                    margin={{ top: 5, right: 10, left: 0, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id="projGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#0D9488" stopOpacity={0.25} />
-                        <stop offset="100%" stopColor="#0D9488" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-1)" opacity={0.3} />
-                    <XAxis dataKey="month" tick={{ fontSize: 12, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} tickFormatter={(v) => formatCurrency(v)} width={70} />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: 'var(--surface-1)', border: '1px solid var(--border-1)', borderRadius: '8px', fontSize: '13px' }}
-                      formatter={(value: number) => [formatCurrency(value), 'Projetado']}
-                    />
-                    <Area type="monotone" dataKey="valor" stroke="#0D9488" strokeWidth={2} fill="url(#projGrad)" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-[220px] flex items-center justify-center text-[var(--text-small)] text-[var(--text-2)]">
-                  Carregando projeções...
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Projections by asset breakdown */}
+          {/* Projections Table — by asset (real API data) */}
           {projections?.projections && projections.projections.length > 0 && (
             <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm overflow-hidden">
               <div className="px-4 py-3 border-b border-[var(--border-1)]">
-                <h3 className="text-[var(--text-small)] font-semibold">Detalhamento Mensal</h3>
+                <h3 className="text-[var(--text-small)] font-semibold">Projeção por Ativo</h3>
+                <p className="text-[var(--text-small)] text-[var(--text-2)]">Dividend Yield projetado e segurança do dividendo</p>
               </div>
-              <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              <div className="overflow-x-auto">
                 <table className="w-full text-[var(--text-small)]">
                   <thead>
                     <tr className="bg-[var(--surface-2)] border-b border-[var(--border-1)]">
-                      <th className="text-left px-4 py-3 text-[var(--text-caption)] font-medium text-[var(--text-2)] uppercase tracking-wider">Mês</th>
-                      <th className="px-4 py-3 text-[var(--text-caption)] font-medium text-[var(--text-2)] uppercase tracking-wider" />
-                      <th className="text-right px-4 py-3 text-[var(--text-caption)] font-medium text-[var(--text-2)] uppercase tracking-wider">Valor Projetado</th>
+                      <th className="text-left px-4 py-3 text-[var(--text-caption)] font-medium text-[var(--text-2)] uppercase tracking-wider">Ativo</th>
+                      <th className="text-right px-4 py-3 text-[var(--text-caption)] font-medium text-[var(--text-2)] uppercase tracking-wider">DY Projetado</th>
+                      <th className="text-right px-4 py-3 text-[var(--text-caption)] font-medium text-[var(--text-2)] uppercase tracking-wider">Segurança</th>
+                      <th className="text-right px-4 py-3 text-[var(--text-caption)] font-medium text-[var(--text-2)] uppercase tracking-wider">CAGR 5a</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--border-1)]/50">
-                    {projections.projections.map((month) => {
-                      const maxVal = Math.max(...projections.projections.map(m => m.projected), 1)
-                      const pct = (month.projected / maxVal) * 100
-                      return (
-                        <tr key={month.month} className="hover:bg-[var(--surface-2)] transition-colors">
-                          <td className="px-4 py-3 font-mono text-[var(--text-small)]">
-                            {new Date(month.date).toLocaleDateString('pt-BR', { month: 'long', year: '2-digit' })}
-                          </td>
-                          <td className="px-4 py-3 w-1/3">
-                            <div className="h-2 bg-[var(--surface-2)] rounded-full overflow-hidden">
-                              <div className="h-full bg-teal rounded-full" style={{ width: `${Math.min(pct, 100)}%` }} />
+                    {projections.projections.map((proj: any) => (
+                      <tr key={proj.ticker} className="hover:bg-[var(--surface-2)] transition-colors">
+                        <td className="px-4 py-3">
+                          <Link href={`/ativo/${proj.ticker}`} className="flex items-center gap-2 group">
+                            <AssetLogo ticker={proj.ticker} size={24} />
+                            <div>
+                              <span className="font-semibold group-hover:text-[var(--accent-1)] transition-colors">{proj.ticker}</span>
+                              <span className="text-[var(--text-caption)] text-[var(--text-2)] ml-1.5">{proj.company_name}</span>
                             </div>
-                          </td>
-                          <td className="px-4 py-3 text-right font-mono text-[var(--text-small)] font-medium">{formatCurrency(month.projected)}</td>
-                        </tr>
-                      )
-                    })}
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3 text-right font-mono font-medium text-[var(--accent-1)]">{((proj.dividend_yield_proj ?? 0) * 100).toFixed(1)}%</td>
+                        <td className="px-4 py-3 text-right">
+                          <span className={cn('font-mono font-bold', (proj.dividend_safety ?? 0) >= 70 ? 'text-[var(--pos)]' : (proj.dividend_safety ?? 0) >= 50 ? 'text-amber-500' : 'text-[var(--neg)]')}>
+                            {proj.dividend_safety ?? '-'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right font-mono">{proj.dividend_cagr_5y != null ? `${(proj.dividend_cagr_5y * 100).toFixed(1)}%` : '-'}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
