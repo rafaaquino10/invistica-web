@@ -479,6 +479,13 @@ export const pro = {
       sector_rotation: Record<string, { cluster_id: number; tilt_points: number; signal: string }>
     }>('/analytics/regime', { token }),
 
+  // Catalysts (news + events + dividends)
+  getCatalysts: (days = 7, token?: string) =>
+    apiFetch<{
+      catalysts: Array<{ type: string; title: string; date: string; source?: string; url?: string; ticker?: string }>
+      period_days: number
+    }>(`/scores/catalysts${qs({ days })}`, { token }),
+
   // Sector Rotation Matrix
   getSectorRotation: (token?: string) =>
     apiFetch<{
