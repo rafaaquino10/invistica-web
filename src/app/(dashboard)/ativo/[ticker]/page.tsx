@@ -180,6 +180,9 @@ export default function AtivoPage() {
   const val = score?.valuation
   const div = score?.dividends
 
+  type AssetTab = 'resumo' | 'valuation' | 'fundamentos' | 'tese' | 'dividendos'
+  const [activeTab, setActiveTab] = useState<AssetTab>('resumo')
+
   if (loadingScore) {
     return (
       <div className="space-y-6">
@@ -202,9 +205,6 @@ export default function AtivoPage() {
       </div>
     )
   }
-
-  type AssetTab = 'resumo' | 'valuation' | 'fundamentos' | 'tese' | 'dividendos'
-  const [activeTab, setActiveTab] = useState<AssetTab>('resumo')
 
   if (!score || !iq) {
     return (
