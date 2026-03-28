@@ -622,9 +622,9 @@ export default function HomePage() {
               transition={{ duration: 0.4 }}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.08]"
             >
-              <span className="text-[var(--text-1)]">Inteligência proprietária</span>
+              <span className="text-[var(--text-1)]">Encontre as melhores ações</span>
               <br />
-              <span className="text-[var(--accent-1)]">para investidores.</span>
+              <span className="text-[var(--accent-1)]">da Bolsa brasileira.</span>
             </motion.h1>
 
             <motion.p
@@ -633,8 +633,8 @@ export default function HomePage() {
               transition={{ duration: 0.4, delay: 0.08 }}
               className="mt-6 text-lg md:text-xl text-[var(--text-2)] max-w-xl mx-auto leading-relaxed"
             >
-              Scoring quantitativo proprietário, gestão de carteira,
-              dados ao vivo e contexto macroeconômico.
+              Cada ação recebe um score de 0 a 100, com preço justo calculado
+              e recomendação clara de compra, venda ou espera.
             </motion.p>
 
             <motion.div
@@ -678,7 +678,7 @@ export default function HomePage() {
           >
             <p className="text-sm font-medium tracking-widest uppercase text-[var(--accent-1)] mb-4">IQ-Cognit™</p>
             <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-              Motor proprietário com calibração setorial.
+              Score inteligente calibrado por setor.
             </h2>
             <p className="mt-3 text-[var(--text-2)] max-w-xl mx-auto">
               20 indicadores, calibração por setor, detecção de regime, diagnóstico IA e monitoramento em tempo real.
