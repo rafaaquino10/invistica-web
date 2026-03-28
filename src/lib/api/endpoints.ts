@@ -222,11 +222,9 @@ export const free = {
 
 export const pro = {
   // Scores
-  getScore: (ticker: string, params?: { mandate?: string; portfolio_id?: string }, token?: string) =>
+  getScore: (ticker: string, params?: { portfolio_id?: string }, token?: string) =>
     apiFetch<IQScore>(`/scores/${ticker}${qs(params || {})}`, { token }),
 
-  getScoreMandates: (ticker: string, token?: string) =>
-    apiFetch<{ ticker: string; scores: Record<string, unknown> }>(`/scores/${ticker}/mandates`, { token }),
 
   getDossier: (ticker: string, token?: string) =>
     apiFetch<{ ticker: string; dimensoes: DossierDimension[]; veredito_geral: string; score_quali: number }>(
@@ -246,7 +244,7 @@ export const pro = {
       `/scores/${ticker}/thesis`, { token },
     ),
 
-  getTop: (params?: { limit?: number; mandate?: string }, token?: string) =>
+  getTop: (params?: { limit?: number;  }, token?: string) =>
     apiFetch<{ top: ScreenerResult[] }>(`/scores/top${qs(params || {})}`, { token }),
 
   getScreener: (
@@ -256,7 +254,7 @@ export const pro = {
       rating?: string
       min_yield?: number
       min_margin?: number
-      mandate?: string
+      
       limit?: number
     },
     token?: string,
@@ -348,32 +346,8 @@ export const pro = {
       `/radar/feed${qs({ limit, filter })}`, { token },
     ),
 
-  // Mandate
-  suggestMandate: (
-    portfolioId: string,
-    profile: {
-      horizonte_meses: number
-      tolerancia_dd_pct: number
-      objetivo: string
-      experiencia_meses: number
-      pct_patrimonio: number
-    },
-    token?: string,
-  ) => apiFetch<{ suggested: string; score: number; confidence: string }>(
-    `/portfolio/${portfolioId}/mandate/suggest`,
-    { method: 'POST', body: JSON.stringify(profile), token },
-  ),
 
-  setMandate: (portfolioId: string, mandate: string, token?: string) =>
-    apiFetch<{ mandate: string; recalculation_queued: boolean }>(
-      `/portfolio/${portfolioId}/mandate`,
-      { method: 'PATCH', body: JSON.stringify({ mandate }), token },
-    ),
 
-  getMandate: (portfolioId: string, token?: string) =>
-    apiFetch<{ mandate: string; weights: Record<string, unknown> }>(
-      `/portfolio/${portfolioId}/mandate`, { token },
-    ),
 
   // Analytics
   getICTimeline: (months = 12, token?: string) =>
@@ -528,13 +502,4 @@ export const pro = {
 
   // Dossier — NOTE: duplicate removed, using the one at line ~231 with correct field name "dimensoes"
 
-  // Mandate Comparison
-  getScoreMandates: (ticker: string, token?: string) =>
-    apiFetch<{
-      ticker: string
-      mandates: Record<string, {
-        iq_score: number; rating: string
-        score_quanti: number; score_quali: number; score_valuation: number
-      }>
-    }>(`/scores/${ticker}/mandates`, { token }),
 }

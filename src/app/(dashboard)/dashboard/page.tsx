@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils'
 import { pro, free } from '@/lib/api/endpoints'
 import { adaptPortfolio } from '@/lib/api/adapters'
 import { useAuth } from '@/hooks/use-auth'
-import { useMandate } from '@/hooks/use-mandate'
 import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
 import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
@@ -58,12 +57,11 @@ const RATING_COLORS: Record<string, string> = {
 export default function DashboardPage() {
   const router = useRouter()
   const { token } = useAuth()
-  const { mandate } = useMandate()
 
   // API queries
   const { data: topPicks, isLoading: loadingTop, isError: errorTop } = useQuery({
-    queryKey: ['scores-top', mandate],
-    queryFn: () => pro.getTop({ limit: 12, mandate }, token ?? undefined).catch(() => null),
+    queryKey: ['scores-top'],
+    queryFn: () => pro.getTop({ limit: 12 }, token ?? undefined).catch(() => null),
     retry: 1,
   })
 

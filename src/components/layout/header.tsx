@@ -13,7 +13,6 @@ import { useQuery } from '@tanstack/react-query'
 import { free } from '@/lib/api/endpoints'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { RegimeBadge } from '@/components/ui/regime-badge'
-import { MandateSelector } from './mandate-selector'
 
 // ─── Plan badge (shared with sidebar export) ──────────────
 export function PlanBadge({ plan }: { plan: string }) {
@@ -341,7 +340,6 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
       {/* ─── Actions (regime badge + theme toggle + user) ── */}
       <div className="flex items-center gap-1.5">
         {/* Mandate Selector */}
-        <MandateSelector size="sm" />
         {/* Macro Regime Badge */}
         <RegimeBadge />
         {/* Mobile Search Button */}

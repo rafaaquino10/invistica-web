@@ -9,11 +9,9 @@ import { AssetLogo } from '@/components/ui/asset-logo'
 import { cn } from '@/lib/utils'
 import { pro, free } from '@/lib/api/endpoints'
 import { useAuth } from '@/hooks/use-auth'
-import { useMandate, type Mandate } from '@/hooks/use-mandate'
 import { fadeInUp } from '@/lib/utils/motion'
 
 // ─── Constants ──────────────────────────────────────────────
-const MANDATES = ['CONSERVADOR', 'EQUILIBRADO', 'ARROJADO'] as const
 
 const RATING_LABELS: Record<string, string> = {
   STRONG_BUY: 'Compra Forte', BUY: 'Acumular', HOLD: 'Neutro',
@@ -42,8 +40,6 @@ export default function ExplorerPage() {
   const router = useRouter()
   const { token } = useAuth()
 
-  // Mandate from global selector (synced with header)
-  const { mandate, setMandate } = useMandate()
   const [minScore, setMinScore] = useState<number>(0)
   const [ratingFilter, setRatingFilter] = useState<string>('')
   const [clusterId, setClusterId] = useState<number | undefined>()
@@ -55,8 +51,8 @@ export default function ExplorerPage() {
   const PAGE_SIZE = 30
   const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map())
 
-  // Reset selection and page when mandate or filters change
-  useEffect(() => { setSelectedIdx(-1); setPage(0) }, [mandate, minScore, ratingFilter, clusterId, sortBy, sortAsc])
+  // Reset selection and page when filters change
+  useEffect(() => { setSelectedIdx(-1); setPage(0) }, [minScore, ratingFilter, clusterId, sortBy, sortAsc])
 
   const { data: clusters } = useQuery({
     queryKey: ['clusters'],
@@ -64,9 +60,8 @@ export default function ExplorerPage() {
   })
 
   const { data: screenerData, isLoading } = useQuery({
-    queryKey: ['screener', mandate, minScore, ratingFilter, clusterId],
+    queryKey: ['screener', minScore, ratingFilter, clusterId],
     queryFn: () => pro.getScreener({
-      mandate,
       min_score: minScore || undefined,
       rating: ratingFilter || undefined,
       cluster_id: clusterId,
@@ -132,7 +127,7 @@ export default function ExplorerPage() {
         <div>
           <h1 className="text-xl font-bold text-[var(--text-1)]">Explorer</h1>
           <p className="text-[var(--text-small)] text-[var(--text-2)]">
-            {sorted.length} ações ranqueadas por IQ-Score | Mandato: {mandate} | Página {page + 1}/{totalPages || 1}
+            {sorted.length} ações ranqueadas por IQ-Score | Página {page + 1}/{totalPages || 1}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -151,24 +146,6 @@ export default function ExplorerPage() {
             j/k navegar | Enter abrir
           </span>
         </div>
-      </div>
-
-      {/* ─── Mandate Tabs ────────────────────────────── */}
-      <div className="flex gap-1 p-1 bg-[var(--bg)] rounded-xl border border-[var(--border-1)]">
-        {(['CONSERVADOR', 'EQUILIBRADO', 'ARROJADO'] as const).map((m) => (
-          <button
-            key={m}
-            onClick={() => setMandate(m as Mandate)}
-            className={cn(
-              'flex-1 px-4 py-2 text-xs font-semibold rounded-lg transition-all',
-              mandate === m
-                ? 'bg-[var(--accent-1)] text-white shadow-sm'
-                : 'text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--surface-1)]'
-            )}
-          >
-            {m}
-          </button>
-        ))}
       </div>
 
       {/* ─── Filters Panel ───────────────────────────── */}

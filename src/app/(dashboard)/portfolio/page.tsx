@@ -12,7 +12,6 @@ import { formatCurrency } from '@/lib/utils/formatters'
 import { pro } from '@/lib/api/endpoints'
 import { adaptPortfolio } from '@/lib/api/adapters'
 import { useAuth } from '@/hooks/use-auth'
-import { useMandate } from '@/hooks/use-mandate'
 import { CSVImport } from '@/components/portfolio/csv-import'
 import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
 import { toast } from 'sonner'
@@ -47,7 +46,6 @@ const RATING_LABELS: Record<string, string> = {
 export default function PortfolioPage() {
   const router = useRouter()
   const { token } = useAuth()
-  const { mandate, currentMeta } = useMandate()
   const queryClient = useQueryClient()
 
   // UI state
@@ -156,7 +154,7 @@ export default function PortfolioPage() {
         <div>
           <h1 className="text-xl font-bold text-[var(--text-1)]">Portfolio</h1>
           <p className="text-[var(--text-small)] text-[var(--text-2)]">
-            {positions.length} posições | Mandato: {currentMeta.label}
+            {positions.length} posições
           </p>
         </div>
         <div className="flex gap-2">

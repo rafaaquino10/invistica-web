@@ -15,7 +15,6 @@ import { cn } from '@/lib/utils'
 import { pro, free } from '@/lib/api/endpoints'
 import { adaptScoreToAsset, adaptEvidenceToDrivers, adaptValuation } from '@/lib/api/adapters'
 import { useAuth } from '@/hooks/use-auth'
-import { useMandate } from '@/hooks/use-mandate'
 import type { Evidence } from '@/lib/api/endpoints'
 
 // ─── Formatters ──────────────────────────────────────────────
@@ -52,12 +51,11 @@ export default function AtivoPage() {
   const params = useParams()
   const ticker = (params['ticker'] as string)?.toUpperCase()
   const { token } = useAuth()
-  const { mandate } = useMandate()
 
   // API calls
   const { data: score, isLoading: loadingScore, isError: errorScore } = useQuery({
-    queryKey: ['score', ticker, mandate],
-    queryFn: () => pro.getScore(ticker, { mandate }, token ?? undefined),
+    queryKey: ['score', ticker],
+    queryFn: () => pro.getScore(ticker, {}, token ?? undefined),
     enabled: !!ticker,
     retry: 1,
   })
@@ -155,12 +153,7 @@ export default function AtivoPage() {
     staleTime: 10 * 60 * 1000,
   })
 
-  const { data: mandatesData } = useQuery({
-    queryKey: ['mandates', ticker],
-    queryFn: () => pro.getScoreMandates(ticker, token ?? undefined).catch(() => null),
-    enabled: !!ticker,
-    retry: 0,
-  })
+  // (mandate query removed)
 
   // Adapt data
   const asset = useMemo(() => {
@@ -237,7 +230,7 @@ export default function AtivoPage() {
             </div>
             <p className="text-[var(--text-body)] text-[var(--text-2)]">{score.company_name}</p>
             <p className="text-[var(--text-caption)] text-[var(--text-2)]">
-              Cluster {score.cluster} | Mandato: {score.mandate}
+              Cluster {score.cluster}
             </p>
           </div>
         </div>
@@ -274,31 +267,7 @@ export default function AtivoPage() {
             </div>
           </div>
 
-          {/* Mandate Compare — how this asset scores across 3 profiles */}
-          {mandatesData?.mandates && (
-            <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-5">
-              <h3 className="text-sm font-semibold text-[var(--text-1)] mb-3">Score por Mandato</h3>
-              <div className="space-y-2">
-                {(['CONSERVADOR', 'EQUILIBRADO', 'ARROJADO'] as const).map((m) => {
-                  const s = mandatesData.mandates[m]
-                  if (!s) return null
-                  const isActive = m === mandate
-                  return (
-                    <div key={m} className={cn('flex items-center gap-3 p-2 rounded-lg transition-colors', isActive && 'bg-[var(--accent-1)]/5 ring-1 ring-[var(--accent-1)]/20')}>
-                      <span className="text-[10px] font-bold w-6 text-center text-[var(--text-2)]">{m.charAt(0)}</span>
-                      <div className="flex-1 h-2 bg-[var(--bg)] rounded-full overflow-hidden">
-                        <div className="h-full bg-[var(--accent-1)] rounded-full transition-all" style={{ width: `${s.iq_score}%` }} />
-                      </div>
-                      <span className={cn('font-mono text-sm font-bold w-8 text-right', s.iq_score >= 75 ? 'text-[var(--pos)]' : s.iq_score >= 60 ? 'text-[var(--accent-1)]' : 'text-[var(--text-2)]')}>
-                        {s.iq_score}
-                      </span>
-                      <span className="text-[10px] text-[var(--text-3)] w-16 truncate">{s.rating}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          )}
+          {/* mandate compare section removed */}
 
           {/* Dividend Trap Risk Alert */}
           {trapRisk?.is_dividend_trap && (

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   try {
     const API_BASE = process.env['NEXT_PUBLIC_API_URL'] || 'https://investiqbackend-production.up.railway.app'
-    const res = await fetch(`${API_BASE}/scores/${upperTicker}?mandate=EQUILIBRADO`, { next: { revalidate: 3600 } })
+    const res = await fetch(`${API_BASE}/scores/${upperTicker}`, { next: { revalidate: 3600 } })
     if (res.ok) {
       const data = await res.json()
       score = data.iq_cognit?.iq_score ?? null
