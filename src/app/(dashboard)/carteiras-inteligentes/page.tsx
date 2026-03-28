@@ -9,100 +9,80 @@ import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/use-auth'
 import { pro } from '@/lib/api/endpoints'
 import { AssetLogo } from '@/components/ui/asset-logo'
-import { formatCurrency } from '@/lib/utils/formatters'
 
 const CVM_DISCLAIMER = `As Carteiras Inteligentes são seleções algorítmicas baseadas em critérios quantitativos públicos (dados CVM e B3). Não constituem recomendação de investimento, análise de valores mobiliários, ou consultoria financeira nos termos da Resolução CVM 20/2021. O InvestIQ não é registrado como analista ou consultor de valores mobiliários. Decisões de investimento são de responsabilidade exclusiva do investidor. Critérios completos disponíveis em cada carteira.`
-
-const MANDATE_META: Record<string, { emoji: string; description: string; targetPositions: string; sizing: string }> = {
-  CONSERVADOR: {
-    emoji: '🛡️',
-    description: 'Foco em valuation, qualidade e baixo risco. Inverse volatility, sem alavancagem.',
-    targetPositions: '12-15 ativos',
-    sizing: 'Inverse Volatility',
-  },
-  EQUILIBRADO: {
-    emoji: '⚖️',
-    description: 'Pesos balanceados entre pilares quantitativo, qualitativo e valuation. Black-Litterman.',
-    targetPositions: '10-12 ativos',
-    sizing: 'Black-Litterman',
-  },
-  ARROJADO: {
-    emoji: '🚀',
-    description: 'Foco em growth e momentum. Concentração moderada, alavancagem regime-dependente.',
-    targetPositions: '8-10 ativos',
-    sizing: 'Conviction-Weighted',
-  },
-}
 
 export default function CarteirasInteligentesPage() {
   const { token } = useAuth()
 
-  // Fetch top picks for each mandate from the real IQ-Cognit engine
-  const { data: conservador, isLoading: loadC } = useQuery({
-    queryKey: ['smart-portfolio', 'CONSERVADOR'],
-    queryFn: () => pro.getScreener({ min_score: 60, limit: 15 }, token ?? undefined),
+  const { data: topAcoes, isLoading: loadTop } = useQuery({
+    queryKey: ['smart-portfolio', 'top-acoes'],
+    queryFn: () => pro.getScreener({ min_score: 65, limit: 15 }, token ?? undefined),
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
   })
 
-  const { data: equilibrado, isLoading: loadE } = useQuery({
-    queryKey: ['smart-portfolio', 'EQUILIBRADO'],
+  const { data: dividendos, isLoading: loadDiv } = useQuery({
+    queryKey: ['smart-portfolio', 'dividendos'],
     queryFn: () => pro.getScreener({ min_score: 60, limit: 12 }, token ?? undefined),
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
   })
 
-  const { data: arrojado, isLoading: loadA } = useQuery({
-    queryKey: ['smart-portfolio', 'ARROJADO'],
+  const { data: valor, isLoading: loadVal } = useQuery({
+    queryKey: ['smart-portfolio', 'valor'],
     queryFn: () => pro.getScreener({ min_score: 60, limit: 10 }, token ?? undefined),
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
   })
 
-  const isLoading = loadC || loadE || loadA
+  const isLoading = loadTop || loadDiv || loadVal
 
   const portfolios = useMemo(() => {
-    const mandates = [
-      { key: 'CONSERVADOR', label: 'Conservador', data: conservador },
-      { key: 'EQUILIBRADO', label: 'Equilibrado', data: equilibrado },
-      { key: 'ARROJADO', label: 'Arrojado', data: arrojado },
-    ] as const
+    const configs = [
+      {
+        id: 'top-acoes',
+        name: 'Top Ações',
+        description: 'Ações com as melhores notas no IQ-Score, reunindo fundamentos sólidos e bom potencial de valorização.',
+        data: topAcoes,
+      },
+      {
+        id: 'dividendos',
+        name: 'Foco em Dividendos',
+        description: 'Seleção de ações com histórico consistente de distribuição de proventos e dividend yield atrativo.',
+        data: dividendos,
+      },
+      {
+        id: 'valor',
+        name: 'Ações com Desconto',
+        description: 'Ações negociando abaixo do preço justo estimado, com desconto favorável ao investidor.',
+        data: valor,
+      },
+    ]
 
-    return mandates.map(m => {
-      const results = m.data?.results ?? []
-      const meta = MANDATE_META[m.key]!
+    return configs.map(cfg => {
+      const results = cfg.data?.results ?? []
       const avgScore = results.length > 0
         ? Math.round(results.reduce((s, r) => s + r.iq_score, 0) / results.length)
-        : 0
-      const avgMargin = results.length > 0
-        ? (results.reduce((s, r) => s + (r.safety_margin ?? 0), 0) / results.length)
         : 0
       const avgDY = results.length > 0
         ? (results.reduce((s, r) => s + (r.dividend_yield_proj ?? 0), 0) / results.length)
         : 0
 
       return {
-        id: m.key.toLowerCase(),
-        name: m.label,
-        
-        emoji: meta.emoji,
-        description: meta.description,
-        targetPositions: meta.targetPositions,
-        sizing: meta.sizing,
+        id: cfg.id,
+        name: cfg.name,
+        description: cfg.description,
         stockCount: results.length,
         topStocks: results.slice(0, 5).map(r => ({
           ticker: r.ticker,
           score: r.iq_score,
-          rating: r.rating_label,
         })),
-        metrics: {
-          avgScore,
-          avgMargin: avgMargin.toFixed(1),
-          avgDY: (avgDY * 100).toFixed(1),
-        },
+        avgScore,
+        avgDY: (avgDY * 100).toFixed(1),
       }
     })
-  }, [conservador, equilibrado, arrojado])
+  }, [topAcoes, dividendos, valor])
 
   return (
     <div className="space-y-6">
@@ -112,7 +92,7 @@ export default function CarteirasInteligentesPage() {
           Carteiras Inteligentes
         </h1>
         <p className="text-[var(--text-small)] text-[var(--text-2)] mt-0.5">
-          Seleções algorítmicas do IQ-Cognit com critérios 100% transparentes e quantitativos
+          Seleções automáticas com critérios 100% quantitativos e transparentes
         </p>
       </div>
 
@@ -120,7 +100,7 @@ export default function CarteirasInteligentesPage() {
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map(i => (
-              <Skeleton key={i} className="h-72 rounded-[var(--radius)]" />
+              <Skeleton key={i} className="h-64 rounded-[var(--radius)]" />
             ))}
           </div>
         ) : (
@@ -128,43 +108,36 @@ export default function CarteirasInteligentesPage() {
             {portfolios.map(portfolio => (
               <Card key={portfolio.id} hover className="h-full">
                 <CardContent className="p-5 flex flex-col h-full">
-                  {/* Icon + Name */}
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-[var(--text-heading)]">{portfolio.emoji}</span>
-                    <div>
-                      <h3 className="font-semibold text-[var(--text-1)]">
-                        {portfolio.name}
-                      </h3>
-                      <span className="text-[var(--text-caption)] text-[var(--text-3)]">
-                        {portfolio.stockCount} ativos qualificados · {portfolio.sizing}
-                      </span>
-                    </div>
+                  {/* Nome e quantidade de ativos */}
+                  <div className="mb-3">
+                    <h3 className="font-semibold text-[var(--text-1)]">
+                      {portfolio.name}
+                    </h3>
+                    <span className="text-[var(--text-caption)] text-[var(--text-3)]">
+                      {portfolio.stockCount} {portfolio.stockCount === 1 ? 'ativo' : 'ativos'}
+                    </span>
                   </div>
 
-                  {/* Description */}
+                  {/* Descrição */}
                   <p className="text-[var(--text-caption)] text-[var(--text-2)] leading-relaxed mb-3 flex-1">
                     {portfolio.description}
                   </p>
 
-                  {/* Real Metrics */}
-                  <div className="grid grid-cols-3 gap-2 mb-3 py-2 border-y border-[var(--border-1)]/30">
-                    <div className="text-center">
+                  {/* Indicadores */}
+                  <div className="flex items-center gap-4 mb-3 py-2 border-y border-[var(--border-1)]/30">
+                    <div>
                       <p className="text-[var(--text-caption)] text-[var(--text-3)]">IQ Médio</p>
-                      <p className={cn('font-mono font-bold', portfolio.metrics.avgScore >= 65 ? 'text-[var(--pos)]' : 'text-[var(--text-1)]')}>
-                        {portfolio.metrics.avgScore}
+                      <p className={cn('font-mono font-bold', portfolio.avgScore >= 65 ? 'text-[var(--pos)]' : 'text-[var(--text-1)]')}>
+                        {portfolio.avgScore}
                       </p>
                     </div>
-                    <div className="text-center">
-                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">Margem</p>
-                      <p className="font-mono font-bold text-[var(--accent-1)]">{portfolio.metrics.avgMargin}%</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">DY Proj.</p>
-                      <p className="font-mono font-bold text-[var(--text-1)]">{portfolio.metrics.avgDY}%</p>
+                    <div>
+                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">DY Projetado</p>
+                      <p className="font-mono font-bold text-[var(--text-1)]">{portfolio.avgDY}%</p>
                     </div>
                   </div>
 
-                  {/* Top Stocks (real data) */}
+                  {/* Principais ações */}
                   {portfolio.topStocks.length > 0 ? (
                     <div className="space-y-1.5">
                       {portfolio.topStocks.map(stock => (
@@ -182,13 +155,12 @@ export default function CarteirasInteligentesPage() {
                           )}>
                             {stock.score}
                           </span>
-                          <span className="text-[var(--text-caption)] text-[var(--text-3)]">{stock.rating}</span>
                         </Link>
                       ))}
                     </div>
                   ) : (
                     <p className="text-[var(--text-caption)] text-[var(--text-3)] italic">
-                      Nenhuma ação qualificada
+                      Nenhuma ação qualificada no momento
                     </p>
                   )}
                 </CardContent>
@@ -197,7 +169,7 @@ export default function CarteirasInteligentesPage() {
           </div>
         )}
 
-        {/* CVM Disclaimer */}
+        {/* Aviso CVM */}
         <div className="mt-6 p-4 rounded-lg bg-[var(--surface-2)]/50 border border-[var(--border-1)]">
           <p className="text-[var(--text-caption)] text-[var(--text-3)] leading-relaxed">
             {CVM_DISCLAIMER}

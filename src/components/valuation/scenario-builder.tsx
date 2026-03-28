@@ -160,7 +160,7 @@ export function ScenarioBuilder({
               'p-3 rounded-lg text-center',
               scenario.adjMargin > 0 ? 'bg-[var(--pos)]/5' : 'bg-[var(--neg)]/5'
             )}>
-              <p className="text-[var(--text-caption)] text-[var(--text-2)]">Margem Seg.</p>
+              <p className="text-[var(--text-caption)] text-[var(--text-2)]">Desconto</p>
               <p className={cn('font-mono text-lg font-bold', scenario.adjMargin > 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
                 {(scenario.adjMargin * 100).toFixed(1)}%
               </p>

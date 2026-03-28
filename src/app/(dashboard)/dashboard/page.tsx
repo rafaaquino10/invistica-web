@@ -206,7 +206,7 @@ export default function DashboardPage() {
                       <p className={cn('font-mono text-xs',
                         pick.safety_margin > 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'
                       )}>
-                        Margem: {(pick.safety_margin * 100).toFixed(0)}%
+                        Desconto: {(pick.safety_margin * 100).toFixed(0)}%
                       </p>
                     </div>
                   )}

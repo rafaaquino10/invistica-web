@@ -29,7 +29,7 @@ const RATING_BADGES: Record<string, string> = {
 
 const SORT_OPTIONS = [
   { value: 'iq_score', label: 'IQ-Score' },
-  { value: 'safety_margin', label: 'Margem Seg.' },
+  { value: 'safety_margin', label: 'Desconto' },
   { value: 'dividend_yield', label: 'Dividend Yield' },
   { value: 'dividend_safety', label: 'Div Safety' },
 ] as const
@@ -245,7 +245,7 @@ export default function ExplorerPage() {
                 <ThWithTooltip label="Quanti" tooltip="Score quantitativo: ROE, margens, crescimento, endividamento" className="hidden xl:table-cell" />
                 <ThWithTooltip label="Quali" tooltip="Score qualitativo: governança, vantagens competitivas, gestão" className="hidden xl:table-cell" />
                 <ThWithTooltip label="Valuation" tooltip="Score de valuation: desconto vs preço justo (DCF, Gordon, múltiplos)" className="hidden xl:table-cell" />
-                <SortHeader label="Desconto" tooltip="Margem de segurança: quanto o preço atual está abaixo do preço justo" sortKey="safety_margin" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} className="hidden md:table-cell" />
+                <SortHeader label="Desconto" tooltip="Desconto: quanto o preço atual está abaixo do preço justo calculado" sortKey="safety_margin" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} className="hidden md:table-cell" />
                 <SortHeader label="DY Proj." tooltip="Dividend Yield projetado para os próximos 12 meses" sortKey="dividend_yield" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} className="hidden md:table-cell" />
                 <SortHeader label="Div Safety" tooltip="Score de segurança do dividendo (0-100): quanto maior, mais sustentável" sortKey="dividend_safety" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} className="hidden lg:table-cell" />
                 <th className="text-center px-2 py-3.5 text-[var(--text-2)] font-medium w-10"></th>
