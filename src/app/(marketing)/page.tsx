@@ -1236,56 +1236,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── Social Proof ──────────────────────────────── */}
-      <section className="py-16 border-t border-b border-[var(--border-1)]/20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center"
-          >
-            <div>
-              <p className="text-3xl font-bold font-mono text-[var(--accent-1)]">384+</p>
-              <p className="text-sm text-[var(--text-2)] mt-1">Ações da B3 analisadas em tempo real</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold font-mono text-emerald-500">+10,5%</p>
-              <p className="text-sm text-[var(--text-2)] mt-1">Alpha sobre o IBOV no backtest</p>
-            </div>
-            <div>
-              <p className="text-3xl font-bold font-mono text-[var(--text-1)]">100%</p>
-              <p className="text-sm text-[var(--text-2)] mt-1">Dados reais — CVM, BCB, brapi, Kalshi</p>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── Acesso Antecipado ────────────────────────── */}
-      <section className="py-20 md:py-28">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 text-emerald-500 text-sm font-medium mb-6">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Acesso Antecipado
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold">Tudo liberado. Grátis.</h2>
-            <p className="mt-3 text-lg text-[var(--text-2)] max-w-xl mx-auto">
-              Estamos em fase de acesso antecipado. Todas as funcionalidades do InvestIQ
-              estão disponíveis gratuitamente para os primeiros usuários.
-            </p>
-            <div className="mt-8">
-              <Link href="/register">
-                <Button size="lg">Criar conta gratuita</Button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      {/* (Social proof + early access sections removed per product decision) */}
 
       {/* ─── CTA ─────────────────────────────────────── */}
       <section className="relative py-20 md:py-28 border-t border-[var(--border-1)]/30 overflow-hidden">
