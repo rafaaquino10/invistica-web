@@ -125,9 +125,9 @@ export default function ExplorerPage() {
       {/* ─── Header ──────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-[var(--text-1)]">Explorer</h1>
+          <h1 className="text-xl font-bold text-[var(--text-1)]">Explorar Ações</h1>
           <p className="text-[var(--text-small)] text-[var(--text-2)]">
-            {sorted.length} ações ranqueadas por IQ-Score | Página {page + 1}/{totalPages || 1}
+            {sorted.length} ações ranqueadas | Página {page + 1}/{totalPages || 1}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -142,10 +142,26 @@ export default function ExplorerPage() {
           >
             Filtros {showFilters ? '▲' : '▼'}
           </button>
-          <span className="text-[var(--text-caption)] text-[var(--text-2)] hidden md:block">
-            j/k navegar | Enter abrir
-          </span>
         </div>
+      </div>
+
+      {/* ─── Presets de busca rápida ────────────────── */}
+      <div className="flex flex-wrap gap-2">
+        {[
+          { label: 'Melhor IQ-Score', action: () => { setMinScore(70); setSortBy('iq_score'); setSortAsc(false) } },
+          { label: 'Maiores Dividendos', action: () => { setMinScore(0); setSortBy('dividend_yield'); setSortAsc(false) } },
+          { label: 'Mais Baratas', action: () => { setMinScore(0); setSortBy('safety_margin'); setSortAsc(false) } },
+          { label: 'Dividendos Seguros', action: () => { setMinScore(0); setSortBy('dividend_safety'); setSortAsc(false) } },
+          { label: 'Todas', action: () => { setMinScore(0); setRatingFilter(''); setClusterId(undefined); setSortBy('iq_score'); setSortAsc(false) } },
+        ].map(preset => (
+          <button
+            key={preset.label}
+            onClick={preset.action}
+            className="px-3 py-1.5 text-xs font-medium rounded-full border border-[var(--border-1)] bg-[var(--surface-1)] text-[var(--text-2)] hover:bg-[var(--accent-1)] hover:text-white hover:border-[var(--accent-1)] transition-colors"
+          >
+            {preset.label}
+          </button>
+        ))}
       </div>
 
       {/* ─── Filters Panel ───────────────────────────── */}

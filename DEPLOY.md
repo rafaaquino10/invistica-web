@@ -76,7 +76,7 @@ Depois, no Vercel: Settings → Domains → Add `investiq.com.br` e `www.investi
 
 1. Acessar [upstash.com](https://upstash.com)
 2. Criar database Redis (regiao: South America)
-3. Copiar `UPSTASH_REDIS_REST_URL` e `UPSTASH_REDIS_REST_TOKEN`
+3. Copiar `1` e `UPSTASH_REDIS_REST_TOKEN`
 4. Adicionar nas env vars do Railway (backend)
 
 ## 6. Supabase
