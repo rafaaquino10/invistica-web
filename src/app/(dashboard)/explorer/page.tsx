@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { Skeleton, Tabs, Disclaimer } from '@/components/ui'
 import { AssetLogo } from '@/components/ui/asset-logo'
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import { pro, free } from '@/lib/api/endpoints'
 import { useAuth } from '@/hooks/use-auth'
 import { fadeInUp } from '@/lib/utils/motion'
+import { toast } from 'sonner'
 
 // ─── Constants ──────────────────────────────────────────────
 
@@ -50,6 +51,17 @@ export default function ExplorerPage() {
   const [page, setPage] = useState(0)
   const PAGE_SIZE = 30
   const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map())
+
+  const queryClient = useQueryClient()
+  const addMutation = useMutation({
+    mutationFn: (ticker: string) =>
+      pro.addPosition({ ticker, qty: 0, avg_price: 0 }, token ?? undefined),
+    onSuccess: (_data, ticker) => {
+      queryClient.invalidateQueries({ queryKey: ['portfolio'] })
+      toast.success(`${ticker} adicionado à carteira`)
+    },
+    onError: () => toast.error('Erro ao adicionar à carteira'),
+  })
 
   // Reset selection and page when filters change
   useEffect(() => { setSelectedIdx(-1); setPage(0) }, [minScore, ratingFilter, clusterId, sortBy, sortAsc])
@@ -227,22 +239,23 @@ export default function ExplorerPage() {
               <tr className="border-b border-[var(--border-1)] bg-[var(--bg)]">
                 <th className="text-left px-5 py-3.5 text-[var(--text-2)] font-medium w-8">#</th>
                 <th className="text-left px-3 py-3.5 text-[var(--text-2)] font-medium">Ativo</th>
-                <th className="text-center px-3 py-3.5 text-[var(--text-2)] font-medium">Setor</th>
-                <SortHeader label="IQ-Score" sortKey="iq_score" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} />
+                <th className="text-center px-3 py-3.5 text-[var(--text-2)] font-medium hidden lg:table-cell">Setor</th>
+                <SortHeader label="IQ-Score" tooltip="Nota geral de 0 a 100 combinando análise quantitativa, qualitativa e de valuation" sortKey="iq_score" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} />
                 <th className="text-center px-3 py-3.5 text-[var(--text-2)] font-medium">Rating</th>
-                <th className="text-right px-3 py-3.5 text-[var(--text-2)] font-medium">Quanti</th>
-                <th className="text-right px-3 py-3.5 text-[var(--text-2)] font-medium">Quali</th>
-                <th className="text-right px-3 py-3.5 text-[var(--text-2)] font-medium">Valuation</th>
-                <SortHeader label="Margem Seg." sortKey="safety_margin" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} />
-                <SortHeader label="DY Proj." sortKey="dividend_yield" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} />
-                <SortHeader label="Div Safety" sortKey="dividend_safety" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} />
+                <ThWithTooltip label="Quanti" tooltip="Score quantitativo: ROE, margens, crescimento, endividamento" className="hidden xl:table-cell" />
+                <ThWithTooltip label="Quali" tooltip="Score qualitativo: governança, vantagens competitivas, gestão" className="hidden xl:table-cell" />
+                <ThWithTooltip label="Valuation" tooltip="Score de valuation: desconto vs preço justo (DCF, Gordon, múltiplos)" className="hidden xl:table-cell" />
+                <SortHeader label="Desconto" tooltip="Margem de segurança: quanto o preço atual está abaixo do preço justo" sortKey="safety_margin" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} className="hidden md:table-cell" />
+                <SortHeader label="DY Proj." tooltip="Dividend Yield projetado para os próximos 12 meses" sortKey="dividend_yield" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} className="hidden md:table-cell" />
+                <SortHeader label="Div Safety" tooltip="Score de segurança do dividendo (0-100): quanto maior, mais sustentável" sortKey="dividend_safety" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} className="hidden lg:table-cell" />
+                <th className="text-center px-2 py-3.5 text-[var(--text-2)] font-medium w-10"></th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 Array.from({ length: 12 }).map((_, i) => (
                   <tr key={i} className="border-b border-[var(--border-1)]/30">
-                    <td className="px-5 py-3.5" colSpan={11}><Skeleton className="h-8" /></td>
+                    <td className="px-5 py-3.5" colSpan={12}><Skeleton className="h-8" /></td>
                   </tr>
                 ))
               ) : paged.length > 0 ? (
@@ -271,7 +284,7 @@ export default function ExplorerPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 py-3 text-center">
+                    <td className="px-3 py-3 text-center hidden lg:table-cell">
                       <span className="text-xs text-[var(--text-2)] bg-[var(--bg)] px-2 py-0.5 rounded-full">
                         {clusterNames[r.cluster_id] ?? `C${r.cluster_id}`}
                       </span>
@@ -292,20 +305,20 @@ export default function ExplorerPage() {
                         {RATING_LABELS[r.rating] ?? r.rating}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)]">{r.score_quanti}</td>
-                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)]">{r.score_quali}</td>
-                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)]">{r.score_valuation}</td>
-                    <td className="px-3 py-3 text-right font-mono text-sm">
+                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)] hidden xl:table-cell">{r.score_quanti}</td>
+                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)] hidden xl:table-cell">{r.score_quali}</td>
+                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)] hidden xl:table-cell">{r.score_valuation}</td>
+                    <td className="px-3 py-3 text-right font-mono text-sm hidden md:table-cell">
                       {r.safety_margin != null ? (
                         <span className={r.safety_margin > 0.15 ? 'text-[var(--pos)]' : r.safety_margin > 0 ? 'text-[var(--accent-1)]' : 'text-[var(--neg)]'}>
                           {(r.safety_margin * 100).toFixed(0)}%
                         </span>
                       ) : <span className="text-[var(--text-2)]">--</span>}
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)]">
+                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)] hidden md:table-cell">
                       {r.dividend_yield_proj != null ? `${(r.dividend_yield_proj * 100).toFixed(1)}%` : '--'}
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-sm">
+                    <td className="px-3 py-3 text-right font-mono text-sm hidden lg:table-cell">
                       {r.dividend_safety != null ? (
                         <span className={
                           r.dividend_safety >= 70 ? 'text-[var(--pos)]' :
@@ -314,11 +327,21 @@ export default function ExplorerPage() {
                         }>{r.dividend_safety}</span>
                       ) : <span className="text-[var(--text-2)]">--</span>}
                     </td>
+                    <td className="px-2 py-3 text-center">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); addMutation.mutate(r.ticker) }}
+                        disabled={addMutation.isPending}
+                        title={`Adicionar ${r.ticker} à carteira`}
+                        className="p-1.5 rounded-lg text-[var(--text-3)] hover:text-[var(--accent-1)] hover:bg-[var(--accent-1)]/10 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td className="px-5 py-12 text-center text-[var(--text-2)]" colSpan={11}>
+                  <td className="px-5 py-12 text-center text-[var(--text-2)]" colSpan={12}>
                     {screenerData?.results !== undefined
                       ? 'Nenhum ativo encontrado com esses filtros. Tente ajustar o IQ-Score mínimo ou o setor.'
                       : 'Erro ao carregar dados. Verifique sua conexão ou tente novamente.'}
@@ -378,20 +401,30 @@ export default function ExplorerPage() {
 }
 
 // ─── Sort Header ─────────────────────────────────────────────
-function SortHeader({ label, sortKey, current, asc, onSort }: {
-  label: string; sortKey: string; current: string; asc: boolean; onSort: (key: string) => void
+function SortHeader({ label, tooltip, sortKey, current, asc, onSort, className }: {
+  label: string; tooltip?: string; sortKey: string; current: string; asc: boolean; onSort: (key: string) => void; className?: string
 }) {
   const active = current === sortKey
   return (
     <th
-      className="text-right px-3 py-3.5 text-[var(--text-2)] font-medium cursor-pointer hover:text-[var(--text-1)] transition-colors select-none"
+      className={cn("text-right px-3 py-3.5 text-[var(--text-2)] font-medium cursor-pointer hover:text-[var(--text-1)] transition-colors select-none", className)}
       onClick={() => onSort(sortKey)}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSort(sortKey) } }}
       tabIndex={0}
       role="columnheader"
       aria-sort={active ? (asc ? 'ascending' : 'descending') : 'none'}
+      title={tooltip}
     >
       {label} {active ? (asc ? '↑' : '↓') : ''}
+    </th>
+  )
+}
+
+// ─── Header with tooltip ─────────────────────────────────────
+function ThWithTooltip({ label, tooltip, className }: { label: string; tooltip: string; className?: string }) {
+  return (
+    <th className={cn("text-right px-3 py-3.5 text-[var(--text-2)] font-medium", className)} title={tooltip}>
+      {label}
     </th>
   )
 }
