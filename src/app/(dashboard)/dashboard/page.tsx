@@ -4,10 +4,10 @@ import { useMemo } from 'react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { Skeleton, Disclaimer } from '@/components/ui'
+import { Skeleton } from '@/components/ui'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { cn } from '@/lib/utils'
-import { pro, free } from '@/lib/api/endpoints'
+import { pro } from '@/lib/api/endpoints'
 import { adaptPortfolio } from '@/lib/api/adapters'
 import { useAuth } from '@/hooks/use-auth'
 import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
@@ -30,53 +30,48 @@ const RATING_LABELS: Record<string, string> = {
 }
 
 const RATING_COLORS: Record<string, string> = {
-  STRONG_BUY: 'bg-emerald-500/15 text-emerald-600',
-  BUY: 'bg-blue-500/15 text-blue-600',
-  HOLD: 'bg-amber-500/15 text-amber-600',
-  REDUCE: 'bg-orange-500/15 text-orange-600',
-  AVOID: 'bg-red-500/15 text-red-600',
+  STRONG_BUY: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/30',
+  BUY: 'bg-blue-500/15 text-blue-600 border-blue-500/30',
+  HOLD: 'bg-amber-500/15 text-amber-600 border-amber-500/30',
+  REDUCE: 'bg-orange-500/15 text-orange-600 border-orange-500/30',
+  AVOID: 'bg-red-500/15 text-red-600 border-red-500/30',
 }
 
-const REGIME_LABELS: Record<string, { label: string; color: string }> = {
-  RISK_ON: { label: 'Risk On', color: 'text-[var(--pos)]' },
-  RISK_OFF: { label: 'Risk Off', color: 'text-[var(--neg)]' },
-  RECOVERY: { label: 'Recuperação', color: 'text-[var(--accent-1)]' },
-  STAGFLATION: { label: 'Estagflação', color: 'text-amber-500' },
+const REGIME_META: Record<string, { label: string; color: string; bg: string }> = {
+  RISK_ON: { label: 'Risk On', color: 'text-emerald-600', bg: 'bg-emerald-500/10' },
+  RISK_OFF: { label: 'Risk Off', color: 'text-red-500', bg: 'bg-red-500/10' },
+  RECOVERY: { label: 'Recuperação', color: 'text-blue-600', bg: 'bg-blue-500/10' },
+  STAGFLATION: { label: 'Estagflação', color: 'text-amber-600', bg: 'bg-amber-500/10' },
 }
 
 // ─── Main Dashboard Page ─────────────────────────────────────
 export default function DashboardPage() {
   const { token } = useAuth()
 
-  // Macro regime
   const { data: macroRegime } = useQuery({
     queryKey: ['macro-regime'],
     queryFn: () => pro.getMacroRegime(token ?? undefined).catch(() => null),
     retry: 0,
   })
 
-  // Top opportunities — usar screener que filtra nulls
   const { data: topData, isLoading: loadingTop } = useQuery({
     queryKey: ['dashboard-top'],
     queryFn: () => pro.getScreener({ min_score: 55, limit: 5 }, token ?? undefined).catch(() => null),
     retry: 1,
   })
 
-  // Dividend radar
   const { data: divRadar } = useQuery({
     queryKey: ['dashboard-div-radar'],
     queryFn: () => pro.getDividendRadar(70, token ?? undefined).catch(() => null),
     retry: 0,
   })
 
-  // Portfolio
   const { data: rawPortfolio, isLoading: loadingPortfolio } = useQuery({
     queryKey: ['portfolio'],
     queryFn: () => pro.getPortfolio(token ?? undefined).catch(() => null),
     retry: 1,
   })
 
-  // Catalysts (news)
   const { data: catalysts } = useQuery({
     queryKey: ['dashboard-catalysts'],
     queryFn: () => pro.getCatalysts(7, token ?? undefined).catch(() => null),
@@ -91,29 +86,31 @@ export default function DashboardPage() {
   const topPicks = topData?.results?.slice(0, 5) ?? []
   const topDividends = (divRadar as any)?.radar?.slice(0, 3) ?? []
   const recentNews = catalysts?.catalysts?.slice(0, 4) ?? []
+  const regime = REGIME_META[macroRegime?.regime] ?? null
 
   return (
-    <motion.div className="space-y-6" {...staggerContainer}>
+    <motion.div className="space-y-8" {...staggerContainer}>
 
-      {/* ─── Seção 1: Barra Macro ──────────────────────── */}
+      {/* ─── Cenário Macro ─────────────────────────────── */}
       {macroRegime && (
-        <motion.div {...fadeInUp} className="flex flex-wrap items-center gap-x-6 gap-y-2 px-5 py-3 bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)]">
-          <MacroItem label="SELIC" value={`${macroRegime.macro.selic.toFixed(2)}%`} />
-          <div className="w-px h-5 bg-[var(--border-1)]" />
-          <MacroItem label="IPCA" value={`${macroRegime.macro.ipca.toFixed(1)}%`} />
-          <div className="w-px h-5 bg-[var(--border-1)]" />
-          <MacroItem label="Dólar" value={`R$ ${macroRegime.macro.cambio_usd.toFixed(2)}`} />
-          <div className="w-px h-5 bg-[var(--border-1)]" />
-          <div className="flex items-center gap-2">
-            <span className="text-[var(--text-caption)] text-[var(--text-2)] font-medium">Regime</span>
-            <span className={cn('font-semibold text-sm', REGIME_LABELS[macroRegime.regime]?.color ?? 'text-[var(--text-1)]')}>
-              {REGIME_LABELS[macroRegime.regime]?.label ?? macroRegime.regime}
-            </span>
+        <motion.div {...fadeInUp}>
+          <h2 className="text-xs font-semibold text-[var(--text-3)] uppercase tracking-widest mb-3">Cenário Macroeconômico</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <MacroCard label="SELIC" value={`${macroRegime.macro.selic.toFixed(2)}%`} sub="Taxa básica de juros" />
+            <MacroCard label="IPCA" value={`${macroRegime.macro.ipca.toFixed(1)}%`} sub="Inflação acumulada" />
+            <MacroCard label="Dólar" value={`R$ ${macroRegime.macro.cambio_usd.toFixed(2)}`} sub="Câmbio comercial" />
+            <div className={cn('rounded-[var(--radius)] border border-[var(--border-1)] p-4', regime?.bg)}>
+              <p className="text-[var(--text-caption)] text-[var(--text-2)] font-medium mb-1">Regime</p>
+              <p className={cn('font-semibold text-lg', regime?.color ?? 'text-[var(--text-1)]')}>
+                {regime?.label ?? macroRegime.regime}
+              </p>
+              <p className="text-[10px] text-[var(--text-2)] mt-0.5">Classificação IQ-Cognit</p>
+            </div>
           </div>
         </motion.div>
       )}
 
-      {/* ─── Seção 2: Hero Patrimônio ─────────────────── */}
+      {/* ─── Patrimônio (se tiver carteira) ───────────── */}
       {portfolio && portfolio.positionsCount > 0 && (
         <motion.div {...fadeInUp} className="rounded-[var(--radius)] border border-[var(--border-1)] p-6 bg-gradient-to-br from-[var(--surface-1)] via-[var(--surface-1)] to-[var(--accent-2)]">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
@@ -139,67 +136,81 @@ export default function DashboardPage() {
         </motion.div>
       )}
 
-      {/* ─── Seção 3: Top 5 Oportunidades ─────────────── */}
+      {/* ─── Melhores Oportunidades ──────────────────── */}
       <motion.div {...fadeInUp}>
         <div className="flex items-center justify-between mb-3">
           <div>
             <h2 className="text-base font-semibold text-[var(--text-1)]">Melhores Oportunidades</h2>
-            <p className="text-[var(--text-caption)] text-[var(--text-2)]">Ações com maior IQ-Score</p>
+            <p className="text-[var(--text-caption)] text-[var(--text-2)]">Top ações por IQ-Score do motor IQ-Cognit</p>
           </div>
           <Link href="/explorer" className="text-[var(--text-small)] font-medium text-[var(--accent-1)] hover:underline">
-            Ver todas
+            Ver screener
           </Link>
         </div>
         {loadingTop ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-40 rounded-[var(--radius)]" />)}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-48 rounded-[var(--radius)]" />)}
           </div>
         ) : topPicks.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {topPicks.map((pick) => (
-              <Link
-                key={pick.ticker}
-                href={`/ativo/${pick.ticker}`}
-                className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-4 hover:border-[var(--accent-1)]/40 hover:shadow-sm transition-all group"
-              >
-                <div className="flex items-center gap-2.5 mb-3">
-                  <AssetLogo ticker={pick.ticker} size={32} />
-                  <div className="min-w-0">
-                    <p className="font-semibold text-sm text-[var(--text-1)] group-hover:text-[var(--accent-1)] transition-colors">{pick.ticker}</p>
-                    <p className="text-[10px] text-[var(--text-2)] truncate">{pick.company_name}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            {topPicks.map((pick) => {
+              const hasDiscount = pick.safety_margin != null && pick.safety_margin > 0
+              const dyProj = pick.dividend_yield_proj != null && pick.dividend_yield_proj > 0 ? (pick.dividend_yield_proj * 100).toFixed(1) : null
+              return (
+                <Link
+                  key={pick.ticker}
+                  href={`/ativo/${pick.ticker}`}
+                  className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-4 hover:border-[var(--accent-1)]/40 hover:shadow-md transition-all group flex flex-col"
+                >
+                  {/* Header: logo + ticker */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <AssetLogo ticker={pick.ticker} size={36} />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-[var(--text-1)] group-hover:text-[var(--accent-1)] transition-colors">{pick.ticker}</p>
+                      <p className="text-[11px] text-[var(--text-2)] truncate leading-tight">{pick.company_name}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center justify-between mb-2">
-                  <div className={cn(
-                    'w-10 h-10 rounded-lg flex items-center justify-center font-mono text-sm font-bold',
-                    (pick.iq_score ?? 0) >= 75 ? 'bg-[var(--pos)]/12 text-[var(--pos)]' :
-                    (pick.iq_score ?? 0) >= 62 ? 'bg-[var(--accent-1)]/12 text-[var(--accent-1)]' :
-                    'bg-[var(--bg)] text-[var(--text-2)]'
-                  )}>
-                    {pick.iq_score ?? '--'}
-                  </div>
-                  <span className={cn('text-[10px] font-semibold px-2 py-0.5 rounded-full', RATING_COLORS[pick.rating] ?? 'bg-[var(--bg)] text-[var(--text-2)]')}>
-                    {RATING_LABELS[pick.rating] ?? pick.rating ?? '--'}
-                  </span>
-                </div>
-                <div className="space-y-1 text-[11px]">
-                  {pick.safety_margin != null && (
-                    <div className="flex justify-between">
-                      <span className="text-[var(--text-2)]">Desconto</span>
-                      <span className={cn('font-mono font-medium', pick.safety_margin > 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
-                        {(pick.safety_margin * 100).toFixed(0)}%
+
+                  {/* Score + Rating */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={cn(
+                      'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg',
+                      (pick.iq_score ?? 0) >= 75 ? 'bg-[var(--pos)]/10' :
+                      (pick.iq_score ?? 0) >= 62 ? 'bg-[var(--accent-1)]/10' :
+                      'bg-[var(--bg)]'
+                    )}>
+                      <span className={cn(
+                        'font-mono text-lg font-bold',
+                        (pick.iq_score ?? 0) >= 75 ? 'text-[var(--pos)]' :
+                        (pick.iq_score ?? 0) >= 62 ? 'text-[var(--accent-1)]' :
+                        'text-[var(--text-2)]'
+                      )}>
+                        {pick.iq_score ?? '--'}
                       </span>
+                      <span className="text-[10px] text-[var(--text-2)] font-medium">IQ</span>
                     </div>
-                  )}
-                  {pick.dividend_yield_proj != null && pick.dividend_yield_proj > 0 && (
-                    <div className="flex justify-between">
-                      <span className="text-[var(--text-2)]">DY Proj.</span>
-                      <span className="font-mono font-medium text-[var(--text-1)]">{(pick.dividend_yield_proj * 100).toFixed(1)}%</span>
-                    </div>
-                  )}
-                </div>
-              </Link>
-            ))}
+                    <span className={cn('text-[10px] font-semibold px-2 py-1 rounded-full border', RATING_COLORS[pick.rating] ?? 'bg-[var(--bg)] text-[var(--text-2)] border-[var(--border-1)]')}>
+                      {RATING_LABELS[pick.rating] ?? '--'}
+                    </span>
+                  </div>
+
+                  {/* Métricas */}
+                  <div className="mt-auto space-y-1.5 pt-3 border-t border-[var(--border-1)]/50">
+                    <MetricRow
+                      label="Preço vs Justo"
+                      value={hasDiscount ? `${(pick.safety_margin! * 100).toFixed(0)}% abaixo` : pick.safety_margin != null ? `${Math.abs(pick.safety_margin * 100).toFixed(0)}% acima` : '--'}
+                      color={hasDiscount ? 'text-[var(--pos)]' : 'text-[var(--neg)]'}
+                    />
+                    {dyProj && (
+                      <MetricRow label="Dividendo Proj." value={`${dyProj}% a.a.`} color="text-[var(--accent-1)]" />
+                    )}
+                    {pick.score_quanti != null && (
+                      <MetricRow label="Fundamentos" value={`${pick.score_quanti}/100`} />
+                    )}
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         ) : (
           <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-8 text-center text-sm text-[var(--text-2)]">
@@ -208,16 +219,16 @@ export default function DashboardPage() {
         )}
       </motion.div>
 
-      {/* ─── Seção 4: Dividendos em Destaque ──────────── */}
+      {/* ─── Dividendos em Destaque ──────────────────── */}
       {topDividends.length > 0 && (
         <motion.div {...fadeInUp}>
           <div className="flex items-center justify-between mb-3">
             <div>
               <h2 className="text-base font-semibold text-[var(--text-1)]">Dividendos Seguros</h2>
-              <p className="text-[var(--text-caption)] text-[var(--text-2)]">Ações com alta segurança de dividendo</p>
+              <p className="text-[var(--text-caption)] text-[var(--text-2)]">Ações com dividendo sustentável e alto yield projetado</p>
             </div>
             <Link href="/dividends" className="text-[var(--text-small)] font-medium text-[var(--accent-1)] hover:underline">
-              Ver radar
+              Ver radar completo
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -225,27 +236,32 @@ export default function DashboardPage() {
               <Link
                 key={d.ticker}
                 href={`/ativo/${d.ticker}`}
-                className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-4 hover:border-teal/40 transition-all"
+                className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-5 hover:border-teal/40 hover:shadow-md transition-all group"
               >
-                <div className="flex items-center gap-3 mb-3">
-                  <AssetLogo ticker={d.ticker} size={28} />
-                  <div>
-                    <p className="font-semibold text-sm">{d.ticker}</p>
-                    <p className="text-[10px] text-[var(--text-2)] truncate">{d.company_name}</p>
+                <div className="flex items-center gap-3 mb-4">
+                  <AssetLogo ticker={d.ticker} size={32} />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-[var(--text-1)] group-hover:text-teal transition-colors">{d.ticker}</p>
+                    <p className="text-[11px] text-[var(--text-2)] truncate">{d.company_name}</p>
                   </div>
+                  {d.iq_score != null && (
+                    <div className="w-9 h-9 rounded-lg bg-[var(--bg)] flex items-center justify-center font-mono text-xs font-bold text-[var(--text-1)]">
+                      {d.iq_score}
+                    </div>
+                  )}
                 </div>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div>
-                    <p className="text-[10px] text-[var(--text-2)]">DY Proj.</p>
-                    <p className="font-mono text-sm font-bold text-[var(--accent-1)]">{((d.dividend_yield_proj ?? 0) * 100).toFixed(1)}%</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-teal/5 rounded-lg p-3 text-center">
+                    <p className="text-[10px] text-[var(--text-2)] font-medium mb-0.5">Dividend Yield</p>
+                    <p className="font-mono text-xl font-bold text-teal">{((d.dividend_yield_proj ?? 0) * 100).toFixed(1)}%</p>
+                    <p className="text-[10px] text-[var(--text-2)]">projetado 12m</p>
                   </div>
-                  <div>
-                    <p className="text-[10px] text-[var(--text-2)]">Safety</p>
-                    <p className={cn('font-mono text-sm font-bold', (d.dividend_safety ?? 0) >= 70 ? 'text-[var(--pos)]' : 'text-amber-500')}>{d.dividend_safety ?? '--'}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] text-[var(--text-2)]">IQ-Score</p>
-                    <p className="font-mono text-sm font-bold text-[var(--text-1)]">{d.iq_score ?? '--'}</p>
+                  <div className="bg-[var(--bg)] rounded-lg p-3 text-center">
+                    <p className="text-[10px] text-[var(--text-2)] font-medium mb-0.5">Segurança</p>
+                    <p className={cn('font-mono text-xl font-bold', (d.dividend_safety ?? 0) >= 80 ? 'text-[var(--pos)]' : (d.dividend_safety ?? 0) >= 60 ? 'text-amber-500' : 'text-[var(--neg)]')}>
+                      {d.dividend_safety ?? '--'}
+                    </p>
+                    <p className="text-[10px] text-[var(--text-2)]">de 0 a 100</p>
                   </div>
                 </div>
               </Link>
@@ -254,11 +270,14 @@ export default function DashboardPage() {
         </motion.div>
       )}
 
-      {/* ─── Seção 5: Minha Carteira ──────────────────── */}
+      {/* ─── Minha Carteira ──────────────────────────── */}
       {!loadingPortfolio && portfolio && portfolio.positionsCount > 0 ? (
         <motion.div {...fadeInUp} className="bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--border-1)] flex items-center justify-between">
-            <h2 className="text-base font-semibold text-[var(--text-1)]">Minha Carteira</h2>
+            <div>
+              <h2 className="text-base font-semibold text-[var(--text-1)]">Minha Carteira</h2>
+              <p className="text-[var(--text-caption)] text-[var(--text-2)]">{portfolio.positionsCount} posições</p>
+            </div>
             <Link href="/portfolio" className="text-[var(--text-small)] font-medium text-[var(--accent-1)] hover:underline">
               Gerenciar
             </Link>
@@ -268,7 +287,7 @@ export default function DashboardPage() {
               <Link
                 key={pos.id}
                 href={`/ativo/${pos.ticker}`}
-                className="flex items-center justify-between px-5 py-3 hover:bg-[var(--surface-2)] transition-colors"
+                className="flex items-center justify-between px-5 py-3.5 hover:bg-[var(--surface-2)] transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <AssetLogo ticker={pos.ticker} size={32} />
@@ -300,7 +319,7 @@ export default function DashboardPage() {
           </div>
         </motion.div>
       ) : !loadingPortfolio ? (
-        <motion.div {...fadeInUp} className="rounded-[var(--radius)] border border-dashed border-[var(--accent-1)]/30 p-8 text-center bg-[var(--accent-2)]/20">
+        <motion.div {...fadeInUp} className="rounded-[var(--radius)] border border-dashed border-[var(--accent-1)]/30 p-8 text-center bg-[var(--accent-2)]/10">
           <h3 className="text-lg font-semibold text-[var(--text-1)] mb-1">Monte sua carteira</h3>
           <p className="text-sm text-[var(--text-2)] max-w-md mx-auto mb-4">
             Adicione suas posições para acompanhar patrimônio, receber insights e recomendações personalizadas.
@@ -314,11 +333,14 @@ export default function DashboardPage() {
         </motion.div>
       ) : null}
 
-      {/* ─── Seção 6: Últimas Notícias ────────────────── */}
+      {/* ─── Mercado Hoje ────────────────────────────── */}
       {recentNews.length > 0 && (
         <motion.div {...fadeInUp}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-semibold text-[var(--text-1)]">Mercado Hoje</h2>
+            <div>
+              <h2 className="text-base font-semibold text-[var(--text-1)]">Mercado Hoje</h2>
+              <p className="text-[var(--text-caption)] text-[var(--text-2)]">Notícias e catalisadores recentes</p>
+            </div>
             <Link href="/news" className="text-[var(--text-small)] font-medium text-[var(--accent-1)] hover:underline">
               Ver todas
             </Link>
@@ -330,40 +352,48 @@ export default function DashboardPage() {
                 href={item.url ?? '#'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-4 hover:border-[var(--accent-1)]/30 transition-all group"
+                className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-4 hover:border-[var(--accent-1)]/30 hover:shadow-sm transition-all group"
               >
-                <p className="text-sm font-medium text-[var(--text-1)] group-hover:text-[var(--accent-1)] transition-colors line-clamp-2 mb-2">
+                <p className="text-sm font-medium text-[var(--text-1)] group-hover:text-[var(--accent-1)] transition-colors line-clamp-2 mb-2.5">
                   {item.title}
                 </p>
-                <div className="flex items-center gap-3 text-[var(--text-caption)] text-[var(--text-2)]">
+                <div className="flex items-center gap-2 text-[var(--text-caption)] text-[var(--text-2)]">
                   <span className={cn(
                     'px-1.5 py-0.5 rounded text-[10px] font-medium',
                     item.type === 'dividendo' ? 'bg-teal/10 text-teal' :
                     item.type === 'fato_relevante' ? 'bg-amber-500/10 text-amber-600' :
-                    'bg-[var(--bg)] text-[var(--text-2)]'
+                    'bg-[var(--surface-2)] text-[var(--text-2)]'
                   )}>
                     {item.type === 'dividendo' ? 'Dividendo' : item.type === 'fato_relevante' ? 'Fato Relevante' : 'Notícia'}
                   </span>
-                  {item.source && <span>{item.source.replace('_', ' ')}</span>}
-                  {item.date && <span>{new Date(item.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>}
+                  {item.source && <span className="text-[var(--text-3)]">{item.source.replace(/_/g, ' ')}</span>}
+                  {item.date && <span className="text-[var(--text-3)]">{new Date(item.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>}
                 </div>
               </a>
             ))}
           </div>
         </motion.div>
       )}
-
-      <Disclaimer variant="footer" />
     </motion.div>
   )
 }
 
-// ─── Macro Item ──────────────────────────────────────────────
-function MacroItem({ label, value }: { label: string; value: string }) {
+// ─── Components ──────────────────────────────────────────────
+function MacroCard({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-[var(--text-caption)] text-[var(--text-2)] font-medium">{label}</span>
-      <span className="font-mono text-sm font-semibold text-[var(--text-1)]">{value}</span>
+    <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-4">
+      <p className="text-[var(--text-caption)] text-[var(--text-2)] font-medium mb-1">{label}</p>
+      <p className="font-mono text-lg font-bold text-[var(--text-1)]">{value}</p>
+      <p className="text-[10px] text-[var(--text-2)] mt-0.5">{sub}</p>
+    </div>
+  )
+}
+
+function MetricRow({ label, value, color }: { label: string; value: string; color?: string }) {
+  return (
+    <div className="flex items-center justify-between text-[11px]">
+      <span className="text-[var(--text-2)]">{label}</span>
+      <span className={cn('font-mono font-medium', color ?? 'text-[var(--text-1)]')}>{value}</span>
     </div>
   )
 }
