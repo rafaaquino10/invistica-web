@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
@@ -203,6 +203,9 @@ export default function AtivoPage() {
     )
   }
 
+  type AssetTab = 'resumo' | 'valuation' | 'fundamentos' | 'tese' | 'dividendos'
+  const [activeTab, setActiveTab] = useState<AssetTab>('resumo')
+
   if (!score || !iq) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
@@ -246,6 +249,33 @@ export default function AtivoPage() {
           </div>
         )}
       </div>
+
+      {/* ─── Tab Navigation ──────────────────────────────── */}
+      <div className="flex gap-1 p-1 bg-[var(--bg)] rounded-xl border border-[var(--border-1)] overflow-x-auto">
+        {([
+          { key: 'resumo' as const, label: 'Resumo' },
+          { key: 'valuation' as const, label: 'Valuation' },
+          { key: 'fundamentos' as const, label: 'Fundamentos' },
+          { key: 'tese' as const, label: 'Tese & Análise' },
+          { key: 'dividendos' as const, label: 'Dividendos' },
+        ]).map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={cn(
+              'flex-1 min-w-[80px] px-4 py-2 text-xs font-semibold rounded-lg transition-all whitespace-nowrap',
+              activeTab === tab.key
+                ? 'bg-[var(--accent-1)] text-white shadow-sm'
+                : 'text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--surface-1)]'
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ─── Tab: Resumo (IQ-Score + Valuation) ────────── */}
+      {activeTab === 'resumo' && <>
 
       {/* ─── Row 1: IQ-Score + Valuation ─────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -553,7 +583,12 @@ export default function AtivoPage() {
         </div>
       )}
 
-      {/* ─── Row 3: Score X-Ray (radar + criteria expandível) ── */}
+      </>}
+
+      {/* ─── Tab: Valuation (Score X-Ray + Risk Lab) ───── */}
+      {activeTab === 'valuation' && <>
+
+      {/* ─── Score X-Ray (radar + criteria expandível) ── */}
       {score.evidences && score.evidences.length > 0 && (
         <IQCognitXRay
           evidences={score.evidences}
@@ -563,7 +598,12 @@ export default function AtivoPage() {
         />
       )}
 
-      {/* ─── Row 4: Dossier Qualitativo ─────────────────── */}
+      </>}
+
+      {/* ─── Tab: Tese & Análise ───────────────────────── */}
+      {activeTab === 'tese' && <>
+
+      {/* ─── Dossier Qualitativo ─────────────────── */}
       {dossier && dossier.dimensoes && dossier.dimensoes.length > 0 && (
         <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
           <div className="flex items-center justify-between mb-4">
@@ -714,7 +754,12 @@ export default function AtivoPage() {
         </div>
       )}
 
-      {/* ─── Row 5: Fundamentals Table ──────────────────── */}
+      </>}
+
+      {/* ─── Tab: Fundamentos ──────────────────────────── */}
+      {activeTab === 'fundamentos' && <>
+
+      {/* ─── Fundamentals Table ──────────────────── */}
       {financialsData?.financials && financialsData.financials.length > 0 && (
         <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
           <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Indicadores Fundamentalistas</h3>
@@ -781,7 +826,12 @@ export default function AtivoPage() {
         </div>
       )}
 
-      {/* ─── Row 7: Dividends History ──────────────────── */}
+      </>}
+
+      {/* ─── Tab: Dividendos ───────────────────────────── */}
+      {activeTab === 'dividendos' && <>
+
+      {/* ─── Dividends History ──────────────────── */}
       {dividendsData?.dividends && dividendsData.dividends.length > 0 && (
         <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
           <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Histórico de Dividendos</h3>
@@ -815,6 +865,9 @@ export default function AtivoPage() {
       )}
 
       {/* ─── Disclaimer ──────────────────────────────────── */}
+      </>}
+
+      {/* ─── Disclaimer (always visible) ──────────────── */}
       {score._disclaimer && (
         <div className="text-[var(--text-caption)] text-[var(--text-2)] italic leading-relaxed p-4 bg-[var(--bg)] rounded-[var(--radius)] border border-[var(--border-1)]/30">
           {score._disclaimer}
