@@ -146,115 +146,31 @@ export default function DashboardPage() {
         </motion.div>
       )}
 
-      {/* ─── KPI Strip ───────────────────────────────────── */}
-      <motion.div {...fadeInUp} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <KPI
-          label="Patrimônio"
-          value={portfolio ? fmt(portfolio.totalValue) : '--'}
-          sub={portfolio ? `${portfolio.positionsCount} posições` : undefined}
-          trend={portfolio?.gainLossPercent}
-          loading={loadingPortfolio}
-        />
+      {/* ─── KPI Strip (simplificado) ──────────────────── */}
+      <motion.div {...fadeInUp} className="grid grid-cols-2 gap-4">
         <KPI
           label="IQ-Score Médio"
           value={portfolio?.avgIqScore ? portfolio.avgIqScore.toFixed(0) : '--'}
           valueColor={getScoreColor(portfolio?.avgIqScore ?? 0)}
           sub={portfolio?.avgIqScore
-            ? (portfolio.avgIqScore >= 75 ? 'Excelente' : portfolio.avgIqScore >= 62 ? 'Bom' : portfolio.avgIqScore >= 42 ? 'Neutro' : 'Atencao')
-            : undefined}
+            ? (portfolio.avgIqScore >= 75 ? 'Excelente' : portfolio.avgIqScore >= 62 ? 'Bom' : portfolio.avgIqScore >= 42 ? 'Neutro' : 'Atenção')
+            : 'Adicione ações à carteira'}
           loading={loadingPortfolio}
         />
         <KPI
-          label="Top IQ-Score"
+          label="Melhor Oportunidade"
           value={topPicks?.top?.[0]?.ticker ?? '--'}
-          sub={topPicks?.top?.[0] ? `Score: ${topPicks.top[0].iq_score}` : undefined}
-          loading={loadingTop}
-        />
-        <KPI
-          label="Setores Cobertos"
-          value={clusterDistribution.length ? `${clusterDistribution.length}` : '--'}
-          sub={clusterDistribution[0]?.cluster ? `Maior: ${clusterDistribution[0].cluster}` : undefined}
+          sub={topPicks?.top?.[0] ? `IQ-Score ${topPicks.top[0].iq_score} — ${RATING_LABELS[topPicks.top[0].rating] ?? topPicks.top[0].rating}` : undefined}
           loading={loadingTop}
         />
       </motion.div>
-
-      {/* ─── Row 1: Portfolio Chart + Cluster Distribution ─ */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Portfolio Evolution */}
-        <motion.div {...fadeInUp} className="lg:col-span-7 bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-[var(--border-1)] flex items-center justify-between">
-            <div>
-              <h2 className="text-[var(--text-body)] font-semibold">Evolução do Patrimônio</h2>
-              <p className="text-[var(--text-small)] text-[var(--text-2)]">12 meses vs CDI</p>
-            </div>
-            <Link href="/portfolio" className="text-[var(--text-small)] font-medium text-[var(--accent-1)] hover:underline">
-              Ver portfolio
-            </Link>
-          </div>
-          <div className="px-3 py-3">
-            {loadingPortfolio ? (
-              <Skeleton className="h-[200px]" />
-            ) : allocationData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={allocationData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-1)" opacity={0.4} />
-                  <XAxis dataKey="ticker" tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} tickFormatter={(v: number) => `${(v/1000).toFixed(0)}k`} width={42} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: 'var(--surface-1)', border: '1px solid var(--border-1)', borderRadius: '8px', fontSize: '12px' }}
-                    formatter={(value: number, name: string) => {
-                      const labels: Record<string, string> = { valor: 'Valor Atual', custo: 'Custo' }
-                      return [fmt(value), labels[name] ?? name]
-                    }}
-                  />
-                  <Bar dataKey="custo" fill="#6B7280" opacity={0.4} radius={[2, 2, 0, 0]} />
-                  <Bar dataKey="valor" fill="var(--accent-1)" opacity={0.85} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <EmptyState
-                compact
-                icon={<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>}
-                title="Crie seu portfólio"
-                description="Adicione ações para acompanhar a evolução do patrimônio vs CDI."
-                actions={[{ label: 'Criar Portfólio', onClick: () => router.push('/portfolio') }]}
-                className="h-[200px] border-0"
-              />
-            )}
-          </div>
-        </motion.div>
-
-        {/* Cluster Distribution */}
-        <motion.div {...fadeInUp} className="lg:col-span-5 bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-[var(--border-1)]">
-            <h2 className="text-[var(--text-body)] font-semibold">Distribuição Setorial</h2>
-            <p className="text-[var(--text-small)] text-[var(--text-2)]">Top picks por setor</p>
-          </div>
-          <div className="p-3">
-            {clusterDistribution.length > 0 ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={clusterDistribution} layout="vertical" margin={{ top: 0, right: 20, left: 0, bottom: 0 }}>
-                  <XAxis type="number" tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} />
-                  <YAxis type="category" dataKey="cluster" tick={{ fontSize: 11, fill: 'var(--text-2)' }} axisLine={false} tickLine={false} width={100} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: 'var(--surface-1)', border: '1px solid var(--border-1)', borderRadius: '8px', fontSize: '12px' }}
-                  />
-                  <Bar dataKey="count" fill="var(--accent-1)" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <Skeleton className="h-[200px]" />
-            )}
-          </div>
-        </motion.div>
-      </div>
 
       {/* ─── Row 2: Top IQ-Score Picks ─────────────────── */}
       <motion.div {...fadeInUp} className="bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] overflow-hidden">
         <div className="px-5 py-4 border-b border-[var(--border-1)] flex items-center justify-between">
           <div>
-            <h2 className="text-[var(--text-body)] font-semibold">Motor IQ-Cognit Recomenda</h2>
-            <p className="text-[var(--text-small)] text-[var(--text-2)]">Melhores oportunidades por IQ-Score</p>
+            <h2 className="text-[var(--text-body)] font-semibold">Melhores Oportunidades</h2>
+            <p className="text-[var(--text-small)] text-[var(--text-2)]">Ações com maior IQ-Score hoje</p>
           </div>
           <Link href="/explorer" className="text-[var(--text-small)] font-medium text-[var(--accent-1)] hover:underline">
             Ver screener completo
