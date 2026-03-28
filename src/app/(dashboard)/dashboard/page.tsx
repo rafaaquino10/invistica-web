@@ -238,6 +238,22 @@ export default function DashboardPage() {
         </div>
       </motion.div>
 
+      {/* ─── CTA: Empty Portfolio ────────────────────── */}
+      {!loadingPortfolio && (!portfolio || portfolio.positionsCount === 0) && (
+        <motion.div {...fadeInUp} className="rounded-[var(--radius)] border border-dashed border-[var(--accent-1)]/30 p-8 text-center bg-[var(--accent-2)]/20">
+          <h3 className="text-lg font-semibold text-[var(--text-1)] mb-1">Monte sua carteira</h3>
+          <p className="text-sm text-[var(--text-2)] max-w-md mx-auto mb-4">
+            Adicione suas posições para acompanhar patrimônio, receber insights de concentração e recomendações personalizadas.
+          </p>
+          <Link
+            href="/portfolio"
+            className="inline-flex items-center gap-2 px-6 py-2.5 bg-[var(--accent-1)] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity"
+          >
+            Ir para Carteira
+          </Link>
+        </motion.div>
+      )}
+
       {/* ─── Row 3: Portfolio Positions ────────────────── */}
       {portfolio && portfolio.positionsCount > 0 && (
         <motion.div {...fadeInUp} className="bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] overflow-hidden">
