@@ -49,8 +49,7 @@ export interface IQScore {
   ticker: string
   company_name: string
   cluster: number
-  mandate: string
-  mandate_source: string
+  
   reference_date: string
   iq_cognit: {
     iq_score: number
@@ -109,7 +108,7 @@ export interface ScreenerResult {
   safety_margin: number | null
   dividend_yield_proj: number | null
   dividend_safety: number | null
-  mandate: string
+  
 }
 
 export interface Valuation {

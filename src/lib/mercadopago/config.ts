@@ -39,7 +39,7 @@ export const PLANS: Record<PlanType, Plan> = {
       'Tese narrativa por ativo',
       'Preco justo (DCF + Gordon + Multiplos)',
       'Monte Carlo e margem de seguranca',
-      'Screener avancado por mandato',
+      'Screener avancado',
       'Carteira pessoal ilimitada',
       'Smart Contribution',
       'Alertas WhatsApp + Email',

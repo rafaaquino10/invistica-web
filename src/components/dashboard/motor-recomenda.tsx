@@ -8,21 +8,21 @@ import { pro } from '@/lib/api/endpoints'
 import { ScoreBadge } from '@/components/ui'
 import { cn } from '@/lib/utils'
 
-type MandateMode = 'EQUILIBRADO' | 'CONSERVADOR' | 'ARROJADO'
+type string = 'EQUILIBRADO' | 'CONSERVADOR' | 'ARROJADO'
 
-const MODES: { key: MandateMode; label: string }[] = [
-  { key: 'EQUILIBRADO', label: 'Equilibrado' },
-  { key: 'CONSERVADOR', label: 'Conservador' },
-  { key: 'ARROJADO', label: 'Arrojado' },
+const MODES: { key: string; label: string }[] = [
+  
+  
+  
 ]
 
 export function MotorRecomenda() {
-  const [mode, setMode] = useState<MandateMode>('EQUILIBRADO')
+  const [mode, setMode] = useState<string>('EQUILIBRADO')
   const { token } = useAuth()
 
   const { data, isLoading } = useQuery({
     queryKey: ['motor-recomenda', mode],
-    queryFn: () => pro.getTop({ limit: 5, mandate: mode }, token ?? undefined),
+    queryFn: () => pro.getTop({ limit: 5,  }, token ?? undefined),
     enabled: !!token,
     staleTime: 5 * 60 * 1000,
   })

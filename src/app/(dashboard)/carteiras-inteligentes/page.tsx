@@ -40,21 +40,21 @@ export default function CarteirasInteligentesPage() {
   // Fetch top picks for each mandate from the real IQ-Cognit engine
   const { data: conservador, isLoading: loadC } = useQuery({
     queryKey: ['smart-portfolio', 'CONSERVADOR'],
-    queryFn: () => pro.getScreener({ mandate: 'CONSERVADOR', min_score: 60, limit: 15 }, token ?? undefined),
+    queryFn: () => pro.getScreener({ min_score: 60, limit: 15 }, token ?? undefined),
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
   })
 
   const { data: equilibrado, isLoading: loadE } = useQuery({
     queryKey: ['smart-portfolio', 'EQUILIBRADO'],
-    queryFn: () => pro.getScreener({ mandate: 'EQUILIBRADO', min_score: 60, limit: 12 }, token ?? undefined),
+    queryFn: () => pro.getScreener({ min_score: 60, limit: 12 }, token ?? undefined),
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
   })
 
   const { data: arrojado, isLoading: loadA } = useQuery({
     queryKey: ['smart-portfolio', 'ARROJADO'],
-    queryFn: () => pro.getScreener({ mandate: 'ARROJADO', min_score: 60, limit: 10 }, token ?? undefined),
+    queryFn: () => pro.getScreener({ min_score: 60, limit: 10 }, token ?? undefined),
     enabled: !!token,
     staleTime: 10 * 60 * 1000,
   })
@@ -84,7 +84,7 @@ export default function CarteirasInteligentesPage() {
       return {
         id: m.key.toLowerCase(),
         name: m.label,
-        mandate: m.key,
+        
         emoji: meta.emoji,
         description: meta.description,
         targetPositions: meta.targetPositions,
@@ -188,7 +188,7 @@ export default function CarteirasInteligentesPage() {
                     </div>
                   ) : (
                     <p className="text-[var(--text-caption)] text-[var(--text-3)] italic">
-                      Nenhuma ação qualificada neste mandato
+                      Nenhuma ação qualificada
                     </p>
                   )}
                 </CardContent>

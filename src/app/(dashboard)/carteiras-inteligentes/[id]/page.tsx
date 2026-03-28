@@ -120,7 +120,7 @@ export default function SmartPortfolioDetailPage({
   const { id } = use(params)
   const PORTFOLIOS: Record<string, any> = {
     conservador: {
-      name: 'Conservador', mandate: 'CONSERVADOR', emoji: '🛡️',
+      name: 'Conservador', emoji: '🛡️',
       description: 'Foco em valuation, qualidade e risco. Prioriza empresas sólidas com margem de segurança.',
       criteria: { 'IQ-Score mínimo': '60', 'DL/EBITDA máximo': '3.0x', 'Piotroski mínimo': '5', 'ADTV mínimo': 'R$ 2M' },
       stocks: [
@@ -134,7 +134,7 @@ export default function SmartPortfolioDetailPage({
       metrics: { cagr: '+15.0%', sharpe: '0.73', maxDD: '-34.8%', alpha_cdi: '+6.5%' },
     },
     equilibrado: {
-      name: 'Equilibrado', mandate: 'EQUILIBRADO', badge: 'E',
+      name: 'Equilibrado', badge: 'E',
       description: 'Pesos balanceados entre todos os pilares. Black-Litterman para otimização.',
       criteria: { 'IQ-Score mínimo': '55', 'Universo': 'Top 100 liquidez', 'Rebalanceamento': 'Trimestral' },
       stocks: [
@@ -148,7 +148,7 @@ export default function SmartPortfolioDetailPage({
       metrics: { cagr: '+16.7%', sharpe: '0.78', maxDD: '-32.8%', alpha_cdi: '+8.2%' },
     },
     arrojado: {
-      name: 'Arrojado', mandate: 'ARROJADO', emoji: '🚀',
+      name: 'Arrojado', emoji: '🚀',
       description: 'Concentração moderada + alavancagem regime-dependente. Foco em growth e momentum.',
       criteria: { 'IQ-Score mínimo': '65', 'Posições': '8-10', 'Alavancagem': '1.2x em RISK_ON' },
       stocks: [
