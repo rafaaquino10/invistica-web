@@ -232,9 +232,9 @@ export default function PortfolioPage() {
       {portfolio && positions.length > 0 && macroRegime && (
         <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-5">
           <h3 className="text-sm font-semibold text-[var(--text-1)] mb-3">vs Benchmarks</h3>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Portfolio Return */}
-            <div className="text-center p-3 rounded-lg bg-[var(--accent-1)]/5">
+            <div className="text-center p-3 rounded-lg bg-[var(--accent-1)]/5 border border-[var(--accent-1)]/20">
               <p className="text-[var(--text-caption)] text-[var(--text-2)]">Sua Carteira</p>
               <p className={cn('font-mono text-xl font-bold', portfolio.gainLossPercent >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
                 {portfolio.gainLossPercent >= 0 ? '+' : ''}{portfolio.gainLossPercent.toFixed(1)}%
@@ -270,7 +270,60 @@ export default function PortfolioPage() {
                 )
               })()}
             </div>
+            {/* Câmbio USD */}
+            <div className="text-center p-3 rounded-lg bg-[var(--bg)]">
+              <p className="text-[var(--text-caption)] text-[var(--text-2)]">Dólar</p>
+              <p className="font-mono text-xl font-bold text-[var(--text-1)]">
+                R$ {macroRegime.macro.cambio_usd.toFixed(2)}
+              </p>
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* ─── Insights Automáticos ────────────────────── */}
+      {portfolio && positions.length > 0 && (riskAnalysis || attribution) && (
+        <div className="space-y-2">
+          {(() => {
+            const insights: { text: string; type: 'info' | 'warning' | 'success' }[] = []
+            // Concentration insight
+            if (riskAnalysis?.hhi && riskAnalysis.hhi >= 0.25) {
+              insights.push({ text: `Sua carteira está muito concentrada (HHI ${(riskAnalysis.hhi * 100).toFixed(0)}%). Considere diversificar adicionando mais posições.`, type: 'warning' })
+            } else if (riskAnalysis?.hhi && riskAnalysis.hhi < 0.10) {
+              insights.push({ text: `Boa diversificação! Sua carteira tem concentração baixa (HHI ${(riskAnalysis.hhi * 100).toFixed(0)}%).`, type: 'success' })
+            }
+            // Top 3 weight
+            if (riskAnalysis?.top3_weight_pct && riskAnalysis.top3_weight_pct > 70) {
+              insights.push({ text: `As 3 maiores posições representam ${riskAnalysis.top3_weight_pct.toFixed(0)}% da carteira. Considere rebalancear.`, type: 'warning' })
+            }
+            // Sector concentration
+            if (riskAnalysis?.max_sector_weight_pct && riskAnalysis.max_sector_weight_pct > 40) {
+              insights.push({ text: `Um setor representa ${riskAnalysis.max_sector_weight_pct.toFixed(0)}% da carteira. Exposição setorial elevada.`, type: 'warning' })
+            }
+            // IQ-Score average
+            if (portfolio.avgIqScore >= 70) {
+              insights.push({ text: `IQ-Score médio de ${portfolio.avgIqScore.toFixed(0)} — carteira de alta qualidade.`, type: 'success' })
+            } else if (portfolio.avgIqScore < 50 && portfolio.avgIqScore > 0) {
+              insights.push({ text: `IQ-Score médio de ${portfolio.avgIqScore.toFixed(0)} — considere trocar posições de baixa qualidade.`, type: 'warning' })
+            }
+            // Positions with losses
+            const losers = positions.filter(p => p.gainLossPercent < -10)
+            if (losers.length > 0) {
+              insights.push({ text: `${losers.length} posição(ões) com perda > 10%: ${losers.map(l => l.ticker).join(', ')}. Verifique a tese de investimento.`, type: 'info' })
+            }
+            if (insights.length === 0) return null
+            return insights.map((ins, i) => (
+              <div key={i} className={cn(
+                'flex items-start gap-3 p-3 rounded-lg border text-sm',
+                ins.type === 'warning' ? 'bg-amber-500/5 border-amber-500/20 text-amber-700 dark:text-amber-400' :
+                ins.type === 'success' ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-700 dark:text-emerald-400' :
+                'bg-blue-500/5 border-blue-500/20 text-blue-700 dark:text-blue-400'
+              )}>
+                <span className="mt-0.5 text-base">{ins.type === 'warning' ? '!' : ins.type === 'success' ? '>' : 'i'}</span>
+                <p>{ins.text}</p>
+              </div>
+            ))
+          })()}
         </div>
       )}
 
@@ -493,14 +546,32 @@ export default function PortfolioPage() {
                 ) : (
                   <tr>
                     <td className="px-4 py-16 text-center text-[var(--text-2)]" colSpan={9}>
-                      <div className="flex flex-col items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-[var(--text-2)]/50">
+                      <div className="flex flex-col items-center gap-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="text-[var(--accent-1)]/40">
                           <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
                           <polyline points="3.29 7 12 12 20.71 7" />
                           <line x1="12" y1="22" x2="12" y2="12" />
                         </svg>
-                        <p className="text-lg font-medium">Portfolio vazio</p>
-                        <p className="text-sm max-w-xs">Clique em &quot;+ Adicionar Ação&quot; para comecar a construir sua carteira.</p>
+                        <div className="space-y-1">
+                          <p className="text-lg font-semibold text-[var(--text-1)]">Sua carteira ainda está vazia</p>
+                          <p className="text-sm max-w-sm text-[var(--text-2)]">
+                            Adicione suas posições manualmente ou importe via CSV para acompanhar performance, receber insights e recomendações.
+                          </p>
+                        </div>
+                        <div className="flex gap-3 mt-2">
+                          <button
+                            onClick={() => setShowAddForm(true)}
+                            className="px-5 py-2.5 bg-[var(--accent-1)] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity"
+                          >
+                            + Adicionar Ação
+                          </button>
+                          <button
+                            onClick={() => setShowCSVImport(true)}
+                            className="px-5 py-2.5 text-sm font-medium text-[var(--text-2)] border border-[var(--border-1)] rounded-xl hover:bg-[var(--surface-2)] transition-colors"
+                          >
+                            Importar CSV
+                          </button>
+                        </div>
                       </div>
                     </td>
                   </tr>
