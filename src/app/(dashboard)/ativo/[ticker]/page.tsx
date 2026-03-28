@@ -374,7 +374,7 @@ export default function AtivoPage() {
               {/* Safety Margin Bar */}
               <div className="mt-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[var(--text-caption)] text-[var(--text-2)]">Margem de Seguranca</span>
+                  <span className="text-[var(--text-caption)] text-[var(--text-2)]">Desconto em relação ao preço justo</span>
                   <span className={cn(
                     'font-mono text-lg font-bold',
                     dcf.safetyMargin > 0.15 ? 'text-[var(--pos)]' :
@@ -631,33 +631,33 @@ export default function AtivoPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {riskMetrics.risk_metrics.merton_pd != null && (
               <RiskMetricCard
-                label="Merton PD"
+                label="Risco de Falência"
                 value={`${(riskMetrics.risk_metrics.merton_pd * 100).toFixed(2)}%`}
-                description="Prob. default estrutural"
+                description="Probabilidade de calote estimada"
                 color={riskMetrics.risk_metrics.merton_pd < 0.05 ? 'pos' : riskMetrics.risk_metrics.merton_pd < 0.15 ? 'warn' : 'neg'}
               />
             )}
             {riskMetrics.risk_metrics.piotroski_score != null && (
               <RiskMetricCard
-                label="Piotroski"
+                label="Saúde Financeira"
                 value={`${riskMetrics.risk_metrics.piotroski_score}/9`}
-                description="Saúde financeira"
+                description="Nota Piotroski (quanto maior, melhor)"
                 color={riskMetrics.risk_metrics.piotroski_score >= 7 ? 'pos' : riskMetrics.risk_metrics.piotroski_score >= 5 ? 'warn' : 'neg'}
               />
             )}
             {riskMetrics.risk_metrics.altman_z != null && (
               <RiskMetricCard
-                label="Altman Z"
+                label="Solidez da Empresa"
                 value={riskMetrics.risk_metrics.altman_z.toFixed(2)}
-                description={riskMetrics.risk_metrics.altman_z_label ?? ''}
+                description={riskMetrics.risk_metrics.altman_z_label || 'Score Altman Z de solvência'}
                 color={riskMetrics.risk_metrics.altman_z > 2.99 ? 'pos' : riskMetrics.risk_metrics.altman_z > 1.81 ? 'warn' : 'neg'}
               />
             )}
             {riskMetrics.risk_metrics.dl_ebitda != null && (
               <RiskMetricCard
-                label="DL/EBITDA"
+                label="Endividamento"
                 value={riskMetrics.risk_metrics.dl_ebitda.toFixed(1) + 'x'}
-                description="Alavancagem"
+                description="Dívida líquida sobre geração de caixa"
                 color={riskMetrics.risk_metrics.dl_ebitda < 2 ? 'pos' : riskMetrics.risk_metrics.dl_ebitda < 3.5 ? 'warn' : 'neg'}
               />
             )}
@@ -771,10 +771,10 @@ export default function AtivoPage() {
                   <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Receita</th>
                   <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Lucro Liq.</th>
                   <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">ROE</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">DL/EBITDA</th>
+                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium" title="Dívida Líquida / EBITDA — quanto menor, menos endividada">Endivid.</th>
                   <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Margem Liq.</th>
                   <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Margem Bruta</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Piotroski</th>
+                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium" title="Score Piotroski de saúde financeira (0-9)">Saúde Fin.</th>
                 </tr>
               </thead>
               <tbody>
