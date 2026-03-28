@@ -26,7 +26,7 @@ type NavSection = {
 /* ─── Task-driven navigation (V2) ─────────────── */
 const navigationSections: NavSection[] = [
   {
-    label: 'ANÁLISE',
+    label: 'PRINCIPAL',
     items: [
       {
         label: 'Dashboard',
@@ -51,23 +51,6 @@ const navigationSections: NavSection[] = [
         ),
       },
       {
-        label: 'Comparar',
-        href: '/comparar',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="7" height="7" />
-            <rect x="14" y="3" width="7" height="7" />
-            <rect x="14" y="14" width="7" height="7" />
-            <rect x="3" y="14" width="7" height="7" />
-          </svg>
-        ),
-      },
-    ],
-  },
-  {
-    label: 'INVESTIMENTOS',
-    items: [
-      {
         label: 'Carteira',
         href: '/portfolio',
         icon: (
@@ -88,41 +71,30 @@ const navigationSections: NavSection[] = [
           </svg>
         ),
       },
-      {
-        label: 'Metas',
-        href: '/goals',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-            <polyline points="22 4 12 14.01 9 11.01" />
-          </svg>
-        ),
-      },
     ],
   },
   {
-    label: 'MONITORAMENTO',
+    label: 'FERRAMENTAS',
     items: [
       {
-        label: 'Mapa',
-        href: '/mercado/mapa',
+        label: 'Comparar',
+        href: '/comparar',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1" />
-            <rect x="14" y="3" width="7" height="4" rx="1" />
-            <rect x="14" y="10" width="7" height="11" rx="1" />
-            <rect x="3" y="13" width="7" height="8" rx="1" />
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
           </svg>
         ),
       },
       {
-        label: 'Radar',
+        label: 'Alertas',
         href: '/radar',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2a10 10 0 1 0 10 10" />
-            <path d="M12 12l8-8" />
-            <path d="M12 2v10" />
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
         ),
       },
@@ -133,70 +105,6 @@ const navigationSections: NavSection[] = [
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
             <path d="M18 14h-8" /><path d="M15 18h-5" /><path d="M10 6h8v4h-8V6Z" />
-          </svg>
-        ),
-      },
-    ],
-  },
-  {
-    label: 'IQ-COGNIT',
-    items: [
-      {
-        label: 'Carteiras IQ',
-        href: '/carteiras-inteligentes',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
-            <path d="M9 21h6" />
-            <path d="M10 19h4" />
-          </svg>
-        ),
-      },
-      {
-        label: 'Backtest Lab',
-        href: '/backtest-lab',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 2v6l-2 4v4h10v-4l-2-4V2" />
-            <path d="M7 16h10" />
-            <path d="M8 22h8" />
-          </svg>
-        ),
-      },
-      {
-        label: 'Feedback Loop',
-        href: '/analytics/feedback',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 3v18h18" />
-            <path d="m19 9-5 5-4-4-3 3" />
-          </svg>
-        ),
-      },
-      {
-        label: 'Regime Macro',
-        href: '/analytics/regime',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" />
-          </svg>
-        ),
-      },
-      {
-        label: 'Signal Decay',
-        href: '/analytics/signal-decay',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-          </svg>
-        ),
-      },
-      {
-        label: 'Sensibilidade',
-        href: '/analytics/sensitivity',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M2 20h.01" /><path d="M7 20v-4" /><path d="M12 20v-8" /><path d="M17 20V8" /><path d="M22 4v16" />
           </svg>
         ),
       },
