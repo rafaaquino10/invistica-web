@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { Skeleton, Tabs, Disclaimer } from '@/components/ui'
+import { Skeleton, Term } from '@/components/ui'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { cn } from '@/lib/utils'
 import { pro, free } from '@/lib/api/endpoints'
@@ -12,13 +12,10 @@ import { useAuth } from '@/hooks/use-auth'
 import { fadeInUp } from '@/lib/utils/motion'
 import { toast } from 'sonner'
 
-// ─── Constants ──────────────────────────────────────────────
-
 const RATING_LABELS: Record<string, string> = {
   STRONG_BUY: 'Compra Forte', BUY: 'Acumular', HOLD: 'Neutro',
   REDUCE: 'Reduzir', AVOID: 'Evitar',
 }
-
 const RATING_BADGES: Record<string, string> = {
   STRONG_BUY: 'bg-emerald-500/15 text-emerald-600',
   BUY: 'bg-blue-500/15 text-blue-600',
@@ -27,19 +24,12 @@ const RATING_BADGES: Record<string, string> = {
   AVOID: 'bg-red-500/15 text-red-600',
 }
 
-const SORT_OPTIONS = [
-  { value: 'iq_score', label: 'IQ-Score' },
-  { value: 'safety_margin', label: 'Desconto' },
-  { value: 'dividend_yield', label: 'Dividend Yield' },
-  { value: 'dividend_safety', label: 'Div Safety' },
-] as const
+type SortKey = 'ticker' | 'company_name' | 'cluster' | 'iq_score' | 'rating' | 'score_quanti' | 'score_quali' | 'score_valuation' | 'safety_margin' | 'dividend_yield' | 'dividend_safety'
 
-type SortKey = typeof SORT_OPTIONS[number]['value']
-
-// ─── Main Page ──────────────────────────────────────────────
 export default function ExplorerPage() {
   const router = useRouter()
   const { token } = useAuth()
+  const queryClient = useQueryClient()
 
   const [minScore, setMinScore] = useState<number>(0)
   const [ratingFilter, setRatingFilter] = useState<string>('')
@@ -47,28 +37,14 @@ export default function ExplorerPage() {
   const [sortBy, setSortBy] = useState<SortKey>('iq_score')
   const [sortAsc, setSortAsc] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
-  const [selectedIdx, setSelectedIdx] = useState(-1)
   const [page, setPage] = useState(0)
   const PAGE_SIZE = 30
-  const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map())
 
-  const queryClient = useQueryClient()
-  const addMutation = useMutation({
-    mutationFn: (ticker: string) =>
-      pro.addPosition({ ticker, qty: 0, avg_price: 0 }, token ?? undefined),
-    onSuccess: (_data, ticker) => {
-      queryClient.invalidateQueries({ queryKey: ['portfolio'] })
-      toast.success(`${ticker} adicionado à carteira`)
-    },
-    onError: () => toast.error('Erro ao adicionar à carteira'),
-  })
-
-  // Reset selection and page when filters change
-  useEffect(() => { setSelectedIdx(-1); setPage(0) }, [minScore, ratingFilter, clusterId, sortBy, sortAsc])
+  useEffect(() => { setPage(0) }, [minScore, ratingFilter, clusterId, sortBy, sortAsc])
 
   const { data: clusters } = useQuery({
     queryKey: ['clusters'],
-    queryFn: () => free.getClusters(),
+    queryFn: () => free.getClusters().catch(() => null),
   })
 
   const { data: screenerData, isLoading } = useQuery({
@@ -78,275 +54,208 @@ export default function ExplorerPage() {
       rating: ratingFilter || undefined,
       cluster_id: clusterId,
       limit: 200,
-    }, token ?? undefined),
+    }, token ?? undefined).catch(() => null),
   })
 
-  // Client-side sort
-  const sorted = useMemo(() => {
-    if (!screenerData?.results) return []
-    const results = [...screenerData.results]
-    results.sort((a, b) => {
-      let va: number, vb: number
-      switch (sortBy) {
-        case 'iq_score': va = a.iq_score; vb = b.iq_score; break
-        case 'safety_margin': va = a.safety_margin ?? -999; vb = b.safety_margin ?? -999; break
-        case 'dividend_yield': va = a.dividend_yield_proj ?? 0; vb = b.dividend_yield_proj ?? 0; break
-        case 'dividend_safety': va = a.dividend_safety ?? 0; vb = b.dividend_safety ?? 0; break
-        default: va = a.iq_score; vb = b.iq_score
-      }
-      return sortAsc ? va - vb : vb - va
-    })
-    return results
-  }, [screenerData, sortBy, sortAsc])
-
-  const totalPages = Math.ceil(sorted.length / PAGE_SIZE)
-  const paged = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+  const addMutation = useMutation({
+    mutationFn: (ticker: string) => pro.addPosition({ ticker, qty: 0, avg_price: 0 }, token ?? undefined),
+    onSuccess: (_d, ticker) => { queryClient.invalidateQueries({ queryKey: ['portfolio'] }); toast.success(`${ticker} adicionado`) },
+    onError: () => toast.error('Erro ao adicionar'),
+  })
 
   const clusterNames = useMemo(() => {
     return clusters?.clusters?.reduce((acc, c) => ({ ...acc, [c.cluster_id]: c.name }), {} as Record<number, string>) ?? {}
   }, [clusters])
 
-  // Keyboard navigation with auto-scroll
-  const scrollToRow = useCallback((idx: number) => {
-    const row = rowRefs.current.get(idx)
-    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-  }, [])
+  const sorted = useMemo(() => {
+    if (!screenerData?.results) return []
+    const results = [...screenerData.results]
+    results.sort((a, b) => {
+      let va: any, vb: any
+      switch (sortBy) {
+        case 'ticker': va = a.ticker ?? ''; vb = b.ticker ?? ''; break
+        case 'company_name': va = a.company_name ?? ''; vb = b.company_name ?? ''; break
+        case 'cluster': va = clusterNames[a.cluster_id] ?? ''; vb = clusterNames[b.cluster_id] ?? ''; break
+        case 'iq_score': va = a.iq_score ?? -1; vb = b.iq_score ?? -1; break
+        case 'rating': {
+          const order: Record<string, number> = { STRONG_BUY: 5, BUY: 4, HOLD: 3, REDUCE: 2, AVOID: 1 }
+          va = order[a.rating] ?? 0; vb = order[b.rating] ?? 0; break
+        }
+        case 'score_quanti': va = a.score_quanti ?? -1; vb = b.score_quanti ?? -1; break
+        case 'score_quali': va = a.score_quali ?? -1; vb = b.score_quali ?? -1; break
+        case 'score_valuation': va = a.score_valuation ?? -1; vb = b.score_valuation ?? -1; break
+        case 'safety_margin': va = a.safety_margin ?? -999; vb = b.safety_margin ?? -999; break
+        case 'dividend_yield': va = a.dividend_yield_proj ?? -1; vb = b.dividend_yield_proj ?? -1; break
+        case 'dividend_safety': va = a.dividend_safety ?? -1; vb = b.dividend_safety ?? -1; break
+        default: va = a.iq_score ?? 0; vb = b.iq_score ?? 0
+      }
+      if (typeof va === 'string') return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va)
+      return sortAsc ? va - vb : vb - va
+    })
+    return results
+  }, [screenerData, sortBy, sortAsc, clusterNames])
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return
-    if (e.key === 'j' && selectedIdx < sorted.length - 1) {
-      const next = selectedIdx + 1
-      setSelectedIdx(next)
-      scrollToRow(next)
-      e.preventDefault()
-    }
-    if (e.key === 'k' && selectedIdx > 0) {
-      const prev = selectedIdx - 1
-      setSelectedIdx(prev)
-      scrollToRow(prev)
-      e.preventDefault()
-    }
-    if (e.key === 'Enter' && selectedIdx >= 0 && sorted[selectedIdx]) {
-      router.push(`/ativo/${sorted[selectedIdx].ticker}`)
-      e.preventDefault()
-    }
-  }
+  const totalPages = Math.ceil(sorted.length / PAGE_SIZE)
+  const paged = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+
+  const toggleSort = useCallback((key: SortKey) => {
+    if (sortBy === key) setSortAsc(!sortAsc)
+    else { setSortBy(key); setSortAsc(false) }
+  }, [sortBy, sortAsc])
 
   return (
-    <div className="space-y-5" onKeyDown={handleKeyDown} tabIndex={0}>
-      {/* ─── Header ──────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-[var(--text-1)]">Explorar Ações</h1>
-          <p className="text-[var(--text-small)] text-[var(--text-2)]">
-            {sorted.length} ações ranqueadas | Página {page + 1}/{totalPages || 1}
-          </p>
+          <p className="text-[var(--text-caption)] text-[var(--text-2)]">{sorted.length} ações ranqueadas pelo IQ-Cognit</p>
         </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            aria-label="Alternar painel de filtros"
-            aria-expanded={showFilters}
-            className={cn(
-              'px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors',
-              showFilters ? 'bg-[var(--accent-1)] text-white border-[var(--accent-1)]' : 'bg-[var(--surface-1)] text-[var(--text-2)] border-[var(--border-1)]'
-            )}
-          >
-            Filtros {showFilters ? '▲' : '▼'}
-          </button>
-        </div>
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className={cn(
+            'px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors self-start',
+            showFilters ? 'bg-[var(--accent-1)] text-white border-[var(--accent-1)]' : 'bg-[var(--surface-1)] text-[var(--text-2)] border-[var(--border-1)]'
+          )}
+        >
+          Filtros {showFilters ? '▲' : '▼'}
+        </button>
       </div>
 
-      {/* ─── Presets de busca rápida ────────────────── */}
+      {/* Presets */}
       <div className="flex flex-wrap gap-2">
         {[
-          { label: 'Melhor IQ-Score', action: () => { setMinScore(70); setSortBy('iq_score'); setSortAsc(false) } },
+          { label: 'Melhor IQ-Score', action: () => { setMinScore(60); setSortBy('iq_score'); setSortAsc(false) } },
           { label: 'Maiores Dividendos', action: () => { setMinScore(0); setSortBy('dividend_yield'); setSortAsc(false) } },
           { label: 'Mais Baratas', action: () => { setMinScore(0); setSortBy('safety_margin'); setSortAsc(false) } },
           { label: 'Dividendos Seguros', action: () => { setMinScore(0); setSortBy('dividend_safety'); setSortAsc(false) } },
           { label: 'Todas', action: () => { setMinScore(0); setRatingFilter(''); setClusterId(undefined); setSortBy('iq_score'); setSortAsc(false) } },
-        ].map(preset => (
-          <button
-            key={preset.label}
-            onClick={preset.action}
-            className="px-3 py-1.5 text-xs font-medium rounded-full border border-[var(--border-1)] bg-[var(--surface-1)] text-[var(--text-2)] hover:bg-[var(--accent-1)] hover:text-white hover:border-[var(--accent-1)] transition-colors"
-          >
-            {preset.label}
+        ].map(p => (
+          <button key={p.label} onClick={p.action}
+            className="px-3 py-1 text-xs font-medium rounded-full border border-[var(--border-1)] bg-[var(--surface-1)] text-[var(--text-2)] hover:bg-[var(--accent-1)] hover:text-white hover:border-[var(--accent-1)] transition-colors">
+            {p.label}
           </button>
         ))}
       </div>
 
-      {/* ─── Filters Panel ───────────────────────────── */}
+      {/* Filters */}
       {showFilters && (
-        <motion.div {...fadeInUp} className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-5">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <motion.div {...fadeInUp} className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
-              <label className="text-[var(--text-caption)] text-[var(--text-2)] font-medium block mb-1.5">IQ-Score minimo</label>
-              <input
-                type="range" min={0} max={100} value={minScore}
-                onChange={(e) => setMinScore(Number(e.target.value))}
-                className="w-full accent-[var(--accent-1)]"
-              />
-              <span className="text-xs font-mono text-[var(--text-2)]">{minScore}</span>
+              <label className="text-[10px] text-[var(--text-2)] font-medium block mb-1">IQ-Score mínimo</label>
+              <input type="range" min={0} max={100} value={minScore} onChange={(e) => setMinScore(Number(e.target.value))} className="w-full accent-[var(--accent-1)]" />
+              <span className="text-[10px] font-mono text-[var(--text-2)]">{minScore}</span>
             </div>
             <div>
-              <label className="text-[var(--text-caption)] text-[var(--text-2)] font-medium block mb-1.5">Rating</label>
-              <select
-                value={ratingFilter}
-                onChange={(e) => setRatingFilter(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--bg)] border border-[var(--border-1)] text-[var(--text-1)]"
-              >
+              <label className="text-[10px] text-[var(--text-2)] font-medium block mb-1">Rating</label>
+              <select value={ratingFilter} onChange={(e) => setRatingFilter(e.target.value)}
+                className="w-full px-2 py-1.5 text-xs rounded-lg bg-[var(--bg)] border border-[var(--border-1)] text-[var(--text-1)]">
                 <option value="">Todos</option>
-                {Object.entries(RATING_LABELS).map(([key, label]) => (
-                  <option key={key} value={key}>{label}</option>
-                ))}
+                {Object.entries(RATING_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[var(--text-caption)] text-[var(--text-2)] font-medium block mb-1.5">Setor</label>
-              <select
-                value={clusterId ?? ''}
-                onChange={(e) => setClusterId(e.target.value ? Number(e.target.value) : undefined)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--bg)] border border-[var(--border-1)] text-[var(--text-1)]"
-              >
-                <option value="">Todos os setores</option>
-                {clusters?.clusters?.map((c) => (
-                  <option key={c.cluster_id} value={c.cluster_id}>{c.name}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-[var(--text-caption)] text-[var(--text-2)] font-medium block mb-1.5">Ordenar por</label>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortKey)}
-                className="w-full px-3 py-2 text-sm rounded-lg bg-[var(--bg)] border border-[var(--border-1)] text-[var(--text-1)]"
-              >
-                {SORT_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
+              <label className="text-[10px] text-[var(--text-2)] font-medium block mb-1">Setor</label>
+              <select value={clusterId ?? ''} onChange={(e) => setClusterId(e.target.value ? Number(e.target.value) : undefined)}
+                className="w-full px-2 py-1.5 text-xs rounded-lg bg-[var(--bg)] border border-[var(--border-1)] text-[var(--text-1)]">
+                <option value="">Todos</option>
+                {clusters?.clusters?.map((c) => <option key={c.cluster_id} value={c.cluster_id}>{c.name}</option>)}
               </select>
             </div>
           </div>
         </motion.div>
       )}
 
-      {/* ─── Results Table ───────────────────────────── */}
+      {/* Table */}
       <div className="bg-[var(--surface-1)] rounded-[var(--radius)] shadow-sm border border-[var(--border-1)] overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-xs">
             <thead className="sticky top-0 z-10">
               <tr className="border-b border-[var(--border-1)] bg-[var(--bg)]">
-                <th className="text-left px-5 py-3.5 text-[var(--text-2)] font-medium w-8">#</th>
-                <th className="text-left px-3 py-3.5 text-[var(--text-2)] font-medium">Ativo</th>
-                <th className="text-center px-3 py-3.5 text-[var(--text-2)] font-medium hidden lg:table-cell">Setor</th>
-                <SortHeader label="IQ-Score" tooltip="Nota geral de 0 a 100 combinando análise quantitativa, qualitativa e de valuation" sortKey="iq_score" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} />
-                <th className="text-center px-3 py-3.5 text-[var(--text-2)] font-medium">Rating</th>
-                <ThWithTooltip label="Quanti" tooltip="Score quantitativo: ROE, margens, crescimento, endividamento" className="hidden xl:table-cell" />
-                <ThWithTooltip label="Quali" tooltip="Score qualitativo: governança, vantagens competitivas, gestão" className="hidden xl:table-cell" />
-                <ThWithTooltip label="Valuation" tooltip="Score de valuation: desconto vs preço justo (DCF, Gordon, múltiplos)" className="hidden xl:table-cell" />
-                <SortHeader label="Desconto" tooltip="Desconto: quanto o preço atual está abaixo do preço justo calculado" sortKey="safety_margin" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} className="hidden md:table-cell" />
-                <SortHeader label="DY Proj." tooltip="Dividend Yield projetado para os próximos 12 meses" sortKey="dividend_yield" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} className="hidden md:table-cell" />
-                <SortHeader label="Div Safety" tooltip="Score de segurança do dividendo (0-100): quanto maior, mais sustentável" sortKey="dividend_safety" current={sortBy} asc={sortAsc} onSort={(k) => { setSortBy(k as SortKey); setSortAsc(sortBy === k ? !sortAsc : false) }} className="hidden lg:table-cell" />
-                <th className="text-center px-2 py-3.5 text-[var(--text-2)] font-medium w-10"></th>
+                <th className="text-left px-3 py-2.5 text-[var(--text-2)] font-medium w-6">#</th>
+                <ColHeader label="Ativo" sortKey="ticker" current={sortBy} asc={sortAsc} onClick={toggleSort} align="left" />
+                <ColHeader label="Setor" sortKey="cluster" current={sortBy} asc={sortAsc} onClick={toggleSort} align="left" className="hidden lg:table-cell" />
+                <ColHeader label="IQ" sortKey="iq_score" current={sortBy} asc={sortAsc} onClick={toggleSort} tooltip="Nota geral de 0 a 100 combinando análise de fundamentos, qualidade e valuation" />
+                <ColHeader label="Rating" sortKey="rating" current={sortBy} asc={sortAsc} onClick={toggleSort} />
+                <ColHeader label="Quanti" sortKey="score_quanti" current={sortBy} asc={sortAsc} onClick={toggleSort} className="hidden xl:table-cell" tooltip="Score quantitativo: ROE, margens, crescimento, endividamento" />
+                <ColHeader label="Quali" sortKey="score_quali" current={sortBy} asc={sortAsc} onClick={toggleSort} className="hidden xl:table-cell" tooltip="Score qualitativo: governança, vantagens competitivas, gestão" />
+                <ColHeader label="Valuation" sortKey="score_valuation" current={sortBy} asc={sortAsc} onClick={toggleSort} className="hidden xl:table-cell" tooltip="Score de valuation: desconto vs preço justo (DCF, Gordon, múltiplos)" />
+                <ColHeader label="Desconto" sortKey="safety_margin" current={sortBy} asc={sortAsc} onClick={toggleSort} className="hidden md:table-cell" tooltip="Quanto o preço atual está abaixo do preço justo calculado" />
+                <ColHeader label="DY" sortKey="dividend_yield" current={sortBy} asc={sortAsc} onClick={toggleSort} className="hidden md:table-cell" tooltip="Dividend Yield projetado para os próximos 12 meses" />
+                <ColHeader label="Div Safe" sortKey="dividend_safety" current={sortBy} asc={sortAsc} onClick={toggleSort} className="hidden lg:table-cell" tooltip="Score de segurança do dividendo (0-100)" />
+                <th className="w-8 px-1"></th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
-                Array.from({ length: 12 }).map((_, i) => (
-                  <tr key={i} className="border-b border-[var(--border-1)]/30">
-                    <td className="px-5 py-3.5" colSpan={12}><Skeleton className="h-8" /></td>
-                  </tr>
+                Array.from({ length: 15 }).map((_, i) => (
+                  <tr key={i} className="border-b border-[var(--border-1)]/20"><td colSpan={12} className="px-3 py-2"><Skeleton className="h-6" /></td></tr>
                 ))
               ) : paged.length > 0 ? (
                 paged.map((r, idx) => (
                   <tr
                     key={r.ticker}
-                    ref={(el) => { if (el) rowRefs.current.set(idx, el); else rowRefs.current.delete(idx) }}
                     onClick={() => router.push(`/ativo/${r.ticker}`)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/ativo/${r.ticker}`) }}
-                    tabIndex={0}
-                    role="row"
-                    aria-selected={idx === selectedIdx}
-                    aria-label={`${r.ticker} — IQ-Score ${r.iq_score}, ${r.rating}`}
-                    className={cn(
-                      'border-b border-[var(--border-1)]/20 cursor-pointer transition-colors',
-                      idx === selectedIdx ? 'bg-[var(--accent-1)]/5 ring-1 ring-[var(--accent-1)]/20' : 'hover:bg-[var(--surface-2)]'
-                    )}
+                    className="border-b border-[var(--border-1)]/10 cursor-pointer hover:bg-[var(--surface-2)] transition-colors"
                   >
-                    <td className="px-5 py-3 text-[var(--text-2)] font-mono text-xs">{page * PAGE_SIZE + idx + 1}</td>
-                    <td className="px-3 py-3">
-                      <div className="flex items-center gap-3">
-                        <AssetLogo ticker={r.ticker} size={32} />
-                        <div>
-                          <p className="font-semibold text-[var(--text-1)]">{r.ticker}</p>
-                          <p className="text-[var(--text-caption)] text-[var(--text-2)] truncate max-w-[200px]">{r.company_name}</p>
+                    <td className="px-3 py-2 text-[var(--text-3)] font-mono">{page * PAGE_SIZE + idx + 1}</td>
+                    <td className="px-3 py-2">
+                      <div className="flex items-center gap-2">
+                        <AssetLogo ticker={r.ticker} size={24} />
+                        <div className="min-w-0">
+                          <span className="font-semibold text-[var(--text-1)]">{r.ticker}</span>
+                          <span className="text-[var(--text-3)] ml-1.5 hidden sm:inline truncate">{r.company_name?.split(' ').slice(0, 3).join(' ')}</span>
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 py-3 text-center hidden lg:table-cell">
-                      <span className="text-xs text-[var(--text-2)] bg-[var(--bg)] px-2 py-0.5 rounded-full">
-                        {clusterNames[r.cluster_id] ?? `C${r.cluster_id}`}
+                    <td className="px-3 py-2 hidden lg:table-cell">
+                      <span className="text-[10px] text-[var(--text-2)] bg-[var(--bg)] px-1.5 py-0.5 rounded">{clusterNames[r.cluster_id]?.split(' ')[0] ?? ''}</span>
+                    </td>
+                    <td className="px-3 py-2 text-center">
+                      <span className={cn('font-mono font-bold',
+                        (r.iq_score ?? 0) >= 75 ? 'text-[var(--pos)]' : (r.iq_score ?? 0) >= 62 ? 'text-[var(--accent-1)]' : (r.iq_score ?? 0) >= 45 ? 'text-[var(--text-1)]' : 'text-[var(--neg)]')}>
+                        {r.iq_score ?? '--'}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-center">
-                      <span className={cn(
-                        'font-mono text-sm font-bold inline-flex items-center justify-center w-10 h-10 rounded-xl',
-                        r.iq_score >= 75 ? 'bg-[var(--pos)]/10 text-[var(--pos)]' :
-                        r.iq_score >= 62 ? 'bg-[var(--accent-1)]/10 text-[var(--accent-1)]' :
-                        r.iq_score >= 42 ? 'bg-[var(--bg)] text-[var(--text-1)]' :
-                        'bg-[var(--neg)]/10 text-[var(--neg)]'
-                      )}>
-                        {r.iq_score}
+                    <td className="px-3 py-2 text-center">
+                      <span className={cn('text-[10px] font-semibold px-1.5 py-0.5 rounded-full', RATING_BADGES[r.rating] ?? 'text-[var(--text-2)]')}>
+                        {RATING_LABELS[r.rating] ?? r.rating ?? '--'}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-center">
-                      <span className={cn('text-[11px] font-semibold px-2 py-0.5 rounded-full', RATING_BADGES[r.rating] ?? '')}>
-                        {RATING_LABELS[r.rating] ?? r.rating}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)] hidden xl:table-cell">{r.score_quanti}</td>
-                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)] hidden xl:table-cell">{r.score_quali}</td>
-                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)] hidden xl:table-cell">{r.score_valuation}</td>
-                    <td className="px-3 py-3 text-right font-mono text-sm hidden md:table-cell">
+                    <td className="px-3 py-2 text-center font-mono text-[var(--text-1)] hidden xl:table-cell">{r.score_quanti ?? '--'}</td>
+                    <td className="px-3 py-2 text-center font-mono text-[var(--text-1)] hidden xl:table-cell">{r.score_quali ?? '--'}</td>
+                    <td className="px-3 py-2 text-center font-mono text-[var(--text-1)] hidden xl:table-cell">{r.score_valuation ?? '--'}</td>
+                    <td className="px-3 py-2 text-right font-mono hidden md:table-cell">
                       {r.safety_margin != null ? (
-                        <span className={r.safety_margin > 0.15 ? 'text-[var(--pos)]' : r.safety_margin > 0 ? 'text-[var(--accent-1)]' : 'text-[var(--neg)]'}>
-                          {(r.safety_margin * 100).toFixed(0)}%
+                        <span className={r.safety_margin > 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]'}>
+                          {r.safety_margin > 0 ? '+' : ''}{(r.safety_margin * 100).toFixed(0)}%
                         </span>
-                      ) : <span className="text-[var(--text-2)]">--</span>}
+                      ) : <span className="text-[var(--text-3)]">--</span>}
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-sm text-[var(--text-1)] hidden md:table-cell">
-                      {r.dividend_yield_proj != null ? `${(r.dividend_yield_proj * 100).toFixed(1)}%` : '--'}
+                    <td className="px-3 py-2 text-right font-mono text-[var(--text-1)] hidden md:table-cell">
+                      {r.dividend_yield_proj != null && r.dividend_yield_proj > 0 ? `${(r.dividend_yield_proj * 100).toFixed(1)}%` : '--'}
                     </td>
-                    <td className="px-3 py-3 text-right font-mono text-sm hidden lg:table-cell">
+                    <td className="px-3 py-2 text-center font-mono hidden lg:table-cell">
                       {r.dividend_safety != null ? (
-                        <span className={
-                          r.dividend_safety >= 70 ? 'text-[var(--pos)]' :
-                          r.dividend_safety >= 50 ? 'text-amber-500' :
-                          'text-[var(--neg)]'
-                        }>{r.dividend_safety}</span>
-                      ) : <span className="text-[var(--text-2)]">--</span>}
+                        <span className={(r.dividend_safety ?? 0) >= 70 ? 'text-[var(--pos)]' : (r.dividend_safety ?? 0) >= 50 ? 'text-amber-500' : 'text-[var(--neg)]'}>
+                          {r.dividend_safety}
+                        </span>
+                      ) : <span className="text-[var(--text-3)]">--</span>}
                     </td>
-                    <td className="px-2 py-3 text-center">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); addMutation.mutate(r.ticker) }}
-                        disabled={addMutation.isPending}
-                        title={`Adicionar ${r.ticker} à carteira`}
-                        className="p-1.5 rounded-lg text-[var(--text-3)] hover:text-[var(--accent-1)] hover:bg-[var(--accent-1)]/10 transition-colors"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <td className="px-1 py-2">
+                      <button onClick={(e) => { e.stopPropagation(); addMutation.mutate(r.ticker) }}
+                        title={`Adicionar ${r.ticker}`}
+                        className="p-1 rounded text-[var(--text-3)] hover:text-[var(--accent-1)] hover:bg-[var(--accent-1)]/10 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
-                <tr>
-                  <td className="px-5 py-12 text-center text-[var(--text-2)]" colSpan={12}>
-                    {screenerData?.results !== undefined
-                      ? 'Nenhum ativo encontrado com esses filtros. Tente ajustar o IQ-Score mínimo ou o setor.'
-                      : 'Erro ao carregar dados. Verifique sua conexão ou tente novamente.'}
-                  </td>
-                </tr>
+                <tr><td colSpan={12} className="px-3 py-10 text-center text-[var(--text-2)]">
+                  {screenerData ? 'Nenhum ativo com esses filtros.' : 'Erro ao carregar. Tente novamente.'}
+                </td></tr>
               )}
             </tbody>
           </table>
@@ -355,76 +264,44 @@ export default function ExplorerPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-2">
-          <span className="text-[var(--text-caption)] text-[var(--text-2)]">
-            {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, sorted.length)} de {sorted.length}
-          </span>
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-[var(--text-2)]">{page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, sorted.length)} de {sorted.length}</span>
           <div className="flex gap-1">
-            <button
-              onClick={() => setPage(p => Math.max(0, p - 1))}
-              disabled={page === 0}
-              className={cn('px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors', page === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--surface-2)]')}
-              aria-label="Página anterior"
-            >
-              Anterior
-            </button>
+            <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
+              className={cn('px-2.5 py-1 rounded border', page === 0 ? 'opacity-30' : 'hover:bg-[var(--surface-2)]')}>Anterior</button>
             {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
               const p = totalPages <= 5 ? i : Math.max(0, Math.min(page - 2, totalPages - 5)) + i
               return (
-                <button
-                  key={p}
-                  onClick={() => setPage(p)}
-                  className={cn(
-                    'w-8 h-8 text-xs font-mono rounded-lg transition-colors',
-                    page === p ? 'bg-[var(--accent-1)] text-white' : 'hover:bg-[var(--surface-2)] text-[var(--text-2)]'
-                  )}
-                >
+                <button key={p} onClick={() => setPage(p)}
+                  className={cn('w-7 h-7 rounded font-mono', page === p ? 'bg-[var(--accent-1)] text-white' : 'hover:bg-[var(--surface-2)] text-[var(--text-2)]')}>
                   {p + 1}
                 </button>
               )
             })}
-            <button
-              onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-              disabled={page >= totalPages - 1}
-              className={cn('px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors', page >= totalPages - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-[var(--surface-2)]')}
-              aria-label="Próxima página"
-            >
-              Próxima
-            </button>
+            <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
+              className={cn('px-2.5 py-1 rounded border', page >= totalPages - 1 ? 'opacity-30' : 'hover:bg-[var(--surface-2)]')}>Próxima</button>
           </div>
         </div>
       )}
-
-      <Disclaimer variant="footer" />
     </div>
   )
 }
 
-// ─── Sort Header ─────────────────────────────────────────────
-function SortHeader({ label, tooltip, sortKey, current, asc, onSort, className }: {
-  label: string; tooltip?: string; sortKey: string; current: string; asc: boolean; onSort: (key: string) => void; className?: string
+function ColHeader({ label, sortKey, current, asc, onClick, align = 'center', className, tooltip }: {
+  label: string; sortKey: SortKey; current: SortKey; asc: boolean; onClick: (k: SortKey) => void; align?: 'left' | 'center' | 'right'; className?: string; tooltip?: string
 }) {
   const active = current === sortKey
   return (
     <th
-      className={cn("text-right px-3 py-3.5 text-[var(--text-2)] font-medium cursor-pointer hover:text-[var(--text-1)] transition-colors select-none", className)}
-      onClick={() => onSort(sortKey)}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSort(sortKey) } }}
-      tabIndex={0}
-      role="columnheader"
-      aria-sort={active ? (asc ? 'ascending' : 'descending') : 'none'}
+      className={cn(
+        `text-${align} px-3 py-2.5 font-medium cursor-pointer select-none transition-colors`,
+        active ? 'text-[var(--accent-1)]' : 'text-[var(--text-2)] hover:text-[var(--text-1)]',
+        className
+      )}
+      onClick={() => onClick(sortKey)}
       title={tooltip}
     >
-      {label} {active ? (asc ? '↑' : '↓') : ''}
-    </th>
-  )
-}
-
-// ─── Header with tooltip ─────────────────────────────────────
-function ThWithTooltip({ label, tooltip, className }: { label: string; tooltip: string; className?: string }) {
-  return (
-    <th className={cn("text-right px-3 py-3.5 text-[var(--text-2)] font-medium", className)} title={tooltip}>
-      {label}
+      {label}{active ? (asc ? ' ↑' : ' ↓') : ''}
     </th>
   )
 }
