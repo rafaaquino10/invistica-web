@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import { Badge, Skeleton, Disclaimer } from '@/components/ui'
+import { Badge, Skeleton, Disclaimer, Term } from '@/components/ui'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { DriversList } from '@/components/ui/drivers-list'
 import { ScoreGauge } from '@/components/score/score-gauge'
@@ -290,10 +290,10 @@ export default function AtivoPage() {
 
             {/* Pillar Breakdown */}
             <div className="grid grid-cols-2 gap-3 mt-6">
-              <PillarCard label="Quantitativo" value={iq.score_quanti} icon="Q" />
-              <PillarCard label="Qualitativo" value={iq.score_quali} icon="L" />
-              <PillarCard label="Valuation" value={iq.score_valuation} icon="V" />
-              <PillarCard label="Operacional" value={iq.score_operational} icon="O" />
+              <PillarCard label={<Term>Quantitativo</Term>} value={iq.score_quanti} icon="Q" />
+              <PillarCard label={<Term>Qualitativo</Term>} value={iq.score_quali} icon="L" />
+              <PillarCard label={<Term>Valuation</Term>} value={iq.score_valuation} icon="V" />
+              <PillarCard label={<Term>Operacional</Term>} value={iq.score_operational} icon="O" />
             </div>
           </div>
 
@@ -365,10 +365,10 @@ export default function AtivoPage() {
             <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
               <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Valuation</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <ValuationMetric label="Preço Justo" value={fmtR$(dcf.intrinsicValue)} highlight />
-                <ValuationMetric label="DCF" value={fmtR$(dcf.fairValueDCF)} />
-                <ValuationMetric label="Gordon DDM" value={fmtR$(dcf.fairValueGordon)} />
-                <ValuationMetric label="Multiplos" value={fmtR$(dcf.fairValueMult)} />
+                <ValuationMetric label={<Term>Preço Justo</Term>} value={fmtR$(dcf.intrinsicValue)} highlight />
+                <ValuationMetric label={<Term>DCF</Term>} value={fmtR$(dcf.fairValueDCF)} />
+                <ValuationMetric label={<Term>Gordon</Term>} value={fmtR$(dcf.fairValueGordon)} />
+                <ValuationMetric label={<Term>Múltiplos</Term>} value={fmtR$(dcf.fairValueMult)} />
               </div>
 
               {/* Safety Margin Bar */}
@@ -770,11 +770,11 @@ export default function AtivoPage() {
                   <th className="text-left py-2 px-3 text-[var(--text-2)] font-medium">Periodo</th>
                   <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Receita</th>
                   <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Lucro Liq.</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">ROE</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium" title="Dívida Líquida / EBITDA — quanto menor, menos endividada">Endivid.</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Margem Liq.</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Margem Bruta</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium" title="Score Piotroski de saúde financeira (0-9)">Saúde Fin.</th>
+                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium"><Term>ROE</Term></th>
+                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium"><Term>DL/EBITDA</Term></th>
+                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium"><Term>Margem Líquida</Term></th>
+                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium"><Term>Margem Bruta</Term></th>
+                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium"><Term>Piotroski</Term></th>
                 </tr>
               </thead>
               <tbody>
@@ -895,7 +895,7 @@ function RiskMetricCard({ label, value, description, color }: { label: string; v
   )
 }
 
-function PillarCard({ label, value, icon }: { label: string; value: number; icon: string }) {
+function PillarCard({ label, value, icon }: { label: React.ReactNode; value: number; icon: string }) {
   const color = value >= 65 ? 'text-[var(--pos)] bg-[var(--pos)]/8 border-[var(--pos)]/20' :
                 value >= 45 ? 'text-[var(--accent-1)] bg-[var(--accent-1)]/8 border-[var(--accent-1)]/20' :
                 'text-[var(--neg)] bg-[var(--neg)]/8 border-[var(--neg)]/20'
@@ -910,7 +910,7 @@ function PillarCard({ label, value, icon }: { label: string; value: number; icon
   )
 }
 
-function ValuationMetric({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
+function ValuationMetric({ label, value, highlight }: { label: React.ReactNode; value: string; highlight?: boolean }) {
   return (
     <div className={cn('p-3 rounded-lg text-center', highlight ? 'bg-[var(--accent-1)]/8 border border-[var(--accent-1)]/20' : 'bg-[var(--bg)]')}>
       <p className="text-[var(--text-caption)] text-[var(--text-2)]">{label}</p>

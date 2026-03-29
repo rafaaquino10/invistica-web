@@ -13,7 +13,7 @@ import {
   verticalListSortingStrategy, useSortable,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { Skeleton } from '@/components/ui'
+import { Skeleton, Term } from '@/components/ui'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { cn } from '@/lib/utils'
 import { pro } from '@/lib/api/endpoints'
@@ -166,8 +166,8 @@ export default function DashboardPage() {
       <div>
         <SectionHeader title="Cenário Macroeconômico" />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <MacroCard label="SELIC" value={`${macroRegime.macro.selic.toFixed(2)}%`} sub="Taxa básica de juros" />
-          <MacroCard label="IPCA" value={`${macroRegime.macro.ipca.toFixed(1)}%`} sub="Inflação acumulada" />
+          <MacroCard label={<Term>SELIC</Term>} value={`${macroRegime.macro.selic.toFixed(2)}%`} sub="Taxa básica de juros" />
+          <MacroCard label={<Term>IPCA</Term>} value={`${macroRegime.macro.ipca.toFixed(1)}%`} sub="Inflação acumulada" />
           <MacroCard label="Dólar" value={`R$ ${macroRegime.macro.cambio_usd.toFixed(2)}`} sub="Câmbio comercial" />
           <div className={cn('rounded-[var(--radius)] border border-[var(--border-1)] p-4', regime?.bg)}>
             <p className="text-[var(--text-caption)] text-[var(--text-2)] font-medium mb-1">Regime</p>
@@ -411,7 +411,7 @@ function SectionHeader({ title, sub, href, linkLabel }: { title: string; sub?: s
   )
 }
 
-function MacroCard({ label, value, sub }: { label: string; value: string; sub: string }) {
+function MacroCard({ label, value, sub }: { label: React.ReactNode; value: string; sub: string }) {
   return (
     <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-4">
       <p className="text-[var(--text-caption)] text-[var(--text-2)] font-medium mb-1">{label}</p>

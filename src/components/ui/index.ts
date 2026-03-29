@@ -7,6 +7,7 @@ export { Input, type InputProps } from './input'
 export { Select, type SelectProps } from './select'
 export { Skeleton, SkeletonCard, SkeletonTable, SkeletonChart } from './skeleton'
 export { Tooltip } from './tooltip'
+export { Term } from './term'
 export { Modal } from './modal'
 
 // ─── Data Display ───

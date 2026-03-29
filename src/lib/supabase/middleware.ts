@@ -50,8 +50,7 @@ export async function updateSession(request: NextRequest) {
     path.startsWith('/carteiras') ||
     path.startsWith('/backtest') ||
     path.startsWith('/analytics') ||
-    path.startsWith('/mercado') ||
-    path.startsWith('/glossario')
+    path.startsWith('/mercado')
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone()
