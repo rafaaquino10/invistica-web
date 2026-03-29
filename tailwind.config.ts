@@ -60,9 +60,9 @@ const config: Config = {
         'full': '9999px',
       },
       fontFamily: {
-        sans: ['var(--font-geist-sans)', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['var(--font-geist-mono)', 'ui-monospace', 'monospace'],
-        display: ['var(--font-geist-sans)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', '-apple-system', 'sans-serif'],
+        mono: ['var(--font-jetbrains)', 'ui-monospace', 'monospace'],
+        display: ['var(--font-inter)', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         'caption': ['var(--text-caption)', { lineHeight: '1.45' }],

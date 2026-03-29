@@ -415,7 +415,7 @@ export function MarketTreemap({
                   fill="white"
                   fontSize={fontSize}
                   fontWeight={700}
-                  fontFamily="var(--font-geist-mono, monospace)"
+                  fontFamily="var(--font-jetbrains, monospace)"
                   style={{ pointerEvents: 'none', userSelect: 'none', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}
                 >
                   {stock.ticker}
@@ -430,7 +430,7 @@ export function MarketTreemap({
                   fill="rgba(255,255,255,0.8)"
                   fontSize={Math.max(8, fontSize - 2)}
                   fontWeight={500}
-                  fontFamily="var(--font-geist-mono, monospace)"
+                  fontFamily="var(--font-jetbrains, monospace)"
                   style={{ pointerEvents: 'none', userSelect: 'none', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}
                 >
                   {getTextForMode(stock, colorMode)}

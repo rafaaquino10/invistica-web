@@ -114,7 +114,7 @@ export function HelpFab() {
       >
         <span
           className="text-sm font-bold"
-          style={{ fontFamily: "var(--font-geist-sans), system-ui, sans-serif" }}
+          style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}
         >
           ?
         </span>

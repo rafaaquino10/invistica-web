@@ -39,7 +39,7 @@ export function AQSymbol({ size = 40, animated = false }: { size?: number; anima
       <text
         x="28"
         y="38"
-        fontFamily="var(--font-geist-sans), system-ui, sans-serif"
+        fontFamily="var(--font-inter), system-ui, sans-serif"
         fontWeight="700"
         fontSize="26"
         fill={COLORS.white}
@@ -67,7 +67,7 @@ export function AQWordmark({
     <span
       className={cn('inline-flex items-baseline', className)}
       style={{
-        fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+        fontFamily: "var(--font-inter), system-ui, sans-serif",
         fontWeight: 700,
         fontSize: `${fontSize}px`,
         letterSpacing: '-0.04em',
@@ -85,7 +85,7 @@ export function Tagline({ className }: { className?: string }) {
     <span
       className={cn('block', className)}
       style={{
-        fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+        fontFamily: "var(--font-inter), system-ui, sans-serif",
         fontSize: '13px',
         fontWeight: 400,
         letterSpacing: '0.02em',

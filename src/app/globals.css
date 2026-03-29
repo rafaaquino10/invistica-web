@@ -176,27 +176,27 @@
 /* ─── Dark Mode ──────────────────────────────── */
 
 .dark {
-  /* ── Surfaces ── */
-  --bg: #0C0F17;
-  --surface-1: #13161F;
-  --surface-2: #1C1F2A;
+  /* ── Surfaces (premium dark — deep navy undertone) ── */
+  --bg: #0B0E14;
+  --surface-1: #12151E;
+  --surface-2: #1A1E2A;
 
-  /* ── Text ── */
-  --text-1: #E0E2E8;
-  --text-2: #8B919E;
-  --text-3: #5A6170;
+  /* ── Text (high contrast for readability) ── */
+  --text-1: #E8EAEF;
+  --text-2: #8892A4;
+  --text-3: #5C6478;
 
-  /* ── Borders ── */
-  --border-1: #232736;
-  --border-2: #333848;
+  /* ── Borders (subtle, structural) ── */
+  --border-1: #1F2333;
+  --border-2: #2C3145;
 
   /* ── Accent ── */
-  --accent-2: rgba(26, 115, 232, 0.15);
+  --accent-2: rgba(26, 115, 232, 0.12);
 
-  /* ── Semantics (dark-adapted) ── */
-  --pos: #3DB389;
-  --neg: #D46A6A;
-  --warn: #C9A03A;
+  /* ── Semantics (vivid on dark — immediate recognition) ── */
+  --pos: #34D399;
+  --neg: #F87171;
+  --warn: #FBBF24;
 
   /* ── Semantic Palette (dark-adapted) ── */
   --success-100: #0F2E20;
@@ -296,7 +296,7 @@
 
   /* Typography — institutional density */
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    font-family: var(--font-inter), system-ui, sans-serif;
     font-weight: 600;
     letter-spacing: -0.01em;
     line-height: 1.25;
@@ -371,7 +371,7 @@
 
   /* ── Number Display ── */
   .number {
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-jetbrains), monospace;
     font-variant-numeric: tabular-nums lining-nums;
   }
 
@@ -630,7 +630,7 @@
 
   .data-table td.numeric {
     text-align: right;
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-jetbrains), monospace;
     font-variant-numeric: tabular-nums;
   }
 
@@ -693,7 +693,7 @@
   .summary-value {
     font-size: var(--text-body);
     font-weight: 500;
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-jetbrains), monospace;
     font-variant-numeric: tabular-nums;
   }
 
@@ -736,7 +736,7 @@
   .metric-value {
     font-size: var(--text-subheading);
     font-weight: 600;
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-jetbrains), monospace;
     font-variant-numeric: tabular-nums;
     line-height: 1.2;
   }
@@ -749,7 +749,7 @@
 
   .metric-change {
     font-size: var(--text-caption);
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-jetbrains), monospace;
     font-variant-numeric: tabular-nums;
     margin-top: 2px;
   }

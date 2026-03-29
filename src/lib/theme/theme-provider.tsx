@@ -11,10 +11,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   return (
     <NextThemesProvider
       attribute="class"
-      defaultTheme="system"
-      enableSystem
+      defaultTheme="dark"
+      enableSystem={false}
       disableTransitionOnChange={false}
-      storageKey="aqinvest-theme"
+      storageKey="investiq-theme"
     >
       {children}
     </NextThemesProvider>

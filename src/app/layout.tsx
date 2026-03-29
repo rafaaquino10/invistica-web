@@ -1,13 +1,20 @@
 import type { Metadata, Viewport } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import { ThemeProvider } from '@/lib/theme'
 import { QueryProvider } from '@/lib/api/query-provider'
 import './globals.css'
 
-// Geist Sans (--font-geist-sans): fonte principal para UI, headings e body text.
-// Geist Mono (--font-geist-mono): para números financeiros, tabelas, IQ-Score
-//   e qualquer dado numérico — usar classe `font-mono` nos elementos.
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const jetbrains = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -103,7 +110,7 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      className={`${inter.variable} ${jetbrains.variable}`}
     >
       <body className="min-h-screen font-sans antialiased">
         <QueryProvider>

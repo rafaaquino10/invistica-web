@@ -53,7 +53,7 @@ const Symbol: React.FC<{ size: number }> = ({ size }) => (
     <text
       x="28"
       y="38"
-      fontFamily="var(--font-geist-sans), system-ui, sans-serif"
+      fontFamily="var(--font-inter), system-ui, sans-serif"
       fontWeight="700"
       fontSize="26"
       fill={COLORS.white}
@@ -69,7 +69,7 @@ const Wordmark: React.FC<{ fontSize: number; className?: string }> = ({ fontSize
   <span
     className={className}
     style={{
-      fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+      fontFamily: "var(--font-inter), system-ui, sans-serif",
       fontWeight: 700,
       fontSize: `${fontSize}px`,
       letterSpacing: '-0.04em',
@@ -87,7 +87,7 @@ const Tagline: React.FC<{ className?: string }> = ({ className }) => (
   <span
     className={className}
     style={{
-      fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+      fontFamily: "var(--font-inter), system-ui, sans-serif",
       fontSize: '13px',
       fontWeight: 400,
       letterSpacing: '0.02em',
