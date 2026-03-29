@@ -246,6 +246,10 @@ export const pro = {
   getTop: (params?: { limit?: number;  }, token?: string) =>
     apiFetch<{ top: ScreenerResult[] }>(`/scores/top${qs(params || {})}`, { token }),
 
+  // Compare multiple tickers side-by-side
+  compareScores: (tickers: string, token?: string) =>
+    apiFetch<{ tickers: any[]; count: number }>(`/scores/compare${qs({ tickers })}`, { token }),
+
   getScreener: (
     params?: {
       cluster_id?: number

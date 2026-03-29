@@ -2,603 +2,294 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import Link from 'next/link'
-import { Button, Input, Disclaimer } from '@/components/ui'
-import { ComparisonRadarChart } from '@/components/charts'
-// Search and history migrated to InvestIQ API
+import { Button, Input, Term } from '@/components/ui'
 import { useQuery } from '@tanstack/react-query'
 import { useAuth } from '@/hooks/use-auth'
 import { free, pro } from '@/lib/api/endpoints'
-import { formatCurrency, getScoreHex } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, Legend, CartesianGrid } from 'recharts'
 
-const MAX_ASSETS = 4
-const COMPARISON_COLORS = ['#1A73E8', '#0D9488', '#D97706', '#EF4444']
-const HISTORY_RANGES = [
-  { label: '1M', range: '1mo' as const, interval: '1d' as const, days: 30 },
-  { label: '3M', range: '3mo' as const, interval: '1d' as const, days: 90 },
-  { label: '6M', range: '6mo' as const, interval: '1d' as const, days: 180 },
-  { label: '1A', range: '1y' as const, interval: '1d' as const, days: 365 },
+const MAX_ASSETS = 5
+const COLORS = ['#1A73E8', '#0D9488', '#D97706', '#EF4444', '#8B5CF6']
+const RANGES = [
+  { label: '1M', days: 30 },
+  { label: '3M', days: 90 },
+  { label: '6M', days: 180 },
+  { label: '1A', days: 365 },
 ]
 
+const RATING_LABELS: Record<string, string> = {
+  STRONG_BUY: 'Compra Forte', BUY: 'Acumular', HOLD: 'Neutro', REDUCE: 'Reduzir', AVOID: 'Evitar',
+}
+const RATING_COLORS: Record<string, string> = {
+  STRONG_BUY: 'text-emerald-600', BUY: 'text-blue-600', HOLD: 'text-amber-600', REDUCE: 'text-orange-600', AVOID: 'text-red-600',
+}
+
 export default function ComparisonPage() {
-  const [selectedTickers, setSelectedTickers] = useState<string[]>([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [isSearching, setIsSearching] = useState(false)
-  const [historyRange, setHistoryRange] = useState(HISTORY_RANGES[3]!) // 1A default
-
-  const { data: searchData } = useQuery({
-    queryKey: ['compare-search', searchQuery],
-    queryFn: () => free.searchTickers(searchQuery, 10),
-    enabled: searchQuery.length >= 1,
-  })
-  const searchResults = (searchData?.results ?? []).map(t => ({
-    ticker: t.ticker,
-    name: t.company_name,
-    logo: null as string | null,
-    sector: null as string | null,
-  }))
-
+  const [tickers, setTickers] = useState<string[]>([])
+  const [query, setQuery] = useState('')
+  const [searching, setSearching] = useState(false)
+  const [rangeIdx, setRangeIdx] = useState(3)
   const { token } = useAuth()
 
-  const { data: comparisonData, isLoading, isError } = useQuery({
-    queryKey: ['comparison', selectedTickers],
+  const { data: searchData } = useQuery({
+    queryKey: ['compare-search', query],
+    queryFn: () => free.searchTickers(query, 10),
+    enabled: query.length >= 1,
+  })
+  const results = (searchData?.results ?? []).filter(t => !tickers.includes(t.ticker))
+
+  // Use /scores/compare endpoint — returns ALL data in one call
+  const { data: compareData, isLoading } = useQuery({
+    queryKey: ['compare', tickers],
+    queryFn: () => pro.compareScores(tickers.join(','), token ?? undefined).catch(() => null),
+    enabled: tickers.length >= 2,
+  })
+
+  // Fallback: individual score queries for tickers not in compare result
+  const { data: individualScores } = useQuery({
+    queryKey: ['compare-individual', tickers],
     queryFn: async () => {
+      const compareTickers = (compareData?.tickers ?? []).map((t: any) => t.ticker)
+      const missing = tickers.filter(t => !compareTickers.includes(t))
+      if (missing.length === 0) return []
       const results = await Promise.all(
-        selectedTickers.map(async (ticker) => {
-          const [tickerData, scoreData] = await Promise.all([
+        missing.map(async (ticker) => {
+          const [tickerData, quote] = await Promise.all([
             free.getTicker(ticker).catch(() => null),
-            pro.getScore(ticker, {}, token ?? undefined).catch(() => null),
+            free.getQuote(ticker).catch(() => null),
           ])
-          if (!tickerData) return null
-          const iq = scoreData?.iq_cognit ?? null
-          return {
-            ...tickerData,
-            iqScore: iq ? {
-              scoreTotal: iq.iq_score,
-              scoreQuanti: iq.score_quanti,
-              scoreQuali: iq.score_quali,
-              scoreValuation: iq.score_valuation,
-              scoreOperational: iq.score_operational,
-            } : null,
-          }
+          return tickerData ? {
+            ticker,
+            company_name: tickerData.company_name,
+            cluster_id: tickerData.cluster_id,
+            close: quote?.close ?? null,
+            market_cap: quote?.market_cap ?? null,
+            iq_score: null, rating: null, score_quanti: null, score_quali: null, score_valuation: null,
+            fair_value_final: null, safety_margin: null, dividend_yield_proj: null, dividend_safety: null,
+            roe: null, dl_ebitda: null, net_margin: null, piotroski: null,
+          } : null
         })
       )
       return results.filter(Boolean)
     },
-    enabled: selectedTickers.length > 0,
-    retry: 2,
+    enabled: tickers.length >= 2 && !!compareData,
   })
 
-  const addAsset = useCallback((ticker: string) => {
-    if (selectedTickers.length < MAX_ASSETS && !selectedTickers.includes(ticker)) {
-      setSelectedTickers([...selectedTickers, ticker])
-    }
-    setSearchQuery('')
-    setIsSearching(false)
-  }, [selectedTickers])
+  // Merge compare + individual data
+  const assets = useMemo(() => {
+    const fromCompare = compareData?.tickers ?? []
+    const fromIndividual = individualScores ?? []
+    const all = [...fromCompare, ...fromIndividual]
+    // Sort by ticker order
+    return tickers.map(t => all.find((a: any) => a.ticker === t)).filter(Boolean) as any[]
+  }, [compareData, individualScores, tickers])
 
-  const removeAsset = useCallback((ticker: string) => {
-    setSelectedTickers(selectedTickers.filter(t => t !== ticker))
-  }, [selectedTickers])
+  // History queries (padded to MAX_ASSETS for stable hook count)
+  const padded = useMemo(() => {
+    const p = [...tickers]; while (p.length < MAX_ASSETS) p.push(''); return p
+  }, [tickers])
+  const days = RANGES[rangeIdx]!.days
+  const h0 = useQuery({ queryKey: ['h', padded[0], days], queryFn: () => free.getHistory(padded[0]!, days), enabled: !!padded[0] && tickers.length >= 2 })
+  const h1 = useQuery({ queryKey: ['h', padded[1], days], queryFn: () => free.getHistory(padded[1]!, days), enabled: !!padded[1] && tickers.length >= 2 })
+  const h2 = useQuery({ queryKey: ['h', padded[2], days], queryFn: () => free.getHistory(padded[2]!, days), enabled: !!padded[2] && tickers.length >= 2 })
+  const h3 = useQuery({ queryKey: ['h', padded[3], days], queryFn: () => free.getHistory(padded[3]!, days), enabled: !!padded[3] && tickers.length >= 2 })
+  const h4 = useQuery({ queryKey: ['h', padded[4], days], queryFn: () => free.getHistory(padded[4]!, days), enabled: !!padded[4] && tickers.length >= 2 })
+  const histQ = [h0, h1, h2, h3, h4].slice(0, tickers.length)
 
-  const clearAll = useCallback(() => {
-    setSelectedTickers([])
-  }, [])
-
-  const findBest = (values: (number | null)[], lowerIsBetter = false) => {
-    const valid = values.map((v, i) => ({ v, i })).filter((x): x is { v: number; i: number } => x.v !== null)
-    if (valid.length < 2) return -1
-    valid.sort((a, b) => lowerIsBetter ? a.v - b.v : b.v - a.v)
-    return valid[0]?.i ?? -1
-  }
-
-  // Detect cross-sector comparison
-  const hasCrossSector = useMemo(() => {
-    if (!comparisonData || comparisonData.length < 2) return false
-    const sectors = new Set(comparisonData.map((a: any) => a.sector).filter(Boolean))
-    return sectors.size > 1
-  }, [comparisonData])
-
-  // Historical price data — pad to 4 slots to keep hooks count stable
-  const paddedTickers = useMemo(() => {
-    const padded = [...selectedTickers]
-    while (padded.length < MAX_ASSETS) padded.push('')
-    return padded
-  }, [selectedTickers])
-
-  const hq0 = useQuery({
-    queryKey: ['history', paddedTickers[0], historyRange.days],
-    queryFn: () => free.getHistory(paddedTickers[0]!, historyRange.days),
-    enabled: !!paddedTickers[0] && selectedTickers.length >= 2,
-  })
-  const hq1 = useQuery({
-    queryKey: ['history', paddedTickers[1], historyRange.days],
-    queryFn: () => free.getHistory(paddedTickers[1]!, historyRange.days),
-    enabled: !!paddedTickers[1] && selectedTickers.length >= 2,
-  })
-  const hq2 = useQuery({
-    queryKey: ['history', paddedTickers[2], historyRange.days],
-    queryFn: () => free.getHistory(paddedTickers[2]!, historyRange.days),
-    enabled: !!paddedTickers[2] && selectedTickers.length >= 2,
-  })
-  const hq3 = useQuery({
-    queryKey: ['history', paddedTickers[3], historyRange.days],
-    queryFn: () => free.getHistory(paddedTickers[3]!, historyRange.days),
-    enabled: !!paddedTickers[3] && selectedTickers.length >= 2,
-  })
-
-  const historyQueries = useMemo(() => {
-    return [hq0, hq1, hq2, hq3].slice(0, selectedTickers.length)
-  }, [hq0, hq1, hq2, hq3, selectedTickers.length])
-
-  // Normalize prices to base 100 for fair comparison
-  const historyChartData = useMemo(() => {
-    if (selectedTickers.length < 2) return []
-    const allLoaded = historyQueries.every(q => q.data)
-    if (!allLoaded) return []
-
-    const seriesByTicker = selectedTickers.map((ticker, i) => {
-      const raw = historyQueries[i]?.data
-      const data: Array<{ date: string; close: number }> = Array.isArray(raw) ? raw : (raw?.data ?? [])
-      return { ticker, data }
+  const chartData = useMemo(() => {
+    if (tickers.length < 2 || !histQ.every(q => q.data)) return []
+    const series = tickers.map((t, i) => {
+      const raw = histQ[i]?.data
+      const data: any[] = Array.isArray(raw) ? raw : (raw?.data ?? [])
+      return { ticker: t, data }
     })
-
-    const ref = seriesByTicker[0]
-    if (!ref || ref.data.length === 0) return []
-
-    return ref.data.map((point: any, dateIdx: number) => {
-      const entry: Record<string, number | string> = {
-        date: new Date(point.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
-        fullDate: new Date(point.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }),
-      }
-      for (const series of seriesByTicker) {
-        const basePrice = series.data[0]?.close
-        const currentPoint = series.data[dateIdx]
-        if (basePrice && currentPoint) {
-          entry[series.ticker] = Number(((currentPoint.close / basePrice - 1) * 100).toFixed(2))
-        }
+    const ref = series[0]
+    if (!ref?.data.length) return []
+    return ref.data.map((p: any, idx: number) => {
+      const entry: Record<string, any> = { date: new Date(p.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) }
+      for (const s of series) {
+        const base = s.data[0]?.close
+        const cur = s.data[idx]
+        if (base && cur) entry[s.ticker] = Number(((cur.close / base - 1) * 100).toFixed(2))
       }
       return entry
     })
-  }, [selectedTickers, historyQueries])
+  }, [tickers, histQ])
 
-  const getGroupedMetrics = () => {
-    if (!comparisonData) return []
-
-    const val = (asset: any, key: string) => {
-      const f = asset.latestFundamental
-      if (!f) return null
-      const v = f[key]
-      return v != null ? Number(v) : null
-    }
-
-    return [
-      {
-        group: 'Valuation',
-        metrics: [
-          { label: 'P/L', values: comparisonData.map(a => val(a, 'peRatio')), format: (v: number) => v.toFixed(1), lowerIsBetter: true },
-          { label: 'P/VP', values: comparisonData.map(a => val(a, 'pbRatio')), format: (v: number) => v.toFixed(2), lowerIsBetter: true },
-          { label: 'EV/EBITDA', values: comparisonData.map(a => val(a, 'evEbitda')), format: (v: number) => v.toFixed(1), lowerIsBetter: true },
-          { label: 'P/Receita', values: comparisonData.map(a => val(a, 'psr')), format: (v: number) => v.toFixed(2), lowerIsBetter: true },
-        ],
-      },
-      {
-        group: 'Rentabilidade',
-        metrics: [
-          { label: 'ROE', values: comparisonData.map(a => val(a, 'roe')), format: (v: number) => `${v.toFixed(1)}%`, lowerIsBetter: false },
-          { label: 'ROIC', values: comparisonData.map(a => val(a, 'roic')), format: (v: number) => `${v.toFixed(1)}%`, lowerIsBetter: false },
-          { label: 'Mrg. Líquida', values: comparisonData.map(a => {
-            const ml = val(a, 'margemLiquida') ?? val(a, 'netMargin')
-            return ml
-          }), format: (v: number) => `${v.toFixed(1)}%`, lowerIsBetter: false },
-          { label: 'Mrg. EBIT', values: comparisonData.map(a => {
-            const me = val(a, 'margemEbit') ?? val(a, 'ebitdaMargin')
-            return me
-          }), format: (v: number) => `${v.toFixed(1)}%`, lowerIsBetter: false },
-        ],
-      },
-      {
-        group: 'Dividendos',
-        metrics: [
-          { label: 'Div. Yield', values: comparisonData.map(a => val(a, 'dividendYield')), format: (v: number) => `${v.toFixed(1)}%`, lowerIsBetter: false },
-          { label: 'Payout', values: comparisonData.map(a => val(a, 'payout')), format: (v: number) => `${v.toFixed(0)}%`, lowerIsBetter: false },
-        ],
-      },
-      {
-        group: 'Performance',
-        metrics: [
-          { label: 'Variação Dia', values: comparisonData.map((a: any) => a.latestQuote?.changePercent != null ? Number(a.latestQuote.changePercent) : null), format: (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`, lowerIsBetter: false },
-          { label: 'Cresc. Receita 5a', values: comparisonData.map(a => val(a, 'crescimentoReceita5a')), format: (v: number) => `${v.toFixed(1)}%`, lowerIsBetter: false },
-          { label: 'Cresc. Lucro 5a', values: comparisonData.map(a => val(a, 'crescLucro5a')), format: (v: number) => `${v.toFixed(1)}%`, lowerIsBetter: false },
-          { label: 'Máx. 52 sem.', values: comparisonData.map(a => val(a, 'fiftyTwoWeekHigh')), format: (v: number) => `R$${v.toFixed(2)}`, lowerIsBetter: false },
-          { label: 'Mín. 52 sem.', values: comparisonData.map(a => val(a, 'fiftyTwoWeekLow')), format: (v: number) => `R$${v.toFixed(2)}`, lowerIsBetter: false },
-        ],
-      },
-      {
-        group: 'Solidez',
-        metrics: [
-          { label: 'Liq. Corrente', values: comparisonData.map(a => val(a, 'liquidezCorrente')), format: (v: number) => v.toFixed(2), lowerIsBetter: false },
-          { label: 'Dív.Brut/Patrim', values: comparisonData.map(a => val(a, 'divBrutPatrim')), format: (v: number) => v.toFixed(2), lowerIsBetter: true },
-          { label: 'Dív.Líq/EBITDA', values: comparisonData.map(a => val(a, 'netDebtEbitda')), format: (v: number) => v.toFixed(2), lowerIsBetter: true },
-        ],
-      },
-    ]
-  }
+  const add = useCallback((t: string) => {
+    if (tickers.length < MAX_ASSETS && !tickers.includes(t)) setTickers([...tickers, t])
+    setQuery(''); setSearching(false)
+  }, [tickers])
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-[var(--text-title)] font-bold tracking-tight">Comparar Ativos</h1>
-          <p className="text-[var(--text-small)] text-[var(--text-2)] mt-0.5">Até 4 ativos lado a lado</p>
+          <h1 className="text-xl font-bold text-[var(--text-1)]">Comparar Ativos</h1>
+          <p className="text-[var(--text-caption)] text-[var(--text-2)]">Até {MAX_ASSETS} ações lado a lado com fundamentos e performance</p>
         </div>
-        {selectedTickers.length > 0 && (
-          <Button variant="ghost" size="sm" onClick={clearAll}>
-            Limpar tudo
-          </Button>
-        )}
+        {tickers.length > 0 && <Button variant="ghost" size="sm" onClick={() => setTickers([])}>Limpar</Button>}
       </div>
 
-      {/* Asset Selector */}
-      <div className="flex flex-wrap items-center gap-3 p-4 border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] overflow-visible relative">
-        {selectedTickers.map((ticker, index) => {
-          const assetData = comparisonData?.find((a: any) => a.ticker === ticker)
-          return (
-          <div
-            key={ticker}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--surface-2)]"
-            style={{ borderLeft: `4px solid ${COMPARISON_COLORS[index]}` }}
-          >
-            <AssetLogo ticker={ticker} size={22} />
-            <span className="font-mono font-medium text-[var(--text-small)]">{ticker}</span>
-            <button
-              onClick={() => removeAsset(ticker)}
-              className="p-0.5 rounded hover:bg-[var(--border-1)] transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
+      {/* Selector */}
+      <div className="flex flex-wrap items-center gap-2 p-3 border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] relative">
+        {tickers.map((t, i) => (
+          <div key={t} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[var(--surface-2)]" style={{ borderLeft: `3px solid ${COLORS[i]}` }}>
+            <AssetLogo ticker={t} size={20} />
+            <span className="font-mono text-xs font-semibold">{t}</span>
+            <button onClick={() => setTickers(tickers.filter(x => x !== t))} className="p-0.5 hover:bg-[var(--border-1)] rounded">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
-          )
-        })}
-
-        {selectedTickers.length < MAX_ASSETS && (
+        ))}
+        {tickers.length < MAX_ASSETS && (
           <div className="relative">
-            <Input
-              type="text"
-              placeholder="+ Adicionar ativo"
-              value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setIsSearching(true) }}
-              onFocus={() => setIsSearching(true)}
-              className="w-full sm:w-44 text-[var(--text-small)]"
-            />
-            {isSearching && searchResults && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 mt-1 w-full sm:w-64 bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg shadow-[var(--shadow-overlay)] z-50 max-h-60 overflow-y-auto">
-                {searchResults.filter((a: any) => !selectedTickers.includes(a.ticker)).map((asset: any) => (
-                  <button
-                    key={asset.id}
-                    onClick={() => addAsset(asset.ticker)}
-                    className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-[var(--surface-2)] transition-colors text-left text-[var(--text-small)]"
-                  >
-                    <AssetLogo ticker={asset.ticker} logo={asset.logo} size={22} />
-                    <span className="font-mono font-medium">{asset.ticker}</span>
-                    <span className="text-[var(--text-caption)] text-[var(--text-2)] truncate">{asset.name}</span>
+            <Input type="text" placeholder="+ Adicionar" value={query}
+              onChange={e => { setQuery(e.target.value); setSearching(true) }}
+              onFocus={() => setSearching(true)}
+              className="w-36 text-xs" />
+            {searching && results.length > 0 && (
+              <div className="absolute top-full left-0 mt-1 w-64 bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                {results.map((r: any) => (
+                  <button key={r.ticker} onClick={() => add(r.ticker)}
+                    className="w-full flex items-center gap-2 px-3 py-2 hover:bg-[var(--surface-2)] text-xs text-left">
+                    <AssetLogo ticker={r.ticker} size={20} />
+                    <span className="font-mono font-semibold">{r.ticker}</span>
+                    <span className="text-[var(--text-2)] truncate">{r.company_name}</span>
                   </button>
                 ))}
               </div>
             )}
           </div>
         )}
-
-        {Array.from({ length: Math.max(0, MAX_ASSETS - selectedTickers.length - 1) }).map((_, i) => (
-          <div key={`empty-${i}`} className="hidden sm:block px-3 py-2 rounded-lg border-2 border-dashed border-[var(--border-1)] text-[var(--text-2)] text-[var(--text-caption)]">
-            + Adicionar
-          </div>
-        ))}
       </div>
 
-      {/* Error state */}
-      {isError && selectedTickers.length > 0 && (
-        <div className="flex items-center gap-2 px-4 py-3 bg-red-500/5 border border-red-500/20 rounded-[var(--radius)] text-[var(--text-small)]">
-          <span className="text-red-400">Erro ao carregar dados de alguns ativos. Verifique sua conexão.</span>
-        </div>
-      )}
-
-      {/* Cross-sector warning */}
-      {hasCrossSector && (
-        <div className="flex items-center gap-2 px-4 py-3 bg-amber-500/5 border border-amber-500/20 rounded-[var(--radius)] text-[var(--text-small)]">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-400 flex-shrink-0">
-            <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
-          <span className="text-amber-300/90">
-            Comparando ações de setores diferentes. Os pesos do IQ-Cognit variam por setor.
-          </span>
-        </div>
-      )}
-
       {/* Empty State */}
-      {selectedTickers.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-16 text-center border border-dashed border-[var(--border-1)] rounded-[var(--radius)]">
-          <div className="w-16 h-16 rounded-full bg-[var(--surface-2)] flex items-center justify-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-2)]">
-              <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
-              <rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-            </svg>
-          </div>
-          <h3 className="text-[var(--text-subheading)] font-semibold mb-1">Selecione ativos para comparar</h3>
-          <p className="text-[var(--text-small)] text-[var(--text-2)] max-w-md">
-            Use a barra acima para adicionar até 4 ativos e comparar indicadores.
-          </p>
+      {tickers.length < 2 && (
+        <div className="py-16 text-center border border-dashed border-[var(--border-1)] rounded-[var(--radius)]">
+          <p className="text-sm text-[var(--text-2)]">Adicione pelo menos 2 ativos para comparar</p>
         </div>
       )}
 
-      {/* Comparison Content */}
-      {comparisonData && comparisonData.length > 0 && (
-        <>
-          {/* Score Cards */}
-          {/* Grade de cartões de score — responsivo para mobile */}
-          <div className={cn(
-            "grid gap-4",
-            comparisonData.length <= 2 && "grid-cols-1 sm:grid-cols-2 max-w-2xl",
-            comparisonData.length === 3 && "grid-cols-1 sm:grid-cols-2 md:grid-cols-3",
-            comparisonData.length === 4 && "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
-          )}>
-            {comparisonData.map((asset: any, index: number) => {
-              const score = asset.iqScore ? Number(asset.iqScore.scoreTotal) : null
-              const scoreColor = score !== null ? getScoreHex(score) : 'var(--border-1)'
-              return (
-                <div
-                  key={asset.ticker}
-                  className="relative overflow-hidden border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-5"
-                >
-                  <div className="absolute top-0 left-0 right-0 h-1" style={{ backgroundColor: COMPARISON_COLORS[index] }} />
-                  <Link href={`/ativo/${asset.ticker}`} className="block group">
-                    <div className="flex items-center gap-2.5 mb-3">
-                      <AssetLogo ticker={asset.ticker} logo={asset.logo} size={28} />
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COMPARISON_COLORS[index] }} />
-                          <span className="font-mono font-medium text-[var(--text-base)] group-hover:text-[var(--accent-1)] transition-colors">{asset.ticker}</span>
-                        </div>
-                        <span className="text-[var(--text-caption)] text-[var(--text-2)] truncate block">{asset.name}</span>
-                      </div>
-                    </div>
-                  </Link>
-                  <div className="flex items-center gap-3">
-                    <span className="text-[var(--text-display)] font-bold font-mono" style={{ color: scoreColor }}>
-                      {score !== null ? score.toFixed(0) : <span className="text-[var(--text-3)]">n/d</span>}
-                    </span>
-                    {score !== null && (
-                      <div className="flex-1 h-2 bg-[var(--surface-2)] rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${score}%`, backgroundColor: scoreColor }} />
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-2.5 flex items-center gap-3 text-[var(--text-caption)] text-[var(--text-2)]">
-                    <span className="font-mono">{asset.latestQuote ? formatCurrency(Number(asset.latestQuote.close)) : <span className="text-[var(--text-3)]">n/d</span>}</span>
-                    <span>{asset.sector ?? <span className="text-[var(--text-3)]">n/d</span>}</span>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-
-          {/* Pillar Comparison — Horizontal Bars (primary) */}
-          {comparisonData.some((a: any) => a.iqScore) && (
-            <div>
-              <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Pilares IQ-Cognit</h2>
-              <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-5">
-                <div className="space-y-5">
-                  {[
-                    { label: 'Quantitativo', key: 'scoreQuanti' },
-                    { label: 'Qualitativo', key: 'scoreQuali' },
-                    { label: 'Valuation', key: 'scoreValuation' },
-                    { label: 'Operacional', key: 'scoreOperational' },
-                  ].map(({ label, key }) => {
-                    const values = comparisonData.map((a: any) => a.iqScore ? Number(a.iqScore[key as keyof typeof a.iqScore]) : 0)
-                    const bestIdx = findBest(values)
-                    return (
-                      <div key={label}>
-                        <span className="text-[var(--text-caption)] font-medium text-[var(--text-2)]">{label}</span>
-                        <div className="space-y-1.5 mt-1.5">
-                          {comparisonData.map((asset: any, index: number) => {
-                            const value = values[index] ?? 0
-                            return (
-                              <div key={asset.ticker} className="flex items-center gap-2">
-                                <span className="w-14 text-[var(--text-caption)] font-mono font-medium text-[var(--text-2)] truncate">{asset.ticker}</span>
-                                <div className="flex-1 max-w-md h-3 bg-[var(--surface-2)] rounded-full overflow-hidden">
-                                  <div
-                                    className="h-full rounded-full transition-all duration-500"
-                                    style={{ width: `${value}%`, backgroundColor: COMPARISON_COLORS[index] ?? '#888' }}
-                                  />
-                                </div>
-                                <span className={cn(
-                                  'w-8 text-right text-[var(--text-caption)] font-mono',
-                                  bestIdx === index ? 'text-[var(--pos)] font-bold' : ''
-                                )}>
-                                  {value.toFixed(0)}
-                                </span>
-                              </div>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Radar Overlay (secundário — visão complementar) */}
-          {comparisonData.some((a: any) => a.iqScore) && comparisonData.length >= 2 && (
-            <div>
-              <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Radar de Pilares</h2>
-              <div>
-                <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4 max-w-lg">
-                  <ComparisonRadarChart
-                    datasets={comparisonData.filter((a: any) => a.iqScore).map((a: any, i: number) => ({
-                      ticker: a.ticker,
-                      color: COMPARISON_COLORS[i] ?? '#888',
-                      quanti: Number(a.iqScore!.scoreQuanti),
-                      quali: Number(a.iqScore!.scoreQuali),
-                      valuation: Number(a.iqScore!.scoreValuation),
-                      operational: Number(a.iqScore!.scoreOperational),
-                    }))}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Performance Histórica Comparada */}
-          {selectedTickers.length >= 2 && (
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider">Performance Comparada</h2>
-                <div className="flex gap-1">
-                  {HISTORY_RANGES.map(r => (
-                    <button
-                      key={r.label}
-                      onClick={() => setHistoryRange(r)}
-                      className={cn(
-                        'px-2.5 py-1 text-[var(--text-caption)] font-medium rounded transition-colors',
-                        historyRange.label === r.label
-                          ? 'bg-[var(--accent-1)] text-white'
-                          : 'text-[var(--text-2)] hover:bg-[var(--surface-2)]'
-                      )}
-                    >
-                      {r.label}
-                    </button>
+      {/* Comparison Table */}
+      {assets.length >= 2 && (
+        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-[var(--border-1)] bg-[var(--bg)]">
+                  <th className="text-left px-4 py-3 text-[var(--text-2)] font-medium w-32">Indicador</th>
+                  {assets.map((a: any, i: number) => (
+                    <th key={a.ticker} className="text-center px-3 py-3 font-medium" style={{ color: COLORS[i] }}>
+                      <Link href={`/ativo/${a.ticker}`} className="hover:underline flex items-center justify-center gap-1.5">
+                        <AssetLogo ticker={a.ticker} size={18} />
+                        {a.ticker}
+                      </Link>
+                    </th>
                   ))}
-                </div>
-              </div>
-              <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
-                {historyChartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={historyChartData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border-1)" opacity={0.15} />
-                      <XAxis
-                        dataKey="date"
-                        tick={{ fontSize: 11, fill: 'var(--text-3)' }}
-                        tickLine={false}
-                        axisLine={false}
-                        interval="preserveStartEnd"
-                        minTickGap={40}
-                      />
-                      <YAxis
-                        tick={{ fontSize: 11, fill: 'var(--text-3)' }}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(v: number) => `${v > 0 ? '+' : ''}${v}%`}
-                        width={55}
-                      />
-                      <RechartsTooltip
-                        contentStyle={{
-                          backgroundColor: 'var(--surface-2)',
-                          border: '1px solid var(--border-1)',
-                          borderRadius: 8,
-                          fontSize: 12,
-                        }}
-                        labelFormatter={(label: string, payload: any[]) => payload?.[0]?.payload?.fullDate ?? label}
-                        formatter={(value: number, name: string) => [`${value > 0 ? '+' : ''}${value.toFixed(2)}%`, name]}
-                      />
-                      <Legend
-                        wrapperStyle={{ fontSize: 12 }}
-                        formatter={(value: string) => <span className="font-mono text-[var(--text-1)]">{value}</span>}
-                      />
-                      {/* Zero line */}
-                      <Line
-                        type="monotone"
-                        dataKey={() => 0}
-                        stroke="var(--text-3)"
-                        strokeDasharray="4 4"
-                        strokeWidth={1}
-                        dot={false}
-                        name=""
-                        legendType="none"
-                      />
-                      {selectedTickers.map((ticker, i) => (
-                        <Line
-                          key={ticker}
-                          type="monotone"
-                          dataKey={ticker}
-                          stroke={COMPARISON_COLORS[i]}
-                          strokeWidth={2}
-                          dot={false}
-                          name={ticker}
-                          connectNulls
-                        />
-                      ))}
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="flex items-center justify-center h-[300px] text-[var(--text-small)] text-[var(--text-3)]">
-                    {historyQueries.some(q => q.isLoading)
-                      ? 'Carregando dados históricos...'
-                      : 'Dados históricos indisponíveis'
-                    }
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+                </tr>
+              </thead>
+              <tbody>
+                <SectionHeader label="Score IQ-Cognit" cols={assets.length} />
+                <MetricRow label={<Term>IQ-Score</Term>} values={assets.map((a: any) => a.iq_score)} format={v => String(v)} best="high" colors={COLORS} />
+                <MetricRow label="Rating" values={assets.map((a: any) => a.rating)} format={v => RATING_LABELS[v] ?? '--'} colorFn={(v) => RATING_COLORS[v] ?? ''} colors={COLORS} />
+                <MetricRow label={<Term>Quantitativo</Term>} values={assets.map((a: any) => a.score_quanti)} format={v => `${v}/100`} best="high" colors={COLORS} />
+                <MetricRow label={<Term>Qualitativo</Term>} values={assets.map((a: any) => a.score_quali)} format={v => `${v}/100`} best="high" colors={COLORS} />
+                <MetricRow label={<Term>Valuation</Term>} values={assets.map((a: any) => a.score_valuation)} format={v => `${v}/100`} best="high" colors={COLORS} />
 
-          {/* Grouped Indicators Table */}
-          {getGroupedMetrics().map(({ group, metrics }) => {
-            const hasAnyData = metrics.some(m => m.values.some(v => v !== null && v !== 0))
-            if (!hasAnyData) return null
-            return (
-              <div key={group}>
-                <h2 className="text-[var(--text-small)] font-semibold text-[var(--text-2)] mb-3">{group}</h2>
-                <div className="overflow-x-auto [mask-image:linear-gradient(to_right,transparent,black_8px,black_calc(100%-8px),transparent)]">
-                  <table className="w-full text-[var(--text-small)]" aria-label="Comparação de indicadores financeiros">
-                    <thead>
-                      <tr className="border-b border-[var(--border-1)]">
-                        <th scope="col" className="pb-2 text-left text-[var(--text-caption)] font-medium text-[var(--text-2)] w-24 sm:w-32">Indicador</th>
-                        {comparisonData.map((a: any, i: number) => (
-                          <th key={a.ticker} scope="col" className="pb-2 text-center text-[var(--text-small)] font-semibold">
-                            <div className="flex items-center justify-center gap-1.5">
-                              <AssetLogo ticker={a.ticker} logo={a.logo} size={18} />
-                              <span className="font-mono font-medium" style={{ color: COMPARISON_COLORS[i] }}>{a.ticker}</span>
-                            </div>
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {metrics.map((metric) => {
-                        const bestIdx = findBest(metric.values, metric.lowerIsBetter)
-                        return (
-                          <tr key={metric.label} className="border-b border-[var(--border-1)] last:border-0">
-                            <td className="py-3 text-[var(--text-small)] text-[var(--text-2)]">{metric.label}</td>
-                            {metric.values.map((v, i) => (
-                              <td key={i} className={cn(
-                                'py-3 text-center font-mono text-[var(--text-small)]',
-                                bestIdx === i && v !== null ? 'text-[var(--pos)] font-bold' : ''
-                              )}>
-                                {v !== null && v !== 0
-                                  ? metric.format(v)
-                                  : <span className="text-[var(--text-3)]">n/d</span>
-                                }
-                              </td>
-                            ))}
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )
-          })}
-        </>
+                <SectionHeader label="Preço e Valuation" cols={assets.length} />
+                <MetricRow label="Preço" values={assets.map((a: any) => a.close)} format={v => `R$ ${Number(v).toFixed(2)}`} colors={COLORS} />
+                <MetricRow label={<Term>Preço Justo</Term>} values={assets.map((a: any) => a.fair_value_final)} format={v => `R$ ${Number(v).toFixed(2)}`} colors={COLORS} />
+                <MetricRow label={<Term>Desconto</Term>} values={assets.map((a: any) => a.safety_margin)} format={v => `${(Number(v) * 100).toFixed(0)}%`} best="high" colors={COLORS} />
+                <MetricRow label="Mkt Cap" values={assets.map((a: any) => a.market_cap)} format={v => {
+                  const n = Number(v); if (n >= 1e9) return `R$ ${(n/1e9).toFixed(1)}B`; if (n >= 1e6) return `R$ ${(n/1e6).toFixed(0)}M`; return `R$ ${n}`
+                }} colors={COLORS} />
+
+                <SectionHeader label="Rentabilidade" cols={assets.length} />
+                <MetricRow label={<Term>ROE</Term>} values={assets.map((a: any) => a.roe)} format={v => `${(Number(v)*100).toFixed(1)}%`} best="high" colors={COLORS} />
+                <MetricRow label="Margem Líq." values={assets.map((a: any) => a.net_margin)} format={v => `${(Number(v)*100).toFixed(1)}%`} best="high" colors={COLORS} />
+                <MetricRow label={<Term>DL/EBITDA</Term>} values={assets.map((a: any) => a.dl_ebitda)} format={v => `${Number(v).toFixed(1)}x`} best="low" colors={COLORS} />
+                <MetricRow label={<Term>Piotroski</Term>} values={assets.map((a: any) => a.piotroski)} format={v => `${v}/9`} best="high" colors={COLORS} />
+
+                <SectionHeader label="Dividendos" cols={assets.length} />
+                <MetricRow label={<Term>DY Proj.</Term>} values={assets.map((a: any) => a.dividend_yield_proj)} format={v => `${(Number(v)*100).toFixed(1)}%`} best="high" colors={COLORS} />
+                <MetricRow label={<Term>Dividend Safety</Term>} values={assets.map((a: any) => a.dividend_safety)} format={v => `${v}/100`} best="high" colors={COLORS} />
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
-      <Disclaimer variant="inline" className="block mt-4" />
+
+      {/* Performance Chart */}
+      {chartData.length > 0 && (
+        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-[var(--text-1)]">Performance Comparada</h2>
+            <div className="flex gap-1">
+              {RANGES.map((r, i) => (
+                <button key={r.label} onClick={() => setRangeIdx(i)}
+                  className={cn('px-2 py-1 text-[10px] font-mono rounded', i === rangeIdx ? 'bg-[var(--accent-1)] text-white' : 'text-[var(--text-2)] hover:bg-[var(--surface-2)]')}>
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border-1)" />
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-2)' }} interval="preserveStartEnd" />
+              <YAxis tick={{ fontSize: 10, fill: 'var(--text-2)' }} tickFormatter={v => `${v > 0 ? '+' : ''}${v}%`} />
+              <RechartsTooltip contentStyle={{ background: 'var(--surface-1)', border: '1px solid var(--border-1)', borderRadius: 8, fontSize: 11 }}
+                formatter={(value: number, name: string) => [`${value > 0 ? '+' : ''}${value.toFixed(1)}%`, name]} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              {tickers.map((t, i) => (
+                <Line key={t} type="monotone" dataKey={t} stroke={COLORS[i]} strokeWidth={2} dot={false} />
+              ))}
+              <Line type="monotone" dataKey="_zero" stroke="var(--text-3)" strokeDasharray="5 5" strokeWidth={1} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
+  )
+}
+
+// ─── Table Components ────────────────────────────────────────
+function SectionHeader({ label, cols }: { label: string; cols: number }) {
+  return (
+    <tr className="bg-[var(--bg)]">
+      <td colSpan={cols + 1} className="px-4 py-2 text-[10px] font-semibold text-[var(--text-2)] uppercase tracking-wider">{label}</td>
+    </tr>
+  )
+}
+
+function MetricRow({ label, values, format, best, colorFn, colors }: {
+  label: React.ReactNode; values: any[]; format: (v: any) => string; best?: 'high' | 'low'; colorFn?: (v: any) => string; colors: string[]
+}) {
+  const numericValues = values.map(v => (v != null && !isNaN(Number(v))) ? Number(v) : null)
+  let bestIdx = -1
+  if (best) {
+    const valid = numericValues.map((v, i) => ({ v, i })).filter((x): x is { v: number; i: number } => x.v !== null)
+    if (valid.length >= 2) {
+      valid.sort((a, b) => best === 'high' ? b.v - a.v : a.v - b.v)
+      bestIdx = valid[0]!.i
+    }
+  }
+
+  return (
+    <tr className="border-b border-[var(--border-1)]/30 hover:bg-[var(--surface-2)]/50">
+      <td className="px-4 py-2 text-[var(--text-2)] font-medium">{label}</td>
+      {values.map((v, i) => (
+        <td key={i} className={cn('text-center px-3 py-2 font-mono',
+          v == null ? 'text-[var(--text-3)]' : i === bestIdx ? 'font-bold text-[var(--pos)]' : 'text-[var(--text-1)]',
+          colorFn && v != null ? colorFn(v) : ''
+        )}>
+          {v != null ? format(v) : '--'}
+        </td>
+      ))}
+    </tr>
   )
 }
