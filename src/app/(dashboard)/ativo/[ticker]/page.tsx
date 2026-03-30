@@ -34,16 +34,27 @@ function fmtPct(val: number | null | undefined): string {
 }
 
 const RATING_STYLES: Record<string, string> = {
-  STRONG_BUY: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/30',
-  BUY: 'bg-blue-500/15 text-blue-600 border-blue-500/30',
-  HOLD: 'bg-amber-500/15 text-amber-600 border-amber-500/30',
-  REDUCE: 'bg-orange-500/15 text-orange-600 border-orange-500/30',
-  AVOID: 'bg-red-500/15 text-red-600 border-red-500/30',
+  STRONG_BUY: 'bg-emerald-400/10 text-emerald-400 border-emerald-400/30',
+  BUY: 'bg-blue-400/10 text-blue-400 border-blue-400/30',
+  HOLD: 'bg-amber-400/10 text-amber-400 border-amber-400/30',
+  REDUCE: 'bg-orange-400/10 text-orange-400 border-orange-400/30',
+  AVOID: 'bg-red-400/10 text-red-400 border-red-400/30',
 }
 
 const RATING_LABELS: Record<string, string> = {
   STRONG_BUY: 'Compra Forte', BUY: 'Acumular', HOLD: 'Neutro',
   REDUCE: 'Reduzir', AVOID: 'Evitar',
+}
+
+function scoreColor(v: number) {
+  if (v >= 70) return 'text-emerald-400'
+  if (v >= 50) return 'text-[var(--accent-1)]'
+  return 'text-red-400'
+}
+function scoreBg(v: number) {
+  if (v >= 70) return 'bg-emerald-400'
+  if (v >= 50) return 'bg-[var(--accent-1)]'
+  return 'bg-red-400'
 }
 
 // ─── Main Page ──────────────────────────────────────────────
@@ -186,12 +197,11 @@ export default function AtivoPage() {
   if (loadingScore) {
     return (
       <div className="space-y-6">
-        <Skeleton className="h-24" />
+        <Skeleton className="h-28 rounded-xl" />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <Skeleton className="h-80 lg:col-span-8" />
-          <Skeleton className="h-80 lg:col-span-4" />
+          <Skeleton className="h-96 lg:col-span-8 rounded-xl" />
+          <Skeleton className="h-96 lg:col-span-4 rounded-xl" />
         </div>
-        <Skeleton className="h-48" />
       </div>
     )
   }
@@ -200,8 +210,8 @@ export default function AtivoPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <p className="text-lg text-[var(--text-1)] font-semibold">Erro ao carregar {ticker}</p>
-        <p className="text-sm text-[var(--text-2)] mt-2">O backend pode estar indisponível. Tente novamente em alguns minutos.</p>
-        <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-[var(--accent-1)] text-white rounded-lg text-sm">Tentar novamente</button>
+        <p className="text-sm text-[var(--text-2)] mt-2">O backend pode estar indisponivel. Tente novamente em alguns minutos.</p>
+        <button onClick={() => window.location.reload()} className="mt-4 px-5 py-2.5 bg-[var(--accent-1)] text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity">Tentar novamente</button>
       </div>
     )
   }
@@ -209,8 +219,8 @@ export default function AtivoPage() {
   if (!score || !iq) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-lg text-[var(--text-2)]">Dados indisponíveis para {ticker}</p>
-        <p className="text-sm text-[var(--text-2)] mt-2">Verifique se o ticker é válido.</p>
+        <p className="text-lg text-[var(--text-2)]">Dados indisponiveis para {ticker}</p>
+        <p className="text-sm text-[var(--text-2)] mt-2">Verifique se o ticker e valido.</p>
       </div>
     )
   }
@@ -218,55 +228,61 @@ export default function AtivoPage() {
   return (
     <div className="space-y-6">
       {/* ─── Header ──────────────────────────────────────── */}
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <AssetLogo ticker={ticker} size={48} />
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-[var(--text-1)]">{ticker}</h1>
-              <span className={cn(
-                'text-xs font-semibold px-3 py-1 rounded-full border',
-                RATING_STYLES[iq.rating] ?? RATING_STYLES['HOLD']
-              )}>
-                {RATING_LABELS[iq.rating] ?? iq.rating}
-              </span>
+      <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[var(--surface-1)] via-[var(--surface-1)] to-[var(--accent-1)]/5 border border-[var(--border-1)] p-6">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[var(--accent-1)]/3 pointer-events-none" />
+        <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <AssetLogo ticker={ticker} size={56} />
+              <div className={cn('absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white', scoreBg(iq.iq_score))}>
+                {iq.iq_score >= 70 ? '+' : iq.iq_score >= 50 ? '=' : '-'}
+              </div>
             </div>
-            <p className="text-[var(--text-body)] text-[var(--text-2)]">{score.company_name}</p>
-            <p className="text-[var(--text-caption)] text-[var(--text-2)]">
-              Cluster {score.cluster}
-            </p>
+            <div>
+              <div className="flex items-center gap-3">
+                <h1 className="text-3xl font-bold text-[var(--text-1)] tracking-tight">{ticker}</h1>
+                <span className={cn('text-xs font-bold px-3 py-1 rounded-full border backdrop-blur-sm', RATING_STYLES[iq.rating] ?? RATING_STYLES['HOLD'])}>
+                  {RATING_LABELS[iq.rating] ?? iq.rating}
+                </span>
+              </div>
+              <p className="text-sm text-[var(--text-2)] mt-0.5">{score.company_name}</p>
+              <p className="text-xs text-[var(--text-3)]">Cluster {score.cluster}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="text-center">
+              <p className="text-xs text-[var(--text-3)] uppercase tracking-wider mb-1">IQ-Score</p>
+              <p className={cn('font-mono text-4xl font-black', scoreColor(iq.iq_score))}>{iq.iq_score}</p>
+            </div>
+            {tickerData?.quote && (
+              <div className="text-right pl-6 border-l border-[var(--border-1)]">
+                <p className="font-mono text-3xl font-bold text-[var(--text-1)]">{fmtR$(tickerData.quote.close)}</p>
+                <p className="text-xs text-[var(--text-3)] font-mono mt-0.5">
+                  Vol: {tickerData.quote.volume?.toLocaleString('pt-BR')} | Mkt Cap: {fmtBig(tickerData.quote.market_cap)}
+                </p>
+              </div>
+            )}
           </div>
         </div>
-
-        {tickerData?.quote && (
-          <div className="text-right">
-            <p className="font-mono text-3xl font-bold text-[var(--text-1)]">
-              {fmtR$(tickerData.quote.close)}
-            </p>
-            <p className="text-[var(--text-small)] text-[var(--text-2)] font-mono">
-              Vol: {tickerData.quote.volume?.toLocaleString('pt-BR')} | Mkt Cap: {fmtBig(tickerData.quote.market_cap)}
-            </p>
-          </div>
-        )}
       </div>
 
       {/* ─── Tab Navigation ──────────────────────────────── */}
-      <div className="flex gap-1 p-1 bg-[var(--bg)] rounded-xl border border-[var(--border-1)] overflow-x-auto">
+      <div className="flex gap-1 p-1 bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] overflow-x-auto">
         {([
           { key: 'resumo' as const, label: 'Resumo' },
           { key: 'valuation' as const, label: 'Valuation' },
           { key: 'fundamentos' as const, label: 'Fundamentos' },
-          { key: 'tese' as const, label: 'Tese & Análise' },
+          { key: 'tese' as const, label: 'Tese & Analise' },
           { key: 'dividendos' as const, label: 'Dividendos' },
         ]).map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={cn(
-              'flex-1 min-w-[80px] px-4 py-2 text-xs font-semibold rounded-lg transition-all whitespace-nowrap',
+              'flex-1 min-w-[90px] px-4 py-2.5 text-xs font-bold rounded-xl transition-all whitespace-nowrap tracking-wide',
               activeTab === tab.key
-                ? 'bg-[var(--accent-1)] text-white shadow-sm'
-                : 'text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--surface-1)]'
+                ? 'bg-[var(--accent-1)] text-white shadow-lg shadow-[var(--accent-1)]/20'
+                : 'text-[var(--text-3)] hover:text-[var(--text-1)] hover:bg-[var(--bg)]'
             )}
           >
             {tab.label}
@@ -274,156 +290,159 @@ export default function AtivoPage() {
         ))}
       </div>
 
-      {/* ─── Tab: Resumo (IQ-Score + Valuation) ────────── */}
-      {activeTab === 'resumo' && <>
-
-      {/* ─── Row 1: IQ-Score + Valuation ─────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* IQ-Score Panel */}
-        <div className="lg:col-span-4 space-y-4">
-          {/* Score Gauge */}
-          <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-            <div className="flex flex-col items-center">
-              <ScoreGauge score={iq.iq_score} classification={iq.rating} size={140} />
-              <p className="text-sm text-[var(--text-2)] mt-2">IQ-Score {iq.rating_label}</p>
-            </div>
-
-            {/* Pillar Breakdown */}
-            <div className="grid grid-cols-2 gap-3 mt-6">
-              <PillarCard label={<Term>Quantitativo</Term>} value={iq.score_quanti} icon="Q" />
-              <PillarCard label={<Term>Qualitativo</Term>} value={iq.score_quali} icon="L" />
-              <PillarCard label={<Term>Valuation</Term>} value={iq.score_valuation} icon="V" />
-              <PillarCard label={<Term>Operacional</Term>} value={iq.score_operational} icon="O" />
-            </div>
-          </div>
-
-          {/* mandate compare section removed */}
-
-          {/* Dividend Trap Risk Alert */}
-          {trapRisk?.is_dividend_trap && (
-            <div className="rounded-[var(--radius)] border border-[var(--neg)]/30 bg-[var(--neg)]/5 p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--neg)]">
-                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-                  <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-                <span className="text-sm font-semibold text-[var(--neg)]">Armadilha de Dividendo — Risco {trapRisk.risk_level}</span>
+      {/* ═══ Tab: Resumo ═══════════════════════════════════ */}
+      {activeTab === 'resumo' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Column */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* IQ-Score Arc + Pillars */}
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <div className="flex flex-col items-center mb-6">
+                <ScoreGauge score={iq.iq_score} classification={iq.rating} size={180} />
+                <p className="text-sm text-[var(--text-3)] mt-3 font-medium">{iq.rating_label}</p>
               </div>
-              <ul className="space-y-0.5">
-                {trapRisk.reasons.map((r, i) => (
-                  <li key={i} className="text-[var(--text-caption)] text-[var(--neg)]/80">• {r}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Dividend Safety */}
-          {div && div.dividend_safety != null && (
-            <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-5">
-              <h3 className="text-sm font-semibold text-[var(--text-1)] mb-3">Dividendos</h3>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[var(--text-caption)] text-[var(--text-2)]">Safety Score</span>
-                <span className={cn(
-                  'font-mono text-xl font-bold',
-                  div.dividend_safety >= 70 ? 'text-[var(--pos)]' :
-                  div.dividend_safety >= 50 ? 'text-[var(--warn)]' :
-                  'text-[var(--neg)]'
-                )}>
-                  {div.dividend_safety}
-                </span>
-              </div>
-              {/* Safety bar */}
-              <div className="w-full h-2 bg-[var(--bg)] rounded-full overflow-hidden">
-                <div
-                  className={cn(
-                    'h-full rounded-full transition-all',
-                    div.dividend_safety >= 70 ? 'bg-[var(--pos)]' :
-                    div.dividend_safety >= 50 ? 'bg-[var(--warn)]' :
-                    'bg-[var(--neg)]'
-                  )}
-                  style={{ width: `${div.dividend_safety}%` }}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3 mt-4 text-center">
-                <div>
-                  <p className="text-[var(--text-caption)] text-[var(--text-2)]">Yield Projetado</p>
-                  <p className="font-mono text-sm font-bold text-[var(--text-1)]">{fmtPct(div.projected_yield)}</p>
-                </div>
-                <div>
-                  <p className="text-[var(--text-caption)] text-[var(--text-2)]">CAGR 5a</p>
-                  <p className="font-mono text-sm font-bold text-[var(--text-1)]">{fmtPct(div.dividend_cagr_5y)}</p>
-                </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <PillarCard label={<Term>Quantitativo</Term>} value={iq.score_quanti} icon="Q" />
+                <PillarCard label={<Term>Qualitativo</Term>} value={iq.score_quali} icon="L" />
+                <PillarCard label={<Term>Valuation</Term>} value={iq.score_valuation} icon="V" />
+                <PillarCard label={<Term>Operacional</Term>} value={iq.score_operational} icon="O" />
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Valuation + Thesis */}
-        <div className="lg:col-span-8 space-y-4">
-          {/* Valuation Card */}
-          {dcf && dcf.available && (
-            <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-              <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Valuation</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <ValuationMetric label={<Term>Preço Justo</Term>} value={fmtR$(dcf.intrinsicValue)} highlight />
-                <ValuationMetric label={<Term>DCF</Term>} value={fmtR$(dcf.fairValueDCF)} />
-                <ValuationMetric label={<Term>Gordon</Term>} value={fmtR$(dcf.fairValueGordon)} />
-                <ValuationMetric label={<Term>Múltiplos</Term>} value={fmtR$(dcf.fairValueMult)} />
-              </div>
-
-              {/* Safety Margin Bar */}
-              <div className="mt-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[var(--text-caption)] text-[var(--text-2)]">Desconto em relação ao preço justo</span>
-                  <span className={cn(
-                    'font-mono text-lg font-bold',
-                    dcf.safetyMargin > 0.15 ? 'text-[var(--pos)]' :
-                    dcf.safetyMargin > 0 ? 'text-[var(--accent-1)]' :
-                    'text-[var(--neg)]'
-                  )}>
+            {/* Safety Margin Bar */}
+            {dcf && dcf.available && (
+              <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-medium text-[var(--text-3)] uppercase tracking-wider"><Term>Desconto</Term> vs Preco Justo</span>
+                  <span className={cn('font-mono text-xl font-black', dcf.safetyMargin > 0.15 ? 'text-emerald-400' : dcf.safetyMargin > 0 ? 'text-[var(--accent-1)]' : 'text-red-400')}>
                     {(dcf.safetyMargin * 100).toFixed(1)}%
                   </span>
                 </div>
                 <div className="relative w-full h-3 bg-[var(--bg)] rounded-full overflow-hidden">
-                  {/* Price position indicator */}
-                  <div className="absolute inset-0 flex items-center">
-                    <div
-                      className={cn(
-                        'h-full rounded-full transition-all',
-                        dcf.safetyMargin > 0.15 ? 'bg-[var(--pos)]' :
-                        dcf.safetyMargin > 0 ? 'bg-[var(--accent-1)]' :
-                        'bg-[var(--neg)]'
-                      )}
-                      style={{ width: `${Math.min(Math.max((dcf.safetyMargin + 0.5) * 100, 5), 95)}%` }}
-                    />
-                  </div>
+                  <div
+                    className={cn('h-full rounded-full transition-all duration-700', dcf.safetyMargin > 0.15 ? 'bg-emerald-400' : dcf.safetyMargin > 0 ? 'bg-[var(--accent-1)]' : 'bg-red-400')}
+                    style={{ width: `${Math.min(Math.max((dcf.safetyMargin + 0.5) * 100, 5), 95)}%` }}
+                  />
                 </div>
-                <div className="flex justify-between mt-1 text-[var(--text-caption)] text-[var(--text-2)] font-mono">
+                <div className="flex justify-between mt-2 text-[10px] text-[var(--text-3)] font-mono">
+                  <span>Caro</span>
+                  <span>Justo</span>
+                  <span>Barato</span>
+                </div>
+              </div>
+            )}
+          </div>
+          {/* Right Column */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* Thesis Preview */}
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-5">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-3">Tese de Investimento</h3>
+              {thesis?.thesis_text ? (
+                <p className="text-sm text-[var(--text-2)] leading-relaxed line-clamp-6">{thesis.thesis_text}</p>
+              ) : score.thesis_summary ? (
+                <p className="text-sm text-[var(--text-2)] leading-relaxed line-clamp-6">{score.thesis_summary}</p>
+              ) : (
+                <p className="text-sm text-[var(--text-3)] italic">Tese em processamento — o IQ-Cognit esta analisando este ativo</p>
+              )}
+              {thesis?.bull_case && (
+                <div className="mt-4 space-y-2">
+                  <div className="p-3 rounded-xl bg-emerald-400/5 border border-emerald-400/10">
+                    <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-1">Bull Case</p>
+                    <ul className="space-y-1">
+                      {thesis.bull_case.split(/[.;]\s*/).filter(Boolean).slice(0, 3).map((b: string, i: number) => (
+                        <li key={i} className="text-xs text-[var(--text-2)] flex gap-1.5">
+                          <span className="text-emerald-400 shrink-0">+</span>{b.trim()}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  {thesis?.bear_case && (
+                    <div className="p-3 rounded-xl bg-red-400/5 border border-red-400/10">
+                      <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1">Bear Case</p>
+                      <ul className="space-y-1">
+                        {thesis.bear_case.split(/[.;]\s*/).filter(Boolean).slice(0, 3).map((b: string, i: number) => (
+                          <li key={i} className="text-xs text-[var(--text-2)] flex gap-1.5">
+                            <span className="text-red-400 shrink-0">-</span>{b.trim()}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            {/* Top Drivers */}
+            {(drivers.positive.length > 0 || drivers.negative.length > 0) && (
+              <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-5">
+                <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-3">Drivers do Score</h3>
+                <div className="space-y-4">
+                  {drivers.positive.slice(0, 3).map((d, i) => (
+                    <div key={`p${i}`} className="flex items-start gap-2">
+                      <div className="w-5 h-5 rounded-full bg-emerald-400/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-emerald-400 text-[10px] font-bold">+</span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-[var(--text-1)] font-medium leading-snug">{d.text}</p>
+                        {d.value && <p className="font-mono text-[10px] text-emerald-400 mt-0.5">{d.value}</p>}
+                      </div>
+                    </div>
+                  ))}
+                  {drivers.negative.slice(0, 3).map((d, i) => (
+                    <div key={`n${i}`} className="flex items-start gap-2">
+                      <div className="w-5 h-5 rounded-full bg-red-400/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="text-red-400 text-[10px] font-bold">-</span>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs text-[var(--text-1)] font-medium leading-snug">{d.text}</p>
+                        {d.value && <p className="font-mono text-[10px] text-red-400 mt-0.5">{d.value}</p>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ═══ Tab: Valuation ════════════════════════════════ */}
+      {activeTab === 'valuation' && (
+        <div className="space-y-6">
+          {/* Valuation Models */}
+          {dcf && dcf.available && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-5">Modelos de Valuation</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <ValuationMetric label={<Term>Preco Justo</Term>} value={fmtR$(dcf.intrinsicValue)} highlight />
+                <ValuationMetric label={<Term>DCF</Term>} value={fmtR$(dcf.fairValueDCF)} />
+                <ValuationMetric label={<Term>Gordon</Term>} value={fmtR$(dcf.fairValueGordon)} />
+                <ValuationMetric label={<Term>Multiplos</Term>} value={fmtR$(dcf.fairValueMult)} />
+              </div>
+              {/* Safety Margin */}
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-[var(--text-3)]"><Term>Desconto</Term> em relacao ao preco justo</span>
+                  <span className={cn('font-mono text-lg font-black', dcf.safetyMargin > 0.15 ? 'text-emerald-400' : dcf.safetyMargin > 0 ? 'text-[var(--accent-1)]' : 'text-red-400')}>
+                    {(dcf.safetyMargin * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <div className="relative w-full h-3 bg-[var(--bg)] rounded-full overflow-hidden">
+                  <div
+                    className={cn('h-full rounded-full transition-all duration-700', dcf.safetyMargin > 0.15 ? 'bg-emerald-400' : dcf.safetyMargin > 0 ? 'bg-[var(--accent-1)]' : 'bg-red-400')}
+                    style={{ width: `${Math.min(Math.max((dcf.safetyMargin + 0.5) * 100, 5), 95)}%` }}
+                  />
+                </div>
+                <div className="flex justify-between mt-1 text-[10px] text-[var(--text-3)] font-mono">
                   <span>P25: {fmtR$(dcf.p25)}</span>
                   <span>Atual: {fmtR$(dcf.currentPrice)}</span>
                   <span>P75: {fmtR$(dcf.p75)}</span>
                 </div>
               </div>
-
-              {/* Probabilities */}
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="text-center p-3 rounded-lg bg-[var(--pos)]/5">
-                  <p className="text-[var(--text-caption)] text-[var(--text-2)]">Probabilidade Upside</p>
-                  <p className="font-mono text-lg font-bold text-[var(--pos)]">{fmtPct(dcf.upsideProb)}</p>
-                </div>
-                <div className="text-center p-3 rounded-lg bg-[var(--neg)]/5">
-                  <p className="text-[var(--text-caption)] text-[var(--text-2)]">Probabilidade Perda</p>
-                  <p className="font-mono text-lg font-bold text-[var(--neg)]">{fmtPct(dcf.lossProb)}</p>
-                </div>
-              </div>
-
-              {/* ─── Monte Carlo Range Visual ──────── */}
+              {/* Monte Carlo Range */}
               {dcf.p25 != null && dcf.p75 != null && (
-                <div className="mt-6 p-4 rounded-lg bg-[var(--bg)]">
-                  <h4 className="text-xs font-semibold text-[var(--text-2)] mb-3 uppercase tracking-wider">Monte Carlo — 10.000 Simulações</h4>
-                  <div className="relative h-12 flex items-center">
-                    {/* Range bar */}
-                    <div className="absolute inset-x-0 h-3 bg-[var(--surface-2)] rounded-full" />
+                <div className="mt-6 p-4 rounded-xl bg-[var(--bg)] border border-[var(--border-1)]">
+                  <h4 className="text-[10px] font-bold text-[var(--text-3)] mb-3 uppercase tracking-wider"><Term>Monte Carlo</Term> — 10.000 Simulacoes</h4>
+                  <div className="relative h-14 flex items-center">
+                    <div className="absolute inset-x-0 h-3 bg-[var(--surface-1)] rounded-full" />
                     {(() => {
                       const min = dcf.p25! * 0.85
                       const max = dcf.p75! * 1.15
@@ -434,72 +453,72 @@ export default function AtivoPage() {
                       const fairPos = dcf.intrinsicValue ? Math.max(0, Math.min(100, ((dcf.intrinsicValue - min) / range) * 100)) : null
                       return (
                         <>
-                          {/* Monte Carlo range */}
-                          <div className="absolute h-3 bg-[var(--accent-1)]/30 rounded-full" style={{ left: `${p25Pos}%`, width: `${p75Pos - p25Pos}%` }} />
-                          {/* Current price marker */}
-                          <div className="absolute w-0.5 h-8 bg-[var(--text-1)]" style={{ left: `${pricePos}%` }} />
-                          <div className="absolute -top-1 text-[10px] font-mono font-bold text-[var(--text-1)] -translate-x-1/2" style={{ left: `${pricePos}%` }}>
-                            Atual
-                          </div>
-                          {/* Fair value marker */}
+                          <div className="absolute h-3 bg-[var(--accent-1)]/25 rounded-full backdrop-blur-sm" style={{ left: `${p25Pos}%`, width: `${p75Pos - p25Pos}%` }} />
+                          <div className="absolute w-0.5 h-10 bg-[var(--text-1)] rounded-full" style={{ left: `${pricePos}%` }} />
+                          <div className="absolute -top-1 text-[10px] font-mono font-bold text-[var(--text-1)] -translate-x-1/2" style={{ left: `${pricePos}%` }}>Atual</div>
                           {fairPos != null && (
                             <>
-                              <div className="absolute w-0.5 h-8 bg-[var(--accent-1)]" style={{ left: `${fairPos}%` }} />
-                              <div className="absolute top-8 text-[10px] font-mono font-bold text-[var(--accent-1)] -translate-x-1/2" style={{ left: `${fairPos}%` }}>
-                                Justo
-                              </div>
+                              <div className="absolute w-0.5 h-10 bg-[var(--accent-1)] rounded-full" style={{ left: `${fairPos}%` }} />
+                              <div className="absolute top-10 text-[10px] font-mono font-bold text-[var(--accent-1)] -translate-x-1/2" style={{ left: `${fairPos}%` }}>Justo</div>
                             </>
                           )}
                         </>
                       )
                     })()}
                   </div>
-                  <div className="flex justify-between mt-2 text-[10px] font-mono text-[var(--text-3)]">
+                  <div className="flex justify-between mt-3 text-[10px] font-mono text-[var(--text-3)]">
                     <span>Pessimista {fmtR$(dcf.p25)}</span>
                     <span>Otimista {fmtR$(dcf.p75)}</span>
                   </div>
                 </div>
               )}
-
-              {/* ─── DCF Reverso (Implied Growth) ──── */}
+              {/* Probabilities */}
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="text-center p-3 rounded-xl bg-emerald-400/5 border border-emerald-400/10">
+                  <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider">Prob. Upside</p>
+                  <p className="font-mono text-xl font-black text-emerald-400">{fmtPct(dcf.upsideProb)}</p>
+                </div>
+                <div className="text-center p-3 rounded-xl bg-red-400/5 border border-red-400/10">
+                  <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider">Prob. Perda</p>
+                  <p className="font-mono text-xl font-black text-red-400">{fmtPct(dcf.lossProb)}</p>
+                </div>
+              </div>
+              {/* DCF Reverso */}
               {valuation?.implied_growth != null && (
-                <div className="mt-4 p-4 rounded-lg border border-[var(--accent-1)]/20 bg-[var(--accent-1)]/5">
+                <div className="mt-4 p-4 rounded-xl border border-[var(--accent-1)]/20 bg-[var(--accent-1)]/5">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-xs font-semibold text-[var(--accent-1)] uppercase tracking-wider">DCF Reverso</h4>
-                      <p className="text-[var(--text-caption)] text-[var(--text-2)] mt-0.5">
-                        O mercado está precificando um crescimento de
-                      </p>
+                      <h4 className="text-[10px] font-bold text-[var(--accent-1)] uppercase tracking-wider">DCF Reverso</h4>
+                      <p className="text-xs text-[var(--text-3)] mt-0.5">O mercado precifica crescimento de</p>
                     </div>
-                    <span className="font-mono text-2xl font-bold text-[var(--accent-1)]">
+                    <span className="font-mono text-2xl font-black text-[var(--accent-1)]">
                       {valuation.implied_growth_pct ?? `${(valuation.implied_growth * 100).toFixed(1)}%`}
                     </span>
                   </div>
                   <p className="text-[10px] text-[var(--text-3)] mt-2">
-                    Se você acredita que a empresa crescerá mais que {valuation.implied_growth_pct ?? `${(valuation.implied_growth * 100).toFixed(1)}%`} ao ano, o preço atual pode estar barato.
+                    Se voce acredita que a empresa crescera mais que {valuation.implied_growth_pct ?? `${(valuation.implied_growth * 100).toFixed(1)}%`} ao ano, o preco atual pode estar barato.
                   </p>
                 </div>
               )}
-
-              {/* ─── Scenarios (Bull / Base / Bear) ── */}
+              {/* Scenarios */}
               {scenarios && scenarios.scenarios && (
                 <div className="mt-4">
-                  <h4 className="text-xs font-semibold text-[var(--text-2)] mb-3 uppercase tracking-wider">Cenários</h4>
+                  <h4 className="text-[10px] font-bold text-[var(--text-3)] mb-3 uppercase tracking-wider">Cenarios</h4>
                   <div className="grid grid-cols-3 gap-3">
                     {[
-                      { key: 'bear', label: 'Pessimista', emoji: '', data: scenarios.scenarios['bear'], color: 'neg' },
-                      { key: 'base', label: 'Base', emoji: '', data: scenarios.scenarios['base'], color: 'accent-1' },
-                      { key: 'bull', label: 'Otimista', emoji: '', data: scenarios.scenarios['bull'], color: 'pos' },
+                      { key: 'bear', label: 'Pessimista', data: scenarios.scenarios['bear'], color: 'red' },
+                      { key: 'base', label: 'Base', data: scenarios.scenarios['base'], color: 'accent' },
+                      { key: 'bull', label: 'Otimista', data: scenarios.scenarios['bull'], color: 'emerald' },
                     ].map(s => {
                       const fv = (s.data as any)?.fair_value
                       const upside = fv && dcf.currentPrice ? ((fv - dcf.currentPrice) / dcf.currentPrice * 100) : null
+                      const borderCls = s.color === 'red' ? 'border-red-400/20 bg-red-400/5' : s.color === 'emerald' ? 'border-emerald-400/20 bg-emerald-400/5' : 'border-[var(--accent-1)]/20 bg-[var(--accent-1)]/5'
                       return (
-                        <div key={s.key} className={cn('p-3 rounded-lg border text-center', `border-[var(--${s.color})]/20 bg-[var(--${s.color})]/5`)}>
-                          <span className="text-lg">{s.emoji}</span>
-                          <p className="text-[10px] font-semibold text-[var(--text-2)] mt-1">{s.label}</p>
-                          <p className="font-mono text-sm font-bold text-[var(--text-1)]">{fv ? fmtR$(fv) : '-'}</p>
+                        <div key={s.key} className={cn('p-4 rounded-xl border text-center', borderCls)}>
+                          <p className="text-[10px] font-bold text-[var(--text-3)] uppercase tracking-wider">{s.label}</p>
+                          <p className="font-mono text-lg font-black text-[var(--text-1)] mt-1">{fv ? fmtR$(fv) : '-'}</p>
                           {upside != null && (
-                            <p className={cn('font-mono text-[10px] font-bold', upside >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
+                            <p className={cn('font-mono text-xs font-bold mt-0.5', upside >= 0 ? 'text-emerald-400' : 'text-red-400')}>
                               {upside >= 0 ? '+' : ''}{upside.toFixed(1)}%
                             </p>
                           )}
@@ -509,36 +528,9 @@ export default function AtivoPage() {
                   </div>
                 </div>
               )}
-
-              {/* ─── DuPont Decomposition ─────────── */}
-              {valuation?.dupont && (
-                <div className="mt-4 p-4 rounded-lg bg-[var(--bg)]">
-                  <h4 className="text-xs font-semibold text-[var(--text-2)] mb-3 uppercase tracking-wider">DuPont — Decomposição do ROE</h4>
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div>
-                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">Margem</p>
-                      <p className="font-mono font-bold text-[var(--text-1)]">{valuation.dupont.margin != null ? (valuation.dupont.margin * 100).toFixed(1) + '%' : '-'}</p>
-                    </div>
-                    <div>
-                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">Giro</p>
-                      <p className="font-mono font-bold text-[var(--text-1)]">{valuation.dupont.turnover?.toFixed(2) ?? '-'}x</p>
-                    </div>
-                    <div>
-                      <p className="text-[var(--text-caption)] text-[var(--text-3)]">Alavancagem</p>
-                      <p className="font-mono font-bold text-[var(--text-1)]">{valuation.dupont.leverage?.toFixed(2) ?? '-'}x</p>
-                    </div>
-                  </div>
-                  {valuation.dupont.driver && (
-                    <p className="text-[10px] text-[var(--text-3)] text-center mt-2">
-                      Driver principal: <span className="font-semibold text-[var(--accent-1)]">{valuation.dupont.driver}</span>
-                    </p>
-                  )}
-                </div>
-              )}
             </div>
           )}
-
-          {/* Scenario Builder — interactive valuation */}
+          {/* Scenario Builder */}
           {dcf && dcf.available && (
             <ScenarioBuilder
               currentPrice={dcf.currentPrice}
@@ -550,326 +542,342 @@ export default function AtivoPage() {
               impliedGrowth={valuation?.implied_growth ?? null}
             />
           )}
-
-          {/* Thesis */}
-          {(thesis || score.thesis_summary) && (
-            <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-              <h3 className="text-sm font-semibold text-[var(--text-1)] mb-3">Tese de Investimento</h3>
-              <p className="text-[var(--text-body)] text-[var(--text-2)] leading-relaxed whitespace-pre-line">
-                {thesis?.thesis_text ?? score.thesis_summary}
-              </p>
-              {thesis?.bull_case && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div className="p-3 rounded-lg bg-[var(--pos)]/5 border border-[var(--pos)]/10">
-                    <p className="text-xs font-semibold text-[var(--pos)] mb-1">Bull Case</p>
-                    <p className="text-sm text-[var(--text-2)]">{thesis.bull_case}</p>
-                  </div>
-                  <div className="p-3 rounded-lg bg-[var(--neg)]/5 border border-[var(--neg)]/10">
-                    <p className="text-xs font-semibold text-[var(--neg)] mb-1">Bear Case</p>
-                    <p className="text-sm text-[var(--text-2)]">{thesis.bear_case}</p>
-                  </div>
+          {/* DuPont */}
+          {valuation?.dupont && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-4"><Term>DuPont</Term> — Decomposicao do <Term>ROE</Term></h3>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="p-4 rounded-xl bg-[var(--bg)]">
+                  <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider"><Term>Margem Liquida</Term></p>
+                  <p className="font-mono text-xl font-black text-[var(--text-1)] mt-1">{valuation.dupont.margin != null ? (valuation.dupont.margin * 100).toFixed(1) + '%' : '-'}</p>
                 </div>
+                <div className="p-4 rounded-xl bg-[var(--bg)]">
+                  <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider"><Term>Giro</Term></p>
+                  <p className="font-mono text-xl font-black text-[var(--text-1)] mt-1">{valuation.dupont.turnover?.toFixed(2) ?? '-'}x</p>
+                </div>
+                <div className="p-4 rounded-xl bg-[var(--bg)]">
+                  <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider"><Term>Alavancagem</Term></p>
+                  <p className="font-mono text-xl font-black text-[var(--text-1)] mt-1">{valuation.dupont.leverage?.toFixed(2) ?? '-'}x</p>
+                </div>
+              </div>
+              {valuation.dupont.driver && (
+                <p className="text-xs text-[var(--text-3)] text-center mt-3">
+                  Driver principal: <span className="font-semibold text-[var(--accent-1)]">{valuation.dupont.driver}</span>
+                </p>
               )}
             </div>
           )}
         </div>
-      </div>
+      )}
 
-      {/* ─── Row 2: Drivers (XAI Evidence) ──────────────── */}
-      {(drivers.positive.length > 0 || drivers.negative.length > 0) && (
-        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Drivers do IQ-Score (XAI)</h3>
-          <DriversList positive={drivers.positive} negative={drivers.negative} />
+      {/* ═══ Tab: Fundamentos ══════════════════════════════ */}
+      {activeTab === 'fundamentos' && (
+        <div className="space-y-6">
+          {/* Financial Table */}
+          {financialsData?.financials && financialsData.financials.length > 0 && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-5">Indicadores Fundamentalistas</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[var(--border-1)]">
+                      <th className="text-left py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider">Periodo</th>
+                      <th className="text-right py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider">Receita</th>
+                      <th className="text-right py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider">Lucro Liq.</th>
+                      <th className="text-right py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider"><Term>ROE</Term></th>
+                      <th className="text-right py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider"><Term>DL/EBITDA</Term></th>
+                      <th className="text-right py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider"><Term>Margem Liquida</Term></th>
+                      <th className="text-right py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider"><Term>Margem Bruta</Term></th>
+                      <th className="text-right py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider"><Term>Piotroski</Term></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {financialsData.financials.map((f) => (
+                      <tr key={f.period} className="border-b border-[var(--border-1)]/20 hover:bg-[var(--bg)] transition-colors">
+                        <td className="py-3 px-3 font-mono font-bold text-[var(--text-1)] text-xs">{f.period?.slice(0, 4)}</td>
+                        <td className="py-3 px-3 text-right font-mono text-[var(--text-1)] text-xs">{fmtBig(f.revenue)}</td>
+                        <td className={cn('py-3 px-3 text-right font-mono text-xs', (f.net_income ?? 0) >= 0 ? 'text-[var(--text-1)]' : 'text-red-400')}>{fmtBig(f.net_income)}</td>
+                        <td className={cn('py-3 px-3 text-right font-mono text-xs', (f.roe ?? 0) >= 0.15 ? 'text-emerald-400' : 'text-[var(--text-1)]')}>{fmtPct(f.roe)}</td>
+                        <td className={cn('py-3 px-3 text-right font-mono text-xs', (f.dl_ebitda ?? 0) > 3 ? 'text-red-400' : 'text-[var(--text-1)]')}>{f.dl_ebitda?.toFixed(1) ?? '--'}</td>
+                        <td className="py-3 px-3 text-right font-mono text-[var(--text-1)] text-xs">{fmtPct(f.net_margin)}</td>
+                        <td className="py-3 px-3 text-right font-mono text-[var(--text-1)] text-xs">{fmtPct(f.gross_margin)}</td>
+                        <td className={cn('py-3 px-3 text-right font-mono text-xs font-bold', (f.piotroski_score ?? 0) >= 7 ? 'text-emerald-400' : (f.piotroski_score ?? 0) >= 5 ? 'text-[var(--text-1)]' : 'text-red-400')}>{f.piotroski_score ?? '--'}/9</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          {/* Risk Lab */}
+          {riskMetrics && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-5">Risk Lab</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {riskMetrics.risk_metrics.merton_pd != null && (
+                  <RiskMetricCard label={<Term>Risco de Falencia</Term>} value={`${(riskMetrics.risk_metrics.merton_pd * 100).toFixed(2)}%`} description="Probabilidade de calote" color={riskMetrics.risk_metrics.merton_pd < 0.05 ? 'pos' : riskMetrics.risk_metrics.merton_pd < 0.15 ? 'warn' : 'neg'} />
+                )}
+                {riskMetrics.risk_metrics.piotroski_score != null && (
+                  <RiskMetricCard label={<Term>Saude Financeira</Term>} value={`${riskMetrics.risk_metrics.piotroski_score}/9`} description="Nota Piotroski" color={riskMetrics.risk_metrics.piotroski_score >= 7 ? 'pos' : riskMetrics.risk_metrics.piotroski_score >= 5 ? 'warn' : 'neg'} />
+                )}
+                {riskMetrics.risk_metrics.altman_z != null && (
+                  <RiskMetricCard label={<Term>Altman Z</Term>} value={riskMetrics.risk_metrics.altman_z.toFixed(2)} description={riskMetrics.risk_metrics.altman_z_label || 'Solvencia'} color={riskMetrics.risk_metrics.altman_z > 2.99 ? 'pos' : riskMetrics.risk_metrics.altman_z > 1.81 ? 'warn' : 'neg'} />
+                )}
+                {riskMetrics.risk_metrics.dl_ebitda != null && (
+                  <RiskMetricCard label={<Term>DL/EBITDA</Term>} value={riskMetrics.risk_metrics.dl_ebitda.toFixed(1) + 'x'} description="Divida / geracao de caixa" color={riskMetrics.risk_metrics.dl_ebitda < 2 ? 'pos' : riskMetrics.risk_metrics.dl_ebitda < 3.5 ? 'warn' : 'neg'} />
+                )}
+                {riskMetrics.risk_metrics.icj != null && (
+                  <RiskMetricCard label={<Term>ICJ</Term>} value={riskMetrics.risk_metrics.icj.toFixed(1) + 'x'} description="EBIT / Juros" color={riskMetrics.risk_metrics.icj > 5 ? 'pos' : riskMetrics.risk_metrics.icj > 2 ? 'warn' : 'neg'} />
+                )}
+                {riskMetrics.profitability.spread_roic_wacc != null && (
+                  <RiskMetricCard label="ROIC - WACC" value={`${(riskMetrics.profitability.spread_roic_wacc * 100).toFixed(1)}pp`} description="Criacao de valor" color={riskMetrics.profitability.spread_roic_wacc > 0 ? 'pos' : 'neg'} />
+                )}
+              </div>
+            </div>
+          )}
+          {/* Peers */}
+          {peersData?.peers && peersData.peers.length > 0 && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-4">Peers do Setor</h3>
+              <div className="flex flex-wrap gap-2">
+                {peersData.peers.slice(0, 12).map((peer) => (
+                  <Link key={peer.ticker} href={`/ativo/${peer.ticker}`} className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[var(--bg)] border border-[var(--border-1)] hover:border-[var(--accent-1)]/40 transition-all text-sm group">
+                    <AssetLogo ticker={peer.ticker} size={20} />
+                    <span className="font-mono font-bold text-[var(--text-1)] text-xs group-hover:text-[var(--accent-1)] transition-colors">{peer.ticker}</span>
+                    <span className="text-[var(--text-3)] text-[10px] truncate max-w-[80px]">{peer.company_name}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      </>}
-
-      {/* ─── Tab: Valuation (Score X-Ray + Risk Lab) ───── */}
-      {activeTab === 'valuation' && <>
-
-      {/* ─── Score X-Ray (radar + criteria expandível) ── */}
-      {score.evidences && score.evidences.length > 0 && (
-        <IQCognitXRay
-          evidences={score.evidences}
-          iqScore={iq.iq_score}
-          rating={iq.rating}
-          ratingLabel={iq.rating_label}
-        />
-      )}
-
-      </>}
-
-      {/* ─── Tab: Tese & Análise ───────────────────────── */}
-      {activeTab === 'tese' && <>
-
-      {/* ─── Dossier Qualitativo ─────────────────── */}
-      {dossier && dossier.dimensoes && dossier.dimensoes.length > 0 && (
-        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-[var(--text-1)]">Dossier Qualitativo</h3>
-            <span className={cn(
-              'text-xs font-medium px-2 py-1 rounded-full',
-              dossier.veredito_geral?.includes('BOM') ? 'bg-[var(--pos)]/10 text-[var(--pos)]' :
-              'bg-[var(--warn)]/10 text-[var(--warn)]'
-            )}>
-              {dossier.veredito_geral}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {dossier.dimensoes.map((dim) => (
-              <DossierDimensionCard key={dim.nome} dimension={dim} />
-            ))}
-          </div>
+      {/* ═══ Tab: Tese & Analise ═══════════════════════════ */}
+      {activeTab === 'tese' && (
+        <div className="space-y-6">
+          {/* Full Thesis */}
+          {(thesis || score.thesis_summary) && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-4">Tese de Investimento</h3>
+              <p className="text-sm text-[var(--text-2)] leading-relaxed whitespace-pre-line">{thesis?.thesis_text ?? score.thesis_summary}</p>
+              {thesis?.bull_case && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                  <div className="p-4 rounded-xl bg-emerald-400/5 border border-emerald-400/10">
+                    <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-2">Bull Case</p>
+                    <ul className="space-y-1.5">
+                      {thesis.bull_case.split(/[.;]\s*/).filter(Boolean).map((b: string, i: number) => (
+                        <li key={i} className="text-sm text-[var(--text-2)] flex gap-2">
+                          <span className="text-emerald-400 shrink-0 font-bold">+</span>{b.trim()}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  {thesis?.bear_case && (
+                    <div className="p-4 rounded-xl bg-red-400/5 border border-red-400/10">
+                      <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-2">Bear Case</p>
+                      <ul className="space-y-1.5">
+                        {thesis.bear_case.split(/[.;]\s*/).filter(Boolean).map((b: string, i: number) => (
+                          <li key={i} className="text-sm text-[var(--text-2)] flex gap-2">
+                            <span className="text-red-400 shrink-0 font-bold">-</span>{b.trim()}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+              {thesis?.main_risks && (
+                <div className="mt-4 p-4 rounded-xl bg-amber-400/5 border border-amber-400/10">
+                  <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-2">Principais Riscos</p>
+                  <p className="text-sm text-[var(--text-2)] leading-relaxed">{thesis.main_risks}</p>
+                </div>
+              )}
+            </div>
+          )}
+          {/* Dossier */}
+          {dossier && dossier.dimensoes && dossier.dimensoes.length > 0 && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider">Dossier Qualitativo</h3>
+                <span className={cn('text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider', dossier.veredito_geral?.includes('BOM') ? 'bg-emerald-400/10 text-emerald-400' : 'bg-amber-400/10 text-amber-400')}>
+                  {dossier.veredito_geral}
+                </span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {dossier.dimensoes.map((dim) => (
+                  <DossierDimensionCard key={dim.nome} dimension={dim} />
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Evidence XRay */}
+          {score.evidences && score.evidences.length > 0 && (
+            <IQCognitXRay evidences={score.evidences} iqScore={iq.iq_score} rating={iq.rating} ratingLabel={iq.rating_label} />
+          )}
+          {/* News */}
+          {newsData?.news && newsData.news.length > 0 && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-4">Noticias Recentes</h3>
+              <div className="space-y-1">
+                {newsData.news.slice(0, 6).map((n) => (
+                  <a key={n.id} href={n.url ?? '#'} target="_blank" rel="noopener noreferrer" className="flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--bg)] transition-colors group">
+                    <span className={cn('mt-1.5 w-2 h-2 rounded-full flex-shrink-0', n.sentiment === 'positive' ? 'bg-emerald-400' : n.sentiment === 'negative' ? 'bg-red-400' : 'bg-[var(--text-3)]')} />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm text-[var(--text-1)] font-medium line-clamp-2 group-hover:text-[var(--accent-1)] transition-colors">{n.title}</p>
+                      <div className="flex items-center gap-2 mt-1 text-[10px] text-[var(--text-3)]">
+                        {n.source && <span>{n.source}</span>}
+                        <span>{new Date(n.published_at).toLocaleDateString('pt-BR')}</span>
+                        {n.sentiment_score != null && (
+                          <span className={cn('font-mono px-1.5 py-0.5 rounded-full', n.sentiment === 'positive' ? 'bg-emerald-400/10 text-emerald-400' : n.sentiment === 'negative' ? 'bg-red-400/10 text-red-400' : 'bg-[var(--bg)] text-[var(--text-3)]')}>
+                            {n.sentiment === 'positive' ? '+' : ''}{(n.sentiment_score * 100).toFixed(0)}%
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Investor Relations */}
+          {investorRelations?.events && investorRelations.events.length > 0 && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-4">Documentos & RI</h3>
+              <div className="space-y-1">
+                {investorRelations.events.slice(0, 8).map((ev) => (
+                  <a key={ev.id} href={ev.url ?? '#'} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-xl hover:bg-[var(--bg)] transition-colors group">
+                    <span className="text-[9px] font-bold uppercase px-2 py-1 rounded-lg bg-[var(--bg)] text-[var(--text-3)] shrink-0 border border-[var(--border-1)]">{ev.event_type}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-[var(--text-1)] truncate group-hover:text-[var(--accent-1)] transition-colors">{ev.title}</p>
+                      <p className="text-[10px] text-[var(--text-3)]">{ev.source} · {new Date(ev.published_at).toLocaleDateString('pt-BR')}</p>
+                    </div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-3)] shrink-0 group-hover:text-[var(--accent-1)] transition-colors">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* ─── Row 4b: Risk Metrics (Merton PD, Piotroski, etc) ── */}
-      {riskMetrics && (
-        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Risk Lab</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {riskMetrics.risk_metrics.merton_pd != null && (
-              <RiskMetricCard
-                label="Risco de Falência"
-                value={`${(riskMetrics.risk_metrics.merton_pd * 100).toFixed(2)}%`}
-                description="Probabilidade de calote estimada"
-                color={riskMetrics.risk_metrics.merton_pd < 0.05 ? 'pos' : riskMetrics.risk_metrics.merton_pd < 0.15 ? 'warn' : 'neg'}
-              />
-            )}
-            {riskMetrics.risk_metrics.piotroski_score != null && (
-              <RiskMetricCard
-                label="Saúde Financeira"
-                value={`${riskMetrics.risk_metrics.piotroski_score}/9`}
-                description="Nota Piotroski (quanto maior, melhor)"
-                color={riskMetrics.risk_metrics.piotroski_score >= 7 ? 'pos' : riskMetrics.risk_metrics.piotroski_score >= 5 ? 'warn' : 'neg'}
-              />
-            )}
-            {riskMetrics.risk_metrics.altman_z != null && (
-              <RiskMetricCard
-                label="Solidez da Empresa"
-                value={riskMetrics.risk_metrics.altman_z.toFixed(2)}
-                description={riskMetrics.risk_metrics.altman_z_label || 'Score Altman Z de solvência'}
-                color={riskMetrics.risk_metrics.altman_z > 2.99 ? 'pos' : riskMetrics.risk_metrics.altman_z > 1.81 ? 'warn' : 'neg'}
-              />
-            )}
-            {riskMetrics.risk_metrics.dl_ebitda != null && (
-              <RiskMetricCard
-                label="Endividamento"
-                value={riskMetrics.risk_metrics.dl_ebitda.toFixed(1) + 'x'}
-                description="Dívida líquida sobre geração de caixa"
-                color={riskMetrics.risk_metrics.dl_ebitda < 2 ? 'pos' : riskMetrics.risk_metrics.dl_ebitda < 3.5 ? 'warn' : 'neg'}
-              />
-            )}
-            {riskMetrics.risk_metrics.icj != null && (
-              <RiskMetricCard
-                label="Cobertura Juros"
-                value={riskMetrics.risk_metrics.icj.toFixed(1) + 'x'}
-                description="EBIT / Juros"
-                color={riskMetrics.risk_metrics.icj > 5 ? 'pos' : riskMetrics.risk_metrics.icj > 2 ? 'warn' : 'neg'}
-              />
-            )}
-            {riskMetrics.profitability.spread_roic_wacc != null && (
-              <RiskMetricCard
-                label="ROIC - WACC"
-                value={`${(riskMetrics.profitability.spread_roic_wacc * 100).toFixed(1)}pp`}
-                description="Criação de valor"
-                color={riskMetrics.profitability.spread_roic_wacc > 0 ? 'pos' : 'neg'}
-              />
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* ─── Row 4c: News with Sentiment ─────────────────── */}
-      {newsData?.news && newsData.news.length > 0 && (
-        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Notícias Recentes</h3>
-          <div className="space-y-3">
-            {newsData.news.slice(0, 6).map((n) => (
-              <a
-                key={n.id}
-                href={n.url ?? '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-start gap-3 p-3 rounded-lg hover:bg-[var(--surface-2)] transition-colors"
-              >
-                <span className={cn(
-                  'mt-0.5 w-2 h-2 rounded-full flex-shrink-0',
-                  n.sentiment === 'positive' ? 'bg-[var(--pos)]' :
-                  n.sentiment === 'negative' ? 'bg-[var(--neg)]' :
-                  'bg-[var(--text-3)]'
-                )} />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm text-[var(--text-1)] font-medium line-clamp-2">{n.title}</p>
-                  <div className="flex items-center gap-2 mt-1 text-[var(--text-caption)] text-[var(--text-2)]">
-                    {n.source && <span>{n.source}</span>}
-                    <span>{new Date(n.published_at).toLocaleDateString('pt-BR')}</span>
-                    {n.sentiment_score != null && (
-                      <span className={cn(
-                        'font-mono text-[10px] px-1.5 py-0.5 rounded',
-                        n.sentiment === 'positive' ? 'bg-[var(--pos)]/10 text-[var(--pos)]' :
-                        n.sentiment === 'negative' ? 'bg-[var(--neg)]/10 text-[var(--neg)]' :
-                        'bg-[var(--surface-2)] text-[var(--text-3)]'
-                      )}>
-                        {n.sentiment === 'positive' ? '+' : ''}{(n.sentiment_score * 100).toFixed(0)}%
-                      </span>
-                    )}
+      {/* ═══ Tab: Dividendos ═══════════════════════════════ */}
+      {activeTab === 'dividendos' && (
+        <div className="space-y-6">
+          {/* Dividend Safety + Stats */}
+          {div && div.dividend_safety != null && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-5"><Term>Dividend Safety</Term></h3>
+              <div className="flex items-center gap-8">
+                <div className="flex flex-col items-center">
+                  <p className={cn('font-mono text-5xl font-black', div.dividend_safety >= 70 ? 'text-emerald-400' : div.dividend_safety >= 50 ? 'text-amber-400' : 'text-red-400')}>
+                    {div.dividend_safety}
+                  </p>
+                  <p className="text-[10px] text-[var(--text-3)] mt-1 uppercase tracking-wider">Safety Score</p>
+                </div>
+                <div className="flex-1">
+                  <div className="w-full h-3 bg-[var(--bg)] rounded-full overflow-hidden">
+                    <div
+                      className={cn('h-full rounded-full transition-all duration-700', div.dividend_safety >= 70 ? 'bg-emerald-400' : div.dividend_safety >= 50 ? 'bg-amber-400' : 'bg-red-400')}
+                      style={{ width: `${div.dividend_safety}%` }}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <div className="p-3 rounded-xl bg-[var(--bg)]">
+                      <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider"><Term>DY Proj.</Term></p>
+                      <p className="font-mono text-lg font-black text-[var(--text-1)] mt-0.5">{fmtPct(div.projected_yield)}</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-[var(--bg)]">
+                      <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider"><Term>CAGR</Term> 5a</p>
+                      <p className="font-mono text-lg font-black text-[var(--text-1)] mt-0.5">{fmtPct(div.dividend_cagr_5y)}</p>
+                    </div>
                   </div>
                 </div>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ─── Row 4d: Investor Relations (CVM filings) ──── */}
-      {investorRelations?.events && investorRelations.events.length > 0 && (
-        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Documentos & Relações com Investidores</h3>
-          <div className="space-y-2">
-            {investorRelations.events.slice(0, 8).map((ev) => (
-              <a
-                key={ev.id}
-                href={ev.url ?? '#'}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-[var(--surface-2)] transition-colors"
-              >
-                <span className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-[var(--surface-2)] text-[var(--text-3)] shrink-0">
-                  {ev.event_type}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-[var(--text-1)] truncate">{ev.title}</p>
-                  <p className="text-[var(--text-caption)] text-[var(--text-2)]">
-                    {ev.source} · {new Date(ev.published_at).toLocaleDateString('pt-BR')}
+              </div>
+            </div>
+          )}
+          {/* DY vs CDI */}
+          {dividendSafety && dividendSafety.dy_vs_cdi != null && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-4"><Term>Dividend Yield</Term> vs <Term>CDI</Term></h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-[var(--bg)] text-center">
+                  <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider">DY Atual</p>
+                  <p className="font-mono text-2xl font-black text-[var(--text-1)] mt-1">{fmtPct(dividendSafety.current_dy)}</p>
+                </div>
+                <div className="p-4 rounded-xl bg-[var(--bg)] text-center">
+                  <p className="text-[10px] text-[var(--text-3)] uppercase tracking-wider">DY / CDI</p>
+                  <p className={cn('font-mono text-2xl font-black mt-1', dividendSafety.dy_vs_cdi > 1 ? 'text-emerald-400' : 'text-red-400')}>
+                    {dividendSafety.dy_vs_cdi.toFixed(2)}x
                   </p>
                 </div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-3)] shrink-0">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
-      </>}
-
-      {/* ─── Tab: Fundamentos ──────────────────────────── */}
-      {activeTab === 'fundamentos' && <>
-
-      {/* ─── Fundamentals Table ──────────────────── */}
-      {financialsData?.financials && financialsData.financials.length > 0 && (
-        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Indicadores Fundamentalistas</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border-1)]">
-                  <th className="text-left py-2 px-3 text-[var(--text-2)] font-medium">Periodo</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Receita</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Lucro Liq.</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium"><Term>ROE</Term></th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium"><Term>DL/EBITDA</Term></th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium"><Term>Margem Líquida</Term></th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium"><Term>Margem Bruta</Term></th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium"><Term>Piotroski</Term></th>
-                </tr>
-              </thead>
-              <tbody>
-                {financialsData.financials.map((f) => (
-                  <tr key={f.period} className="border-b border-[var(--border-1)]/30 hover:bg-[var(--surface-2)] transition-colors">
-                    <td className="py-2.5 px-3 font-mono font-medium text-[var(--text-1)]">{f.period?.slice(0, 4)}</td>
-                    <td className="py-2.5 px-3 text-right font-mono text-[var(--text-1)]">{fmtBig(f.revenue)}</td>
-                    <td className={cn('py-2.5 px-3 text-right font-mono',
-                      (f.net_income ?? 0) >= 0 ? 'text-[var(--text-1)]' : 'text-[var(--neg)]'
-                    )}>{fmtBig(f.net_income)}</td>
-                    <td className={cn('py-2.5 px-3 text-right font-mono',
-                      (f.roe ?? 0) >= 0.15 ? 'text-[var(--pos)]' : 'text-[var(--text-1)]'
-                    )}>{fmtPct(f.roe)}</td>
-                    <td className={cn('py-2.5 px-3 text-right font-mono',
-                      (f.dl_ebitda ?? 0) > 3 ? 'text-[var(--neg)]' : 'text-[var(--text-1)]'
-                    )}>{f.dl_ebitda?.toFixed(1) ?? '--'}</td>
-                    <td className="py-2.5 px-3 text-right font-mono text-[var(--text-1)]">{fmtPct(f.net_margin)}</td>
-                    <td className="py-2.5 px-3 text-right font-mono text-[var(--text-1)]">{fmtPct(f.gross_margin)}</td>
-                    <td className={cn('py-2.5 px-3 text-right font-mono font-medium',
-                      (f.piotroski_score ?? 0) >= 7 ? 'text-[var(--pos)]' :
-                      (f.piotroski_score ?? 0) >= 5 ? 'text-[var(--text-1)]' :
-                      'text-[var(--neg)]'
-                    )}>{f.piotroski_score ?? '--'}/9</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* ─── Row 6: Peers ──────────────────────────────── */}
-      {peersData?.peers && peersData.peers.length > 0 && (
-        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Peers do Setor</h3>
-          <div className="flex flex-wrap gap-2">
-            {peersData.peers.slice(0, 12).map((peer) => (
-              <Link
-                key={peer.ticker}
-                href={`/ativo/${peer.ticker}`}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--bg)] border border-[var(--border-1)]/50 hover:border-[var(--accent-1)]/50 transition-colors text-sm"
-              >
-                <AssetLogo ticker={peer.ticker} size={20} />
-                <span className="font-medium text-[var(--text-1)]">{peer.ticker}</span>
-                <span className="text-[var(--text-2)] text-xs truncate max-w-[100px]">{peer.company_name}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      </>}
-
-      {/* ─── Tab: Dividendos ───────────────────────────── */}
-      {activeTab === 'dividendos' && <>
-
-      {/* ─── Dividends History ──────────────────── */}
-      {dividendsData?.dividends && dividendsData.dividends.length > 0 && (
-        <div className="bg-[var(--surface-1)] rounded-[var(--radius)] border border-[var(--border-1)] p-6">
-          <h3 className="text-sm font-semibold text-[var(--text-1)] mb-4">Histórico de Dividendos</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--border-1)]">
-                  <th className="text-left py-2 px-3 text-[var(--text-2)] font-medium">Data Ex</th>
-                  <th className="text-right py-2 px-3 text-[var(--text-2)] font-medium">Valor/Acao</th>
-                  <th className="text-center py-2 px-3 text-[var(--text-2)] font-medium">Tipo</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dividendsData.dividends.slice(0, 12).map((d, i) => (
-                  <tr key={i} className="border-b border-[var(--border-1)]/30">
-                    <td className="py-2 px-3 font-mono text-[var(--text-1)]">{d.ex_date}</td>
-                    <td className="py-2 px-3 text-right font-mono text-[var(--pos)]">
-                      {fmtR$(d.value_per_share)}
-                    </td>
-                    <td className="py-2 px-3 text-center">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--accent-1)]/10 text-[var(--accent-1)]">
-                        {d.type}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
+            </div>
+          )}
+          {/* Trap Risk */}
+          {trapRisk && (
+            <div className={cn('rounded-xl border p-6', trapRisk.is_dividend_trap ? 'border-red-400/30 bg-red-400/5' : 'bg-[var(--surface-1)] border-[var(--border-1)]')}>
+              <div className="flex items-center gap-3 mb-3">
+                {trapRisk.is_dividend_trap && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400">
+                    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                    <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                )}
+                <h3 className="text-xs font-bold uppercase tracking-wider">
+                  <Term>Dividend Trap</Term>
+                  {' '}<span className={cn(trapRisk.is_dividend_trap ? 'text-red-400' : 'text-emerald-400')}>
+                    — {trapRisk.is_dividend_trap ? `Risco ${trapRisk.risk_level}` : 'Sem risco detectado'}
+                  </span>
+                </h3>
+              </div>
+              {trapRisk.reasons && trapRisk.reasons.length > 0 && (
+                <ul className="space-y-1.5">
+                  {trapRisk.reasons.map((r, i) => (
+                    <li key={i} className={cn('text-xs flex gap-2', trapRisk.is_dividend_trap ? 'text-red-400/80' : 'text-[var(--text-2)]')}>
+                      <span className="shrink-0">{trapRisk.is_dividend_trap ? '!' : '-'}</span>{r}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+          {/* Dividend History Table */}
+          {dividendsData?.dividends && dividendsData.dividends.length > 0 && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-5">Historico de Dividendos</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[var(--border-1)]">
+                      <th className="text-left py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider"><Term>Data Ex</Term></th>
+                      <th className="text-right py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider">Valor/Acao</th>
+                      <th className="text-center py-3 px-3 text-[var(--text-3)] text-[10px] font-bold uppercase tracking-wider">Tipo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dividendsData.dividends.slice(0, 12).map((d, i) => (
+                      <tr key={i} className="border-b border-[var(--border-1)]/20 hover:bg-[var(--bg)] transition-colors">
+                        <td className="py-3 px-3 font-mono text-xs text-[var(--text-1)]">{d.ex_date}</td>
+                        <td className="py-3 px-3 text-right font-mono text-xs text-emerald-400 font-bold">{fmtR$(d.value_per_share)}</td>
+                        <td className="py-3 px-3 text-center">
+                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[var(--accent-1)]/10 text-[var(--accent-1)] uppercase tracking-wider">{d.type}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {/* ─── Disclaimer ──────────────────────────────────── */}
-      </>}
-
-      {/* ─── Disclaimer (always visible) ──────────────── */}
       {score._disclaimer && (
-        <div className="text-[var(--text-caption)] text-[var(--text-2)] italic leading-relaxed p-4 bg-[var(--bg)] rounded-[var(--radius)] border border-[var(--border-1)]/30">
+        <div className="text-[10px] text-[var(--text-3)] italic leading-relaxed p-4 bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)]">
           {score._disclaimer}
         </div>
       )}
@@ -879,71 +887,70 @@ export default function AtivoPage() {
 
 // ─── Sub-Components ─────────────────────────────────────────
 
-function RiskMetricCard({ label, value, description, color }: { label: string; value: string; description: string; color: 'pos' | 'warn' | 'neg' }) {
-  const colors = {
-    pos: 'border-[var(--pos)]/20 bg-[var(--pos)]/5',
-    warn: 'border-amber-500/20 bg-amber-500/5',
-    neg: 'border-[var(--neg)]/20 bg-[var(--neg)]/5',
+function RiskMetricCard({ label, value, description, color }: { label: React.ReactNode; value: string; description: string; color: 'pos' | 'warn' | 'neg' }) {
+  const borderBg = {
+    pos: 'border-emerald-400/20 bg-emerald-400/5',
+    warn: 'border-amber-400/20 bg-amber-400/5',
+    neg: 'border-red-400/20 bg-red-400/5',
   }
-  const textColors = { pos: 'text-[var(--pos)]', warn: 'text-amber-500', neg: 'text-[var(--neg)]' }
+  const textCls = { pos: 'text-emerald-400', warn: 'text-amber-400', neg: 'text-red-400' }
   return (
-    <div className={cn('rounded-lg border p-3 text-center', colors[color])}>
-      <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-1">{label}</p>
-      <p className={cn('font-mono text-lg font-bold', textColors[color])}>{value}</p>
-      {description && <p className="text-[10px] text-[var(--text-3)] mt-0.5">{description}</p>}
+    <div className={cn('rounded-xl border p-4 text-center', borderBg[color])}>
+      <p className="text-[10px] text-[var(--text-3)] font-bold uppercase tracking-wider mb-2">{label}</p>
+      <p className={cn('font-mono text-xl font-black', textCls[color])}>{value}</p>
+      {description && <p className="text-[10px] text-[var(--text-3)] mt-1 leading-snug">{description}</p>}
     </div>
   )
 }
 
 function PillarCard({ label, value, icon }: { label: React.ReactNode; value: number; icon: string }) {
-  const color = value >= 65 ? 'text-[var(--pos)] bg-[var(--pos)]/8 border-[var(--pos)]/20' :
-                value >= 45 ? 'text-[var(--accent-1)] bg-[var(--accent-1)]/8 border-[var(--accent-1)]/20' :
-                'text-[var(--neg)] bg-[var(--neg)]/8 border-[var(--neg)]/20'
+  const base = value >= 65 ? 'border-emerald-400/20 bg-emerald-400/5' :
+               value >= 45 ? 'border-[var(--accent-1)]/20 bg-[var(--accent-1)]/5' :
+               'border-red-400/20 bg-red-400/5'
+  const txt = value >= 65 ? 'text-emerald-400' :
+              value >= 45 ? 'text-[var(--accent-1)]' :
+              'text-red-400'
   return (
-    <div className={cn('rounded-lg p-3 border text-center transition-colors', color)}>
-      <div className="flex items-center justify-center gap-1 mb-1">
-        <span className="text-xs font-bold opacity-50">{icon}</span>
-        <span className="text-[var(--text-caption)] font-medium">{label}</span>
+    <div className={cn('rounded-xl p-4 border text-center transition-all hover:scale-[1.02]', base)}>
+      <div className="flex items-center justify-center gap-1.5 mb-2">
+        <span className={cn('text-[10px] font-black opacity-40', txt)}>{icon}</span>
+        <span className="text-[10px] font-bold text-[var(--text-3)] uppercase tracking-wider">{label}</span>
       </div>
-      <p className="font-mono text-xl font-bold">{value}</p>
+      <p className={cn('font-mono text-2xl font-black', txt)}>{value}</p>
     </div>
   )
 }
 
 function ValuationMetric({ label, value, highlight }: { label: React.ReactNode; value: string; highlight?: boolean }) {
   return (
-    <div className={cn('p-3 rounded-lg text-center', highlight ? 'bg-[var(--accent-1)]/8 border border-[var(--accent-1)]/20' : 'bg-[var(--bg)]')}>
-      <p className="text-[var(--text-caption)] text-[var(--text-2)]">{label}</p>
-      <p className={cn('font-mono text-lg font-bold', highlight ? 'text-[var(--accent-1)]' : 'text-[var(--text-1)]')}>
-        {value}
-      </p>
+    <div className={cn('p-4 rounded-xl text-center transition-all', highlight ? 'bg-[var(--accent-1)]/8 border border-[var(--accent-1)]/20 ring-1 ring-[var(--accent-1)]/10' : 'bg-[var(--bg)] border border-[var(--border-1)]')}>
+      <p className="text-[10px] text-[var(--text-3)] font-bold uppercase tracking-wider mb-1">{label}</p>
+      <p className={cn('font-mono text-lg font-black', highlight ? 'text-[var(--accent-1)]' : 'text-[var(--text-1)]')}>{value}</p>
     </div>
   )
 }
 
-
 function DossierDimensionCard({ dimension }: { dimension: { nome: string; veredito: string; narrativa: string; evidencias: string[]; alertas: string[] } }) {
-  const veredict = dimension.veredito
-  const color = veredict === 'FORTE' ? 'border-[var(--pos)]/30 bg-[var(--pos)]/5' :
-                veredict === 'MODERADO' ? 'border-[var(--warn)]/30 bg-[var(--warn)]/5' :
-                veredict === 'FRACO' ? 'border-[var(--neg)]/30 bg-[var(--neg)]/5' :
-                'border-[var(--border-1)]/30 bg-[var(--bg)]'
-  const badgeColor = veredict === 'FORTE' ? 'text-[var(--pos)]' :
-                     veredict === 'MODERADO' ? 'text-[var(--warn)]' :
-                     veredict === 'FRACO' ? 'text-[var(--neg)]' :
-                     'text-[var(--text-2)]'
-
+  const v = dimension.veredito
+  const borderBg = v === 'FORTE' ? 'border-emerald-400/20 bg-emerald-400/5' :
+                   v === 'MODERADO' ? 'border-amber-400/20 bg-amber-400/5' :
+                   v === 'FRACO' ? 'border-red-400/20 bg-red-400/5' :
+                   'border-[var(--border-1)] bg-[var(--bg)]'
+  const badgeCls = v === 'FORTE' ? 'text-emerald-400 bg-emerald-400/10' :
+                   v === 'MODERADO' ? 'text-amber-400 bg-amber-400/10' :
+                   v === 'FRACO' ? 'text-red-400 bg-red-400/10' :
+                   'text-[var(--text-3)] bg-[var(--bg)]'
   return (
-    <div className={cn('rounded-lg border p-4', color)}>
-      <div className="flex items-center justify-between mb-2">
-        <h4 className="text-xs font-semibold text-[var(--text-1)]">{dimension.nome}</h4>
-        <span className={cn('text-[10px] font-bold uppercase', badgeColor)}>{veredict}</span>
+    <div className={cn('rounded-xl border p-4', borderBg)}>
+      <div className="flex items-center justify-between mb-3">
+        <h4 className="text-xs font-bold text-[var(--text-1)]">{dimension.nome}</h4>
+        <span className={cn('text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full', badgeCls)}>{v}</span>
       </div>
       <p className="text-[11px] text-[var(--text-2)] leading-relaxed line-clamp-3">{dimension.narrativa}</p>
       {dimension.alertas.length > 0 && (
-        <div className="mt-2 space-y-0.5">
+        <div className="mt-3 space-y-1">
           {dimension.alertas.slice(0, 2).map((a, i) => (
-            <p key={i} className="text-[10px] text-[var(--neg)]">! {a}</p>
+            <p key={i} className="text-[10px] text-red-400 flex gap-1"><span className="shrink-0">!</span> {a}</p>
           ))}
         </div>
       )}
