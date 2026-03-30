@@ -729,45 +729,124 @@ export default function AtivoPage() {
       {/* ═══ Tab: Tese & Analise ═══════════════════════════ */}
       {activeTab === 'tese' && (
         <div className="space-y-6">
-          {/* Full Thesis */}
-          {(thesis || score.thesis_summary) && (
-            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
-              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-4">Tese de Investimento</h3>
-              <p className="text-sm text-[var(--text-2)] leading-relaxed whitespace-pre-line">{thesis?.thesis_text ?? score.thesis_summary}</p>
-              {thesis?.bull_case && (
+          {/* Full Thesis — ALWAYS rendered */}
+          <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+            <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-4">Tese de Investimento</h3>
+            <p className="text-sm text-[var(--text-2)] leading-relaxed whitespace-pre-line">
+              {thesis?.thesis_text ?? score.thesis_summary ?? generateClientThesis(ticker, iq, dcf, dividendSafety, riskMetrics)}
+            </p>
+            {/* Bull/Bear — ALWAYS rendered */}
+            {(() => {
+              const bb = thesis?.bull_case
+                ? { bull: thesis.bull_case.split(/[.;]\s*/).filter(Boolean), bear: (thesis.bear_case ?? '').split(/[.;]\s*/).filter(Boolean) }
+                : generateBullBear(iq, dcf, dividendSafety, riskMetrics)
+              return (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                   <div className="p-4 rounded-xl bg-emerald-400/5 border border-emerald-400/10">
-                    <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-2">Bull Case</p>
+                    <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-2">Pontos Fortes</p>
                     <ul className="space-y-1.5">
-                      {thesis.bull_case.split(/[.;]\s*/).filter(Boolean).map((b: string, i: number) => (
+                      {bb.bull.slice(0, 5).map((b: string, i: number) => (
                         <li key={i} className="text-sm text-[var(--text-2)] flex gap-2">
                           <span className="text-emerald-400 shrink-0 font-bold">+</span>{b.trim()}
                         </li>
                       ))}
                     </ul>
                   </div>
-                  {thesis?.bear_case && (
-                    <div className="p-4 rounded-xl bg-red-400/5 border border-red-400/10">
-                      <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-2">Bear Case</p>
-                      <ul className="space-y-1.5">
-                        {thesis.bear_case.split(/[.;]\s*/).filter(Boolean).map((b: string, i: number) => (
-                          <li key={i} className="text-sm text-[var(--text-2)] flex gap-2">
-                            <span className="text-red-400 shrink-0 font-bold">-</span>{b.trim()}
-                          </li>
-                        ))}
-                      </ul>
+                  <div className="p-4 rounded-xl bg-red-400/5 border border-red-400/10">
+                    <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-2">Riscos</p>
+                    <ul className="space-y-1.5">
+                      {bb.bear.slice(0, 5).map((b: string, i: number) => (
+                        <li key={i} className="text-sm text-[var(--text-2)] flex gap-2">
+                          <span className="text-red-400 shrink-0 font-bold">-</span>{b.trim()}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )
+            })()}
+            {thesis?.main_risks && (
+              <div className="mt-4 p-4 rounded-xl bg-amber-400/5 border border-amber-400/10">
+                <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-2">Principais Riscos</p>
+                <p className="text-sm text-[var(--text-2)] leading-relaxed">{thesis.main_risks}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Risk Metrics Summary — ALWAYS rendered if riskMetrics exists */}
+          {riskMetrics && (
+            <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
+              <h3 className="text-xs font-bold text-[var(--text-3)] uppercase tracking-wider mb-4">Indicadores de Risco</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {riskMetrics.risk_metrics?.altman_z != null && (
+                  <div className="text-center p-3 rounded-xl bg-[var(--bg)]">
+                    <p className="text-[10px] text-[var(--text-3)]"><Term>Altman Z</Term></p>
+                    <p className={cn('font-mono text-xl font-bold', riskMetrics.risk_metrics.altman_z > 2.99 ? 'text-emerald-400' : riskMetrics.risk_metrics.altman_z > 1.81 ? 'text-amber-400' : 'text-red-400')}>
+                      {riskMetrics.risk_metrics.altman_z.toFixed(1)}
+                    </p>
+                    <p className="text-[9px] text-[var(--text-3)]">{riskMetrics.risk_metrics.altman_z_label === 'safe' ? 'Zona segura' : riskMetrics.risk_metrics.altman_z_label === 'grey' ? 'Zona cinza' : 'Zona de risco'}</p>
+                  </div>
+                )}
+                {riskMetrics.risk_metrics?.piotroski_score != null && (
+                  <div className="text-center p-3 rounded-xl bg-[var(--bg)]">
+                    <p className="text-[10px] text-[var(--text-3)]"><Term>Piotroski</Term></p>
+                    <p className={cn('font-mono text-xl font-bold', riskMetrics.risk_metrics.piotroski_score >= 7 ? 'text-emerald-400' : riskMetrics.risk_metrics.piotroski_score >= 4 ? 'text-amber-400' : 'text-red-400')}>
+                      {riskMetrics.risk_metrics.piotroski_score}/9
+                    </p>
+                    <p className="text-[9px] text-[var(--text-3)]">{riskMetrics.risk_metrics.piotroski_score >= 7 ? 'Saudavel' : riskMetrics.risk_metrics.piotroski_score >= 4 ? 'Neutro' : 'Fragil'}</p>
+                  </div>
+                )}
+                {riskMetrics.risk_metrics?.dl_ebitda != null && (
+                  <div className="text-center p-3 rounded-xl bg-[var(--bg)]">
+                    <p className="text-[10px] text-[var(--text-3)]"><Term>DL/EBITDA</Term></p>
+                    <p className={cn('font-mono text-xl font-bold', riskMetrics.risk_metrics.dl_ebitda < 2 ? 'text-emerald-400' : riskMetrics.risk_metrics.dl_ebitda < 3.5 ? 'text-amber-400' : 'text-red-400')}>
+                      {riskMetrics.risk_metrics.dl_ebitda.toFixed(1)}x
+                    </p>
+                    <p className="text-[9px] text-[var(--text-3)]">{riskMetrics.risk_metrics.dl_ebitda < 2 ? 'Baixo' : riskMetrics.risk_metrics.dl_ebitda < 3.5 ? 'Moderado' : 'Elevado'}</p>
+                  </div>
+                )}
+                {riskMetrics.risk_metrics?.liquidity_ratio != null && (
+                  <div className="text-center p-3 rounded-xl bg-[var(--bg)]">
+                    <p className="text-[10px] text-[var(--text-3)]">Liquidez</p>
+                    <p className={cn('font-mono text-xl font-bold', riskMetrics.risk_metrics.liquidity_ratio >= 1.5 ? 'text-emerald-400' : riskMetrics.risk_metrics.liquidity_ratio >= 1 ? 'text-amber-400' : 'text-red-400')}>
+                      {riskMetrics.risk_metrics.liquidity_ratio.toFixed(2)}
+                    </p>
+                    <p className="text-[9px] text-[var(--text-3)]">{riskMetrics.risk_metrics.liquidity_ratio >= 1.5 ? 'Confortavel' : riskMetrics.risk_metrics.liquidity_ratio >= 1 ? 'Adequado' : 'Apertado'}</p>
+                  </div>
+                )}
+              </div>
+              {/* Profitability */}
+              {riskMetrics.profitability && (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  {riskMetrics.profitability.roe != null && (
+                    <div className="text-center p-3 rounded-xl bg-[var(--bg)]">
+                      <p className="text-[10px] text-[var(--text-3)]"><Term>ROE</Term></p>
+                      <p className="font-mono text-xl font-bold text-[var(--text-1)]">{(riskMetrics.profitability.roe * 100).toFixed(1)}%</p>
+                    </div>
+                  )}
+                  {riskMetrics.profitability.net_margin != null && (
+                    <div className="text-center p-3 rounded-xl bg-[var(--bg)]">
+                      <p className="text-[10px] text-[var(--text-3)]"><Term>Margem Líquida</Term></p>
+                      <p className="font-mono text-xl font-bold text-[var(--text-1)]">{(riskMetrics.profitability.net_margin * 100).toFixed(1)}%</p>
+                    </div>
+                  )}
+                  {riskMetrics.profitability.gross_margin != null && (
+                    <div className="text-center p-3 rounded-xl bg-[var(--bg)]">
+                      <p className="text-[10px] text-[var(--text-3)]"><Term>Margem Bruta</Term></p>
+                      <p className="font-mono text-xl font-bold text-[var(--text-1)]">{(riskMetrics.profitability.gross_margin * 100).toFixed(1)}%</p>
+                    </div>
+                  )}
+                  {riskMetrics.profitability.roic != null && (
+                    <div className="text-center p-3 rounded-xl bg-[var(--bg)]">
+                      <p className="text-[10px] text-[var(--text-3)]"><Term>ROIC</Term></p>
+                      <p className="font-mono text-xl font-bold text-[var(--text-1)]">{(riskMetrics.profitability.roic * 100).toFixed(1)}%</p>
                     </div>
                   )}
                 </div>
               )}
-              {thesis?.main_risks && (
-                <div className="mt-4 p-4 rounded-xl bg-amber-400/5 border border-amber-400/10">
-                  <p className="text-[10px] font-bold text-amber-400 uppercase tracking-wider mb-2">Principais Riscos</p>
-                  <p className="text-sm text-[var(--text-2)] leading-relaxed">{thesis.main_risks}</p>
-                </div>
-              )}
             </div>
           )}
+
           {/* Dossier */}
           {dossier && dossier.dimensoes && dossier.dimensoes.length > 0 && (
             <div className="bg-[var(--surface-1)] rounded-xl border border-[var(--border-1)] p-6">
