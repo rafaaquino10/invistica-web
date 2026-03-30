@@ -57,6 +57,69 @@ function scoreBg(v: number) {
   return 'bg-red-400'
 }
 
+function generateBullBear(iq: any, dcf: any, divSafety: any, risk: any): { bull: string[]; bear: string[] } {
+  const bull: string[] = []
+  const bear: string[] = []
+  const q = iq?.score_quanti ?? 50; const l = iq?.score_quali ?? 50; const v = iq?.score_valuation ?? 50
+  // Bull
+  if (q >= 65) bull.push(`Fundamentos quantitativos solidos (${q}/100)`)
+  if (l >= 65) bull.push(`Qualidade de gestao e governanca acima da media (${l}/100)`)
+  if (v >= 65) bull.push(`Valuations atrativo vs peers do setor (${v}/100)`)
+  if (dcf?.safetyMargin != null && dcf.safetyMargin > 0.1) bull.push(`Negocia ${(dcf.safetyMargin * 100).toFixed(0)}% abaixo do preco justo`)
+  if (divSafety?.dividend_safety != null && divSafety.dividend_safety >= 70) bull.push(`Dividendo sustentavel (Safety ${divSafety.dividend_safety}/100)`)
+  if (risk?.risk_metrics?.piotroski_score != null && risk.risk_metrics.piotroski_score >= 7) bull.push(`Piotroski ${risk.risk_metrics.piotroski_score}/9 indica saude financeira`)
+  // Bear
+  if (q < 40) bear.push(`Fundamentos quantitativos frageis (${q}/100)`)
+  if (v < 30) bear.push(`Valuations esticados — preco pode nao refletir fundamentos`)
+  if (dcf?.safetyMargin != null && dcf.safetyMargin < -0.2) bear.push(`${Math.abs(dcf.safetyMargin * 100).toFixed(0)}% acima do preco justo — risco de correcao`)
+  if (risk?.risk_metrics?.dl_ebitda != null && risk.risk_metrics.dl_ebitda > 3.5) bear.push(`Endividamento elevado (DL/EBITDA ${risk.risk_metrics.dl_ebitda.toFixed(1)}x)`)
+  if (risk?.risk_metrics?.piotroski_score != null && risk.risk_metrics.piotroski_score <= 3) bear.push(`Piotroski ${risk.risk_metrics.piotroski_score}/9 sinaliza fragilidade`)
+  if (divSafety?.dividend_safety != null && divSafety.dividend_safety < 40) bear.push(`Dividendo com risco de corte (Safety ${divSafety.dividend_safety}/100)`)
+  if (bull.length === 0) bull.push(`IQ-Score ${iq?.iq_score ?? '--'} — analise em andamento`)
+  if (bear.length === 0) bear.push(`Monitorar proximos resultados trimestrais`)
+  return { bull: bull.slice(0, 3), bear: bear.slice(0, 3) }
+}
+
+function generateClientThesis(ticker: string, iq: any, dcf: any, divSafety: any, risk: any): string {
+  const parts: string[] = []
+  const rating = iq?.rating
+  const iqScore = iq?.iq_score ?? 0
+
+  // Overall positioning
+  if (iqScore >= 70) parts.push(`${ticker} recebe IQ-Score ${iqScore} (${iq?.rating_label ?? 'BUY'}), posicionando-se entre as melhores oportunidades do universo IQ-Cognit.`)
+  else if (iqScore >= 50) parts.push(`${ticker} recebe IQ-Score ${iqScore} (${iq?.rating_label ?? 'HOLD'}), com fundamentos moderados que exigem acompanhamento.`)
+  else parts.push(`${ticker} recebe IQ-Score ${iqScore} (${iq?.rating_label ?? 'AVOID'}), indicando fragilidades que recomendam cautela.`)
+
+  // Pillar analysis
+  const q = iq?.score_quanti ?? 50; const l = iq?.score_quali ?? 50; const v = iq?.score_valuation ?? 50
+  const best = q >= l && q >= v ? 'quantitativo' : l >= q && l >= v ? 'qualitativo' : 'valuation'
+  const worst = q <= l && q <= v ? 'quantitativo' : l <= q && l <= v ? 'qualitativo' : 'valuation'
+  parts.push(`O pilar mais forte e o ${best} (${best === 'quantitativo' ? q : best === 'qualitativo' ? l : v}/100), enquanto ${worst} (${worst === 'quantitativo' ? q : worst === 'qualitativo' ? l : v}/100) representa a maior oportunidade de melhoria.`)
+
+  // Valuation
+  if (dcf?.available && dcf.safetyMargin != null) {
+    if (dcf.safetyMargin > 0.15) parts.push(`Negocia ${(dcf.safetyMargin * 100).toFixed(0)}% abaixo do preco justo estimado (${fmtR$(dcf.intrinsicValue)}), oferecendo margem de seguranca atrativa.`)
+    else if (dcf.safetyMargin > 0) parts.push(`Negocia com desconto de ${(dcf.safetyMargin * 100).toFixed(0)}% em relacao ao preco justo (${fmtR$(dcf.intrinsicValue)}).`)
+    else parts.push(`Negocia ${Math.abs(dcf.safetyMargin * 100).toFixed(0)}% acima do preco justo estimado (${fmtR$(dcf.intrinsicValue)}), sugerindo valuations esticados.`)
+  }
+
+  // Dividends
+  if (divSafety?.dividend_safety != null) {
+    const ds = divSafety.dividend_safety
+    if (ds >= 70) parts.push(`Dividend Safety de ${ds}/100 indica dividendo sustentavel.`)
+    else if (ds >= 40) parts.push(`Dividend Safety de ${ds}/100 sugere dividendo com risco moderado.`)
+  }
+
+  // Risk
+  if (risk?.risk_metrics?.piotroski_score != null) {
+    const p = risk.risk_metrics.piotroski_score
+    if (p >= 7) parts.push(`Piotroski ${p}/9 confirma saude financeira solida.`)
+    else if (p <= 3) parts.push(`Piotroski ${p}/9 sinaliza fragilidade nos fundamentos contabeis.`)
+  }
+
+  return parts.join(' ')
+}
+
 // ─── Main Page ──────────────────────────────────────────────
 export default function AtivoPage() {
   const params = useParams()
@@ -341,34 +404,44 @@ export default function AtivoPage() {
               ) : score.thesis_summary ? (
                 <p className="text-sm text-[var(--text-2)] leading-relaxed line-clamp-6">{score.thesis_summary}</p>
               ) : (
-                <p className="text-sm text-[var(--text-3)] italic">Tese em processamento — o IQ-Cognit esta analisando este ativo</p>
+                <p className="text-sm text-[var(--text-2)] leading-relaxed">{generateClientThesis(ticker, iq, dcf, dividendSafety, riskMetrics)}</p>
               )}
-              {thesis?.bull_case && (
-                <div className="mt-4 space-y-2">
-                  <div className="p-3 rounded-xl bg-emerald-400/5 border border-emerald-400/10">
-                    <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-1">Bull Case</p>
-                    <ul className="space-y-1">
-                      {thesis.bull_case.split(/[.;]\s*/).filter(Boolean).slice(0, 3).map((b: string, i: number) => (
-                        <li key={i} className="text-xs text-[var(--text-2)] flex gap-1.5">
-                          <span className="text-emerald-400 shrink-0">+</span>{b.trim()}
-                        </li>
-                      ))}
-                    </ul>
+              {(() => {
+                const bullPoints = thesis?.bull_case
+                  ? thesis.bull_case.split(/[.;]\s*/).filter(Boolean).slice(0, 3)
+                  : generateBullBear(iq, dcf, dividendSafety, riskMetrics).bull
+                const bearPoints = thesis?.bear_case
+                  ? thesis.bear_case.split(/[.;]\s*/).filter(Boolean).slice(0, 3)
+                  : generateBullBear(iq, dcf, dividendSafety, riskMetrics).bear
+                return (
+                  <div className="mt-4 space-y-2">
+                    {bullPoints.length > 0 && (
+                      <div className="p-3 rounded-xl bg-emerald-400/5 border border-emerald-400/10">
+                        <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-1">Pontos Fortes</p>
+                        <ul className="space-y-1">
+                          {bullPoints.map((b: string, i: number) => (
+                            <li key={i} className="text-xs text-[var(--text-2)] flex gap-1.5">
+                              <span className="text-emerald-400 shrink-0">+</span>{b.trim()}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {bearPoints.length > 0 && (
+                      <div className="p-3 rounded-xl bg-red-400/5 border border-red-400/10">
+                        <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1">Riscos</p>
+                        <ul className="space-y-1">
+                          {bearPoints.map((b: string, i: number) => (
+                            <li key={i} className="text-xs text-[var(--text-2)] flex gap-1.5">
+                              <span className="text-red-400 shrink-0">-</span>{b.trim()}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
-                  {thesis?.bear_case && (
-                    <div className="p-3 rounded-xl bg-red-400/5 border border-red-400/10">
-                      <p className="text-[10px] font-bold text-red-400 uppercase tracking-wider mb-1">Bear Case</p>
-                      <ul className="space-y-1">
-                        {thesis.bear_case.split(/[.;]\s*/).filter(Boolean).slice(0, 3).map((b: string, i: number) => (
-                          <li key={i} className="text-xs text-[var(--text-2)] flex gap-1.5">
-                            <span className="text-red-400 shrink-0">-</span>{b.trim()}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
+                )
+              })()}
             </div>
             {/* Top Drivers */}
             {(drivers.positive.length > 0 || drivers.negative.length > 0) && (

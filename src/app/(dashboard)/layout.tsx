@@ -142,9 +142,7 @@ export default function DashboardLayout({
       >
         <div className="py-5">
           <DataStatusBanner />
-          <Disclaimer variant="banner" />
           {children}
-          <Disclaimer variant="footer" className="mt-6" />
         </div>
       </main>
 
