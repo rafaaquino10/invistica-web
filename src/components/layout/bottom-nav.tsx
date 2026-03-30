@@ -76,7 +76,7 @@ export function BottomNav() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
               onClick={() => setIsMoreOpen(false)}
             />
             <motion.div
@@ -86,7 +86,7 @@ export function BottomNav() {
               transition={{ duration: 0.2 }}
               className="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] left-3 right-3 z-50 md:hidden"
             >
-              <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.12)] overflow-hidden">
+              <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-2xl shadow-[0_-4px_32px_rgba(0,0,0,0.4)] overflow-hidden">
                 <div className="px-4 py-3 border-b border-[var(--border-1)]">
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-3)]">Navegação</p>
                 </div>
@@ -121,7 +121,7 @@ export function BottomNav() {
       <nav
         className={cn(
           'fixed bottom-0 left-0 right-0 z-50 md:hidden',
-          'bg-[var(--surface-1)]/90 backdrop-blur-xl',
+          'bg-[var(--surface-1)]/95 backdrop-blur-xl',
           'border-t border-[var(--border-1)]',
           'pb-[env(safe-area-inset-bottom)]'
         )}
@@ -140,7 +140,7 @@ export function BottomNav() {
                   'transition-colors duration-200',
                   isActive
                     ? 'text-[var(--accent-1)]'
-                    : 'text-[var(--text-2)]'
+                    : 'text-[var(--text-3)]'
                 )}
               >
                 {isActive && (
@@ -170,7 +170,7 @@ export function BottomNav() {
               'transition-colors duration-200',
               (isMoreOpen || isMoreActive)
                 ? 'text-[var(--accent-1)]'
-                : 'text-[var(--text-2)]'
+                : 'text-[var(--text-3)]'
             )}
           >
             {isMoreActive && !isMoreOpen && (

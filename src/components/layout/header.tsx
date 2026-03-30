@@ -233,7 +233,7 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
             placeholder="Buscar ativo..."
             className={cn(
               'w-full h-9 pl-9 pr-16 rounded-[var(--radius)] text-[var(--text-body)]',
-              'bg-[var(--surface-2)]/50 border border-[var(--border-1)]',
+              'bg-[var(--surface-1)] border border-[var(--border-1)]',
               'text-[var(--text-1)] placeholder:text-[var(--text-3)]',
               'transition-all duration-150',
               'focus:border-[var(--accent-1)]/40 focus:ring-1 focus:ring-[var(--accent-1)]/20 focus:outline-none',
@@ -371,7 +371,7 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
                   className="rounded-full"
                 />
               ) : (
-                <div className="w-7 h-7 rounded-[var(--radius-sm)] bg-[var(--accent-2)] text-[var(--accent-1)] flex items-center justify-center text-[10px] font-bold">
+                <div className="w-7 h-7 rounded-full bg-[var(--surface-2)] text-[var(--text-2)] ring-1 ring-[var(--border-1)] flex items-center justify-center text-[10px] font-bold">
                   {user.name ? user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() : 'U'}
                 </div>
               )}

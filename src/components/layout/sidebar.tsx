@@ -120,7 +120,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
     <aside
       className={cn(
         'fixed left-0 top-0 h-full z-40',
-        'bg-[var(--surface-1)] border-r border-[var(--border-1)]',
+        'bg-[#0B0E14] border-r border-[var(--border-1)]',
         'transition-all duration-200',
         'hidden md:flex md:flex-col',
         isCollapsed ? 'w-[64px]' : 'w-[200px]'
@@ -158,7 +158,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                 'px-4 pt-4 pb-1',
                 sectionIdx === 0 && 'pt-1'
               )}>
-                <span className="text-[var(--text-caption)] font-semibold uppercase tracking-[0.06em] text-[var(--text-3)]">
+                <span className="text-[9px] font-bold uppercase tracking-widest text-[var(--text-3)]">
                   {section.label}
                 </span>
               </div>
@@ -186,7 +186,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                         'transition-colors duration-100',
                         isActive
                           ? 'text-[var(--accent-1)] font-semibold'
-                          : 'text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--surface-2)]',
+                          : 'text-[var(--text-3)] hover:text-[var(--text-1)] hover:bg-[var(--surface-2)]/50',
                         isCollapsed && 'justify-center px-0'
                       )}
                     >
@@ -220,13 +220,13 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                         <div
                           className={cn(
                             'absolute left-full ml-3 px-3 py-1.5 rounded-[var(--radius)] z-50',
-                            'bg-[var(--text-1)] text-[var(--bg)]',
+                            'bg-[var(--surface-1)] text-[var(--text-1)]',
                             'text-[var(--text-small)] font-medium whitespace-nowrap',
-                            'shadow-[var(--shadow-overlay)]'
+                            'shadow-2xl'
                           )}
                         >
                           {item.label}
-                          <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 rotate-45 bg-[var(--text-1)]" />
+                          <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 rotate-45 bg-[var(--surface-1)]" />
                         </div>
                       )}
                     </Link>
@@ -248,7 +248,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
             'transition-colors duration-100',
             pathname.startsWith('/settings')
               ? 'text-[var(--accent-1)] font-semibold'
-              : 'text-[var(--text-2)] hover:text-[var(--text-1)] hover:bg-[var(--surface-2)]',
+              : 'text-[var(--text-3)] hover:text-[var(--text-1)] hover:bg-[var(--surface-2)]/50',
             isCollapsed && 'justify-center px-0'
           )}
         >
