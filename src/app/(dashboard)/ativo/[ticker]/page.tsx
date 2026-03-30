@@ -408,10 +408,10 @@ export default function AtivoPage() {
               )}
               {(() => {
                 const bullPoints = thesis?.bull_case
-                  ? thesis.bull_case.split(/[.;]\s*/).filter(Boolean).slice(0, 3)
+                  ? (Array.isArray(thesis.bull_case) ? thesis.bull_case : String(thesis.bull_case).split(/[.;]\s*/).filter(Boolean)).slice(0, 3)
                   : generateBullBear(iq, dcf, dividendSafety, riskMetrics).bull
                 const bearPoints = thesis?.bear_case
-                  ? thesis.bear_case.split(/[.;]\s*/).filter(Boolean).slice(0, 3)
+                  ? (Array.isArray(thesis.bear_case) ? thesis.bear_case : String(thesis.bear_case).split(/[.;]\s*/).filter(Boolean)).slice(0, 3)
                   : generateBullBear(iq, dcf, dividendSafety, riskMetrics).bear
                 return (
                   <div className="mt-4 space-y-2">
@@ -738,7 +738,7 @@ export default function AtivoPage() {
             {/* Bull/Bear — ALWAYS rendered */}
             {(() => {
               const bb = thesis?.bull_case
-                ? { bull: thesis.bull_case.split(/[.;]\s*/).filter(Boolean), bear: (thesis.bear_case ?? '').split(/[.;]\s*/).filter(Boolean) }
+                ? { bull: Array.isArray(thesis.bull_case) ? thesis.bull_case : String(thesis.bull_case).split(/[.;]\s*/).filter(Boolean), bear: Array.isArray(thesis.bear_case) ? thesis.bear_case : String(thesis.bear_case ?? '').split(/[.;]\s*/).filter(Boolean) }
                 : generateBullBear(iq, dcf, dividendSafety, riskMetrics)
               return (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
