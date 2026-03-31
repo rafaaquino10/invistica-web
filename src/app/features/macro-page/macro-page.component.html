@@ -1,0 +1,98 @@
+<div class="macro">
+  <h1 class="macro__title">Macro</h1>
+
+  @if (loading()) {
+    <iq-skeleton variant="rect" width="100%" height="300px" />
+  } @else {
+    <!-- REGIME BANNER -->
+    @if (regime(); as r) {
+      <div class="macro__regime">
+        <div class="macro__regime-top">
+          <iq-regime-badge [regime]="r.regime" />
+          <span class="macro__regime-label">{{ r.label }}</span>
+        </div>
+        <p class="macro__regime-desc">{{ r.description }}</p>
+        <div class="macro__indicators">
+          <div class="macro__ind">
+            <span class="macro__ind-label">SELIC</span>
+            <span class="macro__ind-val mono">{{ r.macro.selic }}%</span>
+          </div>
+          <div class="macro__ind">
+            <span class="macro__ind-label">IPCA</span>
+            <span class="macro__ind-val mono">{{ r.macro.ipca }}%</span>
+          </div>
+          <div class="macro__ind">
+            <span class="macro__ind-label">USD/BRL</span>
+            <span class="macro__ind-val mono">{{ r.macro.cambio_usd.toFixed(2) }}</span>
+          </div>
+          <div class="macro__ind">
+            <span class="macro__ind-label">Brent</span>
+            <span class="macro__ind-val mono">{{ r.macro.brent.toFixed(2) }}</span>
+          </div>
+        </div>
+        @if (r.kill_switch_active) {
+          <div class="macro__kill mono">KILL SWITCH ATIVO</div>
+        }
+
+        <!-- WEIGHT ADJUSTMENTS -->
+        @if (r.weight_adjustments) {
+          <div class="macro__adjustments">
+            <h4 class="macro__section-title">Ajustes de Peso do Motor</h4>
+            <div class="macro__adj-list">
+              @for (entry of r.weight_adjustments | keyvalue; track entry.key) {
+                <span class="macro__adj-item">
+                  <span>{{ entry.key }}</span>
+                  <span class="mono" [class.positive]="entry.value > 0" [class.negative]="entry.value < 0">
+                    {{ entry.value > 0 ? '+' : '' }}{{ (entry.value * 100).toFixed(0) }}pp
+                  </span>
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- SECTOR ROTATION HEATMAP -->
+    @if (heatmapData().length > 0) {
+      <div class="macro__card">
+        <h3 class="macro__section-title">Matriz de Rotação Setorial</h3>
+        <p class="macro__section-desc">Tilt points por regime × setor. Positivo = favorecido, negativo = desfavorecido.</p>
+        <iq-heatmap [data]="heatmapData()" [rowLabels]="heatmapRows()" [colLabels]="heatmapCols()" />
+      </div>
+    }
+
+    <!-- FOCUS EXPECTATIONS -->
+    @if (focus().length > 0) {
+      <div class="macro__card">
+        <h3 class="macro__section-title">Focus (BCB)</h3>
+        <div class="macro__table-wrap">
+          <table class="macro__table">
+            <thead>
+              <tr>
+                <th>Indicador</th><th class="mono">Ano</th><th class="mono">Mediana</th>
+                <th class="mono">Média</th><th class="mono">Mín</th><th class="mono">Máx</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (f of focus(); track f.indicator + f.year) {
+                <tr>
+                  <td>{{ f.indicator }}</td>
+                  <td class="mono">{{ f.year }}</td>
+                  <td class="mono">{{ f.median.toFixed(2) }}</td>
+                  <td class="mono">{{ f.mean.toFixed(2) }}</td>
+                  <td class="mono">{{ f.min.toFixed(2) }}</td>
+                  <td class="mono">{{ f.max.toFixed(2) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    } @else {
+      <iq-empty-state title="Sem dados Focus" description="Expectativas do boletim Focus não disponíveis no momento." />
+    }
+  }
+
+  <iq-disclaimer />
+</div>

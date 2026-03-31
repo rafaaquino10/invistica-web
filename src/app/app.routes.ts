@@ -118,12 +118,12 @@ export const routes: Routes = [
       // Monitoramento
       {
         path: 'radar',
-        loadComponent: () => import('./features/radar/radar.component').then(m => m.RadarComponent),
+        loadComponent: () => import('./features/radar-page/radar-page.component').then(m => m.RadarPageComponent),
         canActivate: [planGuard],
       },
       {
         path: 'macro',
-        loadComponent: () => import('./features/macro/macro.component').then(m => m.MacroComponent),
+        loadComponent: () => import('./features/macro-page/macro-page.component').then(m => m.MacroPageComponent),
         canActivate: [planGuard],
       },
 

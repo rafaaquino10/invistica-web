@@ -1,0 +1,53 @@
+@use 'typography' as t;
+
+.macro { max-width: 1000px; margin: 0 auto; }
+.macro__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
+
+// Regime
+.macro__regime {
+  background: var(--surface-1); border: 1px solid var(--border-default); border-radius: var(--radius);
+  padding: var(--space-5); margin-bottom: var(--space-4);
+}
+.macro__regime-top { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
+.macro__regime-label { font-size: t.$text-lg; font-weight: 600; color: var(--text-primary); }
+.macro__regime-desc { font-size: t.$text-sm; color: var(--text-secondary); margin-bottom: var(--space-4); }
+
+.macro__indicators {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--border-default); border: 1px solid var(--border-default); border-radius: var(--radius); overflow: hidden;
+}
+.macro__ind {
+  display: flex; flex-direction: column; gap: 2px; padding: var(--space-3) var(--space-4); background: var(--surface-0); text-align: center;
+}
+.macro__ind-label { font-size: t.$text-xs; color: var(--text-tertiary); }
+.macro__ind-val { font-size: t.$text-lg; font-weight: 700; color: var(--text-primary); }
+
+.macro__kill {
+  margin-top: var(--space-4); font-size: t.$text-xs; font-weight: 700; color: var(--negative);
+  background: var(--negative-bg); border: 1px solid var(--negative-border);
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius); display: inline-block;
+}
+
+.macro__adjustments { margin-top: var(--space-4); }
+.macro__adj-list { display: flex; gap: var(--space-4); }
+.macro__adj-item { display: flex; gap: var(--space-2); font-size: t.$text-sm; }
+
+// Cards
+.macro__card {
+  background: var(--surface-1); border: 1px solid var(--border-default); border-radius: var(--radius);
+  padding: var(--space-4) var(--space-5); margin-bottom: var(--space-4);
+}
+.macro__section-title { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2); }
+.macro__section-desc { font-size: t.$text-xs; color: var(--text-tertiary); margin-bottom: var(--space-4); }
+
+.macro__table-wrap { overflow-x: auto; }
+.macro__table {
+  width: 100%; font-size: t.$text-sm;
+  th, td { padding: 8px 12px; text-align: left; white-space: nowrap; }
+  th { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 1px solid var(--border-default); }
+  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
+  tbody tr:last-child td { border-bottom: none; }
+}
+
+.positive { color: var(--positive); }
+.negative { color: var(--negative); }
