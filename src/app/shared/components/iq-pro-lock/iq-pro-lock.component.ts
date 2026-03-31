@@ -57,8 +57,8 @@ import { IqButtonComponent } from '../iq-button/iq-button.component';
     .pro-lock__badge {
       font-size: 0.6875rem;
       font-weight: 700;
-      color: #fff;
-      background: var(--obsidian);
+      color: var(--btn-primary-text);
+      background: var(--btn-primary-bg);
       padding: 2px 8px;
       border-radius: var(--radius);
       letter-spacing: 0.08em;

@@ -33,9 +33,9 @@
 }
 
 .btn--primary {
-  background: var(--obsidian);
-  color: #fff;
-  border-color: var(--obsidian);
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border-color: var(--btn-primary-bg);
 
   &:hover:not(:disabled) {
     opacity: 0.9;

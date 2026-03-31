@@ -32,7 +32,7 @@
   font-size: t.$text-sm; font-weight: 700; padding: 2px 10px; border-radius: var(--radius);
   background: var(--surface-2); color: var(--text-secondary);
 }
-.settings__plan--pro { background: var(--obsidian); color: #fff; }
+.settings__plan--pro { background: var(--btn-primary-bg); color: var(--btn-primary-text); }
 
 .settings__upgrade {
   display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);

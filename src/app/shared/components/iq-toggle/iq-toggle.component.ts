@@ -27,7 +27,7 @@ import { Component, ChangeDetectionStrategy, model } from '@angular/core';
       transition: background var(--duration-fast) var(--ease);
     }
     .toggle--on .toggle__track {
-      background: var(--obsidian);
+      background: var(--btn-primary-bg);
     }
     .toggle__thumb {
       position: absolute;

@@ -5,6 +5,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { createChart, IChartApi, ISeriesApi, CandlestickData, HistogramData, LineStyle, ColorType, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
 import { TickerService } from '../../../core/services/ticker.service';
+import { ThemeService } from '../../../core/services/theme.service';
 
 @Component({
   selector: 'iq-price-chart',
@@ -46,6 +47,7 @@ export class IqPriceChartComponent implements OnInit, OnDestroy {
   private volumeSeries?: ISeriesApi<'Histogram'>;
 
   private readonly tickerService = inject(TickerService);
+  private readonly themeService = inject(ThemeService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly periods = [
@@ -63,18 +65,40 @@ export class IqPriceChartComponent implements OnInit, OnDestroy {
       const d = this.days();
       if (t && d) this.loadData(t, d);
     });
+    // React to theme changes
+    effect(() => {
+      const theme = this.themeService.theme();
+      if (this.chart) this.applyChartTheme(theme === 'dark');
+    });
+  }
+
+  private applyChartTheme(dark: boolean): void {
+    if (!this.chart) return;
+    this.chart.applyOptions({
+      layout: {
+        background: { type: ColorType.Solid, color: dark ? '#0D0E12' : 'transparent' },
+        textColor: dark ? '#6B6960' : '#6B6960',
+      },
+      grid: {
+        vertLines: { color: dark ? '#1E1F27' : '#E8E6E1' },
+        horzLines: { color: dark ? '#1E1F27' : '#E8E6E1' },
+      },
+      rightPriceScale: { borderColor: dark ? '#22232C' : '#E0DDD6' },
+      timeScale: { borderColor: dark ? '#22232C' : '#E0DDD6' },
+    });
   }
 
   ngOnInit(): void {
     const el = this.chartEl().nativeElement;
+    const dark = this.themeService.theme() === 'dark';
     this.chart = createChart(el, {
       width: el.clientWidth,
       height: 300,
-      layout: { background: { type: ColorType.Solid, color: 'transparent' }, textColor: '#6B6960', fontFamily: "'IBM Plex Mono', monospace", fontSize: 10 },
-      grid: { vertLines: { color: '#E8E6E1' }, horzLines: { color: '#E8E6E1' } },
+      layout: { background: { type: ColorType.Solid, color: dark ? '#0D0E12' : 'transparent' }, textColor: '#6B6960', fontFamily: "'IBM Plex Mono', monospace", fontSize: 10 },
+      grid: { vertLines: { color: dark ? '#1E1F27' : '#E8E6E1' }, horzLines: { color: dark ? '#1E1F27' : '#E8E6E1' } },
       crosshair: { mode: 0 },
-      rightPriceScale: { borderColor: '#E0DDD6' },
-      timeScale: { borderColor: '#E0DDD6' },
+      rightPriceScale: { borderColor: dark ? '#22232C' : '#E0DDD6' },
+      timeScale: { borderColor: dark ? '#22232C' : '#E0DDD6' },
     });
 
     this.candleSeries = this.chart.addSeries(CandlestickSeries, {

@@ -24,8 +24,8 @@ export class IqTooltipDirective implements OnDestroy {
       if (this.tipEl) return;
       this.tipEl = this.renderer.createElement('div');
       this.renderer.setStyle(this.tipEl, 'position', 'absolute');
-      this.renderer.setStyle(this.tipEl, 'background', 'var(--obsidian)');
-      this.renderer.setStyle(this.tipEl, 'color', '#fff');
+      this.renderer.setStyle(this.tipEl, 'background', 'var(--btn-primary-bg)');
+      this.renderer.setStyle(this.tipEl, 'color', 'var(--btn-primary-text)');
       this.renderer.setStyle(this.tipEl, 'padding', '4px 8px');
       this.renderer.setStyle(this.tipEl, 'borderRadius', '2px');
       this.renderer.setStyle(this.tipEl, 'fontSize', '11px');

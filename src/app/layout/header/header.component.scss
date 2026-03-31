@@ -101,8 +101,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--obsidian);
-  color: #fff;
+  background: var(--avatar-bg);
+  color: var(--avatar-text);
   font-family: t.$font-mono;
   font-size: t.$text-xs;
   font-weight: 600;

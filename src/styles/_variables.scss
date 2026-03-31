@@ -71,39 +71,57 @@
 [data-theme="dark"] {
   --surface-0: #07080A;
   --surface-1: #0D0E12;
-  --surface-2: #121318;
-  --surface-3: #1A1B22;
-  --surface-4: #252630;
+  --surface-2: #15161C;
+  --surface-3: #1E1F27;
+  --surface-4: #2A2B35;
 
   --text-primary: #E8E6E1;
-  --text-secondary: #9C998F;
+  --text-secondary: #A09D95;
   --text-tertiary: #6B6960;
   --text-quaternary: #4A4840;
 
-  --obsidian: #C8C7C4;
-  --obsidian-bg: rgba(200, 199, 196, 0.08);
-  --obsidian-border: rgba(200, 199, 196, 0.15);
+  --obsidian: #D4D3D0;
+  --obsidian-bg: rgba(212, 211, 208, 0.08);
+  --obsidian-border: rgba(212, 211, 208, 0.12);
 
   --positive: #3DB87A;
-  --positive-bg: rgba(61, 184, 122, 0.08);
-  --positive-border: rgba(61, 184, 122, 0.15);
+  --positive-bg: rgba(61, 184, 122, 0.10);
+  --positive-border: rgba(61, 184, 122, 0.20);
 
-  --negative: #D4453A;
-  --negative-bg: rgba(212, 69, 58, 0.08);
-  --negative-border: rgba(212, 69, 58, 0.15);
+  --negative: #E05248;
+  --negative-bg: rgba(224, 82, 72, 0.10);
+  --negative-border: rgba(224, 82, 72, 0.20);
 
-  --warning: #D4943A;
-  --warning-bg: rgba(212, 148, 58, 0.08);
-  --warning-border: rgba(212, 148, 58, 0.15);
+  --warning: #E0A540;
+  --warning-bg: rgba(224, 165, 64, 0.10);
+  --warning-border: rgba(224, 165, 64, 0.20);
 
-  --info: #5B7FA6;
-  --info-bg: rgba(91, 127, 166, 0.08);
-  --info-border: rgba(91, 127, 166, 0.15);
+  --info: #6B9FCC;
+  --info-bg: rgba(107, 159, 204, 0.10);
+  --info-border: rgba(107, 159, 204, 0.20);
 
-  --border-default: #1A1B22;
-  --border-hover: #252630;
-  --border-focus: #C8C7C4;
+  --border-default: #22232C;
+  --border-hover: #2E2F3A;
+  --border-focus: #D4D3D0;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  // ── Dark-specific overrides ──
+  --logo-bg: #D4D3D0;
+  --logo-text: #07080A;
+  --btn-primary-bg: #D4D3D0;
+  --btn-primary-text: #07080A;
+  --avatar-bg: #D4D3D0;
+  --avatar-text: #07080A;
+}
+
+// Light mode defaults for dark-specific vars
+:root {
+  --logo-bg: #3D3D3A;
+  --logo-text: #FFFFFF;
+  --btn-primary-bg: #3D3D3A;
+  --btn-primary-text: #FFFFFF;
+  --avatar-bg: #3D3D3A;
+  --avatar-text: #FFFFFF;
 }

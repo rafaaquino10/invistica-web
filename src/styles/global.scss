@@ -15,4 +15,5 @@ body {
   font-weight: 400;
   color: var(--text-primary);
   background-color: var(--surface-0);
+  transition: background-color var(--duration-normal) var(--ease), color var(--duration-normal) var(--ease);
 }

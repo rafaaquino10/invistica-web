@@ -15,7 +15,7 @@
 .sim__slider-val { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); align-self: flex-end; }
 
 .sim__apply {
-  grid-column: 1 / -1; height: 36px; border: none; background: var(--obsidian); color: #fff;
+  grid-column: 1 / -1; height: 36px; border: none; background: var(--btn-primary-bg); color: var(--btn-primary-text);
   font-family: t.$font-ui; font-size: t.$text-sm; font-weight: 500; border-radius: var(--radius); cursor: pointer;
   &:hover { opacity: 0.9; }
 }

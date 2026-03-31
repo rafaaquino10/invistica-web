@@ -77,7 +77,7 @@ export class IqTreemapComponent implements AfterViewInit, OnChanges {
       .style('font-family', "'IBM Plex Mono', monospace")
       .style('font-size', '10px')
       .style('font-weight', '600')
-      .style('fill', '#1A1A18')
+      .style('fill', () => getComputedStyle(el).getPropertyValue('--text-primary').trim() || '#1A1A18')
       .text((d: any) => d.data.ticker);
 
     cells.filter((d: any) => (d.x1 - d.x0) > 40 && (d.y1 - d.y0) > 42)
@@ -85,7 +85,7 @@ export class IqTreemapComponent implements AfterViewInit, OnChanges {
       .attr('x', 4).attr('y', 28)
       .style('font-family', "'IBM Plex Mono', monospace")
       .style('font-size', '9px')
-      .style('fill', '#6B6960')
+      .style('fill', () => getComputedStyle(el).getPropertyValue('--text-secondary').trim() || '#6B6960')
       .text((d: any) => {
         const c = d.data.change;
         return (c >= 0 ? '+' : '') + c.toFixed(1) + '%';
