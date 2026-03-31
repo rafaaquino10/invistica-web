@@ -35,9 +35,8 @@
       @for (item of procItems; track $index) {
         <div class="proc__item">
           <span class="proc__tk mono">{{ item.tk }}</span>
-          <span class="proc__arrow">→</span>
-          <span class="proc__sc mono" [style.color]="scoreColor(item.sc)">{{ item.sc }}</span>
-          <span class="proc__rt mono" [class]="'proc__rt proc__rt--' + item.rc">{{ item.rt }}</span>
+          <span class="proc__px mono">{{ item.px }}</span>
+          <span class="proc__chg mono" [class.proc__chg--pos]="item.chgPos" [class.proc__chg--neg]="!item.chgPos">{{ item.chg }}</span>
         </div>
       }
     </div>

@@ -16,8 +16,7 @@ interface Stock {
 }
 
 interface ProcItem {
-  tk: string; sc: number; rt: string; rc: 'sb' | 'b' | 'h' | 'r';
-  fv: string; mg: string;
+  tk: string; px: string; chg: string; chgPos: boolean;
 }
 
 @Component({
@@ -71,20 +70,22 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private buildProcItems(): ProcItem[] {
     const base: ProcItem[] = [
-      { tk:'PSSA3',sc:88,rt:'Compra forte',rc:'sb',fv:'R$ 42,10',mg:'+32%' },
-      { tk:'WEGE3',sc:85,rt:'Compra forte',rc:'sb',fv:'R$ 52,40',mg:'+27%' },
-      { tk:'ITUB4',sc:83,rt:'Compra forte',rc:'sb',fv:'R$ 38,20',mg:'+18%' },
-      { tk:'BBAS3',sc:79,rt:'Acumular',rc:'b',fv:'R$ 35,40',mg:'+23%' },
-      { tk:'ELET3',sc:76,rt:'Acumular',rc:'b',fv:'R$ 55,30',mg:'+23%' },
-      { tk:'PRIO3',sc:74,rt:'Acumular',rc:'b',fv:'R$ 52,10',mg:'+17%' },
-      { tk:'PETR4',sc:71,rt:'Acumular',rc:'b',fv:'R$ 44,80',mg:'+15%' },
-      { tk:'BBDC4',sc:71,rt:'Acumular',rc:'b',fv:'R$ 18,40',mg:'+27%' },
-      { tk:'VALE3',sc:68,rt:'Manter',rc:'h',fv:'R$ 64,10',mg:'+14%' },
-      { tk:'RENT3',sc:65,rt:'Manter',rc:'h',fv:'R$ 22,50',mg:'+23%' },
-      { tk:'SUZB3',sc:62,rt:'Manter',rc:'h',fv:'R$ 70,20',mg:'+13%' },
-      { tk:'ABEV3',sc:59,rt:'Manter',rc:'h',fv:'R$ 14,80',mg:'+14%' },
-      { tk:'MGLU3',sc:24,rt:'Evitar',rc:'r',fv:'R$ 6,20',mg:'-38%' },
-      { tk:'CVCB3',sc:31,rt:'Reduzir',rc:'r',fv:'R$ 2,80',mg:'-22%' },
+      { tk:'PETR4', px:'R$ 38,91', chg:'+1,07%', chgPos:true },
+      { tk:'VALE3', px:'R$ 56,23', chg:'-2,14%', chgPos:false },
+      { tk:'ITUB4', px:'R$ 32,45', chg:'-0,38%', chgPos:false },
+      { tk:'BBDC4', px:'R$ 14,48', chg:'+0,62%', chgPos:true },
+      { tk:'WEGE3', px:'R$ 41,18', chg:'+2,31%', chgPos:true },
+      { tk:'BBAS3', px:'R$ 28,76', chg:'+0,92%', chgPos:true },
+      { tk:'ABEV3', px:'R$ 12,90', chg:'+0,18%', chgPos:true },
+      { tk:'RENT3', px:'R$ 17,45', chg:'-1,56%', chgPos:false },
+      { tk:'ELET3', px:'R$ 44,87', chg:'+1,12%', chgPos:true },
+      { tk:'PRIO3', px:'R$ 44,52', chg:'-1,85%', chgPos:false },
+      { tk:'SUZB3', px:'R$ 61,30', chg:'+0,92%', chgPos:true },
+      { tk:'MGLU3', px:'R$ 8,45',  chg:'-3,21%', chgPos:false },
+      { tk:'HAPV3', px:'R$ 4,12',  chg:'+1,78%', chgPos:true },
+      { tk:'JBSS3', px:'R$ 34,60', chg:'+0,34%', chgPos:true },
+      { tk:'PSSA3', px:'R$ 32,15', chg:'+1,45%', chgPos:true },
+      { tk:'B3SA3', px:'R$ 12,35', chg:'-0,62%', chgPos:false },
     ];
     return [...base, ...base, ...base];
   }
@@ -127,42 +128,44 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
       canvas.height = canvas.parentElement!.clientHeight;
     };
     resize();
-    window.addEventListener('resize', resize);
 
-    // Init points
-    let y = canvas.height * 0.6;
-    for (let i = 0; i < 200; i++) {
-      y += (Math.random() - 0.44) * 5;
-      y = Math.max(canvas.height * 0.15, Math.min(canvas.height * 0.85, y));
+    const w = canvas.width;
+    const h = canvas.height;
+    const totalPoints = 120;
+
+    // Generate ascending curve with noise
+    let y = h * 0.78;
+    for (let i = 0; i < totalPoints; i++) {
+      const trend = -((h * 0.55) / totalPoints); // overall upward trend
+      y += trend + (Math.random() - 0.5) * 8;
+      y = Math.max(h * 0.12, Math.min(h * 0.88, y));
       this.canvasPoints.push(y);
     }
 
-    const draw = () => {
-      const w = canvas.width;
-      const h = canvas.height;
+    // Reveal animation: draw progressively from left to right
+    let revealed = 0;
+    const step = w / (totalPoints - 1);
+    const speed = 2; // points per frame
 
-      // Advance
-      this.canvasPoints.shift();
-      let last = this.canvasPoints[this.canvasPoints.length - 1];
-      last += (Math.random() - 0.44) * 5;
-      last = Math.max(h * 0.15, Math.min(h * 0.85, last));
-      this.canvasPoints.push(last);
-
+    const drawFrame = () => {
+      revealed = Math.min(revealed + speed, totalPoints);
       ctx.clearRect(0, 0, w, h);
-      const step = w / (this.canvasPoints.length - 1);
+
+      const pts = this.canvasPoints.slice(0, revealed);
+      if (pts.length < 2) { this.animFrame = requestAnimationFrame(drawFrame); return; }
 
       // Area fill
       ctx.beginPath();
       ctx.moveTo(0, h);
-      this.canvasPoints.forEach((py, i) => ctx.lineTo(i * step, py));
-      ctx.lineTo(w, h);
+      pts.forEach((py, i) => ctx.lineTo(i * step, py));
+      ctx.lineTo((pts.length - 1) * step, h);
       ctx.closePath();
       ctx.fillStyle = 'rgba(61, 61, 58, 0.04)';
       ctx.fill();
 
       // Line
       ctx.beginPath();
-      this.canvasPoints.forEach((py, i) => {
+      pts.forEach((py, i) => {
         if (i === 0) ctx.moveTo(0, py);
         else ctx.lineTo(i * step, py);
       });
@@ -170,18 +173,30 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
-      // Dot at end
-      const lastX = (this.canvasPoints.length - 1) * step;
-      const lastY = this.canvasPoints[this.canvasPoints.length - 1];
+      // Dot at current end
+      const lastX = (pts.length - 1) * step;
+      const lastY = pts[pts.length - 1];
       ctx.beginPath();
       ctx.arc(lastX, lastY, 3, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(61, 61, 58, 0.25)';
       ctx.fill();
 
-      this.animFrame = requestAnimationFrame(draw);
+      if (revealed < totalPoints) {
+        this.animFrame = requestAnimationFrame(drawFrame);
+      }
+      // else: stop — chart is fully drawn
     };
 
-    this.animFrame = requestAnimationFrame(draw);
+    this.animFrame = requestAnimationFrame(drawFrame);
+
+    // Redraw static on resize
+    window.addEventListener('resize', () => {
+      resize();
+      if (revealed >= totalPoints) {
+        revealed = totalPoints;
+        drawFrame();
+      }
+    });
   }
 
   scrollToLive(): void {

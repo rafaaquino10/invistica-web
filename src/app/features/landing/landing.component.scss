@@ -89,16 +89,10 @@
   padding: 6px 14px; background: var(--surface-2); border: 1px solid var(--border-default); border-radius: var(--radius);
 }
 .proc__tk { font-size: 11px; font-weight: 600; color: var(--obsidian); }
-.proc__arrow { font-size: 10px; color: var(--text-quaternary); }
-.proc__sc { font-size: 11px; font-weight: 700; }
-.proc__rt {
-  font-size: 8px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
-  padding: 2px 6px; border-radius: 1px;
-}
-.proc__rt--sb { background: var(--positive-bg); color: var(--positive); border: 1px solid var(--positive-border); }
-.proc__rt--b { background: var(--obsidian-bg); color: var(--obsidian); border: 1px solid var(--obsidian-border); }
-.proc__rt--h { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning-border); }
-.proc__rt--r { background: var(--negative-bg); color: var(--negative); border: 1px solid var(--negative-border); }
+.proc__px { font-size: 11px; font-weight: 500; color: var(--text-primary); }
+.proc__chg { font-size: 10px; font-weight: 600; }
+.proc__chg--pos { color: var(--positive); }
+.proc__chg--neg { color: var(--negative); }
 
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
