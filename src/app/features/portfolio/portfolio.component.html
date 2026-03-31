@@ -1,0 +1,154 @@
+<div class="port">
+  <div class="port__header">
+    <h1 class="port__title">Carteira</h1>
+    <iq-button variant="primary" size="sm" (clicked)="addModalOpen.set(true)">Adicionar posição</iq-button>
+  </div>
+
+  @if (loading()) {
+    <iq-skeleton variant="rect" width="100%" height="300px" />
+  } @else if (portfolio()) {
+    @if (portfolio()!.positions.length === 0) {
+      <iq-empty-state title="Nenhuma posição na carteira" description="Adicione ativos para acompanhar seus investimentos." />
+    } @else {
+      <!-- SUMMARY -->
+      <div class="port__summary">
+        <div class="port__kpi">
+          <span class="port__kpi-label">Patrimônio</span>
+          <span class="port__kpi-value mono">{{ portfolio()!.total_value | currencyBrl }}</span>
+        </div>
+        <div class="port__kpi">
+          <span class="port__kpi-label">P&L Total</span>
+          <span class="port__kpi-value mono" [class.positive]="portfolio()!.total_gain_loss >= 0" [class.negative]="portfolio()!.total_gain_loss < 0">
+            {{ portfolio()!.total_gain_loss | currencyBrl }}
+          </span>
+        </div>
+        <div class="port__kpi">
+          <span class="port__kpi-label">P&L %</span>
+          <span class="port__kpi-value mono" [class.positive]="portfolio()!.total_gain_loss_pct >= 0" [class.negative]="portfolio()!.total_gain_loss_pct < 0">
+            {{ portfolio()!.total_gain_loss_pct >= 0 ? '+' : '' }}{{ (portfolio()!.total_gain_loss_pct * 100).toFixed(2) }}%
+          </span>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="port__table-wrap">
+        <table class="port__table">
+          <thead>
+            <tr>
+              <th>Ticker</th>
+              <th>Empresa</th>
+              <th class="mono">Qtd</th>
+              <th class="mono">PM</th>
+              <th class="mono">Atual</th>
+              <th class="mono">P&L %</th>
+              <th class="mono">P&L R$</th>
+              <th class="mono">Peso</th>
+              <th>Score</th>
+              <th>Rating</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (pos of portfolio()!.positions; track pos.id) {
+              <tr>
+                <td class="mono port__ticker" (click)="goToAsset(pos.ticker)">{{ pos.ticker }}</td>
+                <td class="port__name">{{ pos.company_name }}</td>
+                <td class="mono">{{ pos.qty }}</td>
+                <td class="mono">{{ pos.avg_price.toFixed(2) }}</td>
+                <td class="mono">{{ pos.current_price.toFixed(2) }}</td>
+                <td class="mono" [class.positive]="pos.gain_loss_pct >= 0" [class.negative]="pos.gain_loss_pct < 0">
+                  {{ pos.gain_loss_pct >= 0 ? '+' : '' }}{{ (pos.gain_loss_pct * 100).toFixed(2) }}%
+                </td>
+                <td class="mono" [class.positive]="pos.gain_loss >= 0" [class.negative]="pos.gain_loss < 0">
+                  {{ pos.gain_loss | currencyBrl }}
+                </td>
+                <td class="mono">{{ (pos.weight * 100).toFixed(1) }}%</td>
+                <td class="mono port__score">{{ pos.iq_score ?? '—' }}</td>
+                <td>
+                  @if (pos.rating) {
+                    <iq-rating-badge [rating]="$any(pos.rating)" />
+                  }
+                </td>
+                <td class="port__actions">
+                  <button class="port__action-btn" (click)="openEdit(pos)" title="Editar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                  <button class="port__action-btn port__action-btn--danger" (click)="deletePosition(pos.id)" title="Excluir">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2"/></svg>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div class="port__analytics">
+        <div class="port__analytics-card">
+          <h3 class="port__card-title">Exposição Setorial</h3>
+          <iq-donut-chart [data]="sectorDonut()" />
+        </div>
+        <div class="port__analytics-card">
+          <h3 class="port__card-title">Alertas</h3>
+          @if (alerts().length > 0) {
+            @for (alert of alerts(); track alert.id) {
+              <div class="port__alert" [class]="'port__alert port__alert--' + alert.severity">
+                <span class="port__alert-msg">{{ alert.message }}</span>
+              </div>
+            }
+          } @else {
+            <p class="port__muted">Nenhum alerta.</p>
+          }
+        </div>
+      </div>
+    }
+  } @else {
+    <iq-empty-state title="Nenhuma posição na carteira" description="Adicione ativos para acompanhar seus investimentos." />
+  }
+
+  <iq-disclaimer />
+</div>
+
+<!-- ADD MODAL -->
+<iq-modal [open]="addModalOpen()" title="Adicionar Posição" (close)="addModalOpen.set(false)">
+  <div class="port__form">
+    <div class="port__form-field">
+      <label class="port__form-label">Ativo</label>
+      <iq-search placeholder="Buscar ticker..." [results]="searchResults()"
+                 (searchChange)="onSearch($event)" (resultSelect)="onTickerSelect($event)" />
+      @if (newTicker()) {
+        <span class="port__form-selected mono">{{ newTicker() }}</span>
+      }
+    </div>
+    <div class="port__form-row">
+      <div class="port__form-field">
+        <label class="port__form-label">Quantidade</label>
+        <input class="port__form-input mono" type="number" [ngModel]="newQty()" (ngModelChange)="newQty.set($event)" min="1" />
+      </div>
+      <div class="port__form-field">
+        <label class="port__form-label">Preço Médio</label>
+        <input class="port__form-input mono" type="number" [ngModel]="newAvgPrice()" (ngModelChange)="newAvgPrice.set($event)" min="0.01" step="0.01" />
+      </div>
+    </div>
+    <iq-button variant="primary" [loading]="saving()" (clicked)="addPosition()">Salvar</iq-button>
+  </div>
+</iq-modal>
+
+<!-- EDIT MODAL -->
+<iq-modal [open]="editModalOpen()" title="Editar Posição" (close)="editModalOpen.set(false)">
+  <div class="port__form">
+    <span class="port__form-selected mono">{{ editTicker() }}</span>
+    <div class="port__form-row">
+      <div class="port__form-field">
+        <label class="port__form-label">Quantidade</label>
+        <input class="port__form-input mono" type="number" [ngModel]="editQty()" (ngModelChange)="editQty.set($event)" min="1" />
+      </div>
+      <div class="port__form-field">
+        <label class="port__form-label">Preço Médio</label>
+        <input class="port__form-input mono" type="number" [ngModel]="editAvgPrice()" (ngModelChange)="editAvgPrice.set($event)" min="0.01" step="0.01" />
+      </div>
+    </div>
+    <iq-button variant="primary" [loading]="saving()" (clicked)="saveEdit()">Salvar</iq-button>
+  </div>
+</iq-modal>

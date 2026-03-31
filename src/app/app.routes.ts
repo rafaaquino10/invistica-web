@@ -74,12 +74,12 @@ export const routes: Routes = [
       // Patrimônio
       {
         path: 'carteira',
-        loadComponent: () => import('./features/carteira/carteira.component').then(m => m.CarteiraComponent),
+        loadComponent: () => import('./features/portfolio/portfolio.component').then(m => m.PortfolioComponent),
         canActivate: [planGuard],
       },
       {
         path: 'dividendos',
-        loadComponent: () => import('./features/dividendos/dividendos.component').then(m => m.DividendosComponent),
+        loadComponent: () => import('./features/dividends/dividends.component').then(m => m.DividendsComponent),
         canActivate: [planGuard],
       },
       {
