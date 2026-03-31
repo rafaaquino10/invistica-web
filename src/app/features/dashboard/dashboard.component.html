@@ -145,6 +145,7 @@
               @for (asset of topAssets(); track asset.ticker; let i = $index) {
                 <a class="dash__top5-item" [routerLink]="'/ativo/' + asset.ticker">
                   <span class="dash__top5-rank mono">{{ i + 1 }}</span>
+                  <iq-ticker-logo [ticker]="asset.ticker" [size]="24" />
                   <div class="dash__top5-info">
                     <span class="dash__top5-ticker mono">{{ asset.ticker }}</span>
                     <span class="dash__top5-name">{{ asset.company_name | slice:0:28 }}</span>

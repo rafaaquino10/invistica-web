@@ -3,6 +3,7 @@ import {
   ElementRef, viewChild, AfterViewInit,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 
 interface Stock {
   tk: string; nm: string; sec: string; sc: number;
@@ -22,7 +23,7 @@ interface ProcItem {
 @Component({
   selector: 'iq-landing',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, IqTickerLogoComponent],
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

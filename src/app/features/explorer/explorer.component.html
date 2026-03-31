@@ -47,7 +47,7 @@
         <tbody>
           @for (r of sorted(); track r.ticker) {
             <tr (click)="goToAsset(r.ticker)" class="explorer__row">
-              <td class="mono explorer__ticker">{{ r.ticker }}</td>
+              <td class="mono explorer__ticker"><iq-ticker-logo [ticker]="r.ticker" [size]="18" /> {{ r.ticker }}</td>
               <td class="explorer__name">{{ r.company_name | slice:0:30 }}</td>
               <td class="explorer__cluster mono">{{ r.cluster_id }}</td>
               <td class="mono explorer__score" [style.color]="ratingColor(r.rating)" [class.explorer__blur]="planService.isFree()">{{ r.iq_score }}</td>

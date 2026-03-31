@@ -11,6 +11,7 @@ import type { TickerDetail, Quote } from '../../core/models/ticker.model';
 import type { ValuationResult } from '../../core/models/valuation.model';
 import { CLUSTER_NAMES, ClusterId } from '../../core/models/cluster.model';
 import { IqScoreGaugeComponent } from '../../shared/components/iq-score-gauge/iq-score-gauge.component';
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import { IqRatingBadgeComponent } from '../../shared/components/iq-rating-badge/iq-rating-badge.component';
 import { IqPillarBarsComponent } from '../../shared/components/iq-pillar-bars/iq-pillar-bars.component';
 import { IqPriceChartComponent } from '../../shared/components/iq-price-chart/iq-price-chart.component';
@@ -32,7 +33,7 @@ interface TabDef { label: string; id: string; }
   selector: 'iq-ativo',
   standalone: true,
   imports: [
-    RouterLink,
+    RouterLink, IqTickerLogoComponent,
     IqScoreGaugeComponent, IqRatingBadgeComponent, IqPillarBarsComponent,
     IqPriceChartComponent, IqFairValueBarComponent, IqSkeletonComponent,
     IqDisclaimerComponent, CompactNumberPipe,

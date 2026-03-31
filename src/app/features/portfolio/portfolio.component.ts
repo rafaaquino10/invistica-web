@@ -15,6 +15,7 @@ import { IqSkeletonComponent } from '../../shared/components/iq-skeleton/iq-skel
 import { IqEmptyStateComponent } from '../../shared/components/iq-empty-state/iq-empty-state.component';
 import { IqDisclaimerComponent } from '../../shared/components/iq-disclaimer/iq-disclaimer.component';
 import { CurrencyBrlPipe } from '../../shared/pipes/currency-brl.pipe';
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import { Rating } from '../../core/models/score.model';
 import { CLUSTER_NAMES, ClusterId } from '../../core/models/cluster.model';
 
@@ -25,7 +26,7 @@ import { CLUSTER_NAMES, ClusterId } from '../../core/models/cluster.model';
     FormsModule,
     IqButtonComponent, IqModalComponent, IqRatingBadgeComponent,
     IqDonutChartComponent, IqSearchComponent, IqSkeletonComponent,
-    IqEmptyStateComponent, IqDisclaimerComponent, CurrencyBrlPipe,
+    IqEmptyStateComponent, IqDisclaimerComponent, IqTickerLogoComponent, CurrencyBrlPipe,
   ],
   templateUrl: './portfolio.component.html',
   styleUrl: './portfolio.component.scss',

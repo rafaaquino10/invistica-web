@@ -28,12 +28,13 @@ import { CurrencyBrlPipe } from '../../shared/pipes/currency-brl.pipe';
 import { RatingLabelPipe } from '../../shared/pipes/rating-label.pipe';
 import { Rating, RATING_COLORS } from '../../core/models/score.model';
 import { REGIME_LABELS } from '../../core/models/regime.model';
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 
 @Component({
   selector: 'iq-dashboard',
   standalone: true,
   imports: [
-    RouterLink,
+    RouterLink, IqTickerLogoComponent,
     IqScoreGaugeComponent, IqKpiCardComponent, IqRatingBadgeComponent,
     IqRegimeBadgeComponent, IqLineChartComponent, IqBarChartComponent,
     IqSkeletonComponent, IqEmptyStateComponent, IqDisclaimerComponent,

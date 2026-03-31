@@ -73,7 +73,7 @@
 
 .explorer__sortable { cursor: pointer; &:hover { color: var(--text-primary); } }
 .explorer__row { cursor: pointer; transition: background var(--duration-fast) var(--ease); &:hover { background: var(--surface-2); } }
-.explorer__ticker { font-weight: 600; }
+.explorer__ticker { font-weight: 600; display: flex; align-items: center; gap: 6px; }
 .explorer__name { color: var(--text-secondary); max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 .explorer__cluster { color: var(--text-tertiary); font-size: t.$text-xs; }
 .explorer__score { font-weight: 700; font-size: t.$text-base; }

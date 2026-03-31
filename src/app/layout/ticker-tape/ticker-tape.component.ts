@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 
 interface TapeItem {
   ticker: string;
@@ -9,6 +10,7 @@ interface TapeItem {
 @Component({
   selector: 'iq-ticker-tape',
   standalone: true,
+  imports: [IqTickerLogoComponent],
   templateUrl: './ticker-tape.component.html',
   styleUrl: './ticker-tape.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

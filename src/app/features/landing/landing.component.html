@@ -34,6 +34,7 @@
     <div class="proc__inner">
       @for (item of procItems; track $index) {
         <div class="proc__item">
+          <iq-ticker-logo [ticker]="item.tk" [size]="16" />
           <span class="proc__tk mono">{{ item.tk }}</span>
           <span class="proc__px mono">{{ item.px }}</span>
           <span class="proc__chg mono" [class.proc__chg--pos]="item.chgPos" [class.proc__chg--neg]="!item.chgPos">{{ item.chg }}</span>
@@ -55,6 +56,7 @@
   <div class="card" [class.card--fading]="fading()">
     <!-- HEADER -->
     <div class="card__head">
+      <iq-ticker-logo [ticker]="currentStock().tk" [size]="28" />
       <span class="card__tk mono">{{ currentStock().tk }}</span>
       <span class="card__nm">{{ currentStock().nm }}</span>
       <span class="card__sec mono">{{ currentStock().sec }}</span>
