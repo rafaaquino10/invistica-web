@@ -96,12 +96,12 @@ export const routes: Routes = [
       // Inteligência
       {
         path: 'simulador',
-        loadComponent: () => import('./features/simulador/simulador.component').then(m => m.SimuladorComponent),
+        loadComponent: () => import('./features/scenario-simulator/scenario-simulator.component').then(m => m.ScenarioSimulatorComponent),
         canActivate: [planGuard],
       },
       {
         path: 'simulador/comparar',
-        loadComponent: () => import('./features/simulador-comparar/simulador-comparar.component').then(m => m.SimuladorCompararComponent),
+        loadComponent: () => import('./features/what-if/what-if.component').then(m => m.WhatIfComponent),
         canActivate: [planGuard],
       },
       {
@@ -111,7 +111,7 @@ export const routes: Routes = [
       },
       {
         path: 'institucional',
-        loadComponent: () => import('./features/institucional/institucional.component').then(m => m.InstitucionalComponent),
+        loadComponent: () => import('./features/institutional/institutional.component').then(m => m.InstitutionalComponent),
         canActivate: [planGuard],
       },
 

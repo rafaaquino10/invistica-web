@@ -1,0 +1,55 @@
+@use 'typography' as t;
+
+.sim { max-width: 900px; margin: 0 auto; }
+.sim__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
+.sim__subtitle { font-size: t.$text-sm; color: var(--text-secondary); margin-bottom: var(--space-6); }
+
+.sim__sliders {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);
+  padding: var(--space-5); background: var(--surface-1); border: 1px solid var(--border-default);
+  border-radius: var(--radius); margin-bottom: var(--space-4);
+}
+
+.sim__slider-group { display: flex; flex-direction: column; gap: var(--space-2); }
+.sim__slider-label { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; }
+.sim__slider-val { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); align-self: flex-end; }
+
+.sim__apply {
+  grid-column: 1 / -1; height: 36px; border: none; background: var(--obsidian); color: #fff;
+  font-family: t.$font-ui; font-size: t.$text-sm; font-weight: 500; border-radius: var(--radius); cursor: pointer;
+  &:hover { opacity: 0.9; }
+}
+
+.sim__regime-card {
+  display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4);
+  background: var(--surface-1); border: 1px solid var(--border-default); border-radius: var(--radius); margin-bottom: var(--space-4);
+}
+.sim__regime-label { font-size: t.$text-sm; color: var(--text-tertiary); }
+.sim__regime-name { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); }
+
+.sim__section { margin-bottom: var(--space-4); }
+.sim__section-title { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3); }
+
+.sim__table-wrap { border: 1px solid var(--border-default); border-radius: var(--radius); overflow-x: auto; }
+.sim__table {
+  width: 100%; font-size: t.$text-sm; background: var(--surface-1);
+  th, td { padding: 8px 12px; text-align: left; white-space: nowrap; }
+  th { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 1px solid var(--border-default); }
+  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
+  tbody tr:last-child td { border-bottom: none; }
+}
+.sim__ticker { font-weight: 600; }
+.sim__cluster { color: var(--text-secondary); }
+
+.sim__sectors {
+  background: var(--surface-1); border: 1px solid var(--border-default); border-radius: var(--radius); padding: var(--space-3) var(--space-4);
+}
+.sim__sector-row {
+  display: flex; justify-content: space-between; padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border-default); font-size: t.$text-sm;
+  &:last-child { border-bottom: none; }
+}
+.sim__sector-name { color: var(--text-secondary); }
+
+.positive { color: var(--positive); }
+.negative { color: var(--negative); }

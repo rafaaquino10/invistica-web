@@ -1,0 +1,44 @@
+@use 'typography' as t;
+
+.wif { max-width: 900px; margin: 0 auto; }
+.wif__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
+.wif__subtitle { font-size: t.$text-sm; color: var(--text-secondary); margin-bottom: var(--space-6); }
+
+.wif__inputs {
+  display: flex; align-items: flex-end; gap: var(--space-3); flex-wrap: wrap;
+  padding: var(--space-4) var(--space-5); background: var(--surface-1);
+  border: 1px solid var(--border-default); border-radius: var(--radius); margin-bottom: var(--space-4);
+}
+.wif__field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 160px; }
+.wif__label { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); }
+.wif__selected { font-size: t.$text-sm; font-weight: 600; color: var(--obsidian); margin-top: 2px; }
+
+.wif__input-group {
+  display: flex; align-items: center; height: 36px;
+  border: 1px solid var(--border-default); border-radius: var(--radius); background: var(--surface-1);
+  &:focus-within { border-color: var(--border-focus); }
+}
+.wif__prefix { padding: 0 var(--space-2); font-size: t.$text-sm; color: var(--text-tertiary); border-right: 1px solid var(--border-default); }
+.wif__input {
+  width: 100px; height: 100%; border: none; outline: none; background: transparent;
+  font-family: t.$font-mono; font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); padding: 0 var(--space-2);
+}
+
+.wif__card {
+  background: var(--surface-1); border: 1px solid var(--border-default); border-radius: var(--radius);
+  padding: var(--space-4) var(--space-5); margin-bottom: var(--space-4);
+}
+.wif__card-title { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
+
+.wif__table-wrap { border: 1px solid var(--border-default); border-radius: var(--radius); overflow-x: auto; margin-bottom: var(--space-4); }
+.wif__table {
+  width: 100%; font-size: t.$text-sm; background: var(--surface-1);
+  th, td { padding: 10px 14px; text-align: left; white-space: nowrap; }
+  th { font-size: t.$text-xs; font-weight: 600; color: var(--text-primary); border-bottom: 1px solid var(--border-default); }
+  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
+  td:first-child { color: var(--text-secondary); font-weight: 500; }
+  tbody tr:last-child td { border-bottom: none; }
+}
+
+.positive { color: var(--positive); }
+.negative { color: var(--negative); }
