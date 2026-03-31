@@ -1,6 +1,6 @@
 @use 'typography' as t;
 
-.macro { max-width: 1000px; margin: 0 auto; }
+.macro { max-width: 1280px; margin: 0 auto; }
 .macro__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
 
 // Regime

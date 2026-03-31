@@ -1,6 +1,6 @@
 @use 'typography' as t;
 
-.divs { max-width: 1200px; margin: 0 auto; }
+.divs { max-width: 1440px; margin: 0 auto; }
 .divs__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
 
 .divs__tabs {

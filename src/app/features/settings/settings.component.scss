@@ -1,6 +1,6 @@
 @use 'typography' as t;
 
-.settings { max-width: 600px; margin: 0 auto; }
+.settings { max-width: 800px; margin: 0 auto; }
 .settings__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-6); }
 
 .settings__banner {

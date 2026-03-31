@@ -1,6 +1,6 @@
 @use 'typography' as t;
 
-.ip { max-width: 900px; margin: 0 auto; }
+.ip { max-width: 1100px; margin: 0 auto; }
 .ip__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
 .ip__subtitle { font-size: t.$text-sm; color: var(--text-secondary); margin-bottom: var(--space-6); }
 

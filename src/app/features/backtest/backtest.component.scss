@@ -1,6 +1,6 @@
 @use 'typography' as t;
 
-.bt { max-width: 1000px; margin: 0 auto; }
+.bt { max-width: 1280px; margin: 0 auto; }
 .bt__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
 .bt__subtitle { font-size: t.$text-sm; color: var(--text-secondary); margin-bottom: var(--space-6); }
 

@@ -1,6 +1,6 @@
 @use 'typography' as t;
 
-.rs { max-width: 800px; margin: 0 auto; }
+.rs { max-width: 1000px; margin: 0 auto; }
 .rs__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
 .rs__subtitle { font-size: t.$text-sm; color: var(--text-secondary); margin-bottom: var(--space-6); }
 

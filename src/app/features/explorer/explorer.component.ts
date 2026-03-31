@@ -107,8 +107,39 @@ export class ExplorerComponent implements OnInit {
     this.scoreService.screener(params)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {
-        this.results.set(res.results ?? []);
-        this.loading.set(false);
+        const screenerResults = res.results ?? [];
+        if (screenerResults.length >= 5) {
+          this.results.set(screenerResults);
+          this.loading.set(false);
+        } else {
+          // Fallback: load all tickers when screener has few results
+          this.tickerService.list({ limit: 200 })
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(tickerRes => {
+              const fallback: ScreenerResult[] = (tickerRes.tickers ?? []).map(t => ({
+                ticker_id: t.id,
+                iq_score: 0,
+                rating: 'DADOS_INSUFICIENTES' as any,
+                score_quanti: 0,
+                score_quali: 0,
+                score_valuation: 0,
+                fair_value_final: null,
+                safety_margin: null,
+                dividend_yield_proj: null,
+                dividend_safety: null,
+                reference_date: '',
+                ticker: t.ticker,
+                company_name: t.company_name,
+                cluster_id: t.cluster_id,
+                rating_label: 'Dados insuficientes',
+              }));
+              // Merge: scored tickers first, then fallback (avoid duplicates)
+              const scored = new Set(screenerResults.map(r => r.ticker));
+              const merged = [...screenerResults, ...fallback.filter(f => !scored.has(f.ticker))];
+              this.results.set(merged);
+              this.loading.set(false);
+            });
+        }
       });
   }
 

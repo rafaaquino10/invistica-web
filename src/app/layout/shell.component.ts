@@ -24,7 +24,7 @@ import { PlanService } from '../core/services/plan.service';
   styles: [`
     .shell {
       display: grid;
-      grid-template-columns: 56px 1fr;
+      grid-template-columns: auto 1fr;
       height: 100vh;
       overflow: hidden;
     }

@@ -97,7 +97,7 @@
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
 // ── LIVE ANALYSIS ──
-.live { max-width: 920px; margin: 48px auto; padding: 0 48px; }
+.live { max-width: 1100px; margin: 48px auto; padding: 0 48px; }
 .live__label {
   display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
 }
@@ -187,7 +187,7 @@
   border-bottom: 1px solid var(--border-default); padding: 44px 48px; margin-top: 48px;
 }
 .nums__inner {
-  max-width: 800px; margin: 0 auto;
+  max-width: 1000px; margin: 0 auto;
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; text-align: center;
 }
 .nums__val { font-size: 30px; font-weight: 700; color: var(--obsidian); letter-spacing: -0.03em; }
@@ -195,7 +195,7 @@
 .nums__sub { font-size: 9px; color: var(--text-quaternary); margin-top: 2px; }
 
 // ── DIFF ──
-.diff { max-width: 800px; margin: 48px auto; padding: 0 48px; }
+.diff { max-width: 1000px; margin: 48px auto; padding: 0 48px; }
 .diff__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .diff__card {
   background: var(--surface-1); border: 1px solid var(--border-default);

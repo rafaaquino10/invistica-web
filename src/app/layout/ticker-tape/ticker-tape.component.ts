@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 
 interface TapeItem {
@@ -16,6 +16,12 @@ interface TapeItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TickerTapeComponent {
+  readonly paused = signal(false);
+
+  togglePause(): void {
+    this.paused.update(v => !v);
+  }
+
   readonly items: TapeItem[] = [
     { ticker: 'PETR4', price: 49.67, delta: 1.23 },
     { ticker: 'VALE3', price: 79.50, delta: -0.87 },

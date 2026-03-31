@@ -1,6 +1,6 @@
 @use 'typography' as t;
 
-.port { max-width: 1200px; margin: 0 auto; }
+.port { max-width: 1440px; margin: 0 auto; }
 
 .port__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
 .port__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); }

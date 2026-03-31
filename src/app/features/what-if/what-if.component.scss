@@ -1,6 +1,6 @@
 @use 'typography' as t;
 
-.wif { max-width: 900px; margin: 0 auto; }
+.wif { max-width: 1100px; margin: 0 auto; }
 .wif__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
 .wif__subtitle { font-size: t.$text-sm; color: var(--text-secondary); margin-bottom: var(--space-6); }
 
