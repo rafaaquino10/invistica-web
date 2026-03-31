@@ -145,7 +145,7 @@ export class LandingComponent implements OnInit, AfterViewInit, OnDestroy {
     // Reveal animation: draw progressively from left to right
     let revealed = 0;
     const step = w / (totalPoints - 1);
-    const speed = 2; // points per frame
+    const speed = 0.7; // points per frame (~3s total reveal)
 
     const drawFrame = () => {
       revealed = Math.min(revealed + speed, totalPoints);
