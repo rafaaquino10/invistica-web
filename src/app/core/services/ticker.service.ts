@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { ApiService } from './api.service';
 import {
   TickerListResponse, TickerDetail, Quote, FinancialsResponse,
@@ -17,7 +17,9 @@ export class TickerService {
   }
 
   search(q: string, limit = 10): Observable<TickerListResponse> {
-    return this.api.get('/tickers/search', { q, limit });
+    return this.api.get<any>('/tickers/search', { q, limit }).pipe(
+      map(res => ({ count: res.count, tickers: res.results ?? res.tickers ?? [] })),
+    );
   }
 
   get(ticker: string): Observable<TickerDetail> {
