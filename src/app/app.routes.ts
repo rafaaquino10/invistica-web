@@ -40,14 +40,16 @@ export const routes: Routes = [
     component: ShellComponent,
     canActivate: [authGuard],
     children: [
-      // Cockpit
+      // Cockpit (Pro)
       {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+        canActivate: [planGuard],
       },
       {
         path: 'ativo/:ticker',
         loadComponent: () => import('./features/ativo/ativo.component').then(m => m.AtivoComponent),
+        canActivate: [planGuard],
       },
 
       // Descoberta

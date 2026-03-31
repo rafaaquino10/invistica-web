@@ -80,3 +80,39 @@
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
+
+.explorer__blur {
+  filter: blur(5px);
+  user-select: none;
+  pointer-events: none;
+}
+
+.explorer__pro-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--obsidian-bg);
+  border: 1px solid var(--obsidian-border);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-4);
+  font-size: t.$text-sm;
+  color: var(--text-secondary);
+}
+
+.explorer__pro-badge {
+  font-size: t.$text-xs;
+  font-weight: 700;
+  color: #fff;
+  background: var(--obsidian);
+  padding: 2px 6px;
+  border-radius: var(--radius);
+  letter-spacing: 0.06em;
+}
+
+.explorer__pro-link {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--obsidian);
+  &:hover { text-decoration: underline; }
+}

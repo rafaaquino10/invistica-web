@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, DestroyRef, computed } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { SlicePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScoreService, ScreenerParams } from '../../core/services/score.service';
@@ -7,6 +7,7 @@ import { TickerService } from '../../core/services/ticker.service';
 import type { ScreenerResult } from '../../core/models/score.model';
 import type { ClusterInfo } from '../../core/models/cluster.model';
 import { RATING_COLORS, Rating } from '../../core/models/score.model';
+import { PlanService } from '../../core/services/plan.service';
 import { IqDropdownComponent, DropdownOption } from '../../shared/components/iq-dropdown/iq-dropdown.component';
 import { IqSliderComponent } from '../../shared/components/iq-slider/iq-slider.component';
 import { IqButtonComponent } from '../../shared/components/iq-button/iq-button.component';
@@ -22,7 +23,7 @@ type SortKey = 'ticker' | 'iq_score' | 'score_quanti' | 'score_valuation' | 'saf
   selector: 'iq-explorer',
   standalone: true,
   imports: [
-    IqDropdownComponent, IqSliderComponent, IqButtonComponent,
+    RouterLink, IqDropdownComponent, IqSliderComponent, IqButtonComponent,
     IqRatingBadgeComponent, IqSkeletonComponent, IqDisclaimerComponent,
     IqSparklineComponent, SlicePipe, CurrencyBrlPipe,
   ],
@@ -35,6 +36,7 @@ export class ExplorerComponent implements OnInit {
   private readonly tickerService = inject(TickerService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  readonly planService = inject(PlanService);
 
   readonly loading = signal(true);
   readonly results = signal<ScreenerResult[]>([]);

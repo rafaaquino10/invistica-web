@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { HeaderComponent } from './header/header.component';
 import { TickerTapeComponent } from './ticker-tape/ticker-tape.component';
+import { PlanService } from '../core/services/plan.service';
 
 @Component({
   selector: 'iq-shell',
@@ -55,4 +56,10 @@ import { TickerTapeComponent } from './ticker-tape/ticker-tape.component';
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShellComponent {}
+export class ShellComponent {
+  private readonly planService = inject(PlanService);
+
+  constructor() {
+    this.planService.load();
+  }
+}

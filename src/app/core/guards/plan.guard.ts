@@ -22,9 +22,8 @@ export const planGuard: CanActivateFn = () => {
       return true;
     }),
     catchError(() => {
-      return of(router.createUrlTree(['/configuracoes'], {
-        queryParams: { upgrade: true },
-      }));
+      // On network/auth error, allow access — auth guard handles authentication
+      return of(true);
     }),
   );
 };

@@ -1,6 +1,14 @@
 <div class="explorer">
   <h1 class="explorer__title">Explorar</h1>
 
+  @if (planService.isFree()) {
+    <div class="explorer__pro-banner">
+      <span class="explorer__pro-badge mono">PRO</span>
+      <span>Scores, ratings e valuation requerem o plano Pro.</span>
+      <a class="explorer__pro-link" routerLink="/configuracoes" [queryParams]="{ upgrade: true }">Fazer Upgrade</a>
+    </div>
+  }
+
   <!-- FILTERS -->
   <div class="explorer__filters">
     <iq-dropdown [options]="clusterOptions()" placeholder="Setor" (selectionChange)="onClusterChange($event)" />
@@ -42,14 +50,14 @@
               <td class="mono explorer__ticker">{{ r.ticker }}</td>
               <td class="explorer__name">{{ r.company_name | slice:0:30 }}</td>
               <td class="explorer__cluster mono">{{ r.cluster_id }}</td>
-              <td class="mono explorer__score" [style.color]="ratingColor(r.rating)">{{ r.iq_score }}</td>
-              <td><iq-rating-badge [rating]="r.rating" /></td>
-              <td class="mono" [class.positive]="(r.safety_margin ?? 0) >= 0" [class.negative]="(r.safety_margin ?? 0) < 0">
+              <td class="mono explorer__score" [style.color]="ratingColor(r.rating)" [class.explorer__blur]="planService.isFree()">{{ r.iq_score }}</td>
+              <td [class.explorer__blur]="planService.isFree()"><iq-rating-badge [rating]="r.rating" /></td>
+              <td class="mono" [class.positive]="(r.safety_margin ?? 0) >= 0" [class.negative]="(r.safety_margin ?? 0) < 0" [class.explorer__blur]="planService.isFree()">
                 {{ r.safety_margin != null ? (r.safety_margin * 100).toFixed(1) + '%' : '—' }}
               </td>
-              <td class="mono">{{ r.dividend_yield_proj != null ? (r.dividend_yield_proj * 100).toFixed(1) + '%' : '—' }}</td>
-              <td class="mono">{{ r.score_quanti }}</td>
-              <td class="mono">{{ r.score_valuation }}</td>
+              <td class="mono" [class.explorer__blur]="planService.isFree()">{{ r.dividend_yield_proj != null ? (r.dividend_yield_proj * 100).toFixed(1) + '%' : '—' }}</td>
+              <td class="mono" [class.explorer__blur]="planService.isFree()">{{ r.score_quanti }}</td>
+              <td class="mono" [class.explorer__blur]="planService.isFree()">{{ r.score_valuation }}</td>
             </tr>
           }
         </tbody>
