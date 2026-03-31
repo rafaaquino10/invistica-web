@@ -12,7 +12,7 @@ interface TapeItem {
 
 const TICKERS = [
   'PETR4','VALE3','ITUB4','BBDC4','ABEV3','WEGE3','RENT3','BBAS3',
-  'MGLU3','SUZB3','ELET3','HAPV3','RADL3','JBSS3','B3SA3',
+  'MGLU3','SUZB3','HAPV3','RADL3','BPAC11','PRIO3','CSNA3',
 ];
 
 @Component({

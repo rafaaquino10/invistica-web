@@ -21,7 +21,17 @@ export class AuthService {
       return;
     }
 
-    this.supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey);
+    this.supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey, {
+      auth: {
+        storageKey: 'iq-auth',
+        autoRefreshToken: true,
+        persistSession: true,
+        lock: async (name: string, acquireTimeout: number, fn: () => Promise<any>) => {
+          // Skip navigator.locks to avoid NavigatorLockAcquireTimeoutError
+          return fn();
+        },
+      },
+    });
 
     this.supabase.auth.onAuthStateChange((_event, session) => {
       this._currentUser.set(session?.user ?? null);
