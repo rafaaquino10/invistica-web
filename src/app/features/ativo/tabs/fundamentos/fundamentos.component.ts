@@ -54,14 +54,12 @@ export class FundamentosComponent implements OnInit {
   readonly groups = signal<{ title: string; items: Indicator[] }[]>([]);
 
   ngOnInit(): void {
-    toObservable(this.ticker).pipe(
-      filter(t => !!t),
-      switchMap(t => forkJoin({
-        fin: this.tickerService.getFinancials(t, 1).pipe(catchError(() => of({ ticker: t, financials: [] }))),
-        risk: this.scoreService.getRiskMetrics(t).pipe(catchError(() => of(null))),
-      })),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(({ fin, risk }) => {
+    const t = this.ticker();
+    if (!t) return;
+    forkJoin({
+      fin: this.tickerService.getFinancials(t, 1).pipe(catchError(() => of({ ticker: t, financials: [] }))),
+      risk: this.scoreService.getRiskMetrics(t).pipe(catchError(() => of(null))),
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ fin, risk }) => {
       const f = fin.financials[0];
       const r = risk;
       this.groups.set([

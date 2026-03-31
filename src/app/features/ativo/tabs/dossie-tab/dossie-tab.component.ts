@@ -74,8 +74,9 @@ export class DossieTabComponent implements OnInit {
   readonly dossier = signal<Dossier | null>(null);
 
   ngOnInit(): void {
-    toObservable(this.ticker).pipe(
-      filter(t => !!t),
+    const t = this.ticker(); if (!t) return; // direct call
+    of(t).pipe(
+      
       switchMap(t => this.scoreService.getDossier(t).pipe(catchError(() => of(null)))),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(d => {

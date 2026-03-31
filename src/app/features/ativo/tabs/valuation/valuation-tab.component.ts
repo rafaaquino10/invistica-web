@@ -87,8 +87,9 @@ export class ValuationTabComponent implements OnInit {
   readonly mcScenarios = signal<MonteCarloScenarios | null>(null);
 
   ngOnInit(): void {
-    toObservable(this.ticker).pipe(
-      filter(t => !!t),
+    const t = this.ticker(); if (!t) return; // direct call
+    of(t).pipe(
+      
       switchMap(t => forkJoin({
         val: this.valuationService.get(t).pipe(catchError(() => of(null))),
         margin: this.valuationService.getMargin(t).pipe(catchError(() => of(null))),
