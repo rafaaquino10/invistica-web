@@ -9,7 +9,7 @@
     </svg>
   </button>
   <div class="tape__track" [class.tape__track--paused]="paused()">
-    @for (item of items; track item.ticker) {
+    @for (item of items(); track item.ticker) {
       <span class="tape__item">
         <img class="tape__logo" [src]="'https://raw.githubusercontent.com/thefintz/icones-b3/main/icones/' + item.ticker + '.png'" [alt]="item.ticker" width="16" height="16" />
         <span class="tape__ticker">{{ item.ticker }}</span>
@@ -19,7 +19,7 @@
         </span>
       </span>
     }
-    @for (item of items; track item.ticker) {
+    @for (item of items(); track item.ticker) {
       <span class="tape__item">
         <img class="tape__logo" [src]="'https://raw.githubusercontent.com/thefintz/icones-b3/main/icones/' + item.ticker + '.png'" [alt]="item.ticker" width="16" height="16" />
         <span class="tape__ticker">{{ item.ticker }}</span>

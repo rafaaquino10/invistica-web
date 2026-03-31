@@ -1,11 +1,19 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, OnInit, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin, catchError, of } from 'rxjs';
 import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
+import { TickerService } from '../../core/services/ticker.service';
 
 interface TapeItem {
   ticker: string;
   price: number;
   delta: number;
 }
+
+const TICKERS = [
+  'PETR4','VALE3','ITUB4','BBDC4','ABEV3','WEGE3','RENT3','BBAS3',
+  'MGLU3','SUZB3','ELET3','HAPV3','RADL3','JBSS3','B3SA3',
+];
 
 @Component({
   selector: 'iq-ticker-tape',
@@ -15,28 +23,33 @@ interface TapeItem {
   styleUrl: './ticker-tape.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TickerTapeComponent {
+export class TickerTapeComponent implements OnInit {
+  private readonly tickerService = inject(TickerService);
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly paused = signal(false);
+  readonly items = signal<TapeItem[]>([]);
 
   togglePause(): void {
     this.paused.update(v => !v);
   }
 
-  readonly items: TapeItem[] = [
-    { ticker: 'PETR4', price: 49.67, delta: 1.23 },
-    { ticker: 'VALE3', price: 79.50, delta: -0.87 },
-    { ticker: 'ITUB4', price: 32.15, delta: 0.45 },
-    { ticker: 'BBDC4', price: 14.82, delta: -0.32 },
-    { ticker: 'ABEV3', price: 12.90, delta: 0.18 },
-    { ticker: 'WEGE3', price: 38.75, delta: 2.15 },
-    { ticker: 'RENT3', price: 45.20, delta: -1.56 },
-    { ticker: 'BBAS3', price: 28.90, delta: 0.67 },
-    { ticker: 'MGLU3', price: 8.45, delta: -3.21 },
-    { ticker: 'SUZB3', price: 55.30, delta: 0.92 },
-    { ticker: 'ELET3', price: 41.80, delta: -0.45 },
-    { ticker: 'HAPV3', price: 4.12, delta: 1.78 },
-    { ticker: 'RADL3', price: 26.50, delta: -0.15 },
-    { ticker: 'JBSS3', price: 34.60, delta: 0.34 },
-    { ticker: 'B3SA3', price: 12.35, delta: -0.62 },
-  ];
+  ngOnInit(): void {
+    const calls = TICKERS.map(t =>
+      this.tickerService.getQuote(t).pipe(
+        catchError(() => of(null))
+      )
+    );
+
+    forkJoin(calls).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(quotes => {
+      const items: TapeItem[] = [];
+      quotes.forEach((q, i) => {
+        if (q) {
+          const delta = q.open > 0 ? ((q.close - q.open) / q.open) * 100 : 0;
+          items.push({ ticker: TICKERS[i], price: q.close, delta });
+        }
+      });
+      this.items.set(items);
+    });
+  }
 }
