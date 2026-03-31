@@ -1,0 +1,54 @@
+<div class="compare">
+  <h1 class="compare__title">Comparar Ativos</h1>
+
+  <div class="compare__selector">
+    <div class="compare__search">
+      <iq-search placeholder="Adicionar ativo..." [results]="searchResults()"
+                 (searchChange)="onSearch($event)" (resultSelect)="addTicker($event)" />
+    </div>
+    <div class="compare__tags">
+      @for (t of selectedTickers(); track t) {
+        <span class="compare__tag mono">
+          {{ t }}
+          <button class="compare__tag-x" (click)="removeTicker(t)">x</button>
+        </span>
+      }
+    </div>
+    <iq-button variant="primary" size="sm" [disabled]="selectedTickers().length < 2" (clicked)="compare()">
+      Comparar
+    </iq-button>
+  </div>
+
+  @if (loading()) {
+    <iq-skeleton variant="rect" width="100%" height="300px" />
+  } @else if (items().length > 0) {
+    <div class="compare__table-wrap">
+      <table class="compare__table">
+        <thead>
+          <tr>
+            <th>Métrica</th>
+            @for (item of items(); track item.ticker) {
+              <th class="compare__th-ticker" (click)="goToAsset(item.ticker)">
+                <span class="mono">{{ item.ticker }}</span>
+                <iq-rating-badge [rating]="item.rating" />
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (m of metrics; track m.key) {
+            <tr>
+              <td class="compare__metric-label">{{ m.label }}</td>
+              @for (item of items(); track item.ticker) {
+                <td class="mono" [class.compare__best]="isBest(m, item)">
+                  {{ formatVal(getVal(item, m.key), m.format) }}
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <iq-disclaimer />
+  }
+</div>

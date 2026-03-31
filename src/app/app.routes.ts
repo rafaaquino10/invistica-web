@@ -53,21 +53,21 @@ export const routes: Routes = [
       // Descoberta
       {
         path: 'explorar',
-        loadComponent: () => import('./features/explorar/explorar.component').then(m => m.ExplorarComponent),
+        loadComponent: () => import('./features/explorer/explorer.component').then(m => m.ExplorerComponent),
       },
       {
         path: 'comparar',
-        loadComponent: () => import('./features/comparar/comparar.component').then(m => m.CompararComponent),
+        loadComponent: () => import('./features/compare/compare.component').then(m => m.CompareComponent),
         canActivate: [planGuard],
       },
       {
         path: 'mapa',
-        loadComponent: () => import('./features/mapa/mapa.component').then(m => m.MapaComponent),
+        loadComponent: () => import('./features/market-map/market-map.component').then(m => m.MarketMapComponent),
         canActivate: [planGuard],
       },
       {
         path: 'termometro',
-        loadComponent: () => import('./features/termometro/termometro.component').then(m => m.TermometroComponent),
+        loadComponent: () => import('./features/thermometer/thermometer.component').then(m => m.ThermometerComponent),
         canActivate: [planGuard],
       },
 

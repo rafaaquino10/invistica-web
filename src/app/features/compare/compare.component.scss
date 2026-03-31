@@ -1,0 +1,98 @@
+@use 'typography' as t;
+
+.compare {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.compare__title {
+  font-size: t.$text-2xl;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.compare__selector {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-4);
+  background: var(--surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  margin-bottom: var(--space-4);
+}
+
+.compare__search { width: 260px; }
+
+.compare__tags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.compare__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: t.$text-xs;
+  font-weight: 600;
+  background: var(--obsidian-bg);
+  border: 1px solid var(--obsidian-border);
+  border-radius: var(--radius);
+  color: var(--obsidian);
+}
+
+.compare__tag-x {
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  font-size: t.$text-sm;
+  line-height: 1;
+  padding: 0 2px;
+
+  &:hover { color: var(--negative); }
+}
+
+.compare__table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+}
+
+.compare__table {
+  width: 100%;
+  font-size: t.$text-sm;
+  background: var(--surface-1);
+
+  th, td { padding: 8px 14px; text-align: left; white-space: nowrap; }
+  th { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); border-bottom: 1px solid var(--border-default); }
+  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
+  tbody tr:last-child td { border-bottom: none; }
+}
+
+.compare__th-ticker {
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+
+  .mono { font-weight: 700; font-size: t.$text-base; color: var(--text-primary); }
+
+  &:hover .mono { color: var(--obsidian); }
+}
+
+.compare__metric-label {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.compare__best {
+  font-weight: 700;
+  color: var(--positive);
+}
