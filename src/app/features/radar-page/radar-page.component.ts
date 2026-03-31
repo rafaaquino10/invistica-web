@@ -119,9 +119,9 @@ export class RadarPageComponent implements OnInit {
 
   private loadFeed(filter: FeedFilter): void {
     this.radarService.getFeed(50, filter).pipe(
-      catchError(() => of({ items: [], count: 0 })),
+      catchError(() => of({ feed: [], count: 0 })),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe(r => this.feedItems.set(r.items ?? []));
+    ).subscribe(r => this.feedItems.set(r.feed ?? []));
   }
 
   ngOnInit(): void {

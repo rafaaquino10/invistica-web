@@ -13,7 +13,7 @@ export interface FeedItem {
 }
 
 export interface FeedResponse {
-  items: FeedItem[];
+  feed: FeedItem[];
   count: number;
 }
 

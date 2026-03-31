@@ -185,8 +185,8 @@ export class DashboardComponent implements OnInit {
     forkJoin({
       portfolio: this.portfolioService.get().pipe(catchError(() => of(null))),
       top: this.scoreService.getTop(5).pipe(catchError(() => of({ top: [] }))),
-      feed: this.radarService.getFeed(8).pipe(catchError(() => of({ items: [], count: 0 }))),
-      catalysts: this.scoreService.getCatalysts(7).pipe(catchError(() => of({ catalysts: [], period_days: 7 }))),
+      feed: this.radarService.getFeed(8).pipe(catchError(() => of({ feed: [], count: 0 }))),
+      catalysts: this.scoreService.getCatalysts(30).pipe(catchError(() => of({ catalysts: [], period_days: 30 }))),
       divSummary: this.dividendService.getSummary(12).pipe(catchError(() => of(null))),
       divProj: this.dividendService.getProjections(12).pipe(catchError(() => of(null))),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(res => {
@@ -195,7 +195,7 @@ export class DashboardComponent implements OnInit {
         this.hasPortfolio.set(true);
       }
       this.topAssets.set(res.top.top ?? []);
-      this.feedItems.set(res.feed.items ?? []);
+      this.feedItems.set(res.feed.feed ?? []);
       this.catalysts.set(res.catalysts.catalysts ?? []);
       if (res.divSummary) this.dividendSummary.set(res.divSummary);
       if (res.divProj) this.dividendProjections.set(res.divProj);
