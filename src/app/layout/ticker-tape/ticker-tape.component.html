@@ -10,24 +10,24 @@
   </button>
   <div class="tape__track" [class.tape__track--paused]="paused()">
     @for (item of items(); track item.ticker) {
-      <span class="tape__item">
+      <a class="tape__item" [routerLink]="'/ativo/' + item.ticker">
         <img class="tape__logo" [src]="'https://raw.githubusercontent.com/thefintz/icones-b3/main/icones/' + item.ticker + '.png'" [alt]="item.ticker" width="16" height="16" />
         <span class="tape__ticker">{{ item.ticker }}</span>
         <span class="tape__price">{{ item.price.toFixed(2) }}</span>
         <span class="tape__delta" [class.tape__delta--positive]="item.delta >= 0" [class.tape__delta--negative]="item.delta < 0">
           {{ item.delta >= 0 ? '+' : '' }}{{ item.delta.toFixed(2) }}%
         </span>
-      </span>
+      </a>
     }
     @for (item of items(); track item.ticker) {
-      <span class="tape__item">
+      <a class="tape__item" [routerLink]="'/ativo/' + item.ticker">
         <img class="tape__logo" [src]="'https://raw.githubusercontent.com/thefintz/icones-b3/main/icones/' + item.ticker + '.png'" [alt]="item.ticker" width="16" height="16" />
         <span class="tape__ticker">{{ item.ticker }}</span>
         <span class="tape__price">{{ item.price.toFixed(2) }}</span>
         <span class="tape__delta" [class.tape__delta--positive]="item.delta >= 0" [class.tape__delta--negative]="item.delta < 0">
           {{ item.delta >= 0 ? '+' : '' }}{{ item.delta.toFixed(2) }}%
         </span>
-      </span>
+      </a>
     }
   </div>
 </div>
