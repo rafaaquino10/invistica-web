@@ -51,6 +51,15 @@
   line-height: 1;
 }
 
+.tape__logo {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
 .tape__ticker { color: var(--text-tertiary); font-weight: 500; }
 .tape__price { color: var(--text-primary); font-weight: 500; }
 .tape__delta { font-weight: 600; }
