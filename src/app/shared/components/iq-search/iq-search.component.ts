@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ClickOutsideDirective } from '../../directives/click-outside.directive';
+import { IqTickerLogoComponent } from '../iq-ticker-logo/iq-ticker-logo.component';
 
 export interface SearchResult {
   label: string;
@@ -13,7 +14,7 @@ export interface SearchResult {
 @Component({
   selector: 'iq-search',
   standalone: true,
-  imports: [FormsModule, ClickOutsideDirective],
+  imports: [FormsModule, ClickOutsideDirective, IqTickerLogoComponent],
   template: `
     <div class="search" (iqClickOutside)="showResults.set(false)">
       <div class="search__bar">
@@ -31,6 +32,7 @@ export interface SearchResult {
         <ul class="search__results">
           @for (r of results(); track r.value) {
             <li class="search__item" (click)="onSelect(r)">
+              <iq-ticker-logo [ticker]="r.value" [size]="20" />
               <span class="search__label">{{ r.label }}</span>
               @if (r.subtitle) {
                 <span class="search__sub">{{ r.subtitle }}</span>

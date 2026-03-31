@@ -118,7 +118,10 @@
       <iq-search placeholder="Buscar ticker..." [results]="searchResults()"
                  (searchChange)="onSearch($event)" (resultSelect)="onTickerSelect($event)" />
       @if (newTicker()) {
-        <span class="port__form-selected mono">{{ newTicker() }}</span>
+        <div class="port__form-selected">
+          <iq-ticker-logo [ticker]="newTicker()" [size]="22" />
+          <span class="mono">{{ newTicker() }}</span>
+        </div>
       }
     </div>
     <div class="port__form-row">

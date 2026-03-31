@@ -68,4 +68,4 @@
   font-family: t.$font-mono; font-size: t.$text-sm; color: var(--text-primary); background: var(--surface-1); outline: none;
   &:focus { border-color: var(--border-focus); }
 }
-.port__form-selected { font-size: t.$text-sm; font-weight: 600; color: var(--obsidian); }
+.port__form-selected { display: flex; align-items: center; gap: 8px; font-size: t.$text-sm; font-weight: 600; color: var(--obsidian); margin-top: 4px; }
