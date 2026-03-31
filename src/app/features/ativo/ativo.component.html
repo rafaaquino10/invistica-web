@@ -1,0 +1,177 @@
+@if (loading()) {
+  <div class="asset">
+    <iq-skeleton variant="text" width="200px" height="28px" />
+    <div class="asset__overview">
+      <div class="asset__left"><iq-skeleton variant="rect" width="100%" height="200px" /></div>
+      <div class="asset__right"><iq-skeleton variant="rect" width="100%" height="300px" /></div>
+    </div>
+  </div>
+} @else {
+  <div class="asset">
+    <!-- ═══ BREADCRUMB ═══ -->
+    <nav class="asset__breadcrumb">
+      <a routerLink="/dashboard">Dashboard</a>
+      <span class="asset__sep">/</span>
+      <a routerLink="/explorar">Explorar</a>
+      <span class="asset__sep">/</span>
+      <span class="asset__current mono">{{ ticker() }}</span>
+    </nav>
+
+    <!-- ═══ OVERVIEW ═══ -->
+    <div class="asset__overview">
+      <!-- LEFT -->
+      <div class="asset__left">
+        <!-- HEADER -->
+        <div class="asset__header">
+          <span class="asset__ticker mono">{{ ticker() }}</span>
+          <span class="asset__name">{{ tickerDetail()?.company_name }}</span>
+          <span class="asset__cluster">{{ clusterName() }}</span>
+        </div>
+
+        <!-- PRICE -->
+        <div class="asset__price-row">
+          <span class="asset__currency">R$</span>
+          <span class="asset__price mono">{{ currentPrice().toFixed(2) }}</span>
+          <span class="asset__change mono"
+                [class.positive]="priceChange() >= 0"
+                [class.negative]="priceChange() < 0">
+            {{ priceChange() >= 0 ? '+' : '' }}{{ (priceChange() * 100).toFixed(2) }}%
+          </span>
+        </div>
+
+        <!-- SCORE + FAIR VALUE CARDS -->
+        <div class="asset__cards">
+          @if (scoreDetail(); as sd) {
+            <div class="asset__card">
+              <span class="asset__card-label">IQ-Score</span>
+              <div class="asset__card-row">
+                <iq-score-gauge [score]="sd.iq_cognit.iq_score" [rating]="sd.iq_cognit.rating" size="sm" />
+                <div class="asset__card-meta">
+                  <iq-rating-badge [rating]="sd.iq_cognit.rating" />
+                </div>
+              </div>
+            </div>
+          }
+          @if (valuation(); as val) {
+            <div class="asset__card">
+              <span class="asset__card-label">Preço Justo</span>
+              <span class="asset__fair-value mono">R$ {{ val.fair_value_final.toFixed(2) }}</span>
+              <span class="asset__margin mono"
+                    [class.positive]="val.safety_margin >= 0"
+                    [class.negative]="val.safety_margin < 0">
+                Margem {{ (val.safety_margin * 100).toFixed(1) }}%
+              </span>
+              <iq-fair-value-bar
+                [currentPrice]="currentPrice()"
+                [fairValue]="val.fair_value_final"
+                [p25]="val.fair_value_p25"
+                [p75]="val.fair_value_p75" />
+            </div>
+          }
+        </div>
+
+        <!-- PILLAR BARS -->
+        @if (scoreDetail(); as sd) {
+          <div class="asset__pillars">
+            <iq-pillar-bars
+              [quanti]="sd.iq_cognit.score_quanti"
+              [quali]="sd.iq_cognit.score_quali"
+              [valuation]="sd.iq_cognit.score_valuation" />
+          </div>
+        }
+
+        <!-- QUOTE STATS -->
+        @if (quoteData(); as q) {
+          <div class="asset__stats">
+            <div class="asset__stat">
+              <span class="asset__stat-label">Mín</span>
+              <span class="asset__stat-val mono">{{ q.low.toFixed(2) }}</span>
+            </div>
+            <div class="asset__stat">
+              <span class="asset__stat-label">Máx</span>
+              <span class="asset__stat-val mono">{{ q.high.toFixed(2) }}</span>
+            </div>
+            <div class="asset__stat">
+              <span class="asset__stat-label">Volume</span>
+              <span class="asset__stat-val mono">{{ q.volume | compactNumber }}</span>
+            </div>
+            <div class="asset__stat">
+              <span class="asset__stat-label">Market Cap</span>
+              <span class="asset__stat-val mono">{{ q.market_cap | compactNumber }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- RIGHT: PRICE CHART -->
+      <div class="asset__right">
+        <iq-price-chart [ticker]="ticker()" [fairValue]="valuation()?.fair_value_final ?? null" />
+      </div>
+    </div>
+
+    <!-- ═══ TESE ═══ -->
+    @if (thesis(); as t) {
+      <section class="asset__thesis">
+        <h3 class="asset__section-title">
+          <span class="mono">TESE DE INVESTIMENTO</span>
+          <span class="asset__thesis-date mono">{{ scoreDetail()?.reference_date }}</span>
+        </h3>
+        <p class="asset__thesis-text">{{ t.thesis_text }}</p>
+        <div class="asset__thesis-grid">
+          <div class="asset__thesis-col">
+            <h4 class="asset__thesis-heading positive">Bull Case</h4>
+            <ul>
+              @for (point of t.bull_case; track point) {
+                <li class="asset__thesis-point asset__thesis-point--bull">{{ point }}</li>
+              }
+            </ul>
+          </div>
+          <div class="asset__thesis-col">
+            <h4 class="asset__thesis-heading negative">Bear Case</h4>
+            <ul>
+              @for (point of t.bear_case; track point) {
+                <li class="asset__thesis-point asset__thesis-point--bear">{{ point }}</li>
+              }
+            </ul>
+          </div>
+        </div>
+        @if (t.main_risks.length > 0) {
+          <div class="asset__thesis-risks">
+            <h4 class="asset__thesis-heading" style="color:var(--warning)">Riscos Principais</h4>
+            <ul>
+              @for (risk of t.main_risks; track risk) {
+                <li class="asset__thesis-point asset__thesis-point--risk">{{ risk }}</li>
+              }
+            </ul>
+          </div>
+        }
+      </section>
+    }
+
+    <!-- ═══ TABS ═══ -->
+    <section class="asset__tabs">
+      <div class="asset__tab-header">
+        @for (tab of tabs; track tab.id) {
+          <button class="asset__tab-btn"
+                  [class.asset__tab-btn--active]="activeTab() === tab.id"
+                  (click)="onTabChange(tab.id)">
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+      <div class="asset__tab-content">
+        @switch (activeTab()) {
+          @case ('fundamentos') { <iq-fundamentos [ticker]="ticker()" /> }
+          @case ('valuation') { <iq-valuation-tab [ticker]="ticker()" /> }
+          @case ('dividendos') { <iq-dividendos-tab [ticker]="ticker()" /> }
+          @case ('noticias') { <iq-noticias-tab [ticker]="ticker()" /> }
+          @case ('dossie') { <iq-dossie-tab [ticker]="ticker()" /> }
+          @case ('historico') { <iq-historico-tab [ticker]="ticker()" /> }
+          @case ('institucional') { <iq-institucional-tab [ticker]="ticker()" /> }
+        }
+      </div>
+    </section>
+
+    <iq-disclaimer />
+  </div>
+}

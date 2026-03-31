@@ -3,7 +3,7 @@ import {
   OnDestroy, effect, inject, DestroyRef, signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { createChart, IChartApi, ISeriesApi, CandlestickData, HistogramData, LineStyle, ColorType } from 'lightweight-charts';
+import { createChart, IChartApi, ISeriesApi, CandlestickData, HistogramData, LineStyle, ColorType, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
 import { TickerService } from '../../../core/services/ticker.service';
 
 @Component({
@@ -77,13 +77,13 @@ export class IqPriceChartComponent implements OnInit, OnDestroy {
       timeScale: { borderColor: '#E0DDD6' },
     });
 
-    this.candleSeries = this.chart.addCandlestickSeries({
+    this.candleSeries = this.chart.addSeries(CandlestickSeries, {
       upColor: '#1A7A45', downColor: '#C23028',
       borderUpColor: '#1A7A45', borderDownColor: '#C23028',
       wickUpColor: '#1A7A45', wickDownColor: '#C23028',
     });
 
-    this.volumeSeries = this.chart.addHistogramSeries({
+    this.volumeSeries = this.chart.addSeries(HistogramSeries, {
       priceFormat: { type: 'volume' },
       priceScaleId: 'volume',
     });
