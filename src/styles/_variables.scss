@@ -1,0 +1,109 @@
+// ============================================================
+// InvestIQ Design System — Variables & Tokens
+// ============================================================
+
+:root {
+  // ── SURFACES ──
+  --surface-0: #F8F7F4;
+  --surface-1: #FFFFFF;
+  --surface-2: #F2F1EE;
+  --surface-3: #E8E6E1;
+  --surface-4: #DDD9D2;
+
+  // ── TEXT ──
+  --text-primary: #1A1A18;
+  --text-secondary: #6B6960;
+  --text-tertiary: #9C998F;
+  --text-quaternary: #B8B5AD;
+
+  // ── BRAND ──
+  --obsidian: #3D3D3A;
+  --obsidian-bg: rgba(61, 61, 58, 0.05);
+  --obsidian-border: rgba(61, 61, 58, 0.15);
+
+  // ── SEMANTIC ──
+  --positive: #1A7A45;
+  --positive-bg: rgba(26, 122, 69, 0.06);
+  --positive-border: rgba(26, 122, 69, 0.15);
+
+  --negative: #C23028;
+  --negative-bg: rgba(194, 48, 40, 0.05);
+  --negative-border: rgba(194, 48, 40, 0.15);
+
+  --warning: #A07628;
+  --warning-bg: rgba(160, 118, 40, 0.06);
+  --warning-border: rgba(160, 118, 40, 0.15);
+
+  --info: #3B6B96;
+  --info-bg: rgba(59, 107, 150, 0.06);
+  --info-border: rgba(59, 107, 150, 0.15);
+
+  // ── BORDERS ──
+  --border-default: #E0DDD6;
+  --border-hover: #D4D1C9;
+  --border-focus: #3D3D3A;
+
+  // ── SPACING (8px base grid) ──
+  --space-1: 0.25rem;   // 4px
+  --space-2: 0.5rem;    // 8px
+  --space-3: 0.75rem;   // 12px
+  --space-4: 1rem;      // 16px
+  --space-5: 1.25rem;   // 20px
+  --space-6: 1.5rem;    // 24px
+  --space-8: 2rem;      // 32px
+  --space-10: 2.5rem;   // 40px
+  --space-12: 3rem;     // 48px
+
+  // ── RADIUS ──
+  --radius: 2px;
+
+  // ── TRANSITIONS ──
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+
+  // ── SHADOWS ──
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+// ── DARK MODE ──
+[data-theme="dark"] {
+  --surface-0: #07080A;
+  --surface-1: #0D0E12;
+  --surface-2: #121318;
+  --surface-3: #1A1B22;
+  --surface-4: #252630;
+
+  --text-primary: #E8E6E1;
+  --text-secondary: #9C998F;
+  --text-tertiary: #6B6960;
+  --text-quaternary: #4A4840;
+
+  --obsidian: #C8C7C4;
+  --obsidian-bg: rgba(200, 199, 196, 0.08);
+  --obsidian-border: rgba(200, 199, 196, 0.15);
+
+  --positive: #3DB87A;
+  --positive-bg: rgba(61, 184, 122, 0.08);
+  --positive-border: rgba(61, 184, 122, 0.15);
+
+  --negative: #D4453A;
+  --negative-bg: rgba(212, 69, 58, 0.08);
+  --negative-border: rgba(212, 69, 58, 0.15);
+
+  --warning: #D4943A;
+  --warning-bg: rgba(212, 148, 58, 0.08);
+  --warning-border: rgba(212, 148, 58, 0.15);
+
+  --info: #5B7FA6;
+  --info-bg: rgba(91, 127, 166, 0.08);
+  --info-border: rgba(91, 127, 166, 0.15);
+
+  --border-default: #1A1B22;
+  --border-hover: #252630;
+  --border-focus: #C8C7C4;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+}

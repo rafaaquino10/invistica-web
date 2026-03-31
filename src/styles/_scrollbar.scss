@@ -1,0 +1,27 @@
+// ============================================================
+// InvestIQ — Custom Scrollbar (Obsidian thin)
+// ============================================================
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-4);
+  border-radius: 2px;
+
+  &:hover {
+    background: var(--text-quaternary);
+  }
+}
+
+// Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-4) transparent;
+}

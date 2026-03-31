@@ -1,0 +1,48 @@
+// ============================================================
+// InvestIQ — SCSS Mixins
+// ============================================================
+
+// ── Breakpoints ──
+$breakpoint-desktop: 1280px;
+$breakpoint-tablet: 768px;
+$breakpoint-mobile: 480px;
+
+@mixin desktop {
+  @media (min-width: $breakpoint-desktop) { @content; }
+}
+
+@mixin tablet {
+  @media (max-width: #{$breakpoint-desktop - 1}) and (min-width: $breakpoint-tablet) { @content; }
+}
+
+@mixin mobile {
+  @media (max-width: #{$breakpoint-tablet - 1}) { @content; }
+}
+
+@mixin tablet-down {
+  @media (max-width: #{$breakpoint-desktop - 1}) { @content; }
+}
+
+@mixin mobile-down {
+  @media (max-width: #{$breakpoint-tablet - 1}) { @content; }
+}
+
+// ── Text truncation ──
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ── Visually hidden (accessible) ──
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

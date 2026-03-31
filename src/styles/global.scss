@@ -1,0 +1,18 @@
+// ============================================================
+// InvestIQ — Global Stylesheet
+// ============================================================
+
+@use 'variables';
+@use 'reset';
+@use 'typography' as t;
+@use 'animations';
+@use 'scrollbar';
+@use 'mixins';
+
+body {
+  font-family: t.$font-ui;
+  font-size: t.$text-base;
+  font-weight: 400;
+  color: var(--text-primary);
+  background-color: var(--surface-0);
+}
