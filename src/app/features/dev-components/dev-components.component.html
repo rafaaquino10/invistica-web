@@ -1,0 +1,151 @@
+<iq-toast />
+
+<div class="dev">
+  <h1 class="dev__title">Componentes Primitivos</h1>
+
+  <!-- BUTTONS -->
+  <section class="dev__section">
+    <h2>iq-button</h2>
+    <div class="dev__row">
+      <iq-button variant="primary">Primary</iq-button>
+      <iq-button variant="secondary">Secondary</iq-button>
+      <iq-button variant="ghost">Ghost</iq-button>
+      <iq-button variant="danger">Danger</iq-button>
+      <iq-button variant="primary" size="sm">Small</iq-button>
+      <iq-button variant="primary" [disabled]="true">Disabled</iq-button>
+      <iq-button variant="primary" [loading]="true">Loading</iq-button>
+    </div>
+  </section>
+
+  <!-- INPUT -->
+  <section class="dev__section">
+    <h2>iq-input</h2>
+    <div class="dev__row" style="max-width: 400px;">
+      <iq-input label="E-mail" type="email" placeholder="seu@email.com" />
+      <iq-input label="Senha" type="password" error="Senha obrigatória" />
+      <iq-input label="Desabilitado" [disabled]="true" />
+    </div>
+  </section>
+
+  <!-- DROPDOWN -->
+  <section class="dev__section">
+    <h2>iq-dropdown</h2>
+    <div class="dev__row">
+      <iq-dropdown [options]="dropdownOptions" placeholder="Selecione um cluster" />
+      <iq-dropdown [options]="dropdownOptions" placeholder="Multi-select" [multi]="true" />
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <section class="dev__section">
+    <h2>iq-tabs</h2>
+    <iq-tabs [tabs]="tabsDef">
+      <p>Conteúdo da aba ativa aparece aqui.</p>
+    </iq-tabs>
+  </section>
+
+  <!-- TOGGLE -->
+  <section class="dev__section">
+    <h2>iq-toggle</h2>
+    <div class="dev__row">
+      <iq-toggle [(checked)]="toggleChecked" />
+      <span class="mono">{{ toggleChecked() ? 'ON' : 'OFF' }}</span>
+    </div>
+  </section>
+
+  <!-- ACCORDION -->
+  <section class="dev__section">
+    <h2>iq-accordion</h2>
+    <iq-accordion title="O que é o IQ-Score?">
+      O IQ-Score é uma métrica proprietária que combina análise quantitativa, qualitativa e de valuation
+      para gerar um score de 0 a 100 para cada ativo.
+    </iq-accordion>
+  </section>
+
+  <!-- MODAL -->
+  <section class="dev__section">
+    <h2>iq-modal</h2>
+    <iq-button (clicked)="modalOpen.set(true)">Abrir Modal</iq-button>
+    <iq-modal [open]="modalOpen()" title="Exemplo de Modal" (close)="modalOpen.set(false)">
+      <p>Conteúdo do modal. Pressione ESC ou clique fora para fechar.</p>
+    </iq-modal>
+  </section>
+
+  <!-- TOAST -->
+  <section class="dev__section">
+    <h2>iq-toast</h2>
+    <div class="dev__row">
+      <iq-button variant="primary" size="sm" (clicked)="showToast('success')">Success</iq-button>
+      <iq-button variant="danger" size="sm" (clicked)="showToast('error')">Error</iq-button>
+      <iq-button variant="secondary" size="sm" (clicked)="showToast('warning')">Warning</iq-button>
+      <iq-button variant="ghost" size="sm" (clicked)="showToast('info')">Info</iq-button>
+    </div>
+  </section>
+
+  <!-- SEARCH -->
+  <section class="dev__section">
+    <h2>iq-search</h2>
+    <div style="max-width: 360px;">
+      <iq-search placeholder="Buscar ativo..." [results]="searchResults" />
+    </div>
+  </section>
+
+  <!-- SLIDER -->
+  <section class="dev__section">
+    <h2>iq-slider</h2>
+    <div style="max-width: 300px;">
+      <iq-slider [min]="0" [max]="100" [step]="1" [(value)]="sliderVal" />
+    </div>
+  </section>
+
+  <!-- TOOLTIP -->
+  <section class="dev__section">
+    <h2>iq-tooltip</h2>
+    <div class="dev__row">
+      <span [iqTooltip]="'Tooltip no topo'" tooltipPosition="top" style="cursor: help; text-decoration: underline dotted;">Hover aqui (top)</span>
+      <span [iqTooltip]="'Tooltip embaixo'" tooltipPosition="bottom" style="cursor: help; text-decoration: underline dotted;">Hover aqui (bottom)</span>
+      <span [iqTooltip]="'Tooltip direita'" tooltipPosition="right" style="cursor: help; text-decoration: underline dotted;">Hover aqui (right)</span>
+    </div>
+  </section>
+
+  <!-- SKELETON -->
+  <section class="dev__section">
+    <h2>iq-skeleton</h2>
+    <div class="dev__row" style="flex-direction: column; gap: 8px; max-width: 300px;">
+      <iq-skeleton variant="text" width="80%" />
+      <iq-skeleton variant="text" width="60%" />
+      <iq-skeleton variant="rect" width="100%" height="80px" />
+      <iq-skeleton variant="circle" width="40px" height="40px" />
+    </div>
+  </section>
+
+  <!-- EMPTY STATE -->
+  <section class="dev__section">
+    <h2>iq-empty-state</h2>
+    <iq-empty-state title="Sem ativos na carteira" description="Adicione ativos para começar a acompanhar seus investimentos." />
+  </section>
+
+  <!-- DISCLAIMER -->
+  <section class="dev__section">
+    <h2>iq-disclaimer</h2>
+    <iq-disclaimer />
+  </section>
+
+  <!-- PIPES -->
+  <section class="dev__section">
+    <h2>Pipes</h2>
+    <table class="dev__table">
+      <tr><td>currencyBrl</td><td class="mono">{{ 1234.56 | currencyBrl }}</td></tr>
+      <tr><td>iqPercent</td><td class="mono">{{ 0.1234 | iqPercent }}</td></tr>
+      <tr><td>iqPercent (neg)</td><td class="mono">{{ -0.0567 | iqPercent }}</td></tr>
+      <tr><td>compactNumber</td><td class="mono">{{ 666543007149 | compactNumber }}</td></tr>
+      <tr><td>compactNumber</td><td class="mono">{{ 345000000 | compactNumber }}</td></tr>
+      <tr><td>ratingLabel</td><td>{{ 'STRONG_BUY' | ratingLabel }}</td></tr>
+      <tr><td>ratingLabel</td><td>{{ 'AVOID' | ratingLabel }}</td></tr>
+      <tr><td>clusterName</td><td>{{ 1 | clusterName }}</td></tr>
+      <tr><td>clusterName</td><td>{{ 9 | clusterName }}</td></tr>
+      <tr><td>regimeLabel</td><td>{{ 'RISK_OFF' | regimeLabel }}</td></tr>
+      <tr><td>regimeLabel</td><td>{{ 'RECOVERY' | regimeLabel }}</td></tr>
+    </table>
+  </section>
+</div>

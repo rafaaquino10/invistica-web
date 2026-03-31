@@ -4,6 +4,12 @@ import { authGuard } from './core/guards/auth.guard';
 import { planGuard } from './core/guards/plan.guard';
 
 export const routes: Routes = [
+  // ── Dev route (no auth) ──
+  {
+    path: 'dev/components',
+    loadComponent: () => import('./features/dev-components/dev-components.component').then(m => m.DevComponentsComponent),
+  },
+
   // ── Auth routes (outside shell) ──
   {
     path: 'login',

@@ -1,0 +1,42 @@
+@use 'typography' as t;
+
+.tabs__header {
+  display: flex;
+  position: relative;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.tabs__tab {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  background: transparent;
+  font-family: t.$font-ui;
+  font-size: t.$text-sm;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease);
+  text-align: center;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+}
+
+.tabs__tab--active {
+  color: var(--obsidian);
+}
+
+.tabs__indicator {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--obsidian);
+  transition: transform var(--duration-normal) var(--ease);
+}
+
+.tabs__content {
+  padding: var(--space-4) 0;
+}
