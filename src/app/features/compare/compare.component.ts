@@ -68,6 +68,11 @@ export class CompareComponent {
     const current = this.selectedTickers();
     if (current.length >= 5 || current.includes(r.value)) return;
     this.selectedTickers.update(t => [...t, r.value]);
+    this.searchResults.set([]);
+    // Auto-compare when 2+ tickers
+    if (current.length >= 1) {
+      setTimeout(() => this.compare(), 100);
+    }
   }
 
   removeTicker(ticker: string): void {

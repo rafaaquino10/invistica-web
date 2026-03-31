@@ -49,6 +49,7 @@ export interface SearchResult {
 export class IqSearchComponent implements OnInit {
   readonly placeholder = input('Buscar...');
   readonly results = input<SearchResult[]>([]);
+  readonly clearOnSelect = input(false);
   readonly searchChange = output<string>();
   readonly resultSelect = output<SearchResult>();
 
@@ -70,7 +71,7 @@ export class IqSearchComponent implements OnInit {
   }
 
   onSelect(r: SearchResult): void {
-    this.term.set(r.label);
+    this.term.set(this.clearOnSelect() ? '' : r.label);
     this.showResults.set(false);
     this.resultSelect.emit(r);
   }

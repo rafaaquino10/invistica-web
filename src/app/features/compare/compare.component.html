@@ -3,7 +3,7 @@
 
   <div class="compare__selector">
     <div class="compare__search">
-      <iq-search placeholder="Adicionar ativo..." [results]="searchResults()"
+      <iq-search placeholder="Adicionar ativo..." [results]="searchResults()" [clearOnSelect]="true"
                  (searchChange)="onSearch($event)" (resultSelect)="addTicker($event)" />
     </div>
     <div class="compare__tags">
@@ -14,9 +14,6 @@
         </span>
       }
     </div>
-    <iq-button variant="primary" size="sm" [disabled]="selectedTickers().length < 2" (clicked)="compare()">
-      Comparar
-    </iq-button>
   </div>
 
   @if (loading()) {
