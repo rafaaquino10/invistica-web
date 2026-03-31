@@ -56,8 +56,9 @@
 .search__item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
+  text-align: left;
   cursor: pointer;
   transition: background var(--duration-fast) var(--ease);
 

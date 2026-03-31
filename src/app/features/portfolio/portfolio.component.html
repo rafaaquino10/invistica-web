@@ -115,26 +115,29 @@
   <div class="port__form">
     <div class="port__form-field">
       <label class="port__form-label">Ativo</label>
-      <iq-search placeholder="Buscar ticker..." [results]="searchResults()"
+      <iq-search placeholder="Buscar ticker... ex: PETR4" [results]="searchResults()"
                  (searchChange)="onSearch($event)" (resultSelect)="onTickerSelect($event)" />
-      @if (newTicker()) {
-        <div class="port__form-selected">
-          <iq-ticker-logo [ticker]="newTicker()" [size]="22" />
-          <span class="mono">{{ newTicker() }}</span>
-        </div>
-      }
     </div>
+    @if (newTicker()) {
+      <div class="port__form-asset">
+        <iq-ticker-logo [ticker]="newTicker()" [size]="32" />
+        <span class="port__form-asset-ticker mono">{{ newTicker() }}</span>
+      </div>
+    }
     <div class="port__form-row">
       <div class="port__form-field">
         <label class="port__form-label">Quantidade</label>
-        <input class="port__form-input mono" type="number" [ngModel]="newQty()" (ngModelChange)="newQty.set($event)" min="1" />
+        <input class="port__form-input port__form-input--clean mono" type="number"
+               [ngModel]="newQty()" (ngModelChange)="newQty.set($event)" min="1" placeholder="0" />
       </div>
       <div class="port__form-field">
-        <label class="port__form-label">Preço Médio</label>
-        <input class="port__form-input mono" type="number" [ngModel]="newAvgPrice()" (ngModelChange)="newAvgPrice.set($event)" min="0.01" step="0.01" />
+        <label class="port__form-label">Preço Médio (R$)</label>
+        <input class="port__form-input port__form-input--clean mono" type="number"
+               [ngModel]="newAvgPrice()" (ngModelChange)="newAvgPrice.set($event)" min="0.01" step="0.01" placeholder="0.00" />
       </div>
     </div>
-    <iq-button variant="primary" [loading]="saving()" (clicked)="addPosition()">Salvar</iq-button>
+    <iq-button variant="primary" [loading]="saving()" [disabled]="!newTicker() || newQty() <= 0 || newAvgPrice() <= 0"
+              (clicked)="addPosition()">Salvar posição</iq-button>
   </div>
 </iq-modal>
 
