@@ -9,7 +9,7 @@ import { Component, ChangeDetectionStrategy, input, output, effect, ElementRef, 
         <div class="modal" role="dialog" aria-modal="true">
           <div class="modal__header">
             <h2 class="modal__title">{{ title() }}</h2>
-            <button class="modal__close" (click)="close.emit()">
+            <button class="modal__close" (click)="close.emit()" aria-label="Fechar">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>

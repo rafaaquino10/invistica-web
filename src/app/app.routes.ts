@@ -4,12 +4,6 @@ import { authGuard } from './core/guards/auth.guard';
 import { planGuard } from './core/guards/plan.guard';
 
 export const routes: Routes = [
-  // ── Dev route (no auth) ──
-  {
-    path: 'dev/components',
-    loadComponent: () => import('./features/dev-components/dev-components.component').then(m => m.DevComponentsComponent),
-  },
-
   // ── Auth routes (outside shell) ──
   {
     path: 'login',
@@ -152,6 +146,9 @@ export const routes: Routes = [
     ],
   },
 
-  // Fallback
-  { path: '**', redirectTo: 'dashboard' },
+  // 404
+  {
+    path: '**',
+    loadComponent: () => import('./features/not-found/not-found.component').then(m => m.NotFoundComponent),
+  },
 ];

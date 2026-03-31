@@ -8,6 +8,7 @@ import { Component, ChangeDetectionStrategy, input, output } from '@angular/core
             [class]="'btn btn--' + variant() + ' btn--' + size()"
             [class.btn--loading]="loading()"
             [disabled]="disabled() || loading()"
+            [attr.aria-busy]="loading()"
             (click)="clicked.emit($event)">
       @if (loading()) {
         <span class="btn__spinner"></span>
