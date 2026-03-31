@@ -1,15 +1,6 @@
 <div class="explorer">
   <h1 class="explorer__title">Explorar</h1>
 
-  @if (planService.isFree()) {
-    <div class="explorer__pro-banner">
-      <span class="explorer__pro-badge mono">PRO</span>
-      <span>Scores, ratings e valuation requerem o plano Pro.</span>
-      <a class="explorer__pro-link" routerLink="/configuracoes" [queryParams]="{ upgrade: true }">Fazer Upgrade</a>
-    </div>
-  }
-
-  <!-- FILTERS -->
   <div class="explorer__filters">
     <iq-dropdown [options]="clusterOptions()" placeholder="Setor" (selectionChange)="onClusterChange($event)" />
     <iq-dropdown [options]="ratingOptions" placeholder="Rating" (selectionChange)="onRatingChange($event)" />
@@ -24,42 +15,46 @@
     <iq-button variant="primary" size="sm" (clicked)="applyFilters()">Filtrar</iq-button>
   </div>
 
-  <!-- TABLE -->
   @if (loading()) {
     <iq-skeleton variant="rect" width="100%" height="400px" />
   } @else {
-    <div class="explorer__count mono">{{ sorted().length }} ativos</div>
+    <div class="explorer__meta mono">
+      {{ sorted().length }} ativos · {{ scoredCount() }} com score · {{ sortKey() }} {{ sortAsc() ? '▲' : '▼' }}
+    </div>
+
     <div class="explorer__table-wrap">
       <table class="explorer__table">
         <thead>
           <tr>
-            <th (click)="toggleSort('ticker')" class="explorer__sortable">Ticker</th>
-            <th>Empresa</th>
-            <th>Setor</th>
-            <th (click)="toggleSort('iq_score')" class="explorer__sortable">IQ-Score</th>
-            <th>Rating</th>
-            <th (click)="toggleSort('safety_margin')" class="explorer__sortable">Margem</th>
-            <th (click)="toggleSort('dividend_yield_proj')" class="explorer__sortable">DY Proj</th>
-            <th (click)="toggleSort('score_quanti')" class="explorer__sortable">Quanti</th>
-            <th (click)="toggleSort('score_valuation')" class="explorer__sortable">Valuation</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('ticker')" [class.ex-th--active]="sortKey() === 'ticker'">Ticker{{ sortIcon('ticker') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('company_name')" [class.ex-th--active]="sortKey() === 'company_name'">Empresa{{ sortIcon('company_name') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('cluster_name')" [class.ex-th--active]="sortKey() === 'cluster_name'">Setor{{ sortIcon('cluster_name') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('iq_score')" [class.ex-th--active]="sortKey() === 'iq_score'">IQ-Score{{ sortIcon('iq_score') }}</th>
+            <th class="ex-th">Rating</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('score_quali')" [class.ex-th--active]="sortKey() === 'score_quali'">Quali{{ sortIcon('score_quali') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('score_quanti')" [class.ex-th--active]="sortKey() === 'score_quanti'">Quanti{{ sortIcon('score_quanti') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('score_valuation')" [class.ex-th--active]="sortKey() === 'score_valuation'">Valuation{{ sortIcon('score_valuation') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('fair_value_final')" [class.ex-th--active]="sortKey() === 'fair_value_final'">Fair Value{{ sortIcon('fair_value_final') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('safety_margin')" [class.ex-th--active]="sortKey() === 'safety_margin'">Margem{{ sortIcon('safety_margin') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('dividend_yield_proj')" [class.ex-th--active]="sortKey() === 'dividend_yield_proj'">DY Proj{{ sortIcon('dividend_yield_proj') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('dividend_safety')" [class.ex-th--active]="sortKey() === 'dividend_safety'">Safety{{ sortIcon('dividend_safety') }}</th>
           </tr>
         </thead>
         <tbody>
           @for (r of sorted(); track r.ticker) {
-            <tr (click)="goToAsset(r.ticker)" class="explorer__row">
-              <td class="mono explorer__ticker"><iq-ticker-logo [ticker]="r.ticker" [size]="18" /> {{ r.ticker }}</td>
-              <td class="explorer__name">{{ r.company_name | slice:0:30 }}</td>
-              <td class="explorer__cluster mono">{{ r.cluster_id }}</td>
-              <td class="mono explorer__score" [style.color]="r.iq_score ? ratingColor(r.rating) : ''">{{ r.iq_score || '—' }}</td>
-              <td>
-                @if (r.iq_score) { <iq-rating-badge [rating]="r.rating" /> } @else { <span class="explorer__na">—</span> }
-              </td>
-              <td class="mono" [class.positive]="(r.safety_margin ?? 0) > 0" [class.negative]="(r.safety_margin ?? 0) < 0">
-                {{ r.safety_margin != null ? (r.safety_margin * 100).toFixed(1) + '%' : '—' }}
-              </td>
-              <td class="mono">{{ r.dividend_yield_proj != null ? (r.dividend_yield_proj * 100).toFixed(1) + '%' : '—' }}</td>
-              <td class="mono">{{ r.score_quanti || '—' }}</td>
-              <td class="mono">{{ r.score_valuation || '—' }}</td>
+            <tr class="ex-row" (click)="goToAsset(r.ticker)">
+              <td class="ex-td ex-td--ticker"><iq-ticker-logo [ticker]="r.ticker" [size]="20" /><span class="mono">{{ r.ticker }}</span></td>
+              <td class="ex-td ex-td--name">{{ r.company_name | slice:0:28 }}</td>
+              <td class="ex-td ex-td--cluster">{{ r.cluster_name }}</td>
+              <td class="ex-td ex-td--score mono" [style.color]="r.iq_score ? scoreColor(r.iq_score) : ''">{{ fmt(r.iq_score) }}</td>
+              <td class="ex-td">@if (r.iq_score) { <iq-rating-badge [rating]="r.rating" /> } @else { <span class="ex-na">—</span> }</td>
+              <td class="ex-td mono">{{ fmt(r.score_quali) }}</td>
+              <td class="ex-td mono">{{ fmt(r.score_quanti) }}</td>
+              <td class="ex-td mono">{{ fmt(r.score_valuation) }}</td>
+              <td class="ex-td mono">{{ fmtBrl(r.fair_value_final) }}</td>
+              <td class="ex-td mono" [class.positive]="(r.safety_margin ?? 0) > 0" [class.negative]="(r.safety_margin ?? 0) < 0">{{ fmtPct(r.safety_margin) }}</td>
+              <td class="ex-td mono">{{ fmtPct(r.dividend_yield_proj) }}</td>
+              <td class="ex-td mono">{{ fmt(r.dividend_safety) }}</td>
             </tr>
           }
         </tbody>
