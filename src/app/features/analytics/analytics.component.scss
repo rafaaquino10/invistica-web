@@ -1,0 +1,37 @@
+@use 'typography' as t;
+
+.an { max-width: 1000px; margin: 0 auto; }
+.an__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
+.an__subtitle { font-size: t.$text-sm; color: var(--text-secondary); margin-bottom: var(--space-6); }
+
+.an__card {
+  background: var(--surface-1); border: 1px solid var(--border-default); border-radius: var(--radius);
+  padding: var(--space-4) var(--space-5); margin-bottom: var(--space-4);
+}
+.an__card-title { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
+.an__card-desc { font-size: t.$text-xs; color: var(--text-tertiary); margin-bottom: var(--space-3); }
+
+.an__kpis {
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px;
+  background: var(--border-default); border: 1px solid var(--border-default); border-radius: var(--radius);
+  overflow: hidden;
+}
+.an__kpi { display: flex; flex-direction: column; gap: 2px; padding: var(--space-3) var(--space-3); background: var(--surface-0); text-align: center; }
+.an__kpi-label { font-size: t.$text-xs; color: var(--text-tertiary); }
+.an__kpi-value { font-size: t.$text-base; font-weight: 700; color: var(--text-primary); }
+
+.an__muted { font-size: t.$text-sm; color: var(--text-tertiary); padding: var(--space-3) 0; }
+
+.an__table-wrap { overflow-x: auto; }
+.an__table {
+  width: 100%; font-size: t.$text-sm;
+  th, td { padding: 8px 12px; text-align: left; white-space: nowrap; }
+  th { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 1px solid var(--border-default); }
+  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
+  tbody tr:last-child td { border-bottom: none; }
+}
+.an__ticker { font-weight: 600; }
+.an__total { font-size: t.$text-sm; font-weight: 500; color: var(--text-secondary); margin-top: var(--space-3); }
+
+.positive { color: var(--positive); }
+.negative { color: var(--negative); }

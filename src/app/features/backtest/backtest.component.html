@@ -1,0 +1,134 @@
+<div class="bt">
+  <h1 class="bt__title">Backtest</h1>
+  <p class="bt__subtitle">Simule a estratégia IQ-Score contra benchmarks com dados históricos reais.</p>
+
+  <!-- FORM -->
+  <div class="bt__form">
+    <div class="bt__form-row">
+      <div class="bt__field">
+        <label class="bt__label">Data Início</label>
+        <input class="bt__input mono" type="date" [ngModel]="startDate()" (ngModelChange)="startDate.set($event)" />
+      </div>
+      <div class="bt__field">
+        <label class="bt__label">Data Fim</label>
+        <input class="bt__input mono" type="date" [ngModel]="endDate()" (ngModelChange)="endDate.set($event)" />
+      </div>
+      <div class="bt__field">
+        <label class="bt__label">Frequência</label>
+        <iq-dropdown [options]="freqOptions" placeholder="Mensal" (selectionChange)="onFreqChange($event)" />
+      </div>
+      <div class="bt__field">
+        <label class="bt__label">Benchmarks</label>
+        <iq-dropdown [options]="benchmarkOptions" placeholder="Selecionar" [multi]="true" (selectionChange)="onBenchmarkChange($event)" />
+      </div>
+    </div>
+    <div class="bt__form-row">
+      <div class="bt__field">
+        <label class="bt__label">Universo (top N)</label>
+        <iq-slider [min]="10" [max]="500" [step]="10" [(value)]="universeSize" />
+      </div>
+      <div class="bt__field">
+        <label class="bt__label">Long % do universo</label>
+        <iq-slider [min]="5" [max]="50" [step]="5" [(value)]="longPct" />
+      </div>
+      <div class="bt__field">
+        <label class="bt__label">Min IQ-Score</label>
+        <iq-slider [min]="50" [max]="95" [step]="5" [(value)]="minIqScore" />
+      </div>
+      <div class="bt__field">
+        <label class="bt__label">Custo (bps)</label>
+        <iq-slider [min]="0" [max]="200" [step]="10" [(value)]="transactionCostBps" />
+      </div>
+    </div>
+    <div class="bt__form-row">
+      <div class="bt__field">
+        <label class="bt__label">Capital Inicial</label>
+        <div class="bt__input-group">
+          <span class="bt__prefix">R$</span>
+          <input class="bt__input mono" type="number" [ngModel]="initialCapital()" (ngModelChange)="initialCapital.set($event)" min="1000" step="100000" />
+        </div>
+      </div>
+      <div class="bt__field bt__field--action">
+        <iq-button variant="primary" [loading]="loading()" (clicked)="run()">Executar Backtest</iq-button>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="bt__loading">
+      <iq-skeleton variant="rect" width="100%" height="250px" />
+      <p class="bt__loading-text">Processando backtest... isso pode levar alguns segundos.</p>
+    </div>
+  } @else if (result()) {
+    <!-- EQUITY CURVE -->
+    <div class="bt__card">
+      <h3 class="bt__card-title">Equity Curve</h3>
+      <iq-line-chart [series]="chartSeries()" />
+    </div>
+
+    <!-- KPIS -->
+    <div class="bt__kpis">
+      <div class="bt__kpi">
+        <span class="bt__kpi-label">Retorno Total</span>
+        <span class="bt__kpi-value mono" [class.positive]="(result()!.strategy.total_return ?? 0) >= 0"
+              [class.negative]="(result()!.strategy.total_return ?? 0) < 0">
+          {{ pct(result()!.strategy.total_return) }}
+        </span>
+      </div>
+      <div class="bt__kpi">
+        <span class="bt__kpi-label">CAGR</span>
+        <span class="bt__kpi-value mono">{{ pct(result()!.strategy.annualized_return) }}</span>
+      </div>
+      <div class="bt__kpi">
+        <span class="bt__kpi-label">Sharpe</span>
+        <span class="bt__kpi-value mono">{{ num(result()!.strategy.sharpe) }}</span>
+      </div>
+      <div class="bt__kpi">
+        <span class="bt__kpi-label">Max Drawdown</span>
+        <span class="bt__kpi-value mono negative">{{ pct(result()!.strategy.max_drawdown) }}</span>
+      </div>
+      <div class="bt__kpi">
+        <span class="bt__kpi-label">Turnover Médio</span>
+        <span class="bt__kpi-value mono">{{ pct(result()!.strategy.turnover_avg) }}</span>
+      </div>
+      <div class="bt__kpi">
+        <span class="bt__kpi-label">Total Trades</span>
+        <span class="bt__kpi-value mono">{{ result()!.strategy.total_trades ?? '—' }}</span>
+      </div>
+    </div>
+
+    <!-- BENCHMARKS TABLE -->
+    @if (result()!.benchmarks.length > 0) {
+      <div class="bt__card">
+        <h3 class="bt__card-title">Benchmarks</h3>
+        <div class="bt__table-wrap">
+          <table class="bt__table">
+            <thead>
+              <tr><th>Benchmark</th><th class="mono">Retorno</th><th class="mono">CAGR</th><th class="mono">Sharpe</th><th class="mono">Max DD</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bt__strat-label">IQ Strategy</td>
+                <td class="mono">{{ pct(result()!.strategy.total_return) }}</td>
+                <td class="mono">{{ pct(result()!.strategy.annualized_return) }}</td>
+                <td class="mono">{{ num(result()!.strategy.sharpe) }}</td>
+                <td class="mono negative">{{ pct(result()!.strategy.max_drawdown) }}</td>
+              </tr>
+              @for (b of result()!.benchmarks; track b.name) {
+                <tr>
+                  <td>{{ b.name }}</td>
+                  <td class="mono">{{ pct(b.total_return) }}</td>
+                  <td class="mono">{{ pct(b.annualized_return) }}</td>
+                  <td class="mono">{{ num(b.sharpe) }}</td>
+                  <td class="mono negative">{{ pct(b.max_drawdown) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+
+  <iq-disclaimer />
+</div>
