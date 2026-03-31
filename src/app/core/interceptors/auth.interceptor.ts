@@ -2,10 +2,13 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { from, switchMap } from 'rxjs';
 import { AuthService } from '../services/auth.service';
-import { environment } from '../../../environments/environment';
+
+const API_PATHS = ['/scores', '/tickers', '/clusters', '/valuation', '/portfolio', '/dividends', '/news', '/radar', '/analytics', '/billing', '/backtest', '/health'];
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  if (!req.url.startsWith(environment.apiUrl)) {
+  // Only intercept API calls, not assets/fonts/etc.
+  const isApiCall = API_PATHS.some(p => req.url.startsWith(p) || req.url.includes(p));
+  if (!isApiCall) {
     return next(req);
   }
 
