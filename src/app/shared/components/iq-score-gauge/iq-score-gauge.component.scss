@@ -1,0 +1,41 @@
+@use 'typography' as t;
+
+.gauge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge--sm { width: 80px; height: 80px; }
+.gauge--md { width: 120px; height: 120px; }
+.gauge--lg { width: 160px; height: 160px; }
+
+.gauge svg {
+  position: absolute;
+  inset: 0;
+}
+
+.gauge__bg {
+  stroke: var(--surface-3);
+}
+
+.gauge__fill {
+  transition: stroke-dashoffset 0.8s var(--ease);
+}
+
+.gauge__label {
+  position: relative;
+  text-align: center;
+}
+
+.gauge__score {
+  font-family: t.$font-mono;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.gauge--sm .gauge__score { font-size: t.$text-xl; }
+.gauge--md .gauge__score { font-size: t.$text-hero; }
+.gauge--lg .gauge__score { font-size: t.$text-display; }

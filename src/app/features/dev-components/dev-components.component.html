@@ -23,7 +23,6 @@
     <div class="dev__row" style="max-width: 400px;">
       <iq-input label="E-mail" type="email" placeholder="seu@email.com" />
       <iq-input label="Senha" type="password" error="Senha obrigatória" />
-      <iq-input label="Desabilitado" [disabled]="true" />
     </div>
   </section>
 
@@ -57,8 +56,7 @@
   <section class="dev__section">
     <h2>iq-accordion</h2>
     <iq-accordion title="O que é o IQ-Score?">
-      O IQ-Score é uma métrica proprietária que combina análise quantitativa, qualitativa e de valuation
-      para gerar um score de 0 a 100 para cada ativo.
+      O IQ-Score é uma métrica proprietária que combina análise quantitativa, qualitativa e de valuation.
     </iq-accordion>
   </section>
 
@@ -67,7 +65,7 @@
     <h2>iq-modal</h2>
     <iq-button (clicked)="modalOpen.set(true)">Abrir Modal</iq-button>
     <iq-modal [open]="modalOpen()" title="Exemplo de Modal" (close)="modalOpen.set(false)">
-      <p>Conteúdo do modal. Pressione ESC ou clique fora para fechar.</p>
+      <p>Conteúdo do modal. ESC ou clique fora para fechar.</p>
     </iq-modal>
   </section>
 
@@ -102,19 +100,18 @@
   <section class="dev__section">
     <h2>iq-tooltip</h2>
     <div class="dev__row">
-      <span [iqTooltip]="'Tooltip no topo'" tooltipPosition="top" style="cursor: help; text-decoration: underline dotted;">Hover aqui (top)</span>
-      <span [iqTooltip]="'Tooltip embaixo'" tooltipPosition="bottom" style="cursor: help; text-decoration: underline dotted;">Hover aqui (bottom)</span>
-      <span [iqTooltip]="'Tooltip direita'" tooltipPosition="right" style="cursor: help; text-decoration: underline dotted;">Hover aqui (right)</span>
+      <span [iqTooltip]="'Tooltip no topo'" tooltipPosition="top" style="cursor:help;text-decoration:underline dotted">Hover (top)</span>
+      <span [iqTooltip]="'Tooltip embaixo'" tooltipPosition="bottom" style="cursor:help;text-decoration:underline dotted">Hover (bottom)</span>
     </div>
   </section>
 
   <!-- SKELETON -->
   <section class="dev__section">
     <h2>iq-skeleton</h2>
-    <div class="dev__row" style="flex-direction: column; gap: 8px; max-width: 300px;">
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:300px">
       <iq-skeleton variant="text" width="80%" />
       <iq-skeleton variant="text" width="60%" />
-      <iq-skeleton variant="rect" width="100%" height="80px" />
+      <iq-skeleton variant="rect" width="100%" height="60px" />
       <iq-skeleton variant="circle" width="40px" height="40px" />
     </div>
   </section>
@@ -122,13 +119,133 @@
   <!-- EMPTY STATE -->
   <section class="dev__section">
     <h2>iq-empty-state</h2>
-    <iq-empty-state title="Sem ativos na carteira" description="Adicione ativos para começar a acompanhar seus investimentos." />
+    <iq-empty-state title="Sem ativos na carteira" description="Adicione ativos para começar." />
   </section>
 
   <!-- DISCLAIMER -->
   <section class="dev__section">
     <h2>iq-disclaimer</h2>
     <iq-disclaimer />
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- COMPONENTES DE DADOS FINANCEIROS       -->
+  <!-- ═══════════════════════════════════════ -->
+
+  <h1 class="dev__title" style="margin-top:48px">Componentes de Dados</h1>
+
+  <!-- SCORE GAUGE -->
+  <section class="dev__section">
+    <h2>iq-score-gauge</h2>
+    <div class="dev__row">
+      <iq-score-gauge [score]="29" rating="AVOID" size="sm" />
+      <iq-score-gauge [score]="65" rating="HOLD" size="md" />
+      <iq-score-gauge [score]="85" rating="STRONG_BUY" size="lg" />
+    </div>
+  </section>
+
+  <!-- RATING BADGE -->
+  <section class="dev__section">
+    <h2>iq-rating-badge</h2>
+    <div class="dev__row">
+      @for (r of ratings; track r) {
+        <iq-rating-badge [rating]="r" />
+      }
+    </div>
+  </section>
+
+  <!-- REGIME BADGE -->
+  <section class="dev__section">
+    <h2>iq-regime-badge</h2>
+    <div class="dev__row">
+      @for (r of regimes; track r) {
+        <iq-regime-badge [regime]="r" />
+      }
+    </div>
+  </section>
+
+  <!-- PILLAR BARS -->
+  <section class="dev__section">
+    <h2>iq-pillar-bars</h2>
+    <div style="max-width:400px">
+      <iq-pillar-bars [quanti]="50" [quali]="71" [valuation]="3"
+                      [weights]="{ quanti: 0.4, quali: 0.25, valuation: 0.35 }" />
+    </div>
+  </section>
+
+  <!-- SUB-SCORE RADAR -->
+  <section class="dev__section">
+    <h2>iq-sub-score-radar</h2>
+    <iq-sub-score-radar [scores]="subScores" />
+  </section>
+
+  <!-- KPI CARD -->
+  <section class="dev__section">
+    <h2>iq-kpi-card</h2>
+    <div class="dev__row">
+      <iq-kpi-card label="Preço" [value]="'49.67'" prefix="R$ " [delta]="0.0123" deltaLabel="1d" />
+      <iq-kpi-card label="Market Cap" [value]="'666.5B'" prefix="R$ " />
+      <iq-kpi-card label="Dividend Yield" [value]="'7.3%'" [delta]="-0.005" deltaLabel="vs 12m" />
+    </div>
+  </section>
+
+  <!-- SPARKLINE -->
+  <section class="dev__section">
+    <h2>iq-sparkline</h2>
+    <div class="dev__row">
+      <iq-sparkline [data]="sparkData" [positive]="true" />
+      <iq-sparkline [data]="sparkDataDown" [positive]="false" />
+    </div>
+  </section>
+
+  <!-- FAIR VALUE BAR -->
+  <section class="dev__section">
+    <h2>iq-fair-value-bar</h2>
+    <div style="max-width:400px">
+      <iq-fair-value-bar [currentPrice]="49.67" [fairValue]="26.47" [p25]="2.03" [p75]="9.50" />
+    </div>
+  </section>
+
+  <!-- BAR CHART -->
+  <section class="dev__section">
+    <h2>iq-bar-chart</h2>
+    <div style="max-width:400px">
+      <iq-bar-chart [data]="barData" />
+    </div>
+  </section>
+
+  <!-- LINE CHART -->
+  <section class="dev__section">
+    <h2>iq-line-chart</h2>
+    <div style="max-width:400px">
+      <iq-line-chart [series]="lineSeries" />
+    </div>
+  </section>
+
+  <!-- DONUT CHART -->
+  <section class="dev__section">
+    <h2>iq-donut-chart</h2>
+    <iq-donut-chart [data]="donutData" />
+  </section>
+
+  <!-- HEATMAP -->
+  <section class="dev__section">
+    <h2>iq-heatmap</h2>
+    <iq-heatmap [data]="heatmapData" [rowLabels]="heatmapRows" [colLabels]="heatmapCols" />
+  </section>
+
+  <!-- TREEMAP -->
+  <section class="dev__section">
+    <h2>iq-treemap</h2>
+    <iq-treemap [data]="treemapData" colorBy="change" />
+  </section>
+
+  <!-- MONTE CARLO -->
+  <section class="dev__section">
+    <h2>iq-monte-carlo</h2>
+    <div style="max-width:450px">
+      <iq-monte-carlo [scenarios]="mcScenarios" [currentPrice]="49.67" />
+    </div>
   </section>
 
   <!-- PIPES -->
