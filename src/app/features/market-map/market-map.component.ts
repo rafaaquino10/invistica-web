@@ -17,7 +17,6 @@ import { IqDisclaimerComponent } from '../../shared/components/iq-disclaimer/iq-
         <h1 class="mmap__title">Mapa de Mercado</h1>
         <div class="mmap__toggles">
           <iq-button [variant]="colorBy() === 'change' ? 'primary' : 'secondary'" size="sm" (clicked)="colorBy.set('change')">Variação</iq-button>
-          <iq-button [variant]="colorBy() === 'score' ? 'primary' : 'secondary'" size="sm" (clicked)="colorBy.set('score')">IQ-Score</iq-button>
         </div>
       </div>
       @if (loading()) {
