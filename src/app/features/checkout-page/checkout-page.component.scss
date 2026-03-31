@@ -1,0 +1,41 @@
+@use 'typography' as t;
+
+.checkout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--surface-0);
+  padding: var(--space-4);
+}
+
+.checkout__card {
+  text-align: center;
+  max-width: 420px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  padding: var(--space-10) var(--space-8);
+}
+
+.checkout__icon {
+  margin: 0 auto var(--space-5);
+}
+
+.checkout__icon--success { color: var(--positive); }
+.checkout__icon--fail { color: var(--negative); }
+.checkout__icon--pending { color: var(--warning); }
+
+.checkout__title {
+  font-size: t.$text-xl;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.checkout__desc {
+  font-size: t.$text-sm;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--space-6);
+}

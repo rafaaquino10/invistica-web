@@ -13,25 +13,25 @@ export const routes: Routes = [
   // ── Auth routes (outside shell) ──
   {
     path: 'login',
-    loadComponent: () => import('./features/login/login.component').then(m => m.LoginComponent),
+    loadComponent: () => import('./features/auth/login.component').then(m => m.LoginComponent),
   },
   {
     path: 'registro',
-    loadComponent: () => import('./features/login/login.component').then(m => m.LoginComponent),
+    loadComponent: () => import('./features/auth/register.component').then(m => m.RegisterComponent),
   },
 
   // ── Checkout routes (outside shell) ──
   {
     path: 'checkout/sucesso',
-    loadComponent: () => import('./features/checkout/checkout.component').then(m => m.CheckoutComponent),
+    loadComponent: () => import('./features/checkout-page/checkout-sucesso.component').then(m => m.CheckoutSucessoComponent),
   },
   {
     path: 'checkout/falha',
-    loadComponent: () => import('./features/checkout/checkout.component').then(m => m.CheckoutComponent),
+    loadComponent: () => import('./features/checkout-page/checkout-falha.component').then(m => m.CheckoutFalhaComponent),
   },
   {
     path: 'checkout/pendente',
-    loadComponent: () => import('./features/checkout/checkout.component').then(m => m.CheckoutComponent),
+    loadComponent: () => import('./features/checkout-page/checkout-pendente.component').then(m => m.CheckoutPendenteComponent),
   },
 
   // ── Shell (authenticated) ──
@@ -142,7 +142,7 @@ export const routes: Routes = [
       // Conta
       {
         path: 'configuracoes',
-        loadComponent: () => import('./features/configuracoes/configuracoes.component').then(m => m.ConfiguracoesComponent),
+        loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent),
       },
 
       // Default redirect
