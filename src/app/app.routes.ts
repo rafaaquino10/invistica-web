@@ -4,6 +4,13 @@ import { authGuard } from './core/guards/auth.guard';
 import { planGuard } from './core/guards/plan.guard';
 
 export const routes: Routes = [
+  // ── Landing (public, outside shell) ──
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () => import('./features/landing/landing.component').then(m => m.LandingComponent),
+  },
+
   // ── Auth routes (outside shell) ──
   {
     path: 'login',
@@ -141,8 +148,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent),
       },
 
-      // Default redirect
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
 

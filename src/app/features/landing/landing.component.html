@@ -1,0 +1,187 @@
+<!-- ═══ NAV ═══ -->
+<nav class="nav">
+  <div class="nav__logo">
+    <div class="nav__mark mono">iQ</div>
+    <span class="nav__text">InvestIQ</span>
+  </div>
+  <div class="nav__right">
+    <a class="nav__btn-ghost" routerLink="/login">Entrar</a>
+    <a class="nav__btn-solid" routerLink="/registro">Criar conta</a>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <canvas #heroCanvas class="hero__bg"></canvas>
+  <div class="hero__gradient"></div>
+  <div class="hero__content">
+    <h1 class="hero__h">Inteligência proprietária<br>para <strong>investidores</strong>.</h1>
+    <p class="hero__sub">Scoring quantitativo, qualitativo e valuation combinados. 298 ações da B3 analisadas diariamente com dados reais de CVM, BCB e B3.</p>
+    <div class="hero__ctas">
+      <a class="hero__btn hero__btn--pri" routerLink="/registro">Criar conta gratuita</a>
+      <button class="hero__btn hero__btn--sec" (click)="scrollToLive()">Ver análise ao vivo ↓</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PROCESSING STRIP ═══ -->
+<div class="proc">
+  <div class="proc__label">
+    <span class="proc__dot"></span>
+    <span class="proc__label-text mono">PROCESSANDO</span>
+  </div>
+  <div class="proc__track">
+    <div class="proc__inner">
+      @for (item of procItems; track $index) {
+        <div class="proc__item">
+          <span class="proc__tk mono">{{ item.tk }}</span>
+          <span class="proc__arrow">→</span>
+          <span class="proc__sc mono" [style.color]="scoreColor(item.sc)">{{ item.sc }}</span>
+          <span class="proc__rt mono" [class]="'proc__rt proc__rt--' + item.rc">{{ item.rt }}</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LIVE ANALYSIS ═══ -->
+<section class="live">
+  <div class="live__label">
+    <span class="live__dot"></span>
+    <span class="live__text mono">ANÁLISE AO VIVO —</span>
+    <span class="live__ticker mono">{{ currentStock().tk }} · {{ currentStock().nm }}</span>
+    <span class="live__countdown mono">próximo em {{ countdown() }}s</span>
+  </div>
+
+  <div class="card" [class.card--fading]="fading()">
+    <!-- HEADER -->
+    <div class="card__head">
+      <span class="card__tk mono">{{ currentStock().tk }}</span>
+      <span class="card__nm">{{ currentStock().nm }}</span>
+      <span class="card__sec mono">{{ currentStock().sec }}</span>
+    </div>
+
+    <!-- BODY -->
+    <div class="card__body">
+      <!-- Score -->
+      <div class="card__cell card__cell--ctr">
+        <div class="card__lbl mono">IQ-SCORE</div>
+        <div class="card__score mono" [style.color]="scoreColor(currentStock().sc)">{{ currentStock().sc }}</div>
+        <span class="card__badge mono" [class]="'card__badge card__badge--' + currentStock().rc">{{ currentStock().rl }}</span>
+      </div>
+      <!-- Price -->
+      <div class="card__cell">
+        <div class="card__lbl mono">COTAÇÃO ATUAL</div>
+        <div class="card__price mono">{{ currentStock().px }}</div>
+        <div class="card__chg mono" [style.color]="currentStock().chgPos ? 'var(--positive)' : 'var(--negative)'">{{ currentStock().chg }} hoje</div>
+        <div class="card__spacer"></div>
+        <div class="card__lbl mono">PREÇO JUSTO (4 MODELOS)</div>
+        <div class="card__fair mono">{{ currentStock().fv }}</div>
+        <div class="card__mg mono">Margem: {{ currentStock().mg }}</div>
+      </div>
+      <!-- Divs & Risk -->
+      <div class="card__cell">
+        <div class="card__lbl mono">DIVIDENDOS</div>
+        <div class="card__sub mono">{{ currentStock().yd }}</div>
+        <div class="card__det mono">{{ currentStock().sf }}</div>
+        <div class="card__spacer"></div>
+        <div class="card__lbl mono">RISCO</div>
+        <div class="card__sub mono" [style.color]="currentStock().mtOk ? 'var(--positive)' : 'var(--obsidian)'">{{ currentStock().mt }}</div>
+        <div class="card__det mono">{{ currentStock().pi }}</div>
+      </div>
+    </div>
+
+    <!-- PILLARS -->
+    <div class="card__pillars">
+      <div class="card__pillar">
+        <span class="card__pl-nm">Quantitativo</span>
+        <div class="card__pl-bar"><div class="card__pl-fill" [style.width.%]="currentStock().q" [style.background]="pillarColor(currentStock().q)"></div></div>
+        <span class="card__pl-sc mono" [style.color]="pillarColor(currentStock().q)">{{ currentStock().q }}</span>
+      </div>
+      <div class="card__pillar">
+        <span class="card__pl-nm">Qualitativo</span>
+        <div class="card__pl-bar"><div class="card__pl-fill" [style.width.%]="currentStock().l" [style.background]="pillarColor(currentStock().l)"></div></div>
+        <span class="card__pl-sc mono" [style.color]="pillarColor(currentStock().l)">{{ currentStock().l }}</span>
+      </div>
+      <div class="card__pillar">
+        <span class="card__pl-nm">Valuation</span>
+        <div class="card__pl-bar"><div class="card__pl-fill" [style.width.%]="currentStock().v" [style.background]="pillarColor(currentStock().v)"></div></div>
+        <span class="card__pl-sc mono" [style.color]="pillarColor(currentStock().v)">{{ currentStock().v }}</span>
+      </div>
+    </div>
+
+    <!-- THESIS -->
+    <div class="card__thesis" [innerHTML]="currentStock().th"></div>
+
+    <!-- FOOTER -->
+    <div class="card__foot">
+      <span class="card__foot-dis">IQ-Cognit Engine · Não constitui recomendação</span>
+      <a class="card__foot-cta mono" routerLink="/registro">Ver análise completa →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ NUMBERS ═══ -->
+<section class="nums">
+  <div class="nums__inner">
+    <div class="nums__item">
+      <span class="nums__val mono">24,6%</span>
+      <span class="nums__lbl">CAGR anualizado</span>
+      <span class="nums__sub mono">vs IBOV 14,0%</span>
+    </div>
+    <div class="nums__item">
+      <span class="nums__val mono">+10,6pp</span>
+      <span class="nums__lbl">Alpha sobre IBOV</span>
+      <span class="nums__sub mono">backtest 2016–2025</span>
+    </div>
+    <div class="nums__item">
+      <span class="nums__val mono">0,78</span>
+      <span class="nums__lbl">Sharpe Ratio</span>
+      <span class="nums__sub mono">retorno/risco</span>
+    </div>
+    <div class="nums__item">
+      <span class="nums__val mono">59,2%</span>
+      <span class="nums__lbl">Hit rate</span>
+      <span class="nums__sub mono">recomendações corretas</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DIFFERENTIATORS ═══ -->
+<section class="diff">
+  <div class="diff__grid">
+    <div class="diff__card">
+      <span class="diff__num mono">01</span>
+      <h3 class="diff__title">Dados reais. Não opinião.</h3>
+      <p class="diff__text">CVM, B3, BCB, 9 feeds de notícias, Boletim Focus. O motor processa demonstrações financeiras reais — zero estimativa de analista.</p>
+    </div>
+    <div class="diff__card">
+      <span class="diff__num mono">02</span>
+      <h3 class="diff__title">Veja o que os fundos fazem.</h3>
+      <p class="diff__text">Holdings institucionais CVM, short interest B3, taxa de aluguel. Informação que era exclusiva de terminais profissionais.</p>
+    </div>
+    <div class="diff__card">
+      <span class="diff__num mono">03</span>
+      <h3 class="diff__title">Kill switch automático.</h3>
+      <p class="diff__text">Recuperação judicial, fraude, intervenção — o score zera instantaneamente. 13 gatilhos monitorados. Sem delay humano.</p>
+    </div>
+    <div class="diff__card">
+      <span class="diff__num mono">04</span>
+      <h3 class="diff__title">Transparência total.</h3>
+      <p class="diff__text">Cada critério com evidência e fonte. Bull case, bear case, riscos. Você vê POR QUE o score é aquele número.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta">
+  <h2 class="cta__h">298 ações analisadas. <strong>A sua está aqui.</strong></h2>
+  <p class="cta__sub">Comece agora. Sem cartão de crédito.</p>
+  <a class="cta__btn" routerLink="/registro">Criar conta gratuita</a>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="foot">
+  <span>InvestIQ © 2026 · Informações educacionais · Não constitui recomendação de investimento</span>
+  <span>Termos · Privacidade</span>
+</footer>
