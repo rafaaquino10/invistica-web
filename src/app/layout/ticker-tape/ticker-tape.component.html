@@ -1,0 +1,23 @@
+<div class="tape">
+  <div class="tape__track">
+    @for (item of items; track item.ticker) {
+      <span class="tape__item">
+        <span class="tape__ticker">{{ item.ticker }}</span>
+        <span class="tape__price">{{ item.price.toFixed(2) }}</span>
+        <span class="tape__delta" [class.tape__delta--positive]="item.delta >= 0" [class.tape__delta--negative]="item.delta < 0">
+          {{ item.delta >= 0 ? '+' : '' }}{{ item.delta.toFixed(2) }}%
+        </span>
+      </span>
+    }
+    <!-- duplicate for seamless loop -->
+    @for (item of items; track item.ticker) {
+      <span class="tape__item">
+        <span class="tape__ticker">{{ item.ticker }}</span>
+        <span class="tape__price">{{ item.price.toFixed(2) }}</span>
+        <span class="tape__delta" [class.tape__delta--positive]="item.delta >= 0" [class.tape__delta--negative]="item.delta < 0">
+          {{ item.delta >= 0 ? '+' : '' }}{{ item.delta.toFixed(2) }}%
+        </span>
+      </span>
+    }
+  </div>
+</div>
