@@ -84,7 +84,7 @@ export const routes: Routes = [
       },
       {
         path: 'decidir',
-        loadComponent: () => import('./features/decidir/decidir.component').then(m => m.DecidirComponent),
+        loadComponent: () => import('./features/decide/decide.component').then(m => m.DecideComponent),
         canActivate: [planGuard],
       },
       {

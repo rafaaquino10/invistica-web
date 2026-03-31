@@ -1,0 +1,49 @@
+@use 'typography' as t;
+
+.decide { max-width: 900px; margin: 0 auto; }
+.decide__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
+.decide__subtitle { font-size: t.$text-sm; color: var(--text-secondary); margin-bottom: var(--space-6); }
+
+.decide__regime {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) var(--space-4); background: var(--surface-1);
+  border: 1px solid var(--border-default); border-radius: var(--radius); margin-bottom: var(--space-4);
+}
+.decide__regime-desc { font-size: t.$text-sm; color: var(--text-secondary); }
+
+.decide__input-row {
+  display: flex; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-6);
+}
+.decide__input-wrap { display: flex; flex-direction: column; gap: var(--space-1); }
+.decide__label { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); }
+.decide__input-group {
+  display: flex; align-items: center; height: 48px;
+  border: 1px solid var(--border-default); border-radius: var(--radius); background: var(--surface-1);
+  &:focus-within { border-color: var(--border-focus); }
+}
+.decide__prefix {
+  padding: 0 var(--space-3); font-size: t.$text-lg; color: var(--text-tertiary); border-right: 1px solid var(--border-default);
+}
+.decide__input {
+  width: 160px; height: 100%; border: none; outline: none; background: transparent;
+  font-family: t.$font-mono; font-size: t.$text-xl; font-weight: 700; color: var(--text-primary); padding: 0 var(--space-3);
+}
+
+.decide__result { margin-top: var(--space-4); }
+.decide__columns { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-4); }
+.decide__card {
+  background: var(--surface-1); border: 1px solid var(--border-default); border-radius: var(--radius); padding: var(--space-4) var(--space-5);
+}
+.decide__card-title { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
+
+.decide__list { display: flex; flex-direction: column; gap: var(--space-3); }
+.decide__item {
+  padding: var(--space-3); background: var(--surface-0); border-radius: var(--radius); border: 1px solid var(--border-default);
+}
+.decide__item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.decide__item-ticker { font-weight: 700; font-size: t.$text-base; }
+.decide__item-amount { font-weight: 600; color: var(--positive); }
+.decide__item-score { font-size: t.$text-xs; color: var(--obsidian); }
+.decide__item-reason { font-size: t.$text-xs; color: var(--text-tertiary); line-height: 1.4; margin-top: 4px; }
+
+.decide__actions { display: flex; gap: var(--space-3); }

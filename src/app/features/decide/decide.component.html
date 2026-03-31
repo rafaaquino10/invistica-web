@@ -1,0 +1,74 @@
+<div class="decide">
+  <h1 class="decide__title">Decidir</h1>
+  <p class="decide__subtitle">O motor analisa sua carteira e sugere a melhor alocação para seu aporte.</p>
+
+  @if (noPortfolio()) {
+    <iq-empty-state title="Adicione posições primeiro"
+                    description="O motor precisa da sua carteira para sugerir alocações." />
+  } @else {
+    <!-- REGIME CONTEXT -->
+    @if (regime(); as r) {
+      <div class="decide__regime">
+        <iq-regime-badge [regime]="r.regime" />
+        <span class="decide__regime-desc">{{ r.description }}</span>
+      </div>
+    }
+
+    <!-- INPUT -->
+    <div class="decide__input-row">
+      <div class="decide__input-wrap">
+        <label class="decide__label">Quanto quer aportar?</label>
+        <div class="decide__input-group">
+          <span class="decide__prefix">R$</span>
+          <input class="decide__input mono" type="number"
+                 [ngModel]="amount()" (ngModelChange)="amount.set($event)"
+                 min="100" step="100" />
+        </div>
+      </div>
+      <iq-button variant="primary" [loading]="loading()" (clicked)="analyze()">Analisar</iq-button>
+    </div>
+
+    <!-- RESULT -->
+    @if (loading()) {
+      <iq-skeleton variant="rect" width="100%" height="300px" />
+    } @else if (result()) {
+      <div class="decide__result">
+        <div class="decide__columns">
+          <!-- DONUT -->
+          <div class="decide__card">
+            <h3 class="decide__card-title">Distribuição Sugerida</h3>
+            <iq-donut-chart [data]="donutData()" />
+          </div>
+
+          <!-- LIST -->
+          <div class="decide__card">
+            <h3 class="decide__card-title">Alocações</h3>
+            <div class="decide__list">
+              @for (s of result()!.suggestions; track s.ticker) {
+                <div class="decide__item">
+                  <div class="decide__item-header">
+                    <span class="decide__item-ticker mono">{{ s.ticker }}</span>
+                    <span class="decide__item-amount mono">{{ s.suggested_amount | currencyBrl }}</span>
+                  </div>
+                  @if (s.iq_score != null) {
+                    <span class="decide__item-score mono">Score {{ s.iq_score }}</span>
+                  }
+                  <p class="decide__item-reason">{{ s.reason }}</p>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="decide__actions">
+          <iq-button variant="primary" [loading]="applying()" (clicked)="applyAll()">
+            Aceitar e adicionar à carteira
+          </iq-button>
+          <iq-button variant="ghost" (clicked)="result.set(null)">Refazer</iq-button>
+        </div>
+      </div>
+    }
+  }
+
+  <iq-disclaimer />
+</div>
