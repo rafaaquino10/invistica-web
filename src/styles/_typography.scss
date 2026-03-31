@@ -113,12 +113,12 @@ $font-ui: 'Satoshi', system-ui, -apple-system, sans-serif;
 $font-mono: 'IBM Plex Mono', 'Menlo', 'Consolas', monospace;
 
 // ── Typographic scale ──
-$text-xs: 0.6875rem;      // 11px — timestamps, minimal labels
-$text-sm: 0.75rem;        // 12px — captions, metadata
-$text-base: 0.875rem;     // 14px — body copy
-$text-lg: 1rem;           // 16px — card titles
-$text-xl: 1.25rem;        // 20px — section titles
-$text-2xl: 1.5rem;        // 24px — page title, greeting
+$text-xs: 0.75rem;        // 12px — timestamps, minimal labels
+$text-sm: 0.8125rem;      // 13px — captions, metadata
+$text-base: 0.9375rem;    // 15px — body copy
+$text-lg: 1.0625rem;      // 17px — card titles
+$text-xl: 1.3125rem;      // 21px — section titles
+$text-2xl: 1.5625rem;     // 25px — page title, greeting
 $text-hero: 2.25rem;      // 36px — large score, price, hero number
 $text-display: 2.75rem;   // 44px — score within gauge
 
