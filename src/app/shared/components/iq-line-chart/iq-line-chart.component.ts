@@ -35,7 +35,7 @@ const PAD = { top: 16, right: 16, bottom: 28, left: 56 };
     </svg>
   `,
   styles: [`
-    .linechart { width: 100%; height: auto; display: block; }
+    .linechart { width: 100%; max-height: 260px; display: block; }
     .linechart__grid { stroke: var(--surface-3); stroke-width: 0.5; }
     .linechart__label { font-size: 11px; fill: var(--text-tertiary); font-family: 'IBM Plex Mono', monospace; }
     .linechart__legend { font-size: 10px; fill: var(--text-secondary); font-family: 'Satoshi', sans-serif; }

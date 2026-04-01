@@ -28,7 +28,7 @@ const PAD = { top: 16, right: 16, bottom: 36, left: 56 };
     </svg>
   `,
   styles: [`
-    .barchart { width: 100%; height: auto; display: block; }
+    .barchart { width: 100%; max-height: 280px; display: block; }
     .barchart__grid { stroke: var(--surface-3); stroke-width: 0.5; }
     .barchart__y-label { font-size: 11px; fill: var(--text-tertiary); font-family: 'IBM Plex Mono', monospace; }
     .barchart__x-label { font-size: 11px; fill: var(--text-tertiary); font-family: 'IBM Plex Mono', monospace; }
