@@ -6,8 +6,8 @@ export interface MonteCarloScenarios {
   bull: number;
 }
 
-const W = 360;
-const H = 160;
+const W = 600;
+const H = 260;
 const PAD = { top: 20, right: 20, bottom: 30, left: 50 };
 
 @Component({
@@ -34,8 +34,8 @@ const PAD = { top: 20, right: 20, bottom: 30, left: 50 };
   `,
   styles: [`
     .mc { width: 100%; }
-    .mc__label { font-size: 9px; fill: var(--text-secondary); font-family: 'Satoshi', sans-serif; }
-    .mc__value { font-size: 10px; fill: var(--text-primary); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+    .mc__label { font-size: 11px; fill: var(--text-secondary); font-family: 'Satoshi', sans-serif; }
+    .mc__value { font-size: 12px; fill: var(--text-primary); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

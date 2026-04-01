@@ -55,7 +55,7 @@ function polarToXY(angle: number, r: number): [number, number] {
     .radar__grid { fill: none; stroke: var(--surface-3); stroke-width: 0.5; }
     .radar__axis { stroke: var(--surface-3); stroke-width: 0.5; }
     .radar__data { fill: rgba(61,61,58,0.1); stroke: var(--obsidian); stroke-width: 1.5; }
-    .radar__label { font-size: 9px; fill: var(--text-tertiary); font-family: 'Satoshi', sans-serif; }
+    .radar__label { font-size: 11px; fill: var(--text-tertiary); font-family: 'Satoshi', sans-serif; }
     .radar__score { font-size: 10px; fill: var(--text-primary); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,

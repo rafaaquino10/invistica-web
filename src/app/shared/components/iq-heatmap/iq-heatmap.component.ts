@@ -28,8 +28,8 @@ const PAD_TOP = 20;
   `,
   styles: [`
     .heatmap { width: 100%; }
-    .heatmap__label { font-size: 8px; fill: var(--text-tertiary); font-family: 'IBM Plex Mono', monospace; }
-    .heatmap__value { font-size: 9px; fill: var(--text-primary); font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+    .heatmap__label { font-size: 11px; fill: var(--text-tertiary); font-family: 'IBM Plex Mono', monospace; }
+    .heatmap__value { font-size: 11px; fill: var(--text-primary); font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
