@@ -1,51 +1,71 @@
 <div class="macro">
   <h1 class="macro__title">Macro</h1>
+  <p class="macro__subtitle">Panorama macroeconômico e posicionamento do motor IQ-Cognit.</p>
 
   @if (loading()) {
     <iq-skeleton variant="rect" width="100%" height="300px" />
   } @else {
-    <!-- REGIME BANNER -->
-    @if (regime(); as r) {
+    <!-- REGIME -->
+    @if (regime()) {
       <div class="macro__regime">
         <div class="macro__regime-top">
-          <iq-regime-badge [regime]="r.regime" />
-          <span class="macro__regime-label">{{ r.label }}</span>
+          <iq-regime-badge [regime]="regime()!.regime" />
+          <span class="macro__regime-label">{{ regime()!.label }}</span>
         </div>
-        <p class="macro__regime-desc">{{ r.description }}</p>
+        <p class="macro__regime-desc">{{ regime()!.description }}</p>
+
+        <!-- INDICATORS -->
         <div class="macro__indicators">
           <div class="macro__ind">
             <span class="macro__ind-label">SELIC</span>
-            <span class="macro__ind-val mono">{{ r.macro.selic }}%</span>
+            <span class="macro__ind-val mono">{{ regime()!.macro.selic }}%</span>
           </div>
           <div class="macro__ind">
             <span class="macro__ind-label">IPCA</span>
-            <span class="macro__ind-val mono">{{ r.macro.ipca }}%</span>
+            <span class="macro__ind-val mono">{{ regime()!.macro.ipca }}%</span>
           </div>
           <div class="macro__ind">
             <span class="macro__ind-label">USD/BRL</span>
-            <span class="macro__ind-val mono">{{ r.macro.cambio_usd.toFixed(2) }}</span>
+            <span class="macro__ind-val mono">R$ {{ regime()!.macro.cambio_usd.toFixed(2) }}</span>
           </div>
           <div class="macro__ind">
             <span class="macro__ind-label">Brent</span>
-            <span class="macro__ind-val mono">{{ r.macro.brent.toFixed(2) }}</span>
+            <span class="macro__ind-val mono">US$ {{ regime()!.macro.brent.toFixed(2) }}</span>
           </div>
         </div>
-        @if (r.kill_switch_active) {
-          <div class="macro__kill mono">KILL SWITCH ATIVO</div>
+
+        @if (regime()!.kill_switch_active) {
+          <div class="macro__kill mono">KILL SWITCH ATIVO — O motor detectou condições extremas</div>
         }
 
         <!-- WEIGHT ADJUSTMENTS -->
-        @if (r.weight_adjustments) {
+        @if (regime()!.weight_adjustments) {
           <div class="macro__adjustments">
-            <h4 class="macro__section-title">Ajustes de Peso do Motor</h4>
+            <h4 class="macro__adj-title">Ajustes de Peso do Motor</h4>
             <div class="macro__adj-list">
-              @for (entry of r.weight_adjustments | keyvalue; track entry.key) {
-                <span class="macro__adj-item">
-                  <span>{{ entry.key }}</span>
-                  <span class="mono" [class.positive]="entry.value > 0" [class.negative]="entry.value < 0">
+              @for (entry of regime()!.weight_adjustments | keyvalue; track entry.key) {
+                <div class="macro__adj-item">
+                  <span class="macro__adj-name">{{ entry.key }}</span>
+                  <span class="macro__adj-val mono" [class.positive]="entry.value > 0" [class.negative]="entry.value < 0">
                     {{ entry.value > 0 ? '+' : '' }}{{ (entry.value * 100).toFixed(0) }}pp
                   </span>
-                </span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- SECTOR ROTATION inline -->
+        @if (regime()!.sector_rotation) {
+          <div class="macro__rotation">
+            <h4 class="macro__adj-title">Rotação Setorial — Regime Atual</h4>
+            <div class="macro__rotation-grid">
+              @for (entry of regime()!.sector_rotation | keyvalue; track entry.key) {
+                <div class="macro__rotation-item" [class.positive]="entry.value.tilt_points > 0" [class.negative]="entry.value.tilt_points < 0">
+                  <span class="macro__rotation-name">{{ entry.key }}</span>
+                  <span class="macro__rotation-tilt mono">{{ entry.value.tilt_points > 0 ? '+' : '' }}{{ entry.value.tilt_points }}pp</span>
+                  <span class="macro__rotation-signal">{{ entry.value.signal }}</span>
+                </div>
               }
             </div>
           </div>
@@ -53,19 +73,20 @@
       </div>
     }
 
-    <!-- SECTOR ROTATION HEATMAP -->
+    <!-- HEATMAP -->
     @if (heatmapData().length > 0) {
       <div class="macro__card">
-        <h3 class="macro__section-title">Matriz de Rotação Setorial</h3>
-        <p class="macro__section-desc">Tilt points por regime × setor. Positivo = favorecido, negativo = desfavorecido.</p>
+        <h3 class="macro__section-title">Matriz Completa — Todos os Regimes × Setores</h3>
+        <p class="macro__section-desc">Tilt points: quanto o motor favorece (+) ou desfavorece (-) cada setor por regime.</p>
         <iq-heatmap [data]="heatmapData()" [rowLabels]="heatmapRows()" [colLabels]="heatmapCols()" />
       </div>
     }
 
-    <!-- FOCUS EXPECTATIONS -->
+    <!-- FOCUS -->
     @if (focus().length > 0) {
       <div class="macro__card">
-        <h3 class="macro__section-title">Focus (BCB)</h3>
+        <h3 class="macro__section-title">Boletim Focus (BCB)</h3>
+        <p class="macro__section-desc">Expectativas do mercado para indicadores macroeconômicos.</p>
         <div class="macro__table-wrap">
           <table class="macro__table">
             <thead>
