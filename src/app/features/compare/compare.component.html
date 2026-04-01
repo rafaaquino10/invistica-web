@@ -1,51 +1,106 @@
-<div class="compare">
-  <h1 class="compare__title">Comparar Ativos</h1>
+<div class="cmp">
+  <h1 class="cmp__title">Comparar Ativos</h1>
+  <p class="cmp__subtitle">Selecione até 5 ativos para comparação lado a lado.</p>
 
-  <div class="compare__selector">
-    <div class="compare__search">
-      <iq-search placeholder="Adicionar ativo..." [results]="searchResults()" [clearOnSelect]="true"
-                 (searchChange)="onSearch($event)" (resultSelect)="addTicker($event)" />
-    </div>
-    <div class="compare__tags">
+  <!-- SEARCH -->
+  <div class="cmp__search-bar">
+    <iq-search placeholder="Adicionar ativo... (ex: PETR4)" [results]="searchResults()" [clearOnSelect]="true"
+               (searchChange)="onSearch($event)" (resultSelect)="addTicker($event)" />
+    <div class="cmp__tags">
       @for (t of selectedTickers(); track t) {
-        <span class="compare__tag mono">
-          {{ t }}
-          <button class="compare__tag-x" (click)="removeTicker(t)">x</button>
+        <span class="cmp__tag">
+          <iq-ticker-logo [ticker]="t" [size]="16" />
+          <span class="mono">{{ t }}</span>
+          <button class="cmp__tag-x" (click)="removeTicker(t)">×</button>
         </span>
       }
     </div>
   </div>
 
   @if (loading()) {
-    <iq-skeleton variant="rect" width="100%" height="300px" />
+    <iq-skeleton variant="rect" width="100%" height="400px" />
   } @else if (items().length > 0) {
-    <div class="compare__table-wrap">
-      <table class="compare__table">
-        <thead>
-          <tr>
-            <th>Métrica</th>
-            @for (item of items(); track item.ticker) {
-              <th class="compare__th-ticker" (click)="goToAsset(item.ticker)">
-                <span class="mono">{{ item.ticker }}</span>
-                <iq-rating-badge [rating]="item.rating" />
-              </th>
-            }
-          </tr>
-        </thead>
-        <tbody>
-          @for (m of metrics; track m.key) {
+
+    <!-- ASSET CARDS -->
+    <div class="cmp__cards">
+      @for (item of items(); track item.ticker) {
+        <div class="cmp__card" (click)="goToAsset(item.ticker)">
+          <div class="cmp__card-top">
+            <iq-ticker-logo [ticker]="item.ticker" [size]="36" />
+            <div class="cmp__card-info">
+              <span class="cmp__card-ticker mono">{{ item.ticker }}</span>
+              <span class="cmp__card-name">{{ item.company_name | slice:0:22 }}</span>
+              <span class="cmp__card-cluster">{{ clusterName(item.cluster_id) }}</span>
+            </div>
+          </div>
+          <div class="cmp__card-score">
+            <span class="cmp__card-score-val mono" [style.color]="scoreColor(item.iq_score)">{{ item.iq_score || '—' }}</span>
+            @if (item.iq_score) { <iq-rating-badge [rating]="item.rating" /> }
+          </div>
+          <div class="cmp__card-price">
+            <span class="cmp__card-price-val mono">R$ {{ item.close?.toFixed(2) ?? '—' }}</span>
+            <span class="cmp__card-dy mono" [class.positive]="(item.dividend_yield_proj ?? 0) > 0">
+              DY {{ item.dividend_yield_proj != null ? (item.dividend_yield_proj * 100).toFixed(1) + '%' : '—' }}
+            </span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="cmp__charts">
+      @if (scoreChartData().length > 0) {
+        <div class="cmp__chart-card">
+          <h3 class="cmp__chart-title">IQ-Score</h3>
+          <iq-bar-chart [data]="scoreChartData()" color="var(--obsidian)" />
+        </div>
+      }
+      @if (marginChartData().length > 0) {
+        <div class="cmp__chart-card">
+          <h3 class="cmp__chart-title">Margem de Segurança (%)</h3>
+          <iq-bar-chart [data]="marginChartData()" color="var(--positive)" />
+        </div>
+      }
+      @if (dyChartData().length > 0) {
+        <div class="cmp__chart-card">
+          <h3 class="cmp__chart-title">Dividend Yield Projetado (%)</h3>
+          <iq-bar-chart [data]="dyChartData()" color="var(--info)" />
+        </div>
+      }
+    </div>
+
+    <!-- METRICS TABLE -->
+    <div class="cmp__table-card">
+      <h3 class="cmp__chart-title">Métricas Detalhadas</h3>
+      <div class="cmp__table-wrap">
+        <table class="cmp__table">
+          <thead>
             <tr>
-              <td class="compare__metric-label">{{ m.label }}</td>
+              <th class="cmp__th-metric">Métrica</th>
               @for (item of items(); track item.ticker) {
-                <td class="mono" [class.compare__best]="isBest(m, item)">
-                  {{ formatVal(getVal(item, m.key), m.format) }}
-                </td>
+                <th class="cmp__th-ticker">
+                  <iq-ticker-logo [ticker]="item.ticker" [size]="20" />
+                  <span class="mono">{{ item.ticker }}</span>
+                </th>
               }
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (m of metrics; track m.key) {
+              <tr>
+                <td class="cmp__td-label">{{ m.label }}</td>
+                @for (item of items(); track item.ticker) {
+                  <td class="cmp__td-val mono" [class.cmp__best]="isBest(m, item)">
+                    {{ formatVal(getVal(item, m.key), m) }}
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
+
     <iq-disclaimer />
   }
 </div>
