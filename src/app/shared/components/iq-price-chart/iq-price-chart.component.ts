@@ -32,7 +32,7 @@ import { ThemeService } from '../../../core/services/theme.service';
       &:hover { border-color: var(--border-hover); }
     }
     .price-chart__period--active { background: var(--obsidian); color: #fff; border-color: var(--obsidian); }
-    .price-chart__canvas { width: 100%; height: 300px; }
+    .price-chart__canvas { width: 100%; height: 420px; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -93,7 +93,7 @@ export class IqPriceChartComponent implements OnInit, OnDestroy {
     const dark = this.themeService.theme() === 'dark';
     this.chart = createChart(el, {
       width: el.clientWidth,
-      height: 300,
+      height: 420,
       layout: { background: { type: ColorType.Solid, color: dark ? '#0D0E12' : 'transparent' }, textColor: '#6B6960', fontFamily: "'IBM Plex Mono', monospace", fontSize: 10 },
       grid: { vertLines: { color: dark ? '#1E1F27' : '#E8E6E1' }, horzLines: { color: dark ? '#1E1F27' : '#E8E6E1' } },
       crosshair: { mode: 0 },
@@ -113,7 +113,7 @@ export class IqPriceChartComponent implements OnInit, OnDestroy {
     });
 
     this.chart.priceScale('volume').applyOptions({
-      scaleMargins: { top: 0.85, bottom: 0 },
+      scaleMargins: { top: 0.8, bottom: 0 },
     });
 
     new ResizeObserver(() => {
