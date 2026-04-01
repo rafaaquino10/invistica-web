@@ -6,6 +6,7 @@
   align-items: center;
   justify-content: center;
   z-index: 100;
+  padding: 24px;
   animation: fadeIn var(--duration-fast) var(--ease);
 }
 
@@ -14,13 +15,11 @@
   border: 1px solid var(--border-default);
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
-  width: 90%;
+  width: 100%;
   max-width: 480px;
-  max-height: 90vh;
   display: flex;
   flex-direction: column;
   animation: slideUp var(--duration-normal) var(--ease);
-  overflow: visible;
 }
 
 .modal__header {
@@ -29,6 +28,7 @@
   justify-content: space-between;
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--border-default);
+  flex-shrink: 0;
 }
 
 .modal__title {
@@ -57,17 +57,9 @@
 
 .modal__body {
   padding: var(--space-5);
-  overflow-y: auto;
-  overflow-x: visible;
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
