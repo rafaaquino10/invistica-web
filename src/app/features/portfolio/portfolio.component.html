@@ -130,6 +130,13 @@
         <button class="port__add-asset-change" (click)="newTicker.set('')">Trocar</button>
       </div>
 
+      <!-- DATE -->
+      <div class="port__add-field">
+        <label class="port__add-label">Data da compra</label>
+        <input class="port__add-input mono" type="date"
+               [ngModel]="newDate()" (ngModelChange)="newDate.set($event)" />
+      </div>
+
       <!-- QTY + PRICE -->
       <div class="port__add-fields">
         <div class="port__add-field">
@@ -140,7 +147,13 @@
         <div class="port__add-field">
           <label class="port__add-label">Preço médio (R$)</label>
           <input class="port__add-input mono" type="number"
-                 [ngModel]="newAvgPrice()" (ngModelChange)="newAvgPrice.set($event)" min="0.01" step="0.01" placeholder="Ex: 32.50" />
+                 [ngModel]="newAvgPrice()" (ngModelChange)="newAvgPrice.set($event)" min="0.01" step="0.01"
+                 [placeholder]="suggestedPrice() ? 'Fechamento: ' + suggestedPrice().toFixed(2) : 'Ex: 32.50'" />
+          @if (suggestedPrice() && newAvgPrice() !== suggestedPrice()) {
+            <button class="port__add-suggest" (click)="newAvgPrice.set(suggestedPrice())">
+              Usar fechamento R$ {{ suggestedPrice().toFixed(2) }}
+            </button>
+          }
         </div>
       </div>
 

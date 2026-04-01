@@ -51,6 +51,8 @@ export class PortfolioComponent implements OnInit {
   readonly newTicker = signal('');
   readonly newQty = signal(0);
   readonly newAvgPrice = signal(0);
+  readonly newDate = signal(new Date().toISOString().substring(0, 10));
+  readonly suggestedPrice = signal(0);
 
   // Edit form
   readonly editPositionId = signal('');
@@ -73,6 +75,17 @@ export class PortfolioComponent implements OnInit {
 
   onTickerSelect(r: SearchResult): void {
     this.newTicker.set(r.value);
+    // Buscar cotação para sugerir preço médio
+    this.tickerService.getQuote(r.value)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(q => {
+        if (q?.close) {
+          this.suggestedPrice.set(q.close);
+          if (this.newAvgPrice() === 0) {
+            this.newAvgPrice.set(q.close);
+          }
+        }
+      });
   }
 
   addPosition(): void {
@@ -82,7 +95,7 @@ export class PortfolioComponent implements OnInit {
     if (!ticker || qty <= 0 || avg_price <= 0) return;
 
     this.saving.set(true);
-    this.portfolioService.addPosition({ ticker, quantity: qty, avg_price })
+    this.portfolioService.addPosition({ ticker, quantity: qty, avg_price, first_bought_at: this.newDate() })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: res => {

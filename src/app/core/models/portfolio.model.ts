@@ -22,6 +22,7 @@ export interface PositionCreate {
   ticker: string;
   quantity: number;
   avg_price: number;
+  first_bought_at?: string;
 }
 
 export interface PositionUpdate {
