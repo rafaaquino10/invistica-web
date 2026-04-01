@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { forkJoin, catchError, of } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { PortfolioService } from '../../core/services/portfolio.service';
@@ -35,6 +35,7 @@ import { CLUSTER_NAMES, ClusterId } from '../../core/models/cluster.model';
 export class PortfolioComponent implements OnInit {
   private readonly portfolioService = inject(PortfolioService);
   private readonly tickerService = inject(TickerService);
+  private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
@@ -158,6 +159,11 @@ export class PortfolioComponent implements OnInit {
       }
       this.alerts.set(alerts as PortfolioAlert[]);
       this.loading.set(false);
+
+      // Abrir modal automaticamente se veio com ?add=true
+      this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+        if (params['add'] === 'true') this.addModalOpen.set(true);
+      });
     });
   }
 }

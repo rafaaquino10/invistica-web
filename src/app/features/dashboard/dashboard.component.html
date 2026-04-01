@@ -106,7 +106,7 @@
       <section class="dash__empty">
         <iq-empty-state title="Nenhuma posição na carteira"
                         description="Adicione seus ativos para ver seu briefing personalizado." />
-        <iq-button variant="primary" routerLink="/carteira">Adicionar primeira posição</iq-button>
+        <iq-button variant="primary" routerLink="/carteira" [queryParams]="{ add: true }">Adicionar primeira posição</iq-button>
       </section>
     }
 
