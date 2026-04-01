@@ -1,12 +1,18 @@
 @use 'typography' as t;
 
 .hero {
-  background: var(--obsidian);
+  // Fundo fixo escuro — independente do tema (funciona em light E dark)
+  background: #2A2A28;
   border-radius: var(--radius);
   padding: 24px 28px;
   position: relative;
   overflow: hidden;
   color: #fff;
+
+  [data-theme="dark"] & {
+    background: #1A1B22;
+    border: 1px solid #252630;
+  }
 }
 
 .hero__canvas {

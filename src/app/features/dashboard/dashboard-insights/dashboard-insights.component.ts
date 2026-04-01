@@ -116,10 +116,10 @@ export interface UpcomingDividend {
           </div>
           <svg viewBox="0 0 300 80" class="insights__equity" preserveAspectRatio="none">
             <!-- Area fill -->
-            <polygon points="0,80 0,60 30,55 60,50 90,52 120,45 150,42 180,38 210,35 240,30 270,28 300,25 300,80" fill="var(--obsidian)" opacity="0.06" />
+            <polygon points="0,80 0,60 30,55 60,50 90,52 120,45 150,42 180,38 210,35 240,30 270,28 300,25 300,80" fill="var(--text-primary)" opacity="0.06" />
             <!-- Carteira -->
             <polyline points="0,60 30,55 60,50 90,52 120,45 150,42 180,38 210,35 240,30 270,28 300,25"
-                      fill="none" stroke="var(--obsidian)" stroke-width="1.5" stroke-linecap="round" />
+                      fill="none" stroke="var(--text-primary)" stroke-width="1.5" stroke-linecap="round" />
             <!-- CDI -->
             <polyline points="0,60 30,58 60,56 90,54 120,52 150,50 180,48 210,46 240,44 270,42 300,40"
                       fill="none" stroke="var(--text-quaternary)" stroke-width="0.8" />
@@ -128,7 +128,7 @@ export interface UpcomingDividend {
                       fill="none" stroke="var(--text-quaternary)" stroke-width="0.8" stroke-dasharray="4 3" />
           </svg>
           <div class="insights__equity-legend">
-            <span class="insights__eq-leg mono"><span class="insights__eq-dot" style="background:var(--obsidian)"></span>Carteira +15%</span>
+            <span class="insights__eq-leg mono"><span class="insights__eq-dot" style="background:var(--text-primary)"></span>Carteira +15%</span>
             <span class="insights__eq-leg mono"><span class="insights__eq-dot" style="background:var(--text-quaternary)"></span>CDI +8%</span>
             <span class="insights__eq-leg mono"><span class="insights__eq-dot" style="background:var(--text-quaternary)"></span>IBOV +10%</span>
           </div>
@@ -142,7 +142,7 @@ export interface UpcomingDividend {
     .insights__left { display: flex; flex-direction: column; gap: 0; }
     .insights__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .insights__title { font-size: 11px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.04em; }
-    .insights__link { font-size: 10px; color: var(--text-tertiary); text-decoration: none; &:hover { color: var(--obsidian); } }
+    .insights__link { font-size: 10px; color: var(--text-tertiary); text-decoration: none; &:hover { color: var(--text-primary); } }
 
     .insights__stack {
       border: 1px solid var(--border-default); border-radius: var(--radius);
@@ -191,7 +191,7 @@ export interface UpcomingDividend {
       &:last-child { border-bottom: none; }
     }
     .insights__div-date { display: flex; flex-direction: column; align-items: center; min-width: 28px; }
-    .insights__div-day { font-size: 15px; font-weight: 700; color: var(--obsidian); line-height: 1; }
+    .insights__div-day { font-size: 15px; font-weight: 700; color: var(--text-primary); line-height: 1; }
     .insights__div-month { font-size: 7px; text-transform: uppercase; color: var(--text-tertiary); }
     .insights__div-info { flex: 1; display: flex; flex-direction: column; gap: 1px; }
     .insights__div-ticker { font-size: 11px; font-weight: 700; color: var(--text-primary); }
@@ -216,7 +216,7 @@ export class DashboardInsightsComponent {
 
   scoreColor(sc: number): string {
     if (sc >= 82) return 'var(--positive)';
-    if (sc >= 70) return 'var(--obsidian)';
+    if (sc >= 70) return 'var(--text-primary)';
     if (sc >= 45) return 'var(--warning)';
     return 'var(--negative)';
   }
@@ -227,7 +227,7 @@ export class DashboardInsightsComponent {
       case 'risk': return 'var(--negative)';
       case 'dividend': return 'var(--info)';
       case 'alert': return 'var(--warning)';
-      default: return 'var(--obsidian)';
+      default: return 'var(--text-secondary)';
     }
   }
 
@@ -239,7 +239,7 @@ export class DashboardInsightsComponent {
       case 'risk': return 'var(--negative-bg)';
       case 'dividend': return 'var(--info-bg)';
       case 'alert': return 'var(--warning-bg)';
-      default: return 'var(--obsidian-bg)';
+      default: return 'var(--surface-2)';
     }
   }
 }

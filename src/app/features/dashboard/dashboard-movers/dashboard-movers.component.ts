@@ -109,14 +109,14 @@ export interface SectorExposure {
     }
 
     .movers__expo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .movers__link { font-size: 10px; color: var(--text-tertiary); text-decoration: none; &:hover { color: var(--obsidian); } }
+    .movers__link { font-size: 10px; color: var(--text-tertiary); text-decoration: none; &:hover { color: var(--text-primary); } }
 
     .movers__sector { display: flex; align-items: center; gap: 0; padding: 4px 0; }
     .movers__sector-name { font-size: 10px; color: var(--text-secondary); width: 70px; flex-shrink: 0; }
     .movers__sector-bar-wrap {
       flex: 1; height: 6px; background: var(--surface-3); border-radius: 1px; margin: 0 8px;
     }
-    .movers__sector-bar { height: 100%; background: var(--obsidian); border-radius: 1px; }
+    .movers__sector-bar { height: 100%; background: var(--text-primary); border-radius: 1px; }
     .movers__sector-pct { font-size: 10px; font-weight: 700; width: 36px; text-align: right; color: var(--text-primary); }
 
     .movers__hhi { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-default); }
