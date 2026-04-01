@@ -6,36 +6,106 @@ export interface MonteCarloScenarios {
   bull: number;
 }
 
-const W = 600;
-const H = 260;
-const PAD = { top: 20, right: 20, bottom: 30, left: 50 };
-
 @Component({
   selector: 'iq-monte-carlo',
   standalone: true,
   template: `
-    <svg [attr.viewBox]="'0 0 ' + width + ' ' + height" class="mc" preserveAspectRatio="xMidYMid meet">
-      <!-- distribution curve (simplified bell) -->
-      <path [attr.d]="curvePath()" fill="var(--obsidian-bg)" stroke="var(--obsidian)" stroke-width="1.5" />
-      <!-- bear zone -->
-      <rect [attr.x]="bearX()" [attr.y]="padTop" [attr.width]="baseX() - bearX()" [attr.height]="plotH()" fill="var(--negative-bg)" opacity="0.5" />
-      <!-- bull zone -->
-      <rect [attr.x]="baseX()" [attr.y]="padTop" [attr.width]="bullX() - baseX()" [attr.height]="plotH()" fill="var(--positive-bg)" opacity="0.5" />
-      <!-- current price line -->
-      <line [attr.x1]="currentX()" [attr.y1]="padTop" [attr.x2]="currentX()" [attr.y2]="padTop + plotH()" stroke="var(--obsidian)" stroke-width="2" stroke-dasharray="4,2" />
-      <text [attr.x]="currentX()" [attr.y]="padTop - 6" class="mc__label" text-anchor="middle" font-weight="600">Atual</text>
-      <!-- markers -->
-      @for (m of markers(); track m.label) {
-        <line [attr.x1]="m.x" [attr.y1]="padTop + plotH()" [attr.x2]="m.x" [attr.y2]="padTop + plotH() + 6" [attr.stroke]="m.color" stroke-width="1.5" />
-        <text [attr.x]="m.x" [attr.y]="padTop + plotH() + 16" class="mc__label" text-anchor="middle" [attr.fill]="m.color">{{ m.label }}</text>
-        <text [attr.x]="m.x" [attr.y]="padTop + plotH() + 26" class="mc__value" text-anchor="middle">{{ m.valueStr }}</text>
-      }
-    </svg>
+    <div class="mc">
+      <!-- SCALE BAR -->
+      <div class="mc__bar">
+        <div class="mc__zone mc__zone--bear" [style.width.%]="bearPct()"></div>
+        <div class="mc__zone mc__zone--base" [style.width.%]="basePct()"></div>
+        <div class="mc__zone mc__zone--bull" [style.width.%]="bullPct()"></div>
+        <!-- Current price marker -->
+        <div class="mc__marker" [style.left.%]="currentPct()">
+          <div class="mc__marker-line"></div>
+          <span class="mc__marker-label mono">Atual R$ {{ currentPrice().toFixed(2) }}</span>
+        </div>
+      </div>
+
+      <!-- LABELS -->
+      <div class="mc__labels">
+        <div class="mc__label mc__label--bear">
+          <span class="mc__label-name">Bear</span>
+          <span class="mc__label-val mono">R$ {{ scenarios().bear.toFixed(2) }}</span>
+        </div>
+        <div class="mc__label mc__label--base">
+          <span class="mc__label-name">Base</span>
+          <span class="mc__label-val mono">R$ {{ scenarios().base.toFixed(2) }}</span>
+        </div>
+        <div class="mc__label mc__label--bull">
+          <span class="mc__label-name">Bull</span>
+          <span class="mc__label-val mono">R$ {{ scenarios().bull.toFixed(2) }}</span>
+        </div>
+      </div>
+
+      <!-- UPSIDE/DOWNSIDE -->
+      <div class="mc__metrics">
+        <div class="mc__metric">
+          <span class="mc__metric-label">Downside (bear)</span>
+          <span class="mc__metric-val mono negative">{{ downsidePct() }}</span>
+        </div>
+        <div class="mc__metric">
+          <span class="mc__metric-label">Upside (base)</span>
+          <span class="mc__metric-val mono" [class.positive]="baseUpside() >= 0" [class.negative]="baseUpside() < 0">{{ basePctLabel() }}</span>
+        </div>
+        <div class="mc__metric">
+          <span class="mc__metric-label">Upside (bull)</span>
+          <span class="mc__metric-val mono positive">{{ upsidePct() }}</span>
+        </div>
+      </div>
+    </div>
   `,
   styles: [`
-    .mc { width: 100%; }
-    .mc__label { font-size: 11px; fill: var(--text-secondary); font-family: 'Satoshi', sans-serif; }
-    .mc__value { font-size: 12px; fill: var(--text-primary); font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+    .mc { display: flex; flex-direction: column; gap: 16px; }
+
+    .mc__bar {
+      position: relative; display: flex; height: 32px; border-radius: var(--radius); overflow: visible;
+      border: 1px solid var(--border-default);
+    }
+    .mc__zone { height: 100%; }
+    .mc__zone--bear { background: var(--negative-bg); }
+    .mc__zone--base { background: var(--obsidian-bg); }
+    .mc__zone--bull { background: var(--positive-bg); }
+
+    .mc__marker {
+      position: absolute; top: -8px; bottom: -8px; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .mc__marker-line {
+      width: 2px; flex: 1; background: var(--obsidian); border-radius: 1px;
+    }
+    .mc__marker-label {
+      font-size: 11px; font-weight: 600; color: var(--obsidian);
+      white-space: nowrap; margin-top: 4px;
+    }
+
+    .mc__labels {
+      display: flex; justify-content: space-between;
+    }
+    .mc__label { display: flex; flex-direction: column; gap: 2px; }
+    .mc__label--bear { align-items: flex-start; }
+    .mc__label--base { align-items: center; }
+    .mc__label--bull { align-items: flex-end; }
+    .mc__label-name { font-size: 11px; color: var(--text-tertiary); font-weight: 500; }
+    .mc__label-val { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+    .mc__label--bear .mc__label-val { color: var(--negative); }
+    .mc__label--bull .mc__label-val { color: var(--positive); }
+
+    .mc__metrics {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px;
+      background: var(--border-default); border: 1px solid var(--border-default);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .mc__metric {
+      display: flex; flex-direction: column; gap: 2px; padding: 10px 14px;
+      background: var(--surface-0); text-align: center;
+    }
+    .mc__metric-label { font-size: 11px; color: var(--text-tertiary); }
+    .mc__metric-val { font-size: 15px; font-weight: 700; }
+
+    .positive { color: var(--positive); }
+    .negative { color: var(--negative); }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -43,41 +113,38 @@ export class IqMonteCarloComponent {
   readonly scenarios = input.required<MonteCarloScenarios>();
   readonly currentPrice = input(0);
 
-  readonly width = W;
-  readonly height = H;
-  readonly padTop = PAD.top;
+  private readonly min = computed(() => Math.min(this.scenarios().bear, this.currentPrice()) * 0.9);
+  private readonly max = computed(() => Math.max(this.scenarios().bull, this.currentPrice()) * 1.1);
+  private readonly range = computed(() => this.max() - this.min() || 1);
 
-  readonly plotH = computed(() => H - PAD.top - PAD.bottom);
-
-  private readonly scaleMin = computed(() => Math.min(this.scenarios().bear, this.currentPrice()) * 0.85);
-  private readonly scaleMax = computed(() => Math.max(this.scenarios().bull, this.currentPrice()) * 1.15);
-  private readonly range = computed(() => this.scaleMax() - this.scaleMin() || 1);
-
-  private toX(v: number): number {
-    return PAD.left + ((v - this.scaleMin()) / this.range()) * (W - PAD.left - PAD.right);
+  private toPct(v: number): number {
+    return ((v - this.min()) / this.range()) * 100;
   }
 
-  readonly bearX = computed(() => this.toX(this.scenarios().bear));
-  readonly baseX = computed(() => this.toX(this.scenarios().base));
-  readonly bullX = computed(() => this.toX(this.scenarios().bull));
-  readonly currentX = computed(() => this.toX(this.currentPrice()));
+  readonly bearPct = computed(() => this.toPct(this.scenarios().bear));
+  readonly basePct = computed(() => this.toPct(this.scenarios().base) - this.bearPct());
+  readonly bullPct = computed(() => 100 - this.toPct(this.scenarios().base));
+  readonly currentPct = computed(() => this.toPct(this.currentPrice()));
 
-  readonly markers = computed(() => {
-    const s = this.scenarios();
-    return [
-      { label: 'Bear', x: this.bearX(), color: 'var(--negative)', valueStr: s.bear.toFixed(2) },
-      { label: 'Base', x: this.baseX(), color: 'var(--obsidian)', valueStr: s.base.toFixed(2) },
-      { label: 'Bull', x: this.bullX(), color: 'var(--positive)', valueStr: s.bull.toFixed(2) },
-    ];
+  readonly baseUpside = computed(() => {
+    const cp = this.currentPrice();
+    return cp > 0 ? (this.scenarios().base - cp) / cp : 0;
   });
 
-  curvePath(): string {
-    const ph = this.plotH();
-    const bx = this.bearX();
-    const mx = this.baseX();
-    const ux = this.bullX();
-    const top = PAD.top;
-    const bottom = top + ph;
-    return `M${bx},${bottom} Q${(bx + mx) / 2},${top} ${mx},${top + 10} Q${(mx + ux) / 2},${top} ${ux},${bottom} Z`;
-  }
+  readonly downsidePct = computed(() => {
+    const cp = this.currentPrice();
+    const d = cp > 0 ? ((this.scenarios().bear - cp) / cp) * 100 : 0;
+    return d.toFixed(1) + '%';
+  });
+
+  readonly basePctLabel = computed(() => {
+    const v = this.baseUpside() * 100;
+    return (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+  });
+
+  readonly upsidePct = computed(() => {
+    const cp = this.currentPrice();
+    const u = cp > 0 ? ((this.scenarios().bull - cp) / cp) * 100 : 0;
+    return '+' + u.toFixed(1) + '%';
+  });
 }
