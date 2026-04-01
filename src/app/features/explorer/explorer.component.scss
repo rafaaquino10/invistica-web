@@ -48,7 +48,14 @@
   color: var(--text-primary); white-space: nowrap; font-size: t.$text-sm;
 }
 .ex-td--ticker {
-  display: flex; align-items: center; gap: 6px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px; font-weight: 600;
+
+  iq-ticker-logo, img {
+    width: 20px;
+    min-width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
 }
 .ex-td--name {
   color: var(--text-secondary); max-width: 180px; overflow: hidden; text-overflow: ellipsis;

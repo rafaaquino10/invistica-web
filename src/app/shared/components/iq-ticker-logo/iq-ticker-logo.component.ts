@@ -24,6 +24,12 @@ const BASE_URL = 'https://raw.githubusercontent.com/thefintz/icones-b3/main/icon
     }
   `,
   styles: [`
+    :host {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
     .logo {
       border-radius: 50%;
       object-fit: contain;
