@@ -195,8 +195,18 @@ export class DashboardComponent implements OnInit {
         this.hasPortfolio.set(true);
       }
       this.topAssets.set(res.top.top ?? []);
-      this.feedItems.set(res.feed.feed ?? []);
-      this.catalysts.set(res.catalysts.catalysts ?? []);
+      const feedData = res.feed.feed ?? [];
+      const catalystsData = res.catalysts.catalysts ?? [];
+      // Usar feed do radar, ou catalisadores como fallback
+      if (feedData.length > 0) {
+        this.feedItems.set(feedData);
+      } else {
+        this.feedItems.set(catalystsData.slice(0, 10).map((c, i) => ({
+          id: `cat-${i}`, type: 'news', title: c.title,
+          description: c.source, ticker: null, created_at: c.date, metadata: null,
+        })));
+      }
+      this.catalysts.set(catalystsData);
       if (res.divSummary) this.dividendSummary.set(res.divSummary);
       if (res.divProj) this.dividendProjections.set(res.divProj);
       this.loading.set(false);
