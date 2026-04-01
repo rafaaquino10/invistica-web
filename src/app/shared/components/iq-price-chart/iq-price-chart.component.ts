@@ -113,7 +113,12 @@ export class IqPriceChartComponent implements OnInit, OnDestroy {
     });
 
     this.chart.priceScale('volume').applyOptions({
-      scaleMargins: { top: 0.8, bottom: 0 },
+      scaleMargins: { top: 0.7, bottom: 0 },
+    });
+
+    // Price scale — dar espaço para o volume embaixo
+    this.chart.priceScale('right').applyOptions({
+      scaleMargins: { top: 0.05, bottom: 0.35 },
     });
 
     new ResizeObserver(() => {

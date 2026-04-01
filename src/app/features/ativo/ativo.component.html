@@ -23,10 +23,12 @@
       <div class="asset__left">
         <!-- HEADER -->
         <div class="asset__header">
-          <iq-ticker-logo [ticker]="ticker()" [size]="40" />
-          <span class="asset__ticker mono">{{ ticker() }}</span>
+          <div class="asset__header-top">
+            <iq-ticker-logo [ticker]="ticker()" [size]="36" />
+            <span class="asset__ticker mono">{{ ticker() }}</span>
+            <span class="asset__cluster">{{ clusterName() }}</span>
+          </div>
           <span class="asset__name">{{ tickerDetail()?.company_name }}</span>
-          <span class="asset__cluster">{{ clusterName() }}</span>
         </div>
 
         <!-- PRICE -->
