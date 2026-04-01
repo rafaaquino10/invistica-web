@@ -1,4 +1,5 @@
 @use 'typography' as t;
+@use 'mixins' as m;
 
 .divs { max-width: 1440px; margin: 0 auto; }
 .divs__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
@@ -19,18 +20,10 @@
 
 .divs__section { margin-bottom: var(--space-4); }
 
-.divs__table-wrap {
-  overflow-x: auto; border: 1px solid var(--border-default); border-radius: var(--radius);
-}
-.divs__table {
-  width: 100%; font-size: t.$text-sm; background: var(--surface-1);
-  th, td { padding: 8px 12px; text-align: left; white-space: nowrap; }
-  th { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 1px solid var(--border-default); }
-  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
-  tbody tr:last-child td { border-bottom: none; }
-}
+.divs__table-wrap { @include m.iq-table-wrap; }
+.divs__table { @include m.iq-table; }
 .divs__ticker { font-weight: 600; }
-.divs__name { color: var(--text-secondary); max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
+.divs__name { @include m.iq-table-name; }
 .positive { color: var(--positive); }
 
 .divs__summary-kpis {

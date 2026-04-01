@@ -1,4 +1,5 @@
 @use 'typography' as t;
+@use 'mixins' as m;
 
 .bt { max-width: 1280px; margin: 0 auto; }
 .bt__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
@@ -43,14 +44,8 @@
 .bt__kpi-label { font-size: t.$text-xs; color: var(--text-tertiary); }
 .bt__kpi-value { font-size: t.$text-lg; font-weight: 700; color: var(--text-primary); }
 
-.bt__table-wrap { overflow-x: auto; }
-.bt__table {
-  width: 100%; font-size: t.$text-sm;
-  th, td { padding: 8px 12px; text-align: left; white-space: nowrap; }
-  th { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 1px solid var(--border-default); }
-  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
-  tbody tr:last-child td { border-bottom: none; }
-}
+.bt__table-wrap { @include m.iq-table-wrap; }
+.bt__table { @include m.iq-table; }
 .bt__strat-label { font-weight: 600; color: var(--obsidian); }
 
 .positive { color: var(--positive); }

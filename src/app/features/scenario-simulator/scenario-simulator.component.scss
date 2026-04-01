@@ -1,4 +1,5 @@
 @use 'typography' as t;
+@use 'mixins' as m;
 
 .sim { max-width: 1100px; margin: 0 auto; }
 .sim__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
@@ -30,14 +31,8 @@
 .sim__section { margin-bottom: var(--space-4); }
 .sim__section-title { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-3); }
 
-.sim__table-wrap { border: 1px solid var(--border-default); border-radius: var(--radius); overflow-x: auto; }
-.sim__table {
-  width: 100%; font-size: t.$text-sm; background: var(--surface-1);
-  th, td { padding: 8px 12px; text-align: left; white-space: nowrap; }
-  th { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 1px solid var(--border-default); }
-  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
-  tbody tr:last-child td { border-bottom: none; }
-}
+.sim__table-wrap { @include m.iq-table-wrap; }
+.sim__table { @include m.iq-table; }
 .sim__ticker { font-weight: 600; }
 .sim__cluster { color: var(--text-secondary); }
 

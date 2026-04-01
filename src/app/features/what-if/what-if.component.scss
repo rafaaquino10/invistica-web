@@ -1,4 +1,5 @@
 @use 'typography' as t;
+@use 'mixins' as m;
 
 .wif { max-width: 1100px; margin: 0 auto; }
 .wif__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
@@ -32,14 +33,10 @@
 }
 .wif__card-title { font-size: t.$text-base; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
 
-.wif__table-wrap { border: 1px solid var(--border-default); border-radius: var(--radius); overflow-x: auto; margin-bottom: var(--space-4); }
+.wif__table-wrap { @include m.iq-table-wrap; margin-bottom: var(--space-4); }
 .wif__table {
-  width: 100%; font-size: t.$text-sm; background: var(--surface-1);
-  th, td { padding: 12px 16px; text-align: left; white-space: nowrap; }
-  th { font-size: t.$text-xs; font-weight: 600; color: var(--text-primary); border-bottom: 2px solid var(--border-default); text-transform: uppercase; }
-  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
+  @include m.iq-table;
   td:first-child { color: var(--text-secondary); font-weight: 500; }
-  tbody tr:last-child td { border-bottom: none; }
 }
 
 .positive { color: var(--positive); }

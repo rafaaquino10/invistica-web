@@ -1,4 +1,5 @@
 @use 'typography' as t;
+@use 'mixins' as m;
 
 .explorer { max-width: 1440px; margin: 0 auto; }
 .explorer__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
@@ -15,55 +16,17 @@
   font-size: t.$text-xs; color: var(--text-tertiary); margin-bottom: var(--space-2);
 }
 
-.explorer__table-wrap {
-  overflow-x: auto; border: 1px solid var(--border-default); border-radius: var(--radius);
-  max-height: 75vh;
-}
+.explorer__table-wrap { @include m.iq-table-wrap; max-height: 75vh; }
+.explorer__table { @include m.iq-table; }
 
-.explorer__table {
-  width: 100%; font-size: t.$text-sm; background: var(--surface-1); border-collapse: collapse;
-}
-
-// Header
-.ex-th {
-  padding: 6px 10px; text-align: left; white-space: nowrap;
-  font-size: 10px; font-weight: 600; color: var(--text-tertiary);
-  text-transform: uppercase; letter-spacing: 0.04em;
-  border-bottom: 2px solid var(--border-default);
-  position: sticky; top: 0; background: var(--surface-1); z-index: 1;
-  user-select: none;
-}
-.ex-th--sort { cursor: pointer; &:hover { color: var(--text-primary); } }
-.ex-th--active { color: var(--obsidian); border-bottom-color: var(--obsidian); }
-
-// Rows
-.ex-row {
-  cursor: pointer; transition: background var(--duration-fast) var(--ease);
-  &:hover { background: var(--surface-2); }
-}
-
-// Cells
-.ex-td {
-  padding: 6px 10px; border-bottom: 1px solid var(--border-default);
-  color: var(--text-primary); white-space: nowrap; font-size: t.$text-sm;
-}
-.ex-td--ticker {
-  display: flex; align-items: center; gap: 8px; font-weight: 600;
-
-  iq-ticker-logo, img {
-    width: 20px;
-    min-width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
-}
-.ex-td--name {
-  color: var(--text-secondary); max-width: 180px; overflow: hidden; text-overflow: ellipsis;
-}
+.ex-th--sort { @include m.iq-table-sortable; }
+.ex-th--active { @include m.iq-table-sortable-active; }
+.ex-row { cursor: pointer; }
+.ex-td--ticker { @include m.iq-table-ticker; }
+.ex-td--name { @include m.iq-table-name; }
 .ex-td--cluster { font-size: t.$text-xs; color: var(--text-tertiary); }
 .ex-td--score { font-weight: 700; font-size: t.$text-base; }
-
-.ex-na { color: var(--text-quaternary); }
+.ex-na { @include m.iq-table-na; }
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }

@@ -34,6 +34,86 @@ $breakpoint-mobile: 480px;
   white-space: nowrap;
 }
 
+// ── Standard Data Table ──
+// Usage: .my-table { @include iq-table; }
+@mixin iq-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+}
+
+@mixin iq-table {
+  width: 100%;
+  font-size: 0.8125rem; // 13px
+  background: var(--surface-1);
+  border-collapse: collapse;
+
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  th {
+    font-size: 0.6875rem; // 11px
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid var(--border-default);
+    position: sticky;
+    top: 0;
+    background: var(--surface-1);
+    z-index: 1;
+    user-select: none;
+  }
+
+  td {
+    border-bottom: 1px solid var(--border-default);
+    color: var(--text-primary);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr { transition: background var(--duration-fast) var(--ease); }
+  tbody tr:hover { background: var(--surface-2); }
+}
+
+@mixin iq-table-sortable {
+  cursor: pointer;
+  &:hover { color: var(--text-primary); }
+}
+
+@mixin iq-table-sortable-active {
+  color: var(--obsidian);
+  border-bottom-color: var(--obsidian);
+}
+
+@mixin iq-table-ticker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+
+  iq-ticker-logo, img {
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+}
+
+@mixin iq-table-name {
+  color: var(--text-secondary);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin iq-table-na {
+  color: var(--text-quaternary);
+}
+
 // ── Visually hidden (accessible) ──
 @mixin visually-hidden {
   position: absolute;

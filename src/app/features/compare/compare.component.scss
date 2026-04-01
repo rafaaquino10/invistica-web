@@ -1,4 +1,5 @@
 @use 'typography' as t;
+@use 'mixins' as m;
 
 .cmp { max-width: 1440px; margin: 0 auto; }
 .cmp__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
@@ -61,16 +62,9 @@
   padding: var(--space-5); margin-bottom: var(--space-4);
 }
 .cmp__table-wrap { overflow-x: auto; }
-.cmp__table {
-  width: 100%; font-size: t.$text-sm; border-collapse: collapse;
-  th, td { padding: 10px 16px; text-align: left; white-space: nowrap; }
-  th { font-size: t.$text-xs; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 2px solid var(--border-default); }
-  td { border-bottom: 1px solid var(--border-default); }
-  tbody tr:last-child td { border-bottom: none; }
-  tbody tr:hover { background: var(--surface-2); }
-}
+.cmp__table { @include m.iq-table; }
 .cmp__th-metric { width: 140px; }
-.cmp__th-ticker { display: flex; align-items: center; gap: 6px; font-weight: 700; color: var(--text-primary); }
+.cmp__th-ticker { @include m.iq-table-ticker; font-weight: 700; color: var(--text-primary); }
 .cmp__td-label { font-weight: 500; color: var(--text-secondary); }
 .cmp__td-val { color: var(--text-primary); }
 .cmp__best { font-weight: 700; color: var(--positive); }

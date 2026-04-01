@@ -1,20 +1,15 @@
 @use 'typography' as t;
+@use 'mixins' as m;
 
 .inst { max-width: 1280px; margin: 0 auto; }
 .inst__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
 .inst__subtitle { font-size: t.$text-sm; color: var(--text-secondary); margin-bottom: var(--space-6); }
 
-.inst__table-wrap { border: 1px solid var(--border-default); border-radius: var(--radius); overflow-x: auto; }
-.inst__table {
-  width: 100%; font-size: t.$text-sm; background: var(--surface-1);
-  th, td { padding: 10px 14px; text-align: left; white-space: nowrap; }
-  th { font-size: t.$text-xs; font-weight: 500; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 1px solid var(--border-default); }
-  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
-  tbody tr:last-child td { border-bottom: none; }
-}
-.inst__sortable { cursor: pointer; &:hover { color: var(--text-primary); } }
-.inst__row { cursor: pointer; transition: background var(--duration-fast) var(--ease); &:hover { background: var(--surface-2); } }
+.inst__table-wrap { @include m.iq-table-wrap; }
+.inst__table { @include m.iq-table; }
+.inst__sortable { @include m.iq-table-sortable; }
+.inst__row { cursor: pointer; }
 .inst__ticker { font-weight: 600; }
-.inst__fund { color: var(--text-secondary); max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
+.inst__fund { @include m.iq-table-name; max-width: 240px; }
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }

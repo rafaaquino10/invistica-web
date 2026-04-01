@@ -1,4 +1,5 @@
 @use 'typography' as t;
+@use 'mixins' as m;
 
 .macro { max-width: 1280px; margin: 0 auto; }
 .macro__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-1); }
@@ -60,14 +61,8 @@
 .macro__section-title { font-size: t.$text-base; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2); }
 .macro__section-desc { font-size: t.$text-sm; color: var(--text-tertiary); margin-bottom: var(--space-4); }
 
-.macro__table-wrap { overflow-x: auto; }
-.macro__table {
-  width: 100%; font-size: t.$text-sm;
-  th, td { padding: 10px 14px; text-align: left; white-space: nowrap; }
-  th { font-size: t.$text-xs; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; border-bottom: 2px solid var(--border-default); }
-  td { border-bottom: 1px solid var(--border-default); color: var(--text-primary); }
-  tbody tr:last-child td { border-bottom: none; }
-}
+.macro__table-wrap { @include m.iq-table-wrap; }
+.macro__table { @include m.iq-table; }
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
