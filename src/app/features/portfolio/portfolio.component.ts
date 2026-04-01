@@ -98,14 +98,14 @@ export class PortfolioComponent implements OnInit {
     this.portfolioService.addPosition({ ticker, quantity: qty, avg_price, first_bought_at: this.newDate() })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: res => {
-          this.portfolio.set(res);
-          this.buildDonut(res);
+        next: () => {
           this.addModalOpen.set(false);
           this.newTicker.set('');
           this.newQty.set(0);
           this.newAvgPrice.set(0);
+          this.suggestedPrice.set(0);
           this.saving.set(false);
+          this.loadPortfolio();
         },
         error: () => this.saving.set(false),
       });
@@ -124,11 +124,10 @@ export class PortfolioComponent implements OnInit {
     this.portfolioService.updatePosition(this.editPositionId(), { quantity: this.editQty(), avg_price: this.editAvgPrice() })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: res => {
-          this.portfolio.set(res);
-          this.buildDonut(res);
+        next: () => {
           this.editModalOpen.set(false);
           this.saving.set(false);
+          this.loadPortfolio();
         },
         error: () => this.saving.set(false),
       });
@@ -137,10 +136,7 @@ export class PortfolioComponent implements OnInit {
   deletePosition(id: string): void {
     this.portfolioService.deletePosition(id)
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(res => {
-        this.portfolio.set(res);
-        this.buildDonut(res);
-      });
+      .subscribe(() => this.loadPortfolio());
   }
 
   goToAsset(ticker: string): void {
@@ -163,21 +159,27 @@ export class PortfolioComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadPortfolio();
+    // Abrir modal automaticamente se veio com ?add=true
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
+      if (params['add'] === 'true') this.addModalOpen.set(true);
+    });
+  }
+
+  private loadPortfolio(): void {
     forkJoin({
       portfolio: this.portfolioService.get().pipe(catchError(() => of(null))),
-      alerts: this.portfolioService.getAlerts().pipe(catchError(() => of([]))),
+      alerts: this.portfolioService.getAlerts().pipe(catchError(() => of({ alerts: [] }))),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ portfolio, alerts }) => {
       if (portfolio && portfolio.positions?.length) {
         this.portfolio.set(portfolio);
         this.buildDonut(portfolio);
+      } else {
+        this.portfolio.set(null);
+        this.sectorDonut.set([]);
       }
-      this.alerts.set(alerts as PortfolioAlert[]);
+      this.alerts.set((alerts as any)?.alerts ?? alerts ?? []);
       this.loading.set(false);
-
-      // Abrir modal automaticamente se veio com ?add=true
-      this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
-        if (params['add'] === 'true') this.addModalOpen.set(true);
-      });
     });
   }
 }

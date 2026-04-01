@@ -22,6 +22,13 @@
   padding: 0 12px;
   flex-shrink: 0;
   gap: 8px;
+
+  .sidebar:not(.sidebar--expanded) & {
+    flex-direction: column;
+    height: auto;
+    padding: 10px 0 6px;
+    gap: 4px;
+  }
 }
 
 .sidebar__logo {
@@ -65,12 +72,16 @@
   margin-left: auto;
   border: none;
   background: transparent;
-  color: var(--text-quaternary);
+  color: var(--text-tertiary);
   cursor: pointer;
   border-radius: var(--radius);
   flex-shrink: 0;
 
   &:hover { color: var(--text-primary); background: var(--surface-2); }
+
+  .sidebar:not(.sidebar--expanded) & {
+    margin-left: 0;
+  }
 }
 
 // Nav

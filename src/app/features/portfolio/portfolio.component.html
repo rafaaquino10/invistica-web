@@ -7,7 +7,7 @@
   @if (loading()) {
     <iq-skeleton variant="rect" width="100%" height="300px" />
   } @else if (portfolio()) {
-    @if (portfolio()!.positions.length === 0) {
+    @if ((portfolio()!.positions?.length ?? 0) === 0) {
       <iq-empty-state title="Nenhuma posição na carteira" description="Adicione ativos para acompanhar seus investimentos." />
     } @else {
       <!-- SUMMARY -->
