@@ -1,78 +1,102 @@
 import { Component, ChangeDetectionStrategy, input, inject, signal, OnInit, DestroyRef } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { switchMap, forkJoin, catchError, of, filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin, catchError, of } from 'rxjs';
 import { ValuationService } from '../../../../core/services/valuation.service';
 import type { ValuationResult, Scenarios, MarginHistory } from '../../../../core/models/valuation.model';
 import { IqFairValueBarComponent } from '../../../../shared/components/iq-fair-value-bar/iq-fair-value-bar.component';
 import { IqLineChartComponent, LineSeries } from '../../../../shared/components/iq-line-chart/iq-line-chart.component';
 import { IqMonteCarloComponent, MonteCarloScenarios } from '../../../../shared/components/iq-monte-carlo/iq-monte-carlo.component';
 import { IqSkeletonComponent } from '../../../../shared/components/iq-skeleton/iq-skeleton.component';
+import { IqEmptyStateComponent } from '../../../../shared/components/iq-empty-state/iq-empty-state.component';
 
 @Component({
   selector: 'iq-valuation-tab',
   standalone: true,
-  imports: [IqFairValueBarComponent, IqLineChartComponent, IqMonteCarloComponent, IqSkeletonComponent],
+  imports: [IqFairValueBarComponent, IqLineChartComponent, IqMonteCarloComponent, IqSkeletonComponent, IqEmptyStateComponent],
   template: `
     @if (loading()) {
       <iq-skeleton variant="rect" width="100%" height="200px" />
-    } @else {
+    } @else if (valuation()) {
       <div class="val">
-        <!-- FAIR VALUE BAR -->
-        @if (valuation(); as v) {
-          <div class="val__fv">
+        <!-- TOP: FAIR VALUE + MODELS -->
+        <div class="val__top">
+          <div class="val__fv-card">
             <h4 class="val__title">Preço Justo vs Atual</h4>
-            <iq-fair-value-bar [currentPrice]="v.current_price" [fairValue]="v.fair_value_final"
-                               [p25]="v.fair_value_p25" [p75]="v.fair_value_p75" />
+            <iq-fair-value-bar [currentPrice]="valuation()!.current_price" [fairValue]="valuation()!.fair_value_final"
+                               [p25]="valuation()!.fair_value_p25" [p75]="valuation()!.fair_value_p75" />
           </div>
-
-          <!-- MODEL CARDS -->
           <div class="val__models">
             <div class="val__model">
               <span class="val__model-label">DCF</span>
-              <span class="val__model-val mono">{{ v.fair_value_dcf != null ? 'R$ ' + v.fair_value_dcf.toFixed(2) : '—' }}</span>
+              <span class="val__model-val mono">{{ valuation()!.fair_value_dcf != null ? 'R$ ' + valuation()!.fair_value_dcf!.toFixed(2) : '—' }}</span>
             </div>
             <div class="val__model">
               <span class="val__model-label">Gordon</span>
-              <span class="val__model-val mono">{{ v.fair_value_gordon != null ? 'R$ ' + v.fair_value_gordon.toFixed(2) : '—' }}</span>
+              <span class="val__model-val mono">{{ valuation()!.fair_value_gordon != null ? 'R$ ' + valuation()!.fair_value_gordon!.toFixed(2) : '—' }}</span>
             </div>
             <div class="val__model">
               <span class="val__model-label">Múltiplos</span>
-              <span class="val__model-val mono">{{ v.fair_value_mult != null ? 'R$ ' + v.fair_value_mult.toFixed(2) : '—' }}</span>
+              <span class="val__model-val mono">{{ valuation()!.fair_value_mult != null ? 'R$ ' + valuation()!.fair_value_mult!.toFixed(2) : '—' }}</span>
             </div>
             <div class="val__model">
               <span class="val__model-label">Score Valuation</span>
-              <span class="val__model-val mono">{{ v.score_valuation }}/100</span>
+              <span class="val__model-val mono">{{ valuation()!.score_valuation }}/100</span>
             </div>
           </div>
-        }
+        </div>
 
-        <!-- MARGIN HISTORY -->
-        @if (marginSeries().length > 0) {
-          <div class="val__section">
-            <h4 class="val__title">Margem de Segurança Histórica</h4>
-            <iq-line-chart [series]="marginSeries()" />
-          </div>
-        }
-
-        <!-- SCENARIOS -->
-        @if (mcScenarios(); as mc) {
-          <div class="val__section">
-            <h4 class="val__title">Cenários</h4>
-            <iq-monte-carlo [scenarios]="mc" [currentPrice]="valuation()?.current_price ?? 0" />
-          </div>
-        }
+        <!-- CHARTS ROW -->
+        <div class="val__charts">
+          @if (marginSeries().length > 0) {
+            <div class="val__chart-card">
+              <h4 class="val__title">Margem de Segurança Histórica</h4>
+              <iq-line-chart [series]="marginSeries()" />
+            </div>
+          }
+          @if (mcScenarios()) {
+            <div class="val__chart-card">
+              <h4 class="val__title">Cenários Bear / Base / Bull</h4>
+              <iq-monte-carlo [scenarios]="mcScenarios()!" [currentPrice]="valuation()!.current_price" />
+            </div>
+          }
+        </div>
       </div>
+    } @else {
+      <iq-empty-state title="Valuation não disponível" description="Aguardando cálculo de fair value pelo motor IQ-Cognit." />
     }
   `,
   styles: [`
-    .val { display: flex; flex-direction: column; gap: 24px; }
-    .val__title { font-size: 0.75rem; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
-    .val__fv { max-width: 500px; }
-    .val__models { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border-default); border: 1px solid var(--border-default); border-radius: var(--radius); overflow: hidden; }
-    .val__model { padding: 12px 16px; background: var(--surface-0); display: flex; flex-direction: column; gap: 4px; }
-    .val__model-label { font-size: 0.6875rem; color: var(--text-tertiary); }
-    .val__model-val { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); }
-    .val__section { max-width: 500px; }
+    .val { display: flex; flex-direction: column; gap: 28px; }
+    .val__title {
+      font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 16px;
+    }
+
+    .val__top { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+
+    .val__fv-card {
+      background: var(--surface-0); border: 1px solid var(--border-default);
+      border-radius: var(--radius); padding: 20px 24px;
+    }
+
+    .val__models {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+      background: var(--border-default); border: 1px solid var(--border-default);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .val__model {
+      padding: 16px 20px; background: var(--surface-0);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .val__model-label { font-size: 0.75rem; color: var(--text-tertiary); font-weight: 500; }
+    .val__model-val { font-size: 1.125rem; font-weight: 700; color: var(--text-primary); }
+
+    .val__charts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    .val__chart-card {
+      background: var(--surface-0); border: 1px solid var(--border-default);
+      border-radius: var(--radius); padding: 20px 24px;
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -87,16 +111,13 @@ export class ValuationTabComponent implements OnInit {
   readonly mcScenarios = signal<MonteCarloScenarios | null>(null);
 
   ngOnInit(): void {
-    const t = this.ticker(); if (!t) return; // direct call
-    of(t).pipe(
-      
-      switchMap(t => forkJoin({
-        val: this.valuationService.get(t).pipe(catchError(() => of(null))),
-        margin: this.valuationService.getMargin(t).pipe(catchError(() => of(null))),
-        scenarios: this.valuationService.getScenarios(t).pipe(catchError(() => of(null))),
-      })),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(({ val, margin, scenarios }) => {
+    const t = this.ticker();
+    if (!t) return;
+    forkJoin({
+      val: this.valuationService.get(t).pipe(catchError(() => of(null))),
+      margin: this.valuationService.getMargin(t).pipe(catchError(() => of(null))),
+      scenarios: this.valuationService.getScenarios(t).pipe(catchError(() => of(null))),
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ val, margin, scenarios }) => {
       this.valuation.set(val);
 
       if (margin?.history?.length) {
