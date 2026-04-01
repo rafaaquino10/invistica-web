@@ -63,7 +63,7 @@
                   {{ pos.gain_loss | currencyBrl }}
                 </td>
                 <td class="mono">{{ (pos.weight * 100).toFixed(1) }}%</td>
-                <td class="mono port__score">{{ pos.iq_score ?? '—' }}</td>
+                <td class="mono port__score" [style.color]="pos.iq_score ? scoreColor(pos.iq_score) : ''">{{ pos.iq_score ?? '—' }}</td>
                 <td>
                   @if (pos.rating) {
                     <iq-rating-badge [rating]="$any(pos.rating)" />
@@ -98,7 +98,10 @@
               </div>
             }
           } @else {
-            <p class="port__muted">Nenhum alerta.</p>
+            <div class="port__alert-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-quaternary)" stroke-width="1.5" width="24" height="24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span class="port__alert-empty-text">Nenhum alerta ativo. Seus investimentos estão dentro dos parâmetros.</span>
+            </div>
           }
         </div>
       </div>

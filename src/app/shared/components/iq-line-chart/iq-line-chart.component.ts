@@ -5,6 +5,8 @@ export interface LineSeries {
   data: number[];
   color: string;
   dashed?: boolean;
+  areaFill?: boolean;  // fill area below line
+  strokeWidth?: number;
 }
 
 const W = 600;
@@ -21,8 +23,11 @@ const PAD = { top: 16, right: 16, bottom: 28, left: 56 };
         <text [attr.x]="padLeft - 8" [attr.y]="tick.y" class="linechart__label" text-anchor="end" dominant-baseline="middle">{{ tick.label }}</text>
       }
       @for (s of seriesData(); track s.name) {
+        @if (s.areaPoints) {
+          <polygon [attr.points]="s.areaPoints" [attr.fill]="s.color" opacity="0.04" />
+        }
         <polyline [attr.points]="s.points" fill="none"
-                  [attr.stroke]="s.color" stroke-width="2"
+                  [attr.stroke]="s.color" [attr.stroke-width]="s.strokeWidth"
                   [attr.stroke-dasharray]="s.dashed ? '6,4' : 'none'"
                   stroke-linecap="round" stroke-linejoin="round" />
       }
@@ -61,12 +66,21 @@ export class IqLineChartComponent {
 
     return this.series().map(s => {
       const stepX = s.data.length > 1 ? plotW / (s.data.length - 1) : 0;
-      const points = s.data.map((v, i) => {
-        const x = PAD.left + i * stepX;
-        const y = PAD.top + plotH - ((v - min) / range) * plotH;
-        return `${x.toFixed(1)},${y.toFixed(1)}`;
-      }).join(' ');
-      return { name: s.name, points, color: s.color, dashed: s.dashed ?? false };
+      const coords = s.data.map((v, i) => ({
+        x: PAD.left + i * stepX,
+        y: PAD.top + plotH - ((v - min) / range) * plotH,
+      }));
+      const points = coords.map(c => `${c.x.toFixed(1)},${c.y.toFixed(1)}`).join(' ');
+      const baseline = PAD.top + plotH;
+      const areaPoints = s.areaFill && coords.length > 1
+        ? `${coords[0].x.toFixed(1)},${baseline} ${points} ${coords[coords.length - 1].x.toFixed(1)},${baseline}`
+        : null;
+      return {
+        name: s.name, points, color: s.color,
+        dashed: s.dashed ?? false,
+        strokeWidth: s.strokeWidth ?? 2,
+        areaPoints,
+      };
     });
   });
 

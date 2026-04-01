@@ -43,6 +43,19 @@
               DY {{ item.dividend_yield_proj != null ? (item.dividend_yield_proj * 100).toFixed(1) + '%' : '—' }}
             </span>
           </div>
+          @if (item.fair_value_final) {
+            <div class="cmp__card-fv">
+              <span class="cmp__card-fv-label">Fair Value</span>
+              <span class="cmp__card-fv-val mono">R$ {{ item.fair_value_final.toFixed(2) }}</span>
+              @if (item.safety_margin != null) {
+                <span class="cmp__card-fv-margin mono"
+                      [class.positive]="item.safety_margin >= 0"
+                      [class.negative]="item.safety_margin < 0">
+                  {{ (item.safety_margin * 100).toFixed(1) }}%
+                </span>
+              }
+            </div>
+          }
         </div>
       }
     </div>

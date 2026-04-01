@@ -139,6 +139,13 @@ export class PortfolioComponent implements OnInit {
       .subscribe(() => this.loadPortfolio());
   }
 
+  scoreColor(sc: number): string {
+    if (sc >= 82) return 'var(--positive)';
+    if (sc >= 70) return 'var(--obsidian)';
+    if (sc >= 45) return 'var(--warning)';
+    return 'var(--negative)';
+  }
+
   goToAsset(ticker: string): void {
     this.router.navigate(['/ativo', ticker]);
   }

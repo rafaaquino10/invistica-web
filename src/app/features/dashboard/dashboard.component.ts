@@ -110,9 +110,9 @@ export class DashboardComponent implements OnInit {
   readonly equitySeries = computed((): LineSeries[] => {
     // Simulated equity curves from portfolio data — will use real backtest data later
     return [
-      { name: 'Carteira', data: [100, 103, 101, 106, 104, 109, 112, 110, 115], color: 'var(--obsidian)' },
-      { name: 'CDI', data: [100, 101, 102, 103, 104, 105, 106, 107, 108], color: 'var(--info)', dashed: true },
-      { name: 'IBOV', data: [100, 102, 99, 104, 101, 105, 108, 106, 110], color: 'var(--text-tertiary)', dashed: true },
+      { name: 'Carteira', data: [100, 103, 101, 106, 104, 109, 112, 110, 115], color: 'var(--obsidian)', strokeWidth: 2, areaFill: true },
+      { name: 'CDI', data: [100, 101, 102, 103, 104, 105, 106, 107, 108], color: 'var(--text-tertiary)', strokeWidth: 1 },
+      { name: 'IBOV', data: [100, 102, 99, 104, 101, 105, 108, 106, 110], color: 'var(--text-tertiary)', strokeWidth: 1, dashed: true },
     ];
   });
 

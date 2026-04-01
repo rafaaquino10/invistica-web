@@ -48,9 +48,9 @@
               <td class="ex-td ex-td--cluster">{{ r.cluster_name }}</td>
               <td class="ex-td ex-td--score mono" [style.color]="r.iq_score ? scoreColor(r.iq_score) : ''">{{ fmt(r.iq_score) }}</td>
               <td class="ex-td">@if (r.iq_score) { <iq-rating-badge [rating]="r.rating" /> } @else { <span class="ex-na">—</span> }</td>
-              <td class="ex-td mono">{{ fmt(r.score_quali) }}</td>
-              <td class="ex-td mono">{{ fmt(r.score_quanti) }}</td>
-              <td class="ex-td mono">{{ fmt(r.score_valuation) }}</td>
+              <td class="ex-td mono" [style.color]="r.score_quali ? scoreColor(r.score_quali) : ''">{{ fmt(r.score_quali) }}</td>
+              <td class="ex-td mono" [style.color]="r.score_quanti ? scoreColor(r.score_quanti) : ''">{{ fmt(r.score_quanti) }}</td>
+              <td class="ex-td mono" [style.color]="r.score_valuation ? scoreColor(r.score_valuation) : ''">{{ fmt(r.score_valuation) }}</td>
               <td class="ex-td mono">{{ fmtBrl(r.fair_value_final) }}</td>
               <td class="ex-td mono" [class.positive]="(r.safety_margin ?? 0) > 0" [class.negative]="(r.safety_margin ?? 0) < 0">{{ fmtPct(r.safety_margin) }}</td>
               <td class="ex-td mono">{{ fmtPct(r.dividend_yield_proj) }}</td>

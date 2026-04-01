@@ -66,6 +66,12 @@
 .port__alert--low { border-color: var(--info); background: var(--info-bg); color: var(--info); }
 .port__muted { font-size: t.$text-sm; color: var(--text-tertiary); }
 
+.port__alert-empty {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-2);
+  padding: var(--space-6) 0; text-align: center;
+}
+.port__alert-empty-text { font-size: t.$text-sm; color: var(--text-tertiary); max-width: 240px; line-height: 1.4; }
+
 // Add modal
 .port__add { display: flex; flex-direction: column; gap: 20px; }
 

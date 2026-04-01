@@ -84,12 +84,53 @@
       <!-- ═══ CHARTS ROW ═══ -->
       <section class="dash__charts">
         <div class="dash__chart-card">
-          <h3 class="dash__card-title">Equity Curve</h3>
+          <div class="dash__chart-header">
+            <h3 class="dash__card-title">Equity Curve</h3>
+            <div class="dash__period-selector">
+              @for (p of ['1M','3M','6M','12M','Max']; track p) {
+                <button class="dash__period-btn" [class.dash__period-btn--active]="p === '12M'">{{ p }}</button>
+              }
+            </div>
+          </div>
           <iq-line-chart [series]="equitySeries()" />
+          <div class="dash__chart-metrics">
+            <div class="dash__chart-metric">
+              <span class="dash__chart-metric-label">Carteira</span>
+              <span class="dash__chart-metric-val mono positive">+15.0%</span>
+            </div>
+            <div class="dash__chart-metric">
+              <span class="dash__chart-metric-label">CDI</span>
+              <span class="dash__chart-metric-val mono">+8.0%</span>
+            </div>
+            <div class="dash__chart-metric">
+              <span class="dash__chart-metric-label">IBOV</span>
+              <span class="dash__chart-metric-val mono">+10.0%</span>
+            </div>
+            <div class="dash__chart-metric">
+              <span class="dash__chart-metric-label">Alpha</span>
+              <span class="dash__chart-metric-val mono positive">+7.0pp</span>
+            </div>
+          </div>
         </div>
         <div class="dash__chart-card">
           <h3 class="dash__card-title">Dividendos Mensais</h3>
           <iq-bar-chart [data]="dividendBars()" color="var(--positive)" />
+          <div class="dash__chart-metrics">
+            @if (dividendSummary(); as ds) {
+              <div class="dash__chart-metric">
+                <span class="dash__chart-metric-label">Recebido</span>
+                <span class="dash__chart-metric-val mono">{{ ds.total_received | currencyBrl }}</span>
+              </div>
+              <div class="dash__chart-metric">
+                <span class="dash__chart-metric-label">Média/mês</span>
+                <span class="dash__chart-metric-val mono">{{ ds.monthly_avg | currencyBrl }}</span>
+              </div>
+              <div class="dash__chart-metric">
+                <span class="dash__chart-metric-label">Yield on Cost</span>
+                <span class="dash__chart-metric-val mono positive">{{ (ds.yield_on_cost * 100).toFixed(1) }}%</span>
+              </div>
+            }
+          </div>
         </div>
       </section>
 
@@ -120,7 +161,8 @@
             @for (item of feedItems(); track item.id) {
               <div class="dash__intel-card" [style.borderLeftColor]="getInsightBorderColor(item.type)">
                 <div class="dash__intel-header">
-                  <span class="dash__intel-tag">{{ getInsightTag(item.type) }}</span>
+                  <span class="dash__intel-pill" [style.color]="getInsightBorderColor(item.type)"
+                        [style.backgroundColor]="getInsightBorderColor(item.type) + '10'">{{ getInsightTag(item.type) }}</span>
                   <span class="dash__intel-time mono">{{ item.created_at | date:'dd/MM HH:mm' }}</span>
                 </div>
                 <p class="dash__intel-text">{{ item.title }}</p>
@@ -155,7 +197,11 @@
                           [style.color]="ratingColors(asset.rating).text">
                       {{ asset.iq_score }}
                     </span>
-                    <span class="dash__top5-label">{{ asset.rating | ratingLabel }}</span>
+                    <div class="dash__top5-bar">
+                      <div class="dash__top5-bar-fill"
+                           [style.width.%]="asset.iq_score"
+                           [style.backgroundColor]="ratingColors(asset.rating).text"></div>
+                    </div>
                   </div>
                 </a>
               }

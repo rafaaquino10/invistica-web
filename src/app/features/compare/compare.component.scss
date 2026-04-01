@@ -45,6 +45,10 @@
 .cmp__card-price { display: flex; align-items: baseline; gap: var(--space-3); }
 .cmp__card-price-val { font-size: t.$text-lg; font-weight: 600; color: var(--text-primary); }
 .cmp__card-dy { font-size: t.$text-sm; }
+.cmp__card-fv { display: flex; align-items: baseline; gap: var(--space-2); padding-top: var(--space-2); border-top: 1px solid var(--border-default); }
+.cmp__card-fv-label { font-size: t.$text-xs; color: var(--text-tertiary); }
+.cmp__card-fv-val { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); }
+.cmp__card-fv-margin { font-size: t.$text-xs; font-weight: 600; }
 
 // Charts
 .cmp__charts {

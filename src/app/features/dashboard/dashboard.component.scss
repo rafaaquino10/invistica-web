@@ -38,7 +38,7 @@
 
 .dash__line {
   height: 2px;
-  background: linear-gradient(90deg, var(--obsidian), transparent);
+  background: linear-gradient(90deg, rgba(61,61,58,0.12), transparent);
   margin-top: var(--space-2);
 }
 
@@ -113,6 +113,65 @@
   margin-bottom: var(--space-4);
 }
 
+// Chart header with period selector
+.dash__chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.dash__chart-header .dash__card-title { margin-bottom: 0; }
+
+.dash__period-selector { display: flex; gap: 2px; }
+.dash__period-btn {
+  border: none; background: transparent;
+  font-family: t.$font-mono; font-size: 10px; font-weight: 500;
+  color: var(--text-tertiary); padding: 4px 8px;
+  border-radius: var(--radius); cursor: pointer;
+  &:hover { color: var(--text-primary); background: var(--surface-2); }
+}
+.dash__period-btn--active {
+  color: var(--obsidian); background: var(--obsidian-bg);
+  font-weight: 600;
+}
+
+// Metrics row below charts
+.dash__chart-metrics {
+  display: flex;
+  gap: 0;
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--border-default);
+  padding-top: var(--space-3);
+}
+
+.dash__chart-metric {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-3);
+  border-right: 1px solid var(--border-default);
+  &:last-child { border-right: none; }
+  &:first-child { padding-left: 0; }
+}
+
+.dash__chart-metric-label {
+  font-size: 9px;
+  font-family: t.$font-mono;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dash__chart-metric-val {
+  font-family: t.$font-mono;
+  font-size: t.$text-sm;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
 // ── SECTOR ──
 .dash__sector {
   background: var(--surface-1);
@@ -171,6 +230,16 @@
   color: var(--text-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.dash__intel-pill {
+  font-family: t.$font-mono;
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 1px;
+  letter-spacing: 0.06em;
 }
 
 .dash__intel-time {
@@ -264,14 +333,25 @@
 
 .dash__top5-val {
   font-family: t.$font-mono;
-  font-size: t.$text-xl;
+  font-size: t.$text-lg;
   font-weight: 700;
   line-height: 1;
+  min-width: 28px;
+  text-align: right;
 }
 
-.dash__top5-label {
-  font-size: t.$text-xs;
-  color: var(--text-tertiary);
+.dash__top5-bar {
+  width: 60px;
+  height: 4px;
+  background: var(--surface-3);
+  border-radius: 1px;
+  margin-top: 4px;
+}
+
+.dash__top5-bar-fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.6s var(--ease);
 }
 
 // ── CATALYSTS ──
@@ -349,3 +429,6 @@
   padding: var(--space-4) 0;
   text-align: center;
 }
+
+.positive { color: var(--positive); }
+.negative { color: var(--negative); }
