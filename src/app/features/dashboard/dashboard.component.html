@@ -1,240 +1,55 @@
-<!-- ═══ LOADING STATE ═══ -->
 @if (loading()) {
   <div class="dash">
-    <div class="dash__greeting">
-      <iq-skeleton variant="text" width="180px" height="12px" />
-      <iq-skeleton variant="text" width="380px" height="22px" />
-    </div>
-    <div class="dash__strip">
-      @for (i of [1,2,3,4]; track i) {
-        <div class="dash__strip-cell">
-          <iq-skeleton variant="rect" width="100%" height="80px" />
-        </div>
-      }
-    </div>
-    <div class="dash__charts">
+    <iq-skeleton variant="rect" width="100%" height="200px" />
+    <iq-skeleton variant="rect" width="100%" height="100px" />
+    <div class="dash__skeleton-row">
+      <iq-skeleton variant="rect" width="100%" height="200px" />
       <iq-skeleton variant="rect" width="100%" height="200px" />
       <iq-skeleton variant="rect" width="100%" height="200px" />
     </div>
   </div>
 } @else {
   <div class="dash">
-    <!-- ═══ SAUDAÇÃO ═══ -->
-    <section class="dash__greeting">
-      <span class="dash__date mono">{{ todayDate() }}</span>
-      @if (hasPortfolio()) {
-        <h1 class="dash__hello">
-          {{ greeting() }}, {{ userName() }}.
-          <span class="dash__hello-sub">
-            Sua carteira tem score
-            <strong class="mono">{{ portfolioScore() }}</strong>
-            e vale
-            <strong class="mono">{{ portfolio()!.total_value | currencyBrl }}</strong>.
-          </span>
-        </h1>
-      } @else {
-        <h1 class="dash__hello">{{ greeting() }}, {{ userName() }}.</h1>
-      }
-      <div class="dash__line"></div>
-    </section>
-
-    <!-- ═══ REGIME BANNER ═══ -->
-    @if (regime(); as r) {
-      <section class="dash__regime">
-        <iq-regime-badge [regime]="r.regime" />
-        <span class="dash__regime-desc">{{ r.description }}</span>
-        @if (r.kill_switch_active) {
-          <span class="dash__kill-switch">KILL SWITCH ATIVO</span>
-        }
-      </section>
-    }
-
-    <!-- ═══ PORTFOLIO STRIP ═══ -->
+    <!-- SEÇÃO 1: HERO BANNER -->
     @if (hasPortfolio()) {
-      <section class="dash__strip">
-        <div class="dash__strip-cell dash__strip-cell--gauge">
-          <iq-score-gauge [score]="portfolioScore()" [rating]="portfolioRating()" size="sm" />
-          <iq-rating-badge [rating]="portfolioRating()" />
-        </div>
-        <div class="dash__strip-cell">
-          <iq-kpi-card label="Patrimônio"
-                       [value]="portfolio()!.total_value | currencyBrl"
-                       [delta]="portfolio()!.total_gain_loss_pct"
-                       deltaLabel="total" />
-        </div>
-        <div class="dash__strip-cell">
-          <iq-kpi-card label="Rentabilidade"
-                       [value]="portfolio()!.total_gain_loss | currencyBrl"
-                       [delta]="portfolio()!.total_gain_loss_pct"
-                       deltaLabel="vs custo" />
-        </div>
-        <div class="dash__strip-cell">
-          @if (dividendSummary(); as ds) {
-            <iq-kpi-card label="Dividendos 12m"
-                         [value]="ds.total_received | currencyBrl"
-                         prefix=""
-                         [delta]="ds.yield_on_cost"
-                         deltaLabel="yield on cost" />
-          } @else {
-            <iq-kpi-card label="Dividendos 12m" value="—" />
-          }
-        </div>
-      </section>
-
-      <!-- ═══ CHARTS ROW ═══ -->
-      <section class="dash__charts">
-        <div class="dash__chart-card">
-          <div class="dash__chart-header">
-            <h3 class="dash__card-title">Equity Curve</h3>
-            <div class="dash__period-selector">
-              @for (p of ['1M','3M','6M','12M','Max']; track p) {
-                <button class="dash__period-btn" [class.dash__period-btn--active]="p === '12M'">{{ p }}</button>
-              }
-            </div>
-          </div>
-          <iq-line-chart [series]="equitySeries()" />
-          <div class="dash__chart-metrics">
-            <div class="dash__chart-metric">
-              <span class="dash__chart-metric-label">Carteira</span>
-              <span class="dash__chart-metric-val mono positive">+15.0%</span>
-            </div>
-            <div class="dash__chart-metric">
-              <span class="dash__chart-metric-label">CDI</span>
-              <span class="dash__chart-metric-val mono">+8.0%</span>
-            </div>
-            <div class="dash__chart-metric">
-              <span class="dash__chart-metric-label">IBOV</span>
-              <span class="dash__chart-metric-val mono">+10.0%</span>
-            </div>
-            <div class="dash__chart-metric">
-              <span class="dash__chart-metric-label">Alpha</span>
-              <span class="dash__chart-metric-val mono positive">+7.0pp</span>
-            </div>
-          </div>
-        </div>
-        <div class="dash__chart-card">
-          <h3 class="dash__card-title">Dividendos Mensais</h3>
-          <iq-bar-chart [data]="dividendBars()" color="var(--positive)" />
-          <div class="dash__chart-metrics">
-            @if (dividendSummary(); as ds) {
-              <div class="dash__chart-metric">
-                <span class="dash__chart-metric-label">Recebido</span>
-                <span class="dash__chart-metric-val mono">{{ ds.total_received | currencyBrl }}</span>
-              </div>
-              <div class="dash__chart-metric">
-                <span class="dash__chart-metric-label">Média/mês</span>
-                <span class="dash__chart-metric-val mono">{{ ds.monthly_avg | currencyBrl }}</span>
-              </div>
-              <div class="dash__chart-metric">
-                <span class="dash__chart-metric-label">Yield on Cost</span>
-                <span class="dash__chart-metric-val mono positive">{{ (ds.yield_on_cost * 100).toFixed(1) }}%</span>
-              </div>
-            }
-          </div>
-        </div>
-      </section>
-
-      <!-- ═══ SECTOR EXPOSURE ═══ -->
-      @if (sectorBars().length > 0) {
-        <section class="dash__sector">
-          <h3 class="dash__card-title">Exposição Setorial</h3>
-          <iq-bar-chart [data]="sectorBars()" color="var(--obsidian)" />
-        </section>
-      }
-
+      <dash-hero
+        [userName]="userName()"
+        [score]="portfolioScore()"
+        [rating]="portfolioRating()"
+        [totalValue]="portfolio()!.total_value"
+        [plToday]="0"
+        [plTotal]="portfolio()!.total_gain_loss"
+        [plTotalPct]="portfolio()!.total_gain_loss_pct"
+        [dividends12m]="divTotal()"
+        [yieldOnCost]="divYield()"
+        [regimeType]="regimeType()"
+        [selic]="selic()"
+        [ipca]="ipca()" />
     } @else {
-      <!-- ═══ EMPTY STATE ═══ -->
-      <section class="dash__empty">
-        <iq-empty-state title="Nenhuma posição na carteira"
-                        description="Adicione seus ativos para ver seu briefing personalizado." />
-        <iq-button variant="primary" routerLink="/carteira" [queryParams]="{ add: true }">Adicionar primeira posição</iq-button>
+      <section class="dash__empty-hero">
+        <div class="dash__empty-hero-content">
+          <h1 class="dash__empty-hero-title">{{ userName() ? 'Olá, ' + userName() + '.' : 'Bem-vindo ao InvestIQ.' }}</h1>
+          <p class="dash__empty-hero-desc">Adicione suas posições para ver seu briefing personalizado.</p>
+          <iq-button variant="primary" routerLink="/carteira" [queryParams]="{ add: true }">Adicionar primeira posição</iq-button>
+        </div>
       </section>
     }
 
-    <!-- ═══ INTELLIGENCE + TOP 5 ═══ -->
-    <section class="dash__bottom">
-      <!-- INTELIGÊNCIA -->
-      <div class="dash__intel">
-        <h3 class="dash__card-title">Inteligência</h3>
-        @if (feedItems().length > 0) {
-          <div class="dash__intel-list">
-            @for (item of feedItems(); track item.id) {
-              <div class="dash__intel-card" [style.borderLeftColor]="getInsightBorderColor(item.type)">
-                <div class="dash__intel-header">
-                  <span class="dash__intel-pill" [style.color]="getInsightBorderColor(item.type)"
-                        [style.backgroundColor]="getInsightBorderColor(item.type) + '10'">{{ getInsightTag(item.type) }}</span>
-                  <span class="dash__intel-time mono">{{ item.created_at | date:'dd/MM HH:mm' }}</span>
-                </div>
-                <p class="dash__intel-text">{{ item.title }}</p>
-                @if (item.description) {
-                  <p class="dash__intel-sub">{{ item.description }}</p>
-                }
-              </div>
-            }
-          </div>
-        } @else {
-          <p class="dash__muted">Nenhum insight recente.</p>
-        }
-      </div>
+    <!-- SEÇÃO 2: IBOV INTRADAY -->
+    <dash-ibov />
 
-      <!-- RIGHT COLUMN -->
-      <div class="dash__right">
-        <!-- TOP 5 -->
-        <div class="dash__top5">
-          <h3 class="dash__card-title">Top 5 IQ-Score</h3>
-          @if (topAssets().length > 0) {
-            <div class="dash__top5-list">
-              @for (asset of topAssets(); track asset.ticker; let i = $index) {
-                <a class="dash__top5-item" [routerLink]="'/ativo/' + asset.ticker">
-                  <span class="dash__top5-rank mono">{{ i + 1 }}</span>
-                  <iq-ticker-logo [ticker]="asset.ticker" [size]="24" />
-                  <div class="dash__top5-info">
-                    <span class="dash__top5-ticker mono">{{ asset.ticker }}</span>
-                    <span class="dash__top5-name">{{ asset.company_name | slice:0:28 }}</span>
-                  </div>
-                  <div class="dash__top5-score">
-                    <span class="dash__top5-val mono"
-                          [style.color]="ratingColors(asset.rating).text">
-                      {{ asset.iq_score }}
-                    </span>
-                    <div class="dash__top5-bar">
-                      <div class="dash__top5-bar-fill"
-                           [style.width.%]="asset.iq_score"
-                           [style.backgroundColor]="ratingColors(asset.rating).text"></div>
-                    </div>
-                  </div>
-                </a>
-              }
-            </div>
-          } @else {
-            <p class="dash__muted">Sem dados de score.</p>
-          }
-        </div>
+    <!-- SEÇÃO 3: ALTAS + BAIXAS + EXPOSIÇÃO -->
+    <dash-movers
+      [gainers]="gainers()"
+      [losers]="losers()"
+      [sectors]="sectorExposure()"
+      [hhi]="0" />
 
-        <!-- CATALISADORES -->
-        <div class="dash__catalysts">
-          <h3 class="dash__card-title">Catalisadores</h3>
-          @if (catalysts().length > 0) {
-            <div class="dash__cat-list">
-              @for (cat of catalysts(); track cat.url) {
-                <a class="dash__cat-item" [href]="cat.url" target="_blank" rel="noopener">
-                  <div class="dash__cat-date">
-                    <span class="dash__cat-day mono">{{ cat.date | date:'dd' }}</span>
-                    <span class="dash__cat-month mono">{{ cat.date | date:'MMM' }}</span>
-                  </div>
-                  <div class="dash__cat-content">
-                    <span class="dash__cat-title">{{ cat.title | slice:0:80 }}</span>
-                    <span class="dash__cat-source mono">{{ cat.source }}</span>
-                  </div>
-                </a>
-              }
-            </div>
-          } @else {
-            <p class="dash__muted">Nenhum catalisador recente.</p>
-          }
-        </div>
-      </div>
-    </section>
+    <!-- SEÇÃO 4: INSIGHTS + COLUNA DIREITA -->
+    <dash-insights
+      [cards]="insightCards()"
+      [recommended]="recommended()"
+      [dividends]="[]" />
 
     <iq-disclaimer />
   </div>
