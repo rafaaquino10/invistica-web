@@ -19,7 +19,21 @@
 .port__kpi-value { font-size: t.$text-xl; font-weight: 700; color: var(--text-primary); }
 
 .port__table-wrap { @include m.iq-table-wrap; margin-bottom: var(--space-4); }
-.port__table { @include m.iq-table; }
+.port__table {
+  @include m.iq-table;
+  // 11 colunas
+  th:nth-child(1) { width: 10%; }  // Ticker
+  th:nth-child(2) { width: 14%; }  // Empresa
+  th:nth-child(3) { width: 7%; }   // Qtd
+  th:nth-child(4) { width: 8%; }   // PM
+  th:nth-child(5) { width: 8%; }   // Atual
+  th:nth-child(6) { width: 8%; }   // P&L %
+  th:nth-child(7) { width: 10%; }  // P&L R$
+  th:nth-child(8) { width: 7%; }   // Peso
+  th:nth-child(9) { width: 7%; }   // Score
+  th:nth-child(10) { width: 9%; }  // Rating
+  th:nth-child(11) { width: 6%; }  // Actions
+}
 
 .port__ticker { @include m.iq-table-ticker; cursor: pointer; &:hover { color: var(--obsidian); text-decoration: underline; } }
 .port__name { @include m.iq-table-name; }
@@ -27,12 +41,14 @@
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
 
-.port__actions { display: flex; gap: 4px; }
+.port__actions { white-space: nowrap; }
 .port__action-btn {
-  display: flex; align-items: center; justify-content: center;
+  display: inline-flex; align-items: center; justify-content: center;
   width: 26px; height: 26px; border: none; background: transparent;
   color: var(--text-tertiary); border-radius: var(--radius); cursor: pointer;
+  vertical-align: middle;
   &:hover { background: var(--surface-2); color: var(--text-primary); }
+  & + & { margin-left: 2px; }
 }
 .port__action-btn--danger:hover { color: var(--negative); }
 

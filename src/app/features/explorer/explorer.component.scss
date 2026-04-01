@@ -17,7 +17,22 @@
 }
 
 .explorer__table-wrap { @include m.iq-table-wrap; max-height: 75vh; }
-.explorer__table { @include m.iq-table; }
+.explorer__table {
+  @include m.iq-table;
+  // 12 colunas — larguras proporcionais
+  th:nth-child(1) { width: 10%; }  // Ticker
+  th:nth-child(2) { width: 16%; }  // Empresa
+  th:nth-child(3) { width: 9%; }   // Setor
+  th:nth-child(4) { width: 8%; }   // IQ-Score
+  th:nth-child(5) { width: 8%; }   // Rating
+  th:nth-child(6),
+  th:nth-child(7),
+  th:nth-child(8) { width: 7%; }   // Quali, Quanti, Valuation
+  th:nth-child(9) { width: 8%; }   // Fair Value
+  th:nth-child(10),
+  th:nth-child(11),
+  th:nth-child(12) { width: 7%; }  // Margem, DY Proj, Safety
+}
 
 .ex-th--sort { @include m.iq-table-sortable; }
 .ex-th--active { @include m.iq-table-sortable-active; }
