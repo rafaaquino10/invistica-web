@@ -1,0 +1,43 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find C:workspaceinvestiq-full -name *ARQUITETURA* -type f)",
+      "WebFetch(domain:api.fontshare.com)",
+      "WebFetch(domain:fonts.googleapis.com)",
+      "Bash(curl -sL \"https://cdn.fontshare.com/wf/NWBQYJIM7GCZ5XWD7D26ARB3VDY55ZRT/K63EV2KZIGKLE7RANQ2U42S6SVHU5RJ7/X6XYTKIVDUW7GZTZPZNN4EUM5KH54KHF.woff2\" -o Satoshi-Variable.woff2)",
+      "Bash(curl:*)",
+      "Bash(npx ng:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm install:*)",
+      "WebFetch(domain:investiqbackend-production.up.railway.app)",
+      "Bash(node:*)",
+      "Bash(sed -i \"s/import { CurrencyBrlPipe } from ''..\\\\/..\\\\/shared\\\\/pipes\\\\/currency-brl.pipe'';\\\\n//\" src/app/features/ativo/ativo.component.ts)",
+      "Bash(sed -i \"s/CurrencyBrlPipe, CompactNumberPipe/CompactNumberPipe/\" src/app/features/ativo/ativo.component.ts)",
+      "Bash(sed -i \"/^import { CurrencyBrlPipe }/d\" src/app/features/ativo/ativo.component.ts)",
+      "Bash(grep -i \"\\\\.md$\")",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(xargs grep:*)",
+      "Bash(grep -rn \"def main\" /c/workspace/investiq-full/investiq/engine/iq_cognit/jobs/*.py)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(f''''count: {d[\"\"count\"\"]}, tickers: {len\\(d[\"\"tickers\"\"]\\)}''''\\)\")",
+      "Bash(taskkill:*)",
+      "Bash(ls:*)",
+      "Bash(git push:*)",
+      "Bash(sed -i 's/const W = 360;/const W = 600;/' src/app/shared/components/iq-monte-carlo/iq-monte-carlo.component.ts)",
+      "Bash(sed -i 's/const H = 160;/const H = 260;/' src/app/shared/components/iq-monte-carlo/iq-monte-carlo.component.ts)",
+      "Bash(grep:*)",
+      "Bash(find /c/workspace/investiq-full/investiq-web/src -type f -name *thermometer* -o -name *heatmap*)",
+      "Bash(node -e \"const d=JSON.parse\\(require\\(''''fs''''\\).readFileSync\\(0,''''utf8''''\\)\\); d.results.forEach\\(r => console.log\\(r.ticker, ''''score:'''', r.iq_score, ''''rating:'''', r.rating, ''''quali:'''', r.score_quali, ''''quanti:'''', r.score_quanti, ''''val:'''', r.score_valuation, ''''fv:'''', r.fair_value_final, ''''margin:'''', r.safety_margin, ''''dy:'''', r.dividend_yield_proj\\)\\)\")",
+      "Bash(sed -i 's/\"\"qty\"\"/\"\"quantity\"\"/g' engine/iq_cognit/api/routers/portfolio.py)",
+      "Bash(sed -i \"s/\\\\.qty/.quantity/g\" engine/iq_cognit/api/routers/portfolio.py)",
+      "Bash(sed -i 's/, qty,/, quantity,/g' engine/iq_cognit/api/routers/portfolio.py)",
+      "Bash(sed -i 's/qty: float/quantity: float/g' engine/iq_cognit/api/routers/portfolio.py)",
+      "Bash(sed -i 's/pos\\\\.qty/pos.quantity/g' src/app/features/portfolio/portfolio.component.html src/app/features/portfolio/portfolio.component.ts)",
+      "Bash(sed -i 's/{ qty:/{ quantity:/g' src/app/features/portfolio/portfolio.component.ts)",
+      "Bash(gh run:*)",
+      "Bash(find /c/workspace/investiq-full/investiq -name *.sql -o -name *migration* -o -name *schema*)",
+      "Bash(find /c/workspace/investiq-full/investiq -type f -name *.log -o -name *score*)",
+      "Bash(echo \"exit: $?\")"
+    ]
+  }
+}

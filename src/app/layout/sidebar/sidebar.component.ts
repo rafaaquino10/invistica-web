@@ -35,7 +35,6 @@ export class SidebarComponent {
       { label: 'Explorar', route: '/explorar', icon: 'search' },
       { label: 'Comparar', route: '/comparar', icon: 'columns' },
       { label: 'Mapa', route: '/mapa', icon: 'map' },
-      { label: 'Termômetro', route: '/termometro', icon: 'thermometer' },
     ]},
     { title: 'PATRIMÔNIO', items: [
       { label: 'Carteira', route: '/carteira', icon: 'briefcase' },

@@ -68,12 +68,6 @@ export const routes: Routes = [
         loadComponent: () => import('./features/market-map/market-map.component').then(m => m.MarketMapComponent),
         canActivate: [planGuard],
       },
-      {
-        path: 'termometro',
-        loadComponent: () => import('./features/thermometer/thermometer.component').then(m => m.ThermometerComponent),
-        canActivate: [planGuard],
-      },
-
       // Patrimônio
       {
         path: 'carteira',
