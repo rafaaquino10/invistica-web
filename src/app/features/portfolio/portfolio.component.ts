@@ -148,6 +148,7 @@ export class PortfolioComponent implements OnInit {
   }
 
   private buildDonut(p: PortfolioResult): void {
+    if (!p?.positions?.length) return;
     const clusters: Record<number, number> = {};
     p.positions.forEach(pos => {
       clusters[pos.cluster_id] = (clusters[pos.cluster_id] || 0) + pos.market_value;
@@ -166,7 +167,7 @@ export class PortfolioComponent implements OnInit {
       portfolio: this.portfolioService.get().pipe(catchError(() => of(null))),
       alerts: this.portfolioService.getAlerts().pipe(catchError(() => of([]))),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ portfolio, alerts }) => {
-      if (portfolio) {
+      if (portfolio && portfolio.positions?.length) {
         this.portfolio.set(portfolio);
         this.buildDonut(portfolio);
       }
