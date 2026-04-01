@@ -82,7 +82,7 @@ export class PortfolioComponent implements OnInit {
     if (!ticker || qty <= 0 || avg_price <= 0) return;
 
     this.saving.set(true);
-    this.portfolioService.addPosition({ ticker, qty, avg_price })
+    this.portfolioService.addPosition({ ticker, quantity: qty, avg_price })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: res => {
@@ -101,14 +101,14 @@ export class PortfolioComponent implements OnInit {
   openEdit(pos: Position): void {
     this.editPositionId.set(pos.id);
     this.editTicker.set(pos.ticker);
-    this.editQty.set(pos.qty);
+    this.editQty.set(pos.quantity);
     this.editAvgPrice.set(pos.avg_price);
     this.editModalOpen.set(true);
   }
 
   saveEdit(): void {
     this.saving.set(true);
-    this.portfolioService.updatePosition(this.editPositionId(), { qty: this.editQty(), avg_price: this.editAvgPrice() })
+    this.portfolioService.updatePosition(this.editPositionId(), { quantity: this.editQty(), avg_price: this.editAvgPrice() })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: res => {

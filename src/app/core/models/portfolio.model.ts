@@ -7,7 +7,7 @@ export interface Position {
   ticker: string;
   company_name: string;
   cluster_id: number;
-  qty: number;
+  quantity: number;
   avg_price: number;
   current_price: number;
   market_value: number;
@@ -20,12 +20,12 @@ export interface Position {
 
 export interface PositionCreate {
   ticker: string;
-  qty: number;
+  quantity: number;
   avg_price: number;
 }
 
 export interface PositionUpdate {
-  qty?: number;
+  quantity?: number;
   avg_price?: number;
 }
 

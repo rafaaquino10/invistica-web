@@ -53,7 +53,7 @@
               <tr>
                 <td class="mono port__ticker" (click)="goToAsset(pos.ticker)"><iq-ticker-logo [ticker]="pos.ticker" [size]="18" /> {{ pos.ticker }}</td>
                 <td class="port__name">{{ pos.company_name }}</td>
-                <td class="mono">{{ pos.qty }}</td>
+                <td class="mono">{{ pos.quantity }}</td>
                 <td class="mono">{{ pos.avg_price.toFixed(2) }}</td>
                 <td class="mono">{{ pos.current_price.toFixed(2) }}</td>
                 <td class="mono" [class.positive]="pos.gain_loss_pct >= 0" [class.negative]="pos.gain_loss_pct < 0">

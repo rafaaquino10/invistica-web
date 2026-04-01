@@ -85,7 +85,7 @@ export class DecideComponent {
     for (const s of suggestions) {
       const qty = Math.max(1, Math.floor(s.suggested_amount / 30));
       const avg_price = s.suggested_amount / qty;
-      this.portfolioService.addPosition({ ticker: s.ticker, qty, avg_price })
+      this.portfolioService.addPosition({ ticker: s.ticker, quantity: qty, avg_price })
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
