@@ -38,7 +38,8 @@
       "Bash(find /c/workspace/investiq-full/investiq -name *.sql -o -name *migration* -o -name *schema*)",
       "Bash(find /c/workspace/investiq-full/investiq -type f -name *.log -o -name *score*)",
       "Bash(echo \"exit: $?\")",
-      "Bash(Curve Mini\" com área fill:*)"
+      "Bash(Curve Mini\" com área fill:*)",
+      "Bash(git checkout:*)"
     ]
   }
 }
