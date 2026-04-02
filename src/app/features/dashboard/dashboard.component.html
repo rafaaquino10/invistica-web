@@ -1,16 +1,15 @@
 @if (loading()) {
   <div class="dash">
-    <iq-skeleton variant="rect" width="100%" height="200px" />
-    <iq-skeleton variant="rect" width="100%" height="100px" />
-    <div class="dash__skeleton-row">
-      <iq-skeleton variant="rect" width="100%" height="200px" />
-      <iq-skeleton variant="rect" width="100%" height="200px" />
-      <iq-skeleton variant="rect" width="100%" height="200px" />
+    <iq-skeleton variant="rect" width="100%" height="160px" />
+    <div class="dash__row2-skel">
+      <iq-skeleton variant="rect" width="100%" height="340px" />
+      <iq-skeleton variant="rect" width="100%" height="340px" />
     </div>
   </div>
 } @else {
   <div class="dash">
-    <!-- SEÇÃO 1: HERO BANNER -->
+
+    <!-- ═══ SEÇÃO 1: HERO ═══ -->
     @if (hasPortfolio()) {
       <dash-hero
         [userName]="userName()"
@@ -35,21 +34,139 @@
       </section>
     }
 
-    <!-- SEÇÃO 2: IBOV INTRADAY -->
-    <dash-ibov />
+    <!-- ═══ SEÇÃO 2: EVOLUÇÃO PATRIMONIAL + SIDEBAR MERCADO ═══ -->
+    <section class="dash__row2">
+      <!-- EVOLUÇÃO PATRIMONIAL -->
+      <div class="dash__equity-card">
+        <div class="dash__equity-header">
+          <h3 class="dash__section-title mono">EVOLUÇÃO PATRIMONIAL</h3>
+          <div class="dash__period-sel">
+            @for (p of ['1M','3M','6M','12M','Max']; track p) {
+              <button class="dash__period-btn mono" [class.dash__period-btn--active]="p === '12M'">{{ p }}</button>
+            }
+          </div>
+        </div>
+        <iq-line-chart [series]="equitySeries()" />
+        <div class="dash__equity-metrics">
+          <div class="dash__eq-metric">
+            <span class="dash__eq-metric-label mono">CARTEIRA</span>
+            <span class="dash__eq-metric-val mono positive">+15.0%</span>
+          </div>
+          <div class="dash__eq-metric">
+            <span class="dash__eq-metric-label mono">CDI</span>
+            <span class="dash__eq-metric-val mono">+8.0%</span>
+          </div>
+          <div class="dash__eq-metric">
+            <span class="dash__eq-metric-label mono">IBOV</span>
+            <span class="dash__eq-metric-val mono">+10.0%</span>
+          </div>
+          <div class="dash__eq-metric">
+            <span class="dash__eq-metric-label mono">ALPHA</span>
+            <span class="dash__eq-metric-val mono positive">+7.0pp</span>
+          </div>
+        </div>
+      </div>
 
-    <!-- SEÇÃO 3: ALTAS + BAIXAS + EXPOSIÇÃO -->
-    <dash-movers
-      [gainers]="gainers()"
-      [losers]="losers()"
-      [sectors]="sectorExposure()"
-      [hhi]="0" />
+      <!-- SIDEBAR: IBOV + MOVERS -->
+      <div class="dash__sidebar">
+        <dash-ibov />
+        <dash-movers [gainers]="gainers()" [losers]="losers()" />
+      </div>
+    </section>
 
-    <!-- SEÇÃO 4: INSIGHTS + COLUNA DIREITA -->
-    <dash-insights
-      [cards]="insightCards()"
-      [recommended]="recommended()"
-      [dividends]="[]" />
+    <!-- ═══ SEÇÃO 3: EXPOSIÇÃO + DIVIDENDOS + MOTOR ═══ -->
+    @if (hasPortfolio()) {
+      <section class="dash__row3">
+        <!-- EXPOSIÇÃO SETORIAL -->
+        <div class="dash__card">
+          <div class="dash__card-header">
+            <h3 class="dash__section-title mono">EXPOSIÇÃO SETORIAL</h3>
+            <a class="dash__card-link" routerLink="/carteira">Carteira →</a>
+          </div>
+          @if (sectorExposure().length > 0) {
+            @for (s of sectorExposure(); track s.name) {
+              <div class="dash__sector-row">
+                <span class="dash__sector-name">{{ s.name }}</span>
+                <div class="dash__sector-bar-wrap">
+                  <div class="dash__sector-bar" [style.width.%]="s.pct"></div>
+                </div>
+                <span class="dash__sector-pct mono">{{ s.pct.toFixed(0) }}%</span>
+              </div>
+            }
+          } @else {
+            <p class="dash__muted">Sem dados de exposição.</p>
+          }
+        </div>
+
+        <!-- DIVIDENDOS MENSAIS -->
+        <div class="dash__card">
+          <h3 class="dash__section-title mono">DIVIDENDOS MENSAIS</h3>
+          <iq-bar-chart [data]="dividendBarsData()" color="var(--positive)" />
+          <div class="dash__div-metrics">
+            <div class="dash__div-metric">
+              <span class="dash__div-metric-label mono">RECEBIDO</span>
+              <span class="dash__div-metric-val mono">{{ divTotal() | currencyBrl }}</span>
+            </div>
+            <div class="dash__div-metric">
+              <span class="dash__div-metric-label mono">MÉDIA/MÊS</span>
+              <span class="dash__div-metric-val mono">{{ divMonthlyAvg() | currencyBrl }}</span>
+            </div>
+            <div class="dash__div-metric">
+              <span class="dash__div-metric-label mono">YIELD</span>
+              <span class="dash__div-metric-val mono positive">{{ (divYield() * 100).toFixed(1) }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MOTOR RECOMENDA -->
+        <div class="dash__card">
+          <div class="dash__card-header">
+            <h3 class="dash__section-title mono">MOTOR RECOMENDA</h3>
+            <a class="dash__card-link" routerLink="/explorar">Explorar →</a>
+          </div>
+          @if (recommended().length > 0) {
+            @for (a of recommended(); track a.ticker) {
+              <a class="dash__rec-item" [routerLink]="'/ativo/' + a.ticker">
+                <iq-ticker-logo [ticker]="a.ticker" [size]="22" />
+                <div class="dash__rec-info">
+                  <span class="dash__rec-ticker mono">{{ a.ticker }}</span>
+                  <span class="dash__rec-name">{{ a.company_name }}</span>
+                </div>
+                <span class="dash__rec-score mono" [style.color]="scoreColor(a.iq_score)">{{ a.iq_score }}</span>
+                @if (a.safety_margin != null && a.safety_margin > 0) {
+                  <span class="dash__rec-margin mono positive">+{{ (a.safety_margin * 100).toFixed(0) }}%</span>
+                }
+              </a>
+            }
+          } @else {
+            <p class="dash__muted">Sem recomendações disponíveis.</p>
+          }
+        </div>
+      </section>
+    } @else {
+      <!-- SEM CARTEIRA: TOP 10 -->
+      <section class="dash__top10">
+        <div class="dash__card dash__card--wide">
+          <div class="dash__card-header">
+            <h3 class="dash__section-title mono">TOP 10 IQ-SCORE</h3>
+            <a class="dash__card-link" routerLink="/explorar">Explorar →</a>
+          </div>
+          @for (a of topAssets(); track a.ticker) {
+            <a class="dash__rec-item" [routerLink]="'/ativo/' + a.ticker">
+              <iq-ticker-logo [ticker]="a.ticker" [size]="22" />
+              <div class="dash__rec-info">
+                <span class="dash__rec-ticker mono">{{ a.ticker }}</span>
+                <span class="dash__rec-name">{{ a.company_name }}</span>
+              </div>
+              <span class="dash__rec-score mono" [style.color]="scoreColor(a.iq_score)">{{ a.iq_score }}</span>
+              @if (a.rating) {
+                <iq-rating-badge [rating]="a.rating" />
+              }
+            </a>
+          }
+        </div>
+      </section>
+    }
 
     <iq-disclaimer />
   </div>

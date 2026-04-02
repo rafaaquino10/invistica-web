@@ -8,34 +8,265 @@
   gap: 20px;
 }
 
-.dash__skeleton-row {
+// SKELETONS
+.dash__row2-skel { display: grid; grid-template-columns: 1fr 320px; gap: 16px; }
+
+// EMPTY HERO
+.dash__empty-hero {
+  background: #2A2A28;
+  border-radius: var(--radius);
+  padding: 48px 32px;
+  text-align: center;
+
+  [data-theme="dark"] & { background: #1A1B22; border: 1px solid #252630; }
+}
+.dash__empty-hero-content { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
+.dash__empty-hero-title { font-size: t.$text-2xl; font-weight: 300; color: #fff; }
+.dash__empty-hero-desc { font-size: t.$text-sm; color: rgba(255,255,255,0.5); }
+
+// ── ROW 2: EQUITY + SIDEBAR ──
+.dash__row2 {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+}
+
+.dash__equity-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-5);
+}
+
+.dash__equity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.dash__section-title {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+}
+
+.dash__period-sel { display: flex; gap: 2px; }
+.dash__period-btn {
+  border: none; background: transparent;
+  font-size: 10px; font-weight: 500;
+  color: var(--text-tertiary); padding: 4px 8px;
+  border-radius: var(--radius); cursor: pointer;
+  &:hover { color: var(--text-primary); background: var(--surface-2); }
+}
+.dash__period-btn--active {
+  color: var(--text-primary); background: var(--surface-2);
+  font-weight: 600;
+}
+
+.dash__equity-metrics {
+  display: flex;
+  gap: 0;
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--border-default);
+  padding-top: var(--space-3);
+}
+
+.dash__eq-metric {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-3);
+  border-right: 1px solid var(--border-default);
+  &:last-child { border-right: none; }
+  &:first-child { padding-left: 0; }
+}
+
+.dash__eq-metric-label {
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: 0.08em;
+}
+
+.dash__eq-metric-val {
+  font-size: t.$text-sm;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+// SIDEBAR
+.dash__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// ── ROW 3: THREE COLUMNS ──
+.dash__row3 {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
 }
 
-// EMPTY HERO
-.dash__empty-hero {
-  background: var(--obsidian);
+.dash__card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-default);
   border-radius: var(--radius);
-  padding: 48px 32px;
-  text-align: center;
+  padding: 14px 16px;
 }
 
-.dash__empty-hero-content {
+.dash__card--wide { grid-column: 1 / -1; }
+
+.dash__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dash__card-link {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  &:hover { color: var(--text-primary); }
+}
+
+// SECTOR EXPOSURE
+.dash__sector-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 4px 0;
+}
+
+.dash__sector-name {
+  font-size: 10px;
+  color: var(--text-secondary);
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.dash__sector-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: var(--surface-3);
+  border-radius: 1px;
+  margin: 0 8px;
+}
+
+.dash__sector-bar {
+  height: 100%;
+  background: var(--text-primary);
+  border-radius: 1px;
+}
+
+.dash__sector-pct {
+  font-size: 10px;
+  font-weight: 700;
+  width: 36px;
+  text-align: right;
+  color: var(--text-primary);
+}
+
+// DIVIDENDS METRICS
+.dash__div-metrics {
+  display: flex;
+  gap: 0;
+  margin-top: var(--space-3);
+  border-top: 1px solid var(--border-default);
+  padding-top: var(--space-3);
+}
+
+.dash__div-metric {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
+  gap: 2px;
+  padding: 0 var(--space-2);
+  border-right: 1px solid var(--border-default);
+  &:last-child { border-right: none; }
+  &:first-child { padding-left: 0; }
 }
 
-.dash__empty-hero-title {
-  font-size: t.$text-2xl;
-  font-weight: 300;
-  color: #fff;
+.dash__div-metric-label {
+  font-size: 8px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  letter-spacing: 0.08em;
 }
 
-.dash__empty-hero-desc {
+.dash__div-metric-val {
   font-size: t.$text-sm;
-  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+  color: var(--text-primary);
 }
+
+// MOTOR RECOMENDA / TOP 10
+.dash__rec-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border-default);
+  text-decoration: none;
+  color: inherit;
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--surface-2); margin: 0 -8px; padding: 6px 8px; border-radius: var(--radius); }
+}
+
+.dash__rec-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.dash__rec-ticker {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.dash__rec-name {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash__rec-score {
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 28px;
+  text-align: right;
+}
+
+.dash__rec-margin {
+  font-size: 9px;
+  font-weight: 600;
+  min-width: 36px;
+  text-align: right;
+}
+
+// TOP 10 (sem carteira)
+.dash__top10 {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+}
+
+// UTILS
+.dash__muted {
+  font-size: t.$text-sm;
+  color: var(--text-tertiary);
+  padding: var(--space-3) 0;
+}
+
+.positive { color: var(--positive); }
+.negative { color: var(--negative); }

@@ -4,7 +4,7 @@
   // Fundo fixo escuro — independente do tema (funciona em light E dark)
   background: #2A2A28;
   border-radius: var(--radius);
-  padding: 24px 28px;
+  padding: 20px 24px;
   position: relative;
   overflow: hidden;
   color: #fff;
@@ -89,7 +89,7 @@
 // BOTTOM
 .hero__bottom {
   display: grid;
-  grid-template-columns: 140px 1fr;
+  grid-template-columns: 120px 1fr;
   gap: 20px;
   align-items: end;
 }
