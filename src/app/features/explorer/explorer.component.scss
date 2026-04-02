@@ -45,3 +45,9 @@
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
+
+// RESPONSIVE
+@media (max-width: 767px) {
+  .explorer__filters { padding: var(--space-3); }
+  .explorer__table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}

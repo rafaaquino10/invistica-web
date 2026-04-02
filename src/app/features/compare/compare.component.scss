@@ -75,3 +75,15 @@
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
+
+// RESPONSIVE
+@media (min-width: 768px) and (max-width: 1279px) {
+  .cmp__charts { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 767px) {
+  .cmp__search-bar { padding: var(--space-3); }
+  .cmp__charts { grid-template-columns: 1fr; }
+  .cmp__chart-card { padding: var(--space-3); }
+  .cmp__table-card { padding: var(--space-3); }
+}

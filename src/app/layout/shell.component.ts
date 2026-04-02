@@ -39,19 +39,24 @@ import { PlanService } from '../core/services/plan.service';
       overflow: hidden;
     }
 
-    .shell__header {
-      flex-shrink: 0;
-    }
-
-    .shell__tape {
-      flex-shrink: 0;
-    }
+    .shell__header { flex-shrink: 0; }
+    .shell__tape { flex-shrink: 0; }
 
     .shell__content {
       flex: 1;
       overflow-y: auto;
       padding: var(--space-6);
       background: var(--surface-0);
+    }
+
+    @media (max-width: 767px) {
+      .shell { grid-template-columns: 1fr; }
+      .shell__sidebar { display: none; }
+      .shell__content { padding: var(--space-3); }
+    }
+
+    @media (min-width: 768px) and (max-width: 1279px) {
+      .shell__content { padding: var(--space-4); }
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,

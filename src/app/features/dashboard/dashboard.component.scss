@@ -270,3 +270,24 @@
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
+
+// ── RESPONSIVE ──
+@media (max-width: 767px) {
+  .dash__row2-skel { grid-template-columns: 1fr; }
+  .dash__empty-hero { padding: 32px 16px; }
+  .dash__empty-hero-title { font-size: t.$text-xl; }
+  .dash__row2 { grid-template-columns: 1fr; }
+  .dash__equity-card { padding: var(--space-3); }
+  .dash__equity-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .dash__equity-metrics { flex-wrap: wrap; }
+  .dash__eq-metric { min-width: 45%; border-right: none; padding: var(--space-1) 0; }
+  .dash__row3 { grid-template-columns: 1fr; }
+  .dash__top10 { grid-template-columns: 1fr; }
+  .dash__sector-name { width: 64px; font-size: 9px; }
+  .dash__div-metrics { flex-wrap: wrap; }
+  .dash__div-metric { min-width: 45%; border-right: none; padding: var(--space-1) 0; }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .dash__row3 { grid-template-columns: 1fr 1fr; }
+}

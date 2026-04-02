@@ -48,3 +48,8 @@
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
+
+// RESPONSIVE
+@media (max-width: 767px) {
+  .sim__sliders { grid-template-columns: 1fr; padding: var(--space-3); }
+}

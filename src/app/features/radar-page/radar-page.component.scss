@@ -67,3 +67,10 @@
   &:focus { border-color: var(--border-focus); }
 }
 .radar__form-selected { font-size: t.$text-sm; font-weight: 600; color: var(--obsidian); margin-top: 2px; }
+
+// RESPONSIVE
+@media (max-width: 767px) {
+  .radar__layout { grid-template-columns: 1fr; }
+  .radar__alerts { position: static; }
+  .radar__filters { overflow-x: auto; }
+}

@@ -41,3 +41,13 @@
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
+
+// RESPONSIVE
+@media (min-width: 768px) and (max-width: 1279px) {
+  .wif__inputs { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 767px) {
+  .wif__inputs { grid-template-columns: 1fr; padding: var(--space-3); }
+  .wif__card { padding: var(--space-3); }
+}

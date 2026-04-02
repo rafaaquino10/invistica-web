@@ -174,3 +174,10 @@
   border-top: 1px solid var(--border-default);
   &:hover { background: var(--negative-bg); }
 }
+
+// ── RESPONSIVE ──
+@media (max-width: 767px) {
+  .header { padding: 0 var(--space-3); gap: var(--space-2); }
+  .header__search { max-width: none; }
+  .header__menu { width: calc(100vw - 32px); max-width: 280px; }
+}

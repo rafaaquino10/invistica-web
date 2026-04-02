@@ -319,3 +319,21 @@
 .asset__tab-content {
   padding: var(--space-5);
 }
+
+// RESPONSIVE
+@media (min-width: 768px) and (max-width: 1279px) {
+  .asset__overview { grid-template-columns: 1fr; }
+  .asset__stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 767px) {
+  .asset { gap: var(--space-3); }
+  .asset__overview { grid-template-columns: 1fr; gap: var(--space-3); }
+  .asset__cards { grid-template-columns: 1fr; }
+  .asset__stats { grid-template-columns: repeat(2, 1fr); }
+  .asset__thesis { padding: var(--space-3); }
+  .asset__thesis-grid { grid-template-columns: 1fr; gap: var(--space-3); }
+  .asset__tab-content { padding: var(--space-3); }
+  .asset__tab-header { overflow-x: auto; }
+  .asset__tab-btn { padding: var(--space-2) var(--space-2); font-size: 12px; white-space: nowrap; }
+}

@@ -124,3 +124,16 @@
   &:hover { opacity: 0.9; }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
+
+// RESPONSIVE
+@media (min-width: 768px) and (max-width: 1279px) {
+  .port__summary { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 767px) {
+  .port__summary { grid-template-columns: 1fr; }
+  .port__kpi { padding: var(--space-3) var(--space-3); }
+  .port__analytics { grid-template-columns: 1fr; }
+  .port__analytics-card { padding: var(--space-3); }
+  .port__add-fields { grid-template-columns: 1fr; }
+}

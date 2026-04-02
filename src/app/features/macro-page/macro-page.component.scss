@@ -66,3 +66,16 @@
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
+
+// RESPONSIVE
+@media (min-width: 768px) and (max-width: 1279px) {
+  .macro__indicators { grid-template-columns: repeat(2, 1fr); }
+  .macro__rotation-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 767px) {
+  .macro__regime { padding: var(--space-3); }
+  .macro__indicators { grid-template-columns: 1fr; }
+  .macro__rotation-grid { grid-template-columns: 1fr; }
+  .macro__card { padding: var(--space-3); }
+}
