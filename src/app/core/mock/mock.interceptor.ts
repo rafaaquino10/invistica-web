@@ -3,7 +3,7 @@
  * Ativado APENAS na branch mock-data-preview.
  */
 import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
-import { of, delay } from 'rxjs';
+import { of } from 'rxjs';
 import { MOCK_DATA, getMockForTickerEndpoint } from './mock-data';
 
 export const mockInterceptor: HttpInterceptorFn = (req, next) => {
@@ -47,8 +47,8 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   if (data) {
-    // Simular latência de rede (50-150ms)
-    return of(new HttpResponse({ status: 200, body: data })).pipe(delay(Math.random() * 100 + 50));
+    // Resposta instantânea — sem latência artificial
+    return of(new HttpResponse({ status: 200, body: data }));
   }
 
   // Fallback: deixa passar para o backend real

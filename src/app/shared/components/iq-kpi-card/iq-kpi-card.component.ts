@@ -28,13 +28,13 @@ import { Component, ChangeDetectionStrategy, input, computed } from '@angular/co
     .kpi { display: flex; flex-direction: column; gap: 4px; }
     .kpi__label {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 9px; font-weight: 500;
+      font-size: 11px; font-weight: 500;
       color: var(--text-tertiary);
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.10em;
     }
-    .kpi__value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
-    .kpi__delta { display: inline-flex; align-items: center; gap: 3px; font-size: 0.6875rem; font-weight: 600; }
+    .kpi__value { font-size: 1.625rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+    .kpi__delta { display: inline-flex; align-items: center; gap: 4px; font-size: 0.8125rem; font-weight: 600; }
     .kpi__delta--pos { color: var(--positive); }
     .kpi__delta--neg { color: var(--negative); }
     .kpi__delta-label { font-weight: 400; color: var(--text-tertiary); }

@@ -112,15 +112,15 @@
 $font-ui: 'Satoshi', system-ui, -apple-system, sans-serif;
 $font-mono: 'IBM Plex Mono', 'Menlo', 'Consolas', monospace;
 
-// ── Typographic scale ──
-$text-xs: 0.75rem;        // 12px — timestamps, minimal labels
-$text-sm: 0.8125rem;      // 13px — captions, metadata
-$text-base: 0.9375rem;    // 15px — body copy
-$text-lg: 1.0625rem;      // 17px — card titles
-$text-xl: 1.3125rem;      // 21px — section titles
-$text-2xl: 1.5625rem;     // 25px — page title, greeting
-$text-hero: 2.25rem;      // 36px — large score, price, hero number
-$text-display: 2.75rem;   // 44px — score within gauge
+// ── Typographic scale (legível, profissional) ──
+$text-xs: 0.8125rem;      // 13px — timestamps, labels (era 12px — ilegível)
+$text-sm: 0.875rem;       // 14px — captions, metadata (era 13px)
+$text-base: 1rem;         // 16px — body copy (era 15px)
+$text-lg: 1.125rem;       // 18px — card titles (era 17px)
+$text-xl: 1.375rem;       // 22px — section titles (era 21px)
+$text-2xl: 1.625rem;      // 26px — page title, greeting (era 25px)
+$text-hero: 2.5rem;       // 40px — large score, price (era 36px)
+$text-display: 3rem;      // 48px — score within gauge (era 44px)
 
 // ── Utility class: force mono on any element ──
 .mono {
