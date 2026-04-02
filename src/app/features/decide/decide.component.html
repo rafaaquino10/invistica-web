@@ -6,14 +6,6 @@
     <iq-empty-state title="Adicione posições primeiro"
                     description="O motor precisa da sua carteira para sugerir alocações." />
   } @else {
-    <!-- REGIME CONTEXT -->
-    @if (regime(); as r) {
-      <div class="decide__regime">
-        <iq-regime-badge [regime]="r.regime" />
-        <span class="decide__regime-desc">{{ r.description }}</span>
-      </div>
-    }
-
     <!-- INPUT -->
     <div class="decide__input-row">
       <div class="decide__input-wrap">

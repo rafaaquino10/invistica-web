@@ -23,16 +23,6 @@ import { RegimeType, REGIME_LABELS } from '../../../core/models/regime.model';
               }
             </h1>
           </div>
-          @if (regimeType()) {
-            <div class="hero__regime">
-              <span class="hero__regime-dot" [style.backgroundColor]="regimeColor()"></span>
-              <span class="hero__regime-text">
-                Regime: <strong>{{ regimeLabel() }}</strong>
-                @if (selic()) { · SELIC {{ selic() }}% }
-                @if (ipca()) { · IPCA {{ ipca() }}% }
-              </span>
-            </div>
-          }
         </div>
 
         <!-- BOTTOM ROW -->
