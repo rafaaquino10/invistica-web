@@ -1,3 +1,4 @@
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, DestroyRef, computed } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, debounceTime, switchMap, catchError, of, forkJoin } from 'rxjs';
@@ -23,7 +24,8 @@ interface ImpactRow {
 @Component({
   selector: 'iq-scenario-simulator',
   standalone: true,
-  imports: [IqSliderComponent, IqRegimeBadgeComponent, IqSkeletonComponent, IqDisclaimerComponent, IqEmptyStateComponent],
+  imports: [
+    IqTickerLogoComponent,IqSliderComponent, IqRegimeBadgeComponent, IqSkeletonComponent, IqDisclaimerComponent, IqEmptyStateComponent],
   templateUrl: './scenario-simulator.component.html',
   styleUrl: './scenario-simulator.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -81,7 +81,7 @@
             <tbody>
               @for (a of suggestedAssets(); track a.ticker) {
                 <tr>
-                  <td class="mono ip__ticker">{{ a.ticker }}</td>
+                  <td class="mono ip__ticker"><iq-ticker-logo [ticker]="a.ticker" [size]="18" /> {{ a.ticker }}</td>
                   <td class="ip__name">{{ a.company_name }}</td>
                   <td class="mono positive">{{ (a.dividend_yield * 100).toFixed(2) }}%</td>
                   <td class="mono">{{ a.dividend_safety }}</td>

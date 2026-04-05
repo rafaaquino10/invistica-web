@@ -31,7 +31,7 @@
                   <p class="radar__card-desc">{{ item.description }}</p>
                 }
                 @if (item.ticker) {
-                  <span class="radar__card-ticker mono">{{ item.ticker }}</span>
+                  <iq-ticker-logo [ticker]="item.ticker" [size]="16" /><span class="radar__card-ticker mono">{{ item.ticker }}</span>
                 }
               </div>
             }

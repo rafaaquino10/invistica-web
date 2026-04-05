@@ -48,7 +48,7 @@
               <tbody>
                 @for (e of calendar(); track e.ticker + e.ex_date) {
                   <tr>
-                    <td class="mono divs__ticker">{{ e.ticker }}</td>
+                    <td class="mono divs__ticker"><iq-ticker-logo [ticker]="e.ticker" [size]="18" /> {{ e.ticker }}</td>
                     <td class="divs__name">{{ e.company_name }}</td>
                     <td class="mono">{{ e.ex_date | date:'dd/MM' }}</td>
                     <td class="mono">{{ e.payment_date ? (e.payment_date | date:'dd/MM') : '—' }}</td>
@@ -80,7 +80,7 @@
               <tbody>
                 @for (r of radar(); track r.ticker) {
                   <tr>
-                    <td class="mono divs__ticker">{{ r.ticker }}</td>
+                    <td class="mono divs__ticker"><iq-ticker-logo [ticker]="r.ticker" [size]="18" /> {{ r.ticker }}</td>
                     <td class="divs__name">{{ r.company_name }}</td>
                     <td class="mono">{{ (r.dividend_yield * 100).toFixed(2) }}%</td>
                     <td class="mono">{{ r.dividend_safety }}</td>
@@ -171,7 +171,7 @@
                   <tbody>
                     @for (t of simResult()!.by_ticker; track t.ticker) {
                       <tr>
-                        <td class="mono divs__ticker">{{ t.ticker }}</td>
+                        <td class="mono divs__ticker"><iq-ticker-logo [ticker]="t.ticker" [size]="18" /> {{ t.ticker }}</td>
                         <td class="mono">{{ t.amount_invested | currencyBrl }}</td>
                         <td class="mono positive">{{ t.monthly_income | currencyBrl }}</td>
                         <td class="mono positive">{{ t.annual_income | currencyBrl }}</td>

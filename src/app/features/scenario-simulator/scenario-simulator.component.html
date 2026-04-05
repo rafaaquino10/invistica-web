@@ -48,7 +48,7 @@
             <tbody>
               @for (row of impacts(); track row.ticker) {
                 <tr>
-                  <td class="mono sim__ticker">{{ row.ticker }}</td>
+                  <td class="mono sim__ticker"><iq-ticker-logo [ticker]="row.ticker" [size]="18" /> {{ row.ticker }}</td>
                   <td class="sim__cluster">{{ row.cluster }}</td>
                   <td class="mono sim__impact-cell">
                     <div class="sim__impact-bar-wrap">

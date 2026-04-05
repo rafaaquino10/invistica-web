@@ -1,3 +1,4 @@
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +20,7 @@ import { DatePipe } from '@angular/common';
   selector: 'iq-dividends-page',
   standalone: true,
   imports: [
+    IqTickerLogoComponent,
     FormsModule, DatePipe,
     IqBarChartComponent, IqButtonComponent, IqSkeletonComponent,
     IqEmptyStateComponent, IqDisclaimerComponent, CurrencyBrlPipe,

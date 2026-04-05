@@ -19,7 +19,7 @@
         <tbody>
           @for (row of rows(); track row.ticker) {
             <tr class="inst__row" (click)="goToAsset(row.ticker)">
-              <td class="mono inst__ticker">{{ row.ticker }}</td>
+              <td class="mono inst__ticker"><iq-ticker-logo [ticker]="row.ticker" [size]="18" /> {{ row.ticker }}</td>
               <td class="inst__fund">{{ row.topFund }}</td>
               <td class="mono">{{ row.shares | compactNumber }}</td>
               <td class="mono" [class.positive]="(row.changePct ?? 0) > 0" [class.negative]="(row.changePct ?? 0) < 0">

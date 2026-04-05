@@ -81,7 +81,7 @@
             <tbody>
               @for (e of attribution()!.entries; track e.ticker) {
                 <tr>
-                  <td class="mono an__ticker">{{ e.ticker }}</td>
+                  <td class="mono an__ticker"><iq-ticker-logo [ticker]="e.ticker" [size]="18" /> {{ e.ticker }}</td>
                   <td class="mono">{{ (e.weight * 100).toFixed(1) }}%</td>
                   <td class="mono" [class.positive]="e.return_pct >= 0" [class.negative]="e.return_pct < 0">
                     {{ (e.return_pct * 100).toFixed(2) }}%

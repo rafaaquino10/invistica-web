@@ -1,3 +1,4 @@
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, catchError, of } from 'rxjs';
@@ -15,7 +16,8 @@ import { IqDisclaimerComponent } from '../../shared/components/iq-disclaimer/iq-
 @Component({
   selector: 'iq-analytics',
   standalone: true,
-  imports: [IqLineChartComponent, IqBarChartComponent, IqSkeletonComponent, IqEmptyStateComponent, IqDisclaimerComponent],
+  imports: [
+    IqTickerLogoComponent,IqLineChartComponent, IqBarChartComponent, IqSkeletonComponent, IqEmptyStateComponent, IqDisclaimerComponent],
   templateUrl: './analytics.component.html',
   styleUrl: './analytics.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

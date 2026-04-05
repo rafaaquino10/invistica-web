@@ -1,3 +1,4 @@
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import { Component, ChangeDetectionStrategy, inject, signal, DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -22,6 +23,7 @@ interface SuggestedAsset {
   selector: 'iq-income-planner',
   standalone: true,
   imports: [
+    IqTickerLogoComponent,
     FormsModule,
     IqButtonComponent, IqLineChartComponent, IqSkeletonComponent,
     IqDisclaimerComponent, CurrencyBrlPipe,

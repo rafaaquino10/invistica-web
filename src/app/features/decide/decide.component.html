@@ -39,7 +39,7 @@
               @for (s of result()!.suggestions; track s.ticker) {
                 <div class="decide__item">
                   <div class="decide__item-header">
-                    <span class="decide__item-ticker mono">{{ s.ticker }}</span>
+                    <iq-ticker-logo [ticker]="s.ticker" [size]="20" /><span class="decide__item-ticker mono">{{ s.ticker }}</span>
                     <span class="decide__item-amount mono">{{ s.suggested_amount | currencyBrl }}</span>
                   </div>
                   @if (s.iq_score != null) {

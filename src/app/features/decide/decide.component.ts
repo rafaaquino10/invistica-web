@@ -1,3 +1,4 @@
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import { Component, ChangeDetectionStrategy, inject, signal, DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -21,6 +22,7 @@ const COLORS = ['#3D3D3A', '#1A7A45', '#3B6B96', '#A07628', '#C23028', '#9C998F'
   selector: 'iq-decide',
   standalone: true,
   imports: [
+    IqTickerLogoComponent,
     FormsModule,
     IqButtonComponent, IqDonutChartComponent, IqRegimeBadgeComponent,
     IqSkeletonComponent, IqEmptyStateComponent, IqDisclaimerComponent, CurrencyBrlPipe,

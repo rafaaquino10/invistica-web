@@ -66,7 +66,7 @@
             @for (asset of opportunities(); track asset.ticker) {
               <a class="opp-card" [routerLink]="'/ativo/' + asset.ticker">
                 <div class="opp-card__top">
-                  <span class="opp-card__ticker mono">{{ asset.ticker }}</span>
+                  <iq-ticker-logo [ticker]="asset.ticker" [size]="20" /><span class="opp-card__ticker mono">{{ asset.ticker }}</span>
                   <iq-rating-badge [rating]="$any(asset.rating)" />
                 </div>
                 <span class="opp-card__name">{{ asset.company_name }}</span>
@@ -194,7 +194,7 @@
             <tbody>
               @for (pos of portfolio()!.positions; track pos.id) {
                 <tr class="positions__row" [routerLink]="'/ativo/' + pos.ticker">
-                  <td class="positions__ticker mono">{{ pos.ticker }}</td>
+                  <td class="positions__ticker mono"><iq-ticker-logo [ticker]="pos.ticker" [size]="18" /> {{ pos.ticker }}</td>
                   <td class="mono">{{ pos.current_price.toFixed(2) }}</td>
                   <td class="mono" [class.positive]="pos.gain_loss_pct >= 0" [class.negative]="pos.gain_loss_pct < 0">
                     {{ pos.gain_loss_pct >= 0 ? '+' : '' }}{{ (pos.gain_loss_pct * 100).toFixed(1) }}%
@@ -227,7 +227,7 @@
           @for (asset of topAssets().slice(0, 4); track asset.ticker) {
             <a class="sig-card" [routerLink]="'/ativo/' + asset.ticker">
               <div class="sig-card__header">
-                <span class="sig-card__ticker mono">{{ asset.ticker }}</span>
+                <iq-ticker-logo [ticker]="asset.ticker" [size]="18" /><span class="sig-card__ticker mono">{{ asset.ticker }}</span>
                 <span class="sig-card__score mono" [style.color]="scoreColor(asset.iq_score)">{{ asset.iq_score }}</span>
               </div>
               <span class="sig-card__name">{{ asset.company_name }}</span>

@@ -1,3 +1,4 @@
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -20,7 +21,8 @@ interface InstitutionalRow {
 @Component({
   selector: 'iq-institutional-page',
   standalone: true,
-  imports: [IqSkeletonComponent, IqEmptyStateComponent, IqDisclaimerComponent, CompactNumberPipe],
+  imports: [
+    IqTickerLogoComponent,IqSkeletonComponent, IqEmptyStateComponent, IqDisclaimerComponent, CompactNumberPipe],
   templateUrl: './institutional.component.html',
   styleUrl: './institutional.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

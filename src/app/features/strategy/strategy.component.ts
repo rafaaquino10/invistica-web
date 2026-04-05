@@ -1,3 +1,4 @@
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import {
   Component, ChangeDetectionStrategy, inject, signal, OnInit, DestroyRef, computed,
 } from '@angular/core';
@@ -15,7 +16,8 @@ import { IqEmptyStateComponent } from '../../shared/components/iq-empty-state/iq
 @Component({
   selector: 'iq-strategy',
   standalone: true,
-  imports: [RouterLink, IqSkeletonComponent, IqDisclaimerComponent, IqEmptyStateComponent],
+  imports: [
+    IqTickerLogoComponent,RouterLink, IqSkeletonComponent, IqDisclaimerComponent, IqEmptyStateComponent],
   templateUrl: './strategy.component.html',
   styleUrl: './strategy.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

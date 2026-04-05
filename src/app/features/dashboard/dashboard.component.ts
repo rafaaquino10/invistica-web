@@ -1,3 +1,4 @@
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import {
   Component, ChangeDetectionStrategy, inject, computed, OnInit, signal, DestroyRef,
 } from '@angular/core';
@@ -26,6 +27,7 @@ import { CurrencyBrlPipe } from '../../shared/pipes/currency-brl.pipe';
   selector: 'iq-dashboard',
   standalone: true,
   imports: [
+    IqTickerLogoComponent,
     RouterLink, DashboardHeroComponent, IqRatingBadgeComponent,
     IqSkeletonComponent, IqDisclaimerComponent, IqButtonComponent,
     IqEmptyStateComponent, CurrencyBrlPipe,

@@ -77,7 +77,7 @@
                   <div class="pos-card__left">
                     <span class="pos-card__rank">{{ i + 1 }}</span>
                     <div class="pos-card__info">
-                      <span class="pos-card__ticker">{{ pos.ticker }}</span>
+                      <iq-ticker-logo [ticker]="pos.ticker" [size]="20" /><span class="pos-card__ticker">{{ pos.ticker }}</span>
                       <span class="pos-card__badge" [class]="ratingClass(pos.rating)">{{ ratingLabel(pos.rating) }}</span>
                     </div>
                   </div>
@@ -132,7 +132,7 @@
               @for (sig of s.signals; track sig.ticker) {
                 <a class="signal-row" [routerLink]="'/ativo/' + sig.ticker">
                   <span class="signal-row__action" [class]="actionClass(sig.action)">{{ actionLabel(sig.action) }}</span>
-                  <span class="signal-row__ticker">{{ sig.ticker }}</span>
+                  <iq-ticker-logo [ticker]="sig.ticker" [size]="16" /><span class="signal-row__ticker">{{ sig.ticker }}</span>
                   <span class="signal-row__reason">{{ sig.reason }}</span>
                 </a>
               }
@@ -155,7 +155,7 @@
               }
               @for (c of sh.candidates; track c.ticker) {
                 <a class="short-card" [routerLink]="'/ativo/' + c.ticker">
-                  <span class="short-card__ticker">{{ c.ticker }}</span>
+                  <iq-ticker-logo [ticker]="c.ticker" [size]="18" /><span class="short-card__ticker">{{ c.ticker }}</span>
                   <span class="short-card__score" [style.color]="scoreColor(c.iq_score)">{{ c.iq_score }}</span>
                   <span class="short-card__badge badge--avoid">{{ ratingLabel(c.rating) }}</span>
                   <span class="short-card__margin negative">{{ c.margin_of_safety }}</span>

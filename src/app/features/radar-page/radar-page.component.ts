@@ -1,3 +1,4 @@
+import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
@@ -20,6 +21,7 @@ type FeedFilter = 'all' | 'news' | 'score_change' | 'dividend';
   selector: 'iq-radar-page',
   standalone: true,
   imports: [
+    IqTickerLogoComponent,
     FormsModule, DatePipe,
     IqButtonComponent, IqModalComponent, IqSearchComponent, IqDropdownComponent,
     IqSkeletonComponent, IqEmptyStateComponent, IqDisclaimerComponent,
