@@ -42,6 +42,7 @@ export class AnalyticsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     forkJoin({
       perf: this.scoreService.getPerformance().pipe(catchError(() => of(null))),
       ic: this.analyticsService.getICTimeline(24).pipe(catchError(() => of(null))),

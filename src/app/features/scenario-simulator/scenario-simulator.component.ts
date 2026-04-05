@@ -34,6 +34,7 @@ export class ScenarioSimulatorComponent implements OnInit {
   private readonly portfolioService = inject(PortfolioService);
   private readonly destroyRef = inject(DestroyRef);
 
+  readonly Math = Math;
   readonly loading = signal(true);
   readonly positions = signal<Position[]>([]);
   readonly regime = signal<RegimeResult | null>(null);
@@ -71,6 +72,7 @@ export class ScenarioSimulatorComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     forkJoin({
       regime: this.regimeService.regime$.pipe(catchError(() => of(null))),
       portfolio: this.portfolioService.get().pipe(catchError(() => of(null))),

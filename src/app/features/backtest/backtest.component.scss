@@ -41,8 +41,27 @@
   overflow: hidden; margin-bottom: var(--space-4);
 }
 .bt__kpi { display: flex; flex-direction: column; gap: 2px; padding: var(--space-3) var(--space-4); background: var(--surface-1); text-align: center; }
+.bt__kpi--hero { background: var(--surface-0); }
+.bt__kpi--hero .bt__kpi-value { font-size: t.$text-xl; }
 .bt__kpi-label { font-size: t.$text-xs; color: var(--text-tertiary); }
 .bt__kpi-value { font-size: t.$text-lg; font-weight: 700; color: var(--text-primary); }
+
+// Alpha strip
+.bt__alpha-strip {
+  display: flex; gap: var(--space-4); margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4); background: var(--surface-1);
+  border: 1px solid var(--border-default); border-radius: var(--radius);
+}
+.bt__alpha-item { display: flex; flex-direction: column; gap: 2px; }
+.bt__alpha-label { font-size: t.$text-xs; color: var(--text-tertiary); }
+.bt__alpha-val { font-size: t.$text-base; font-weight: 700; }
+
+// Rebalance grid
+.bt__rebal-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.bt__rebal-date {
+  font-size: 11px; padding: 3px 8px; background: var(--surface-2);
+  border-radius: var(--radius); color: var(--text-tertiary);
+}
 
 .bt__table-wrap { @include m.iq-table-wrap; }
 .bt__table { @include m.iq-table; }

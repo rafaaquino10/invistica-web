@@ -9,8 +9,22 @@
   background: var(--surface-1); border: 1px solid var(--border-default); border-radius: var(--radius);
   padding: var(--space-4) var(--space-5); margin-bottom: var(--space-4);
 }
+.an__card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
+.an__card-header .an__card-title { margin-bottom: 0; }
 .an__card-title { font-size: t.$text-sm; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
 .an__card-desc { font-size: t.$text-xs; color: var(--text-tertiary); margin-bottom: var(--space-3); }
+
+// Model Health
+.an__health {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 3px 10px; border-radius: var(--radius);
+}
+.an__health--good { background: rgba(22, 163, 74, 0.08); color: var(--positive); }
+.an__health--warn { background: rgba(161, 98, 7, 0.08); color: var(--warning); }
+.an__health--bad { background: rgba(220, 38, 38, 0.08); color: var(--negative); }
+
+// 2-column grid for IC + Decay
+.an__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
 
 .an__kpis {
   display: grid; grid-template-columns: repeat(6, 1fr); gap: 1px;
@@ -39,4 +53,9 @@
 @media (max-width: 767px) {
   .an__kpis { grid-template-columns: repeat(2, 1fr); }
   .an__card { padding: var(--space-3); }
+  .an__grid { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  .an__grid { grid-template-columns: 1fr; }
 }

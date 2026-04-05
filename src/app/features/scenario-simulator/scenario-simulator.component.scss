@@ -46,6 +46,13 @@
 }
 .sim__sector-name { color: var(--text-secondary); }
 
+// Impact bars
+.sim__impact-cell { display: flex; align-items: center; gap: 8px; }
+.sim__impact-bar-wrap { width: 60px; height: 6px; background: var(--surface-3); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+.sim__impact-bar { height: 100%; border-radius: 3px; transition: width 300ms ease-out; }
+.sim__impact-bar--pos { background: var(--positive); }
+.sim__impact-bar--neg { background: var(--negative); }
+
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
 
