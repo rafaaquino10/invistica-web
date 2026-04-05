@@ -57,6 +57,7 @@ export class InstitutionalComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     this.scoreService.screener({ limit: 20 }).pipe(
       switchMap(screener => {
         const tickers = (screener.results ?? []).map(r => r.ticker).slice(0, 20);

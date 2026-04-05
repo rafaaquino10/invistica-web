@@ -1,18 +1,15 @@
-@use 'typography' as t;
-
 .sidebar {
   display: flex;
   flex-direction: column;
   width: 56px;
   height: 100vh;
   background: var(--surface-1);
-  border-right: 1px solid var(--border-default);
+  border-right: 1px solid var(--border);
   overflow-y: auto;
   overflow-x: hidden;
-  transition: width var(--duration-normal) var(--ease);
 }
 
-.sidebar--expanded { width: 200px; }
+.sidebar--expanded { width: 220px; }
 
 // Top: logo + toggle
 .sidebar__top {
@@ -41,11 +38,9 @@
 }
 
 .sidebar__logo-text {
-  font-family: t.$font-mono;
   font-weight: 700;
-  font-size: t.$text-lg;
+  font-size: 18px;
   color: var(--logo-text);
-  background: var(--logo-bg);
   width: 32px;
   height: 32px;
   display: flex;
@@ -59,7 +54,7 @@
 .sidebar__logo-name {
   font-size: 14px;
   font-weight: 600;
-  color: var(--obsidian);
+  color: var(--text-primary);
   white-space: nowrap;
 }
 
@@ -79,9 +74,7 @@
 
   &:hover { color: var(--text-primary); background: var(--surface-2); }
 
-  .sidebar:not(.sidebar--expanded) & {
-    margin-left: 0;
-  }
+  .sidebar:not(.sidebar--expanded) & { margin-left: 0; }
 }
 
 // Nav
@@ -99,16 +92,17 @@
   gap: 2px;
   padding: var(--space-1) 0;
 
-  & + & { border-top: 1px solid var(--border-default); }
+  & + & { border-top: 1px solid var(--border); }
 }
 
 .sidebar__group-title {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
   color: var(--text-quaternary);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   padding: 4px 16px;
   white-space: nowrap;
+  text-transform: capitalize;
 }
 
 // Item
@@ -120,14 +114,13 @@
   padding: 0 18px;
   border-radius: var(--radius);
   color: var(--text-tertiary);
-  transition: all var(--duration-fast) var(--ease);
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
+  position: relative;
 
   &:hover { color: var(--text-primary); background: var(--surface-2); }
 
-  // Collapsed: center the icon
   .sidebar:not(.sidebar--expanded) & {
     justify-content: center;
     padding: 0;
@@ -137,18 +130,41 @@
 }
 
 .sidebar__item--active {
-  color: var(--obsidian);
-  background: var(--obsidian-bg);
+  color: var(--acid-dark);
+  background: var(--acid-bg);
+
+  [data-theme="dark"] & {
+    color: var(--acid);
+    background: var(--acid-bg);
+  }
+
+  // Acid indicator bar left
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    background: var(--acid-dark);
+    border-radius: 0 2px 2px 0;
+
+    [data-theme="dark"] & { background: var(--acid); }
+  }
 }
 
 .sidebar__icon {
-  width: 18px;
-  height: 18px;
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar__label {
-  font-size: t.$text-sm;
+  font-size: 14px;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -157,5 +173,5 @@
 .sidebar__bottom {
   flex-shrink: 0;
   padding: var(--space-2) 0;
-  border-top: 1px solid var(--border-default);
+  border-top: 1px solid var(--border);
 }

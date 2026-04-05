@@ -45,7 +45,7 @@ import { PlanService } from '../core/services/plan.service';
     .shell__content {
       flex: 1;
       overflow-y: auto;
-      padding: var(--space-6);
+      padding: 24px 32px;
       background: var(--surface-0);
     }
 

@@ -80,9 +80,10 @@ export class NoticiasTabComponent implements OnInit {
   readonly irEvents = signal<IREvent[]>([]);
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     const t = this.ticker(); if (!t) return; // direct call
     of(t).pipe(
-      
+
       switchMap(t => forkJoin({
         news: this.newsService.getNews(t, 20).pipe(catchError(() => of({ ticker: t, news: [] }))),
         ir: this.newsService.getIR(t, 10).pipe(catchError(() => of({ ticker: t, events: [] }))),

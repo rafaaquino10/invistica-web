@@ -3,7 +3,7 @@ import {
   OnDestroy, effect, inject, DestroyRef, signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { createChart, IChartApi, ISeriesApi, CandlestickData, HistogramData, LineStyle, ColorType, CandlestickSeries, HistogramSeries } from 'lightweight-charts';
+import type { IChartApi, ISeriesApi, CandlestickData, HistogramData } from 'lightweight-charts';
 import { TickerService } from '../../../core/services/ticker.service';
 import { ThemeService } from '../../../core/services/theme.service';
 
@@ -49,6 +49,8 @@ export class IqPriceChartComponent implements OnInit, OnDestroy {
   private readonly tickerService = inject(TickerService);
   private readonly themeService = inject(ThemeService);
   private readonly destroyRef = inject(DestroyRef);
+  private LineStyle: any;
+  private ColorType: any;
 
   readonly periods = [
     { label: '7D', days: 7 },
@@ -76,7 +78,7 @@ export class IqPriceChartComponent implements OnInit, OnDestroy {
     if (!this.chart) return;
     this.chart.applyOptions({
       layout: {
-        background: { type: ColorType.Solid, color: dark ? '#0D0E12' : 'transparent' },
+        background: { type: this.ColorType?.Solid ?? 0, color: dark ? '#0D0E12' : 'transparent' },
         textColor: dark ? '#6B6960' : '#6B6960',
       },
       grid: {
@@ -88,7 +90,10 @@ export class IqPriceChartComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const { createChart, ColorType, CandlestickSeries, HistogramSeries, LineStyle } = await import('lightweight-charts');
+    this.LineStyle = LineStyle;
+    this.ColorType = ColorType;
     const el = this.chartEl().nativeElement;
     const dark = this.themeService.theme() === 'dark';
     this.chart = createChart(el, {
@@ -148,7 +153,7 @@ export class IqPriceChartComponent implements OnInit, OnDestroy {
 
         const fv = this.fairValue();
         if (fv != null) {
-          const priceLine = { price: fv, color: '#3D3D3A', lineWidth: 1 as const, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: 'Justo' };
+          const priceLine = { price: fv, color: '#3D3D3A', lineWidth: 1 as const, lineStyle: this.LineStyle?.Dashed ?? 2, axisLabelVisible: true, title: 'Justo' };
           this.candleSeries?.createPriceLine(priceLine);
         }
 

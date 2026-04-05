@@ -54,6 +54,7 @@ export class FundamentosComponent implements OnInit {
   readonly groups = signal<{ title: string; items: Indicator[] }[]>([]);
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     const t = this.ticker();
     if (!t) return;
     forkJoin({

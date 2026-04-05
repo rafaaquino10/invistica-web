@@ -2,8 +2,6 @@ import {
   Component, ChangeDetectionStrategy, input, output, ElementRef,
   viewChild, OnChanges, AfterViewInit, signal,
 } from '@angular/core';
-import * as d3 from 'd3';
-
 export interface TreemapItem {
   ticker: string;
   name: string;
@@ -38,7 +36,7 @@ export class IqTreemapComponent implements AfterViewInit, OnChanges {
 
   readonly container = viewChild.required<ElementRef<HTMLElement>>('container');
   private rendered = false;
-  private tooltip: d3.Selection<HTMLDivElement, unknown, null, undefined> | null = null;
+  private tooltip: any = null;
 
   ngAfterViewInit(): void {
     this.rendered = true;
@@ -49,7 +47,8 @@ export class IqTreemapComponent implements AfterViewInit, OnChanges {
     if (this.rendered) this.render();
   }
 
-  private render(): void {
+  private async render(): Promise<void> {
+    const d3 = await import('d3');
     const el = this.container().nativeElement;
     el.innerHTML = '';
     const items = this.data();

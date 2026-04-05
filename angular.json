@@ -32,6 +32,9 @@
               }
             ],
             "styles": [
+              "node_modules/@fontsource-variable/onest/index.css",
+              "node_modules/@phosphor-icons/web/src/regular/style.css",
+              "node_modules/@phosphor-icons/web/src/fill/style.css",
               "src/styles/global.scss"
             ],
             "scripts": [],
@@ -55,8 +58,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kB",
-                  "maximumError": "16kB"
+                  "maximumWarning": "16kB",
+                  "maximumError": "24kB"
                 }
               ],
               "outputHashing": "all"
@@ -110,5 +113,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "2e480856-90a0-4ca8-914c-7068dcfcd209"
   }
 }

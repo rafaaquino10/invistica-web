@@ -53,6 +53,7 @@ export class RiskScannerComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     forkJoin({
       portfolio: this.portfolioService.get().pipe(catchError(() => of(null))),
       regime: this.regimeService.regime$.pipe(catchError(() => of(null))),

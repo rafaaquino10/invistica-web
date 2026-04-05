@@ -74,9 +74,10 @@ export class DossieTabComponent implements OnInit {
   readonly dossier = signal<Dossier | null>(null);
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     const t = this.ticker(); if (!t) return; // direct call
     of(t).pipe(
-      
+
       switchMap(t => this.scoreService.getDossier(t).pipe(catchError(() => of(null)))),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(d => {

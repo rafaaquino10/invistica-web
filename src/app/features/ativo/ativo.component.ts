@@ -99,6 +99,7 @@ export class AtivoComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     this.route.paramMap.pipe(
       switchMap(params => {
         const t = params.get('ticker')?.toUpperCase() ?? '';

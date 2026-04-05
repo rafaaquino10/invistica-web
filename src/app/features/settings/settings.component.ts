@@ -58,6 +58,7 @@ export class SettingsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {
       if (params['upgrade'] === 'true') this.showUpgradeBanner.set(true);
     });

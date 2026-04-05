@@ -8,7 +8,7 @@ import { Component, ChangeDetectionStrategy, input } from '@angular/core';
     .skeleton {
       background: linear-gradient(90deg, var(--surface-2) 25%, var(--surface-3) 50%, var(--surface-2) 75%);
       background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
+      animation: shimmer 1.8s ease-in-out infinite;
       border-radius: var(--radius);
     }
     .skeleton--text { height: 14px; border-radius: var(--radius); }
