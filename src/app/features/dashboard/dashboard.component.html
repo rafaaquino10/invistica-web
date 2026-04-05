@@ -1,260 +1,245 @@
 @if (loading()) {
   <div class="dash">
+    <iq-skeleton variant="rect" width="100%" height="180px" />
     <iq-skeleton variant="rect" width="100%" height="40px" />
-    <iq-skeleton variant="rect" width="100%" height="120px" />
-    <div class="dash__skel-row">
-      <iq-skeleton variant="rect" width="100%" height="340px" />
-      <iq-skeleton variant="rect" width="100%" height="340px" />
+    <div class="dash__skel-grid">
+      <iq-skeleton variant="rect" width="100%" height="300px" />
+      <iq-skeleton variant="rect" width="100%" height="300px" />
     </div>
   </div>
 } @else {
   <div class="dash" [class.dash--ready]="ready()">
 
-    <!-- ZONE 1: INTELLIGENCE STRIP -->
-    <div class="strip anim-item" style="--anim-order: 0">
+    <!-- ═══ ZONE 1: HERO ═══ -->
+    <dash-hero class="anim-item" style="--anim-order: 0"
+      [userName]="userName()"
+      [score]="portfolioScore()"
+      [rating]="portfolioRating()"
+      [totalValue]="totalValue()"
+      [plToday]="0"
+      [plTotal]="plTotal()"
+      [plTotalPct]="plTotalPct()"
+      [dividends12m]="divTotal()"
+      [yieldOnCost]="divYield()"
+      [regimeType]="regime()?.regime ?? null"
+      [selic]="regime()?.macro?.selic ?? null"
+      [ipca]="regime()?.macro?.ipca ?? null"
+    />
+
+    <!-- ═══ ZONE 2: INTELLIGENCE STRIP ═══ -->
+    <div class="strip anim-item" style="--anim-order: 1">
       <div class="strip__content">
-        <span class="strip__item">
-          <span class="strip__dot" [style.background]="regimeDotColor()"></span>
-          <span class="strip__text">{{ regimeLabel() }}</span>
-        </span>
-        @if (recommended().length > 0) {
-          <span class="strip__sep">&middot;</span>
-          <span class="strip__item strip__item--acid">
-            {{ recommended().length }} oportunidades detectadas
+        @if (regime()) {
+          <span class="strip__item">
+            <span class="strip__dot" [style.background]="regimeDotColor()"></span>
+            {{ regimeLabel() }}
           </span>
+          <span class="strip__sep">&middot;</span>
+        }
+        @if (opportunities().length > 0) {
+          <span class="strip__item strip__item--accent">{{ opportunities().length }} oportunidades detectadas</span>
+          <span class="strip__sep">&middot;</span>
         }
         @if (alertCount() > 0) {
+          <span class="strip__item strip__item--neg">{{ alertCount() }} {{ alertCount() === 1 ? 'alerta' : 'alertas' }}</span>
           <span class="strip__sep">&middot;</span>
-          <span class="strip__item strip__item--neg">{{ alertCount() }} {{ alertCount() === 1 ? 'alerta' : 'alertas' }} na carteira</span>
         }
+        @if (risk()?.vol_stress) {
+          <span class="strip__item">Vol: <span class="mono" [style.color]="volColor()">{{ volLabel() }}</span></span>
+          <span class="strip__sep">&middot;</span>
+        }
+        <span class="strip__item">Confianca motor: <span class="mono">{{ confidencePct() }}%</span></span>
       </div>
-      <div class="strip__accent"></div>
     </div>
 
-    <!-- ZONE 2: PORTFOLIO COMMAND -->
-    @if (hasPortfolio()) {
-      <section class="command anim-item" style="--anim-order: 1">
-        <!-- Score Gauge -->
-        <div class="command__gauge">
-          <svg width="120" height="75" viewBox="0 0 120 75" class="gauge-svg">
-            <path d="M12 68 A48 48 0 0 1 108 68" fill="none" stroke="var(--border)" stroke-width="8" stroke-linecap="round"/>
-            <path d="M12 68 A48 48 0 0 1 108 68" fill="none"
-                  [attr.stroke]="gaugeStrokeColor()"
-                  stroke-width="8" stroke-linecap="round"
-                  stroke-dasharray="151" [attr.stroke-dashoffset]="gaugeDashOffset()"
-                  class="gauge-svg__arc" />
-            <text x="60" y="58" text-anchor="middle" font-size="32" font-weight="700"
-                  [attr.fill]="gaugeStrokeColor()" class="gauge-svg__number">
-              {{ portfolioScore() }}
-            </text>
-          </svg>
-          <span class="command__badge" [class]="ratingBadgeClass(portfolioScore())">{{ ratingLabel() }}</span>
-        </div>
+    <!-- ═══ ZONE 3: OPORTUNIDADES + RISK STATUS ═══ -->
+    <div class="main-grid anim-item" style="--anim-order: 2">
 
-        <!-- KPIs — real data -->
-        <div class="command__kpis">
-          <div class="command__kpi">
-            <span class="command__kpi-label">Patrimonio</span>
-            <span class="command__kpi-value">R$ {{ formatBrl(totalValue()) }}</span>
-            <span class="command__kpi-sub">{{ positionCount() }} {{ positionCount() === 1 ? 'posicao' : 'posicoes' }}</span>
-          </div>
-          <div class="command__kpi">
-            <span class="command__kpi-label">P&L total</span>
-            <span class="command__kpi-value" [class.positive]="plTotalPct() >= 0" [class.negative]="plTotalPct() < 0">
-              {{ plTotalPct() >= 0 ? '+' : '' }}{{ (plTotalPct() * 100).toFixed(2) }}%
-            </span>
-            <span class="command__kpi-sub">{{ plTotal() >= 0 ? '+' : '' }}R$ {{ formatBrl(plTotal()) }}</span>
-          </div>
-          <div class="command__kpi">
-            <span class="command__kpi-label">Dividendos 12M</span>
-            <span class="command__kpi-value positive">R$ {{ formatBrl(divTotal()) }}</span>
-            <span class="command__kpi-sub">Yield {{ (divYield() * 100).toFixed(1) }}%</span>
-          </div>
-          @if (portfolioBeta() != null) {
-            <div class="command__kpi">
-              <span class="command__kpi-label">Beta</span>
-              <span class="command__kpi-value">{{ portfolioBeta()!.toFixed(2) }}</span>
-              <span class="command__kpi-sub">{{ betaLabel() }}</span>
-            </div>
-          }
-          @if (portfolioSharpe() != null) {
-            <div class="command__kpi">
-              <span class="command__kpi-label">Sharpe</span>
-              <span class="command__kpi-value">{{ portfolioSharpe()!.toFixed(2) }}</span>
-              <span class="command__kpi-sub">12 meses</span>
-            </div>
-          }
-          @if (portfolioMaxDD() != null) {
-            <div class="command__kpi">
-              <span class="command__kpi-label">Max Drawdown</span>
-              <span class="command__kpi-value negative">{{ (portfolioMaxDD()! * 100).toFixed(1) }}%</span>
-              <span class="command__kpi-sub">12 meses</span>
-            </div>
-          }
+      <!-- Top Oportunidades -->
+      <div class="opps">
+        <div class="opps__header">
+          <h2 class="section-title">Top Oportunidades IQ-Score</h2>
+          <a class="section-link" routerLink="/explorar">Ver todas</a>
         </div>
+        @if (opportunities().length > 0) {
+          <div class="opps__grid">
+            @for (asset of opportunities(); track asset.ticker) {
+              <a class="opp-card" [routerLink]="'/ativo/' + asset.ticker">
+                <div class="opp-card__top">
+                  <span class="opp-card__ticker mono">{{ asset.ticker }}</span>
+                  <iq-rating-badge [rating]="$any(asset.rating)" />
+                </div>
+                <span class="opp-card__name">{{ asset.company_name }}</span>
+                <div class="opp-card__metrics">
+                  <div class="opp-card__metric">
+                    <span class="opp-card__metric-val mono" [style.color]="scoreColor(asset.iq_score)">{{ asset.iq_score }}</span>
+                    <span class="opp-card__metric-label">IQ-Score</span>
+                  </div>
+                  @if (asset.fair_value_final) {
+                    <div class="opp-card__metric">
+                      <span class="opp-card__metric-val mono">R$ {{ asset.fair_value_final.toFixed(2) }}</span>
+                      <span class="opp-card__metric-label">Fair Value</span>
+                    </div>
+                  }
+                  @if (asset.safety_margin != null) {
+                    <div class="opp-card__metric">
+                      <span class="opp-card__metric-val mono" [class.positive]="asset.safety_margin > 0" [class.negative]="asset.safety_margin <= 0">
+                        {{ asset.safety_margin > 0 ? '+' : '' }}{{ (asset.safety_margin * 100).toFixed(0) }}%
+                      </span>
+                      <span class="opp-card__metric-label">Margem</span>
+                    </div>
+                  }
+                  @if (asset.dividend_yield_proj) {
+                    <div class="opp-card__metric">
+                      <span class="opp-card__metric-val mono">{{ (asset.dividend_yield_proj * 100).toFixed(1) }}%</span>
+                      <span class="opp-card__metric-label">DY Proj</span>
+                    </div>
+                  }
+                </div>
+                <!-- Score bar -->
+                <div class="opp-card__bar">
+                  <div class="opp-card__bar-fill" [style.width.%]="asset.iq_score" [style.background]="scoreColor(asset.iq_score)"></div>
+                </div>
+              </a>
+            }
+          </div>
+        } @else {
+          <iq-empty-state title="Sem oportunidades" description="O motor nao detectou oportunidades com IQ-Score elevado no momento." />
+        }
+      </div>
 
-        <div class="command__accent"></div>
-      </section>
-    } @else {
-      <section class="dash__empty-hero anim-item" style="--anim-order: 1">
-        <div class="dash__empty-hero-content">
-          <h1 class="dash__empty-hero-title">{{ userName() ? 'Ola, ' + userName() + '.' : 'Bem-vindo ao InvestIQ.' }}</h1>
-          <p class="dash__empty-hero-desc">Adicione suas posicoes para ver seu briefing personalizado.</p>
+      <!-- Risk Status Sidebar -->
+      <div class="risk-side">
+        @if (risk(); as r) {
+          <!-- Regime -->
+          <div class="risk-card">
+            <span class="risk-card__label mono">REGIME</span>
+            <span class="risk-card__value" [style.color]="regimeDotColor()">{{ regimeLabel() }}</span>
+            <div class="risk-card__row">
+              <span class="mono">SELIC {{ r.selic }}</span>
+              <span class="mono">IPCA {{ r.ipca }}</span>
+            </div>
+          </div>
+
+          <!-- Volatilidade -->
+          <div class="risk-card">
+            <span class="risk-card__label mono">VOLATILIDADE</span>
+            <div class="risk-card__gauge-row">
+              <div class="risk-gauge">
+                <div class="risk-gauge__fill" [style.width.%]="Math.min(r.vol_stress.ratio * 50, 100)" [style.background]="volColor()"></div>
+              </div>
+              <span class="risk-card__status mono" [style.color]="volColor()">{{ volLabel() }}</span>
+            </div>
+            <div class="risk-card__row">
+              <span class="mono">21d: {{ r.vol_stress.vol_21d }}</span>
+              <span class="mono">Ratio: {{ r.vol_stress.ratio.toFixed(2) }}x</span>
+            </div>
+          </div>
+
+          <!-- Confianca -->
+          <div class="risk-card">
+            <span class="risk-card__label mono">CONFIANCA DO MOTOR</span>
+            <div class="risk-card__gauge-row">
+              <div class="risk-gauge">
+                <div class="risk-gauge__fill risk-gauge__fill--conf" [style.width.%]="confidencePct()"></div>
+              </div>
+              <span class="risk-card__pct mono">{{ confidencePct() }}%</span>
+            </div>
+            <div class="risk-card__row">
+              <span class="mono">Hit Rate: {{ r.confidence.hit_rate }}</span>
+            </div>
+            @if (r.confidence.forced_low) {
+              <span class="risk-card__alert mono">Confianca forcada baixa</span>
+            }
+          </div>
+
+          <!-- CTA -->
+          <a class="risk-cta" routerLink="/estrategia">
+            Ver estrategia completa ->
+          </a>
+        } @else {
+          <div class="risk-card">
+            <span class="risk-card__label mono">RISK STATUS</span>
+            <span class="risk-card__sub">Carregando...</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- ═══ ZONE 4: POSICOES ═══ -->
+    <div class="positions anim-item" style="--anim-order: 3">
+      @if (hasPortfolio()) {
+        <div class="positions__header">
+          <h2 class="section-title">Minha Carteira</h2>
+          <a class="section-link" routerLink="/carteira">Ver completa</a>
+        </div>
+        <div class="positions__summary">
+          <span class="positions__total">Patrimonio: <strong class="mono">R$ {{ fmtBrl(totalValue()) }}</strong></span>
+          <span class="positions__pl mono" [class.positive]="plTotalPct() >= 0" [class.negative]="plTotalPct() < 0">
+            {{ plTotalPct() >= 0 ? '+' : '' }}{{ (plTotalPct() * 100).toFixed(2) }}%
+          </span>
+        </div>
+        <div class="positions__table-wrap">
+          <table class="positions__table">
+            <thead>
+              <tr>
+                <th>Ticker</th>
+                <th class="mono">Atual</th>
+                <th class="mono">P&L</th>
+                <th class="mono">Peso</th>
+                <th class="mono">Score</th>
+                <th>Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (pos of portfolio()!.positions; track pos.id) {
+                <tr class="positions__row" [routerLink]="'/ativo/' + pos.ticker">
+                  <td class="positions__ticker mono">{{ pos.ticker }}</td>
+                  <td class="mono">{{ pos.current_price.toFixed(2) }}</td>
+                  <td class="mono" [class.positive]="pos.gain_loss_pct >= 0" [class.negative]="pos.gain_loss_pct < 0">
+                    {{ pos.gain_loss_pct >= 0 ? '+' : '' }}{{ (pos.gain_loss_pct * 100).toFixed(1) }}%
+                  </td>
+                  <td class="mono">{{ (pos.weight * 100).toFixed(1) }}%</td>
+                  <td class="mono" [style.color]="pos.iq_score ? scoreColor(pos.iq_score) : ''">{{ pos.iq_score ?? '--' }}</td>
+                  <td>@if (pos.rating) { <iq-rating-badge [rating]="$any(pos.rating)" /> }</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="positions__empty">
+          <h2 class="section-title">Minha Carteira</h2>
+          <p class="positions__empty-desc">Adicione suas posicoes para acompanhar performance, receber sinais e recomendacoes personalizadas.</p>
           <iq-button variant="primary" routerLink="/carteira" [queryParams]="{ add: true }">Adicionar primeira posicao</iq-button>
         </div>
-      </section>
-    }
+      }
+    </div>
 
-    <!-- ZONE 3: PERFORMANCE CHARTS -->
-    <section class="perf anim-item" style="--anim-order: 2">
-      <!-- Main: Equity Curve -->
-      <div class="perf__main">
-        <div class="perf__header">
-          <span class="perf__title">Evolucao patrimonial</span>
-          <div class="perf__periods">
-            @for (p of ['1M','3M','6M','12M','Max']; track p) {
-              <button class="perf__period" [class.perf__period--active]="activePeriod() === p" (click)="setPeriod(p)">{{ p }}</button>
-            }
-          </div>
+    <!-- ═══ ZONE 5: SIGNALS ═══ -->
+    @if (topAssets().length > 0) {
+      <div class="signals anim-item" style="--anim-order: 4">
+        <div class="signals__header">
+          <h2 class="section-title">Destaques do Mercado</h2>
+          <a class="section-link" routerLink="/explorar">Explorar</a>
         </div>
-        <div class="perf__chart" #equityChart></div>
-        <div class="perf__legend">
-          <span class="perf__legend-item"><span class="perf__legend-dot perf__legend-dot--acid"></span> Carteira</span>
-          <span class="perf__legend-item"><span class="perf__legend-dot perf__legend-dot--cdi"></span> CDI</span>
-          <span class="perf__legend-item"><span class="perf__legend-dot perf__legend-dot--ibov"></span> Ibovespa</span>
-        </div>
-        @if (hasPortfolio()) {
-          <div class="perf__metrics">
-            <div class="perf__metric">
-              <span class="perf__metric-val" [class.positive]="plTotalPct() >= 0" [class.negative]="plTotalPct() < 0">
-                {{ plTotalPct() >= 0 ? '+' : '' }}{{ (plTotalPct() * 100).toFixed(1) }}%
-              </span>
-              <span class="perf__metric-label">Carteira</span>
-            </div>
-            @if (portfolioSharpe() != null) {
-              <div class="perf__metric">
-                <span class="perf__metric-val muted">{{ portfolioSharpe()!.toFixed(2) }}</span>
-                <span class="perf__metric-label">Sharpe</span>
-              </div>
-            }
-            @if (portfolioMaxDD() != null) {
-              <div class="perf__metric">
-                <span class="perf__metric-val muted">{{ (portfolioMaxDD()! * 100).toFixed(1) }}%</span>
-                <span class="perf__metric-label">Max Drawdown</span>
-              </div>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Sidebar: IBOV + Treemap + Dividendos -->
-      <div class="perf__side">
-        <!-- IBOV Intraday -->
-        <div class="side-card">
-          <span class="side-card__label">Ibovespa</span>
-          <span class="side-card__value">131.842</span>
-          <div class="side-card__row">
-            <span class="side-card__pct positive">+0,87%</span>
-            <span class="side-card__pts">+1.138 pts</span>
-          </div>
-          <div class="side-card__chart" #ibovChart></div>
-        </div>
-
-        <!-- Sector Treemap -->
-        @if (sectorExposure().length > 0) {
-          <div class="side-card">
-            <span class="side-card__label">Exposicao setorial</span>
-            <div class="side-card__chart" #treemapChart></div>
-          </div>
-        }
-
-        <!-- Dividendos Recebidos -->
-        <div class="side-card">
-          <span class="side-card__label">Dividendos recebidos</span>
-          <div class="side-card__chart" #divBarsChart></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ZONE 4: MARKET -->
-    <section class="market anim-item" style="--anim-order: 3">
-      <!-- Maiores Altas -->
-      <div class="market__col">
-        <span class="market__title">Maiores altas</span>
-        @for (item of gainers(); track item.ticker; let i = $index) {
-          <a class="mover" [routerLink]="'/ativo/' + item.ticker">
-            <span class="mover__rank">{{ i + 1 }}</span>
-            <span class="mover__ticker">{{ item.ticker }}</span>
-            <svg viewBox="0 0 48 18" class="mover__spark" preserveAspectRatio="none">
-              <polyline [attr.points]="genSpark(true)" fill="none" stroke="var(--positive)" stroke-width="1.2" stroke-linecap="round" />
-            </svg>
-            <span class="mover__change positive">+{{ item.change.toFixed(1) }}%</span>
-            <span class="mover__score" [style.color]="scoreColor(item.score)">{{ item.score }}</span>
-            <span class="mover__dot" [style.background]="scoreColor(item.score)"></span>
-          </a>
-        }
-      </div>
-
-      <!-- Maiores Baixas -->
-      <div class="market__col">
-        <span class="market__title">Maiores baixas</span>
-        @for (item of losers(); track item.ticker; let i = $index) {
-          <a class="mover" [routerLink]="'/ativo/' + item.ticker">
-            <span class="mover__rank">{{ i + 1 }}</span>
-            <span class="mover__ticker">{{ item.ticker }}</span>
-            <svg viewBox="0 0 48 18" class="mover__spark" preserveAspectRatio="none">
-              <polyline [attr.points]="genSpark(false)" fill="none" stroke="var(--negative)" stroke-width="1.2" stroke-linecap="round" />
-            </svg>
-            <span class="mover__change negative">{{ item.change.toFixed(1) }}%</span>
-            <span class="mover__score" [style.color]="scoreColor(item.score)">{{ item.score }}</span>
-            <span class="mover__dot" [style.background]="scoreColor(item.score)"></span>
-          </a>
-        }
-      </div>
-
-      <!-- IQ Radar -->
-      <div class="market__col market__col--radar">
-        <span class="market__title">IQ Radar - Fora da carteira</span>
-        @for (item of recommended(); track item.ticker) {
-          <a class="radar-item" [routerLink]="'/ativo/' + item.ticker">
-            <span class="radar-item__ticker">{{ item.ticker }}</span>
-            <span class="radar-item__score" [style.color]="scoreColor(item.iq_score)">{{ item.iq_score }}</span>
-            <div class="radar-item__bar-wrap">
-              <span class="radar-item__bar-label">Margem de seguranca</span>
-              <div class="radar-item__bar-track">
-                <div class="radar-item__bar-fill" [style.width.%]="Math.min((item.safety_margin ?? 0) * 100, 100)"></div>
-              </div>
-            </div>
-            @if (item.safety_margin != null && item.safety_margin > 0) {
-              <span class="radar-item__margin positive">+{{ (item.safety_margin * 100).toFixed(0) }}%</span>
-            }
-          </a>
-        }
-        @if (recommended().length === 0) {
-          <p class="market__empty">Nenhuma oportunidade detectada no momento.</p>
-        }
-      </div>
-    </section>
-
-    <!-- ZONE 5: IQ SIGNALS -->
-    @if (signals().length > 0) {
-      <section class="signals anim-item" style="--anim-order: 4">
-        <span class="signals__title">IQ Signals</span>
         <div class="signals__grid">
-          @for (sig of signals(); track sig.ticker + sig.type) {
-            <div class="signal" [style.border-left-color]="signalBorderColor(sig.type)">
-              <div class="signal__top">
-                <span class="signal__tag" [class]="signalTagClass(sig.type)">{{ sig.tag }}</span>
+          @for (asset of topAssets().slice(0, 4); track asset.ticker) {
+            <a class="sig-card" [routerLink]="'/ativo/' + asset.ticker">
+              <div class="sig-card__header">
+                <span class="sig-card__ticker mono">{{ asset.ticker }}</span>
+                <span class="sig-card__score mono" [style.color]="scoreColor(asset.iq_score)">{{ asset.iq_score }}</span>
               </div>
-              @if (sig.ticker) {
-                <span class="signal__ticker">{{ sig.ticker }}</span>
-              }
-              <span class="signal__main" [style.color]="signalMainColor(sig.type)">{{ sig.main }}</span>
-              <span class="signal__context">{{ sig.context }}</span>
-            </div>
+              <span class="sig-card__name">{{ asset.company_name }}</span>
+              <div class="sig-card__pills">
+                <span class="sig-card__pill mono">Q {{ asset.score_quanti }}</span>
+                <span class="sig-card__pill mono">L {{ asset.score_quali }}</span>
+                <span class="sig-card__pill mono">V {{ asset.score_valuation }}</span>
+              </div>
+            </a>
           }
         </div>
-      </section>
+      </div>
     }
 
     <iq-disclaimer />
