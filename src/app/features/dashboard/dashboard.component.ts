@@ -11,7 +11,8 @@ import { ScoreService } from '../../core/services/score.service';
 import { DividendService } from '../../core/services/dividend.service';
 import { RegimeService } from '../../core/services/regime.service';
 import { StrategyService, RiskStatus } from '../../core/services/strategy.service';
-import type { PortfolioResult, PortfolioAlert } from '../../core/models/portfolio.model';
+import type { PortfolioResult, PortfolioAlert, PerformanceResult, IntradayResult } from '../../core/models/portfolio.model';
+import { IqLineChartComponent, LineSeries } from '../../shared/components/iq-line-chart/iq-line-chart.component';
 import type { ScreenerResult } from '../../core/models/score.model';
 import type { RegimeResult } from '../../core/models/regime.model';
 import { Rating, RATING_LABELS } from '../../core/models/score.model';
@@ -27,7 +28,7 @@ import { CurrencyBrlPipe } from '../../shared/pipes/currency-brl.pipe';
   selector: 'iq-dashboard',
   standalone: true,
   imports: [
-    IqTickerLogoComponent,
+    IqTickerLogoComponent, IqLineChartComponent,
     RouterLink, DashboardHeroComponent, IqRatingBadgeComponent,
     IqSkeletonComponent, IqDisclaimerComponent, IqButtonComponent,
     IqEmptyStateComponent, CurrencyBrlPipe,
@@ -55,6 +56,49 @@ export class DashboardComponent implements OnInit {
   readonly alerts = signal<PortfolioAlert[]>([]);
   readonly divTotal = signal(0);
   readonly divYield = signal(0);
+
+  // ── Charts ──
+  readonly perfSeries = signal<LineSeries[]>([]);
+  readonly perfMetrics = signal<any>(null);
+  readonly intradaySeries = signal<LineSeries[]>([]);
+  readonly intradayMetrics = signal<{ carteira: number; ibov: number } | null>(null);
+  readonly perfPeriod = signal('12M');
+
+  changePerfPeriod(period: string): void {
+    this.perfPeriod.set(period);
+    const months = period === '1M' ? 1 : period === '3M' ? 3 : period === '6M' ? 6 : period === 'MAX' ? 60 : 12;
+    this.portfolioService.getPerformance(months).pipe(
+      catchError(() => of(null)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(res => this.buildPerfChart(res));
+  }
+
+  private buildPerfChart(res: PerformanceResult | null): void {
+    if (!res?.series?.carteira?.length) { this.perfSeries.set([]); return; }
+    const series: LineSeries[] = [
+      { name: 'Carteira', data: res.series.carteira.map(p => p.value), color: 'var(--accent, #C9A84C)', areaFill: true, strokeWidth: 2.5 },
+    ];
+    if (res.series.ibov?.length) {
+      series.push({ name: 'IBOV', data: res.series.ibov.map(p => p.value), color: 'var(--text-tertiary, #888)', dashed: true });
+    }
+    if (res.series.cdi?.length) {
+      series.push({ name: 'CDI', data: res.series.cdi.map(p => p.value), color: 'var(--info, #3B6B96)', dashed: true });
+    }
+    this.perfSeries.set(series);
+    this.perfMetrics.set(res.metrics);
+  }
+
+  private buildIntradayChart(res: IntradayResult | null): void {
+    if (!res?.series?.carteira?.length) { this.intradaySeries.set([]); return; }
+    const series: LineSeries[] = [
+      { name: 'Carteira', data: res.series.carteira.map(p => p.value), color: 'var(--accent, #C9A84C)', areaFill: true, strokeWidth: 2 },
+    ];
+    if (res.series.ibov?.length) {
+      series.push({ name: 'IBOV', data: res.series.ibov.map(p => p.value), color: 'var(--text-tertiary, #888)', dashed: true });
+    }
+    this.intradaySeries.set(series);
+    this.intradayMetrics.set({ carteira: res.carteira_change, ibov: res.ibov_change });
+  }
 
   // ── Hero inputs ──
   readonly userName = computed(() => {
@@ -187,5 +231,16 @@ export class DashboardComponent implements OnInit {
       catchError(() => of(null)),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(r => this.regime.set(r));
+
+    // Load performance charts
+    this.portfolioService.getPerformance(12).pipe(
+      catchError(() => of(null)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(res => this.buildPerfChart(res as PerformanceResult | null));
+
+    this.portfolioService.getIntraday().pipe(
+      catchError(() => of(null)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(res => this.buildIntradayChart(res as IntradayResult | null));
   }
 }

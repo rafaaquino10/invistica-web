@@ -64,6 +64,44 @@ export interface PortfolioAnalytics {
   };
 }
 
+export interface PerformanceSeriesPoint {
+  date: string;
+  value: number;
+}
+
+export interface PerformanceResult {
+  start_date: string | null;
+  end_date: string | null;
+  series: {
+    carteira: PerformanceSeriesPoint[];
+    ibov: PerformanceSeriesPoint[];
+    cdi: PerformanceSeriesPoint[];
+    selic_aa: number;
+  };
+  metrics: {
+    carteira_return: number;
+    ibov_return: number;
+    cdi_return: number;
+    alpha_ibov: number;
+    max_drawdown: number;
+  };
+}
+
+export interface IntradayPoint {
+  time: string;
+  value: number;
+}
+
+export interface IntradayResult {
+  date: string;
+  series: {
+    carteira: IntradayPoint[];
+    ibov: IntradayPoint[];
+  };
+  carteira_change: number;
+  ibov_change: number;
+}
+
 export interface PortfolioAlert {
   id: string;
   type: string;

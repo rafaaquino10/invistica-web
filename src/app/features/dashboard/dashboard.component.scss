@@ -60,6 +60,91 @@
 .strip__dot { width: 7px; height: 7px; border-radius: 50%; }
 .strip__sep { color: rgba(80, 70, 0, 0.25); [data-theme="dark"] & { color: var(--text-quaternary); } }
 
+// ═══ CHARTS GRID ═══
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.chart-card {
+  @include m.iq-card;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chart-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-card__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.chart-card__subtitle {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.chart-card__periods {
+  display: flex;
+  gap: 2px;
+}
+
+.chart-card__period {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-family: inherit;
+
+  &:hover { color: var(--text-primary); }
+}
+
+.chart-card__period--active {
+  color: var(--obsidian);
+  font-weight: 600;
+  background: var(--obsidian-bg);
+}
+
+.chart-card__metrics {
+  display: flex;
+  gap: 20px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.chart-card__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chart-card__metric-val {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.chart-card__metric-label {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 // ═══ MAIN GRID (opportunities + risk sidebar) ═══
 .main-grid {
   display: grid;
@@ -261,6 +346,9 @@
 @media (max-width: 767px) {
   .dash { gap: 12px; }
   .dash__skel-grid { grid-template-columns: 1fr; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .chart-card__metrics { gap: 10px; }
+  .chart-card__metric-val { font-size: 14px; }
   .main-grid { grid-template-columns: 1fr; }
   .opps__grid { grid-template-columns: 1fr; }
   .opps__header { flex-direction: column; gap: 4px; align-items: flex-start; }

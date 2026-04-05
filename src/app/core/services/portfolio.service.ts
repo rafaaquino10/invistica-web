@@ -4,6 +4,7 @@ import { ApiService } from './api.service';
 import {
   PortfolioResult, PositionCreate, PositionUpdate,
   SmartContributionResponse, PortfolioAlert, PortfolioAnalytics,
+  PerformanceResult, IntradayResult,
 } from '../models/portfolio.model';
 
 @Injectable({ providedIn: 'root' })
@@ -36,5 +37,13 @@ export class PortfolioService {
 
   getAnalytics(): Observable<PortfolioAnalytics> {
     return this.api.get('/portfolio/analytics');
+  }
+
+  getPerformance(months = 12): Observable<PerformanceResult> {
+    return this.api.get('/portfolio/performance', { months });
+  }
+
+  getIntraday(): Observable<IntradayResult> {
+    return this.api.get('/portfolio/intraday');
   }
 }

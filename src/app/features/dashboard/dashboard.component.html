@@ -52,7 +52,89 @@
       </div>
     </div>
 
-    <!-- ═══ ZONE 3: OPORTUNIDADES + RISK STATUS ═══ -->
+    <!-- ═══ ZONE 3: GRAFICOS DE PERFORMANCE ═══ -->
+    @if (perfSeries().length > 0 || intradaySeries().length > 0) {
+      <div class="charts-grid anim-item" style="--anim-order: 2">
+        <!-- Rentabilidade vs Benchmarks -->
+        @if (perfSeries().length > 0) {
+          <div class="chart-card">
+            <div class="chart-card__head">
+              <span class="chart-card__title">Rentabilidade vs Benchmarks</span>
+              <div class="chart-card__periods">
+                @for (p of ['1M','3M','6M','12M','MAX']; track p) {
+                  <button class="chart-card__period" [class.chart-card__period--active]="perfPeriod() === p"
+                          (click)="changePerfPeriod(p)">{{ p }}</button>
+                }
+              </div>
+            </div>
+            <iq-line-chart [series]="perfSeries()" />
+            @if (perfMetrics(); as m) {
+              <div class="chart-card__metrics">
+                <div class="chart-card__metric">
+                  <span class="chart-card__metric-val mono" [class.positive]="m.carteira_return >= 0" [class.negative]="m.carteira_return < 0">
+                    {{ m.carteira_return >= 0 ? '+' : '' }}{{ (m.carteira_return * 100).toFixed(2) }}%
+                  </span>
+                  <span class="chart-card__metric-label">Carteira</span>
+                </div>
+                <div class="chart-card__metric">
+                  <span class="chart-card__metric-val mono">{{ (m.ibov_return * 100).toFixed(2) }}%</span>
+                  <span class="chart-card__metric-label">IBOV</span>
+                </div>
+                <div class="chart-card__metric">
+                  <span class="chart-card__metric-val mono">{{ (m.cdi_return * 100).toFixed(2) }}%</span>
+                  <span class="chart-card__metric-label">CDI</span>
+                </div>
+                <div class="chart-card__metric">
+                  <span class="chart-card__metric-val mono" [class.positive]="m.alpha_ibov > 0" [class.negative]="m.alpha_ibov < 0">
+                    {{ m.alpha_ibov > 0 ? '+' : '' }}{{ (m.alpha_ibov * 100).toFixed(2) }}pp
+                  </span>
+                  <span class="chart-card__metric-label">Alpha IBOV</span>
+                </div>
+                <div class="chart-card__metric">
+                  <span class="chart-card__metric-val mono negative">{{ (m.max_drawdown * 100).toFixed(1) }}%</span>
+                  <span class="chart-card__metric-label">Max DD</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Intraday: Carteira vs IBOV -->
+        @if (intradaySeries().length > 0) {
+          <div class="chart-card">
+            <div class="chart-card__head">
+              <span class="chart-card__title">Intraday - Carteira vs IBOV</span>
+              <span class="chart-card__subtitle mono">Hoje</span>
+            </div>
+            <iq-line-chart [series]="intradaySeries()" />
+            @if (intradayMetrics(); as im) {
+              <div class="chart-card__metrics">
+                <div class="chart-card__metric">
+                  <span class="chart-card__metric-val mono" [class.positive]="im.carteira >= 0" [class.negative]="im.carteira < 0">
+                    {{ im.carteira >= 0 ? '+' : '' }}{{ (im.carteira * 100).toFixed(2) }}%
+                  </span>
+                  <span class="chart-card__metric-label">Carteira hoje</span>
+                </div>
+                <div class="chart-card__metric">
+                  <span class="chart-card__metric-val mono" [class.positive]="im.ibov >= 0" [class.negative]="im.ibov < 0">
+                    {{ im.ibov >= 0 ? '+' : '' }}{{ (im.ibov * 100).toFixed(2) }}%
+                  </span>
+                  <span class="chart-card__metric-label">IBOV hoje</span>
+                </div>
+                <div class="chart-card__metric">
+                  <span class="chart-card__metric-val mono" [class.positive]="im.carteira - im.ibov > 0" [class.negative]="im.carteira - im.ibov < 0">
+                    {{ im.carteira - im.ibov > 0 ? '+' : '' }}{{ ((im.carteira - im.ibov) * 100).toFixed(2) }}pp
+                  </span>
+                  <span class="chart-card__metric-label">Spread</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ═══ ZONE 4: OPORTUNIDADES + RISK STATUS ═══ -->
     <div class="main-grid anim-item" style="--anim-order: 2">
 
       <!-- Top Oportunidades -->
