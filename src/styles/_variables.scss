@@ -9,6 +9,11 @@
   --acid-bg: rgba(212, 229, 0, 0.10);
   --acid-bg-dark: rgba(212, 229, 0, 0.08);
 
+  // ── OBSIDIAN (alias -> acid neon for brand consistency) ──
+  --obsidian: var(--acid-dark);
+  --obsidian-bg: var(--acid-bg);
+  --obsidian-border: rgba(107, 114, 0, 0.20);
+
   // ── SURFACES ──
   --surface-0: #FAFAF6;
   --surface-1: #FFFFFF;
@@ -43,7 +48,7 @@
   // ── BORDERS (legacy compat) ──
   --border-default: var(--border);
   --border-hover: #D4D1C9;
-  --border-focus: #111110;
+  --border-focus: var(--acid-dark);
 
   // ── SPACING (4px base) ──
   --space-1: 0.25rem;   // 4px
@@ -89,6 +94,10 @@
   --acid-bg: rgba(212, 229, 0, 0.08);
   --acid-bg-dark: rgba(212, 229, 0, 0.06);
 
+  --obsidian: var(--acid);
+  --obsidian-bg: var(--acid-bg);
+  --obsidian-border: rgba(212, 229, 0, 0.15);
+
   --surface-0: #08080A;
   --surface-1: #0E0E10;
   --surface-2: #141416;
@@ -119,7 +128,7 @@
 
   --border-default: var(--border);
   --border-hover: #2A2A24;
-  --border-focus: #E8E8E0;
+  --border-focus: var(--acid);
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.15);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);

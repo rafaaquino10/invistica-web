@@ -34,8 +34,12 @@
 // ═══ INTELLIGENCE STRIP ═══
 .strip {
   padding: 10px 20px;
-  background: var(--obsidian);
+  background: var(--acid);
   border-radius: var(--radius);
+
+  [data-theme="dark"] & {
+    background: rgba(212, 229, 0, 0.10);
+  }
 }
 .strip__content {
   display: flex;
@@ -44,13 +48,15 @@
   flex-wrap: wrap;
   font-size: 12px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(80, 70, 0, 0.7);
+
+  [data-theme="dark"] & { color: var(--text-tertiary); }
 }
 .strip__item { display: flex; align-items: center; gap: 4px; }
-.strip__item--accent { color: rgba(255, 255, 255, 0.85); }
-.strip__item--neg { color: #F87171; }
+.strip__item--accent { color: rgba(50, 45, 0, 0.9); font-weight: 600; [data-theme="dark"] & { color: var(--acid); } }
+.strip__item--neg { color: #B91C1C; [data-theme="dark"] & { color: var(--negative); } }
 .strip__dot { width: 7px; height: 7px; border-radius: 50%; }
-.strip__sep { color: rgba(255, 255, 255, 0.15); }
+.strip__sep { color: rgba(80, 70, 0, 0.25); [data-theme="dark"] & { color: var(--text-quaternary); } }
 
 // ═══ MAIN GRID (opportunities + risk sidebar) ═══
 .main-grid {
