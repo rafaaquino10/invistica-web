@@ -46,7 +46,18 @@
 
 .cmp__td-label { font-weight: 500; color: var(--text-secondary); white-space: nowrap; }
 .cmp__td-val { color: var(--text-primary); }
-.cmp__best { font-weight: 700; color: var(--positive); }
+.cmp__best {
+  font-weight: 700;
+  color: var(--positive);
+  position: relative;
+}
+.cmp__crown {
+  font-size: 11px;
+  color: var(--acid-dark);
+  margin-left: 4px;
+  vertical-align: super;
+  [data-theme="dark"] & { color: var(--acid); }
+}
 
 // Visual Bars Section (unified, below table)
 .cmp__bars-section {

@@ -41,32 +41,20 @@
             </tr>
           </thead>
           <tbody>
-            <!-- IQ-Score (special row with rating badge) -->
-            <tr class="cmp__row--hero">
-              <td class="cmp__td-label">IQ-Score</td>
-              @for (item of items(); track item.ticker) {
-                <td class="cmp__td-val">
-                  <span class="cmp__score mono" [style.color]="scoreColor(item.iq_score)">{{ item.iq_score || '--' }}</span>
-                  @if (item.iq_score) { <iq-rating-badge [rating]="item.rating" /> }
-                </td>
-              }
-            </tr>
-
-            <!-- Cotacao -->
-            <tr>
-              <td class="cmp__td-label">Cotacao</td>
-              @for (item of items(); track item.ticker) {
-                <td class="cmp__td-val mono">R$ {{ item.close?.toFixed(2) ?? '--' }}</td>
-              }
-            </tr>
-
-            <!-- Other metrics with mini bar -->
             @for (m of metrics; track m.key) {
-              <tr>
+              <tr [class.cmp__row--hero]="m.key === 'iq_score'">
                 <td class="cmp__td-label">{{ m.label }}</td>
                 @for (item of items(); track item.ticker) {
                   <td class="cmp__td-val mono" [class.cmp__best]="isBest(m, item)">
-                    {{ formatVal(getVal(item, m.key), m) }}
+                    @if (m.key === 'iq_score') {
+                      <span class="cmp__score" [style.color]="scoreColor(item.iq_score)">{{ item.iq_score || '--' }}</span>
+                      @if (item.iq_score) { <iq-rating-badge [rating]="item.rating" /> }
+                    } @else {
+                      {{ formatVal(getVal(item, m.key), m) }}
+                    }
+                    @if (isBest(m, item)) {
+                      <span class="cmp__crown" title="Melhor nesta metrica">&#9733;</span>
+                    }
                   </td>
                 }
               </tr>
