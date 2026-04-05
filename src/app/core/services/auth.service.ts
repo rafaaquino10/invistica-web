@@ -9,7 +9,7 @@ export class AuthService {
   private readonly supabase: SupabaseClient | null = null;
 
   private readonly _currentUser = signal<User | null>(null);
-  private readonly _isLoading = signal(!IS_CONFIGURED); // skip loading if not configured
+  private readonly _isLoading = signal(IS_CONFIGURED); // true when Supabase configured — wait for session load
 
   readonly currentUser = this._currentUser.asReadonly();
   readonly isAuthenticated = computed(() => IS_CONFIGURED ? !!this._currentUser() : true);
