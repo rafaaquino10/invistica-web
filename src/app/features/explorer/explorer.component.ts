@@ -51,6 +51,43 @@ export class ExplorerComponent implements OnInit {
   readonly sortKey = signal<SortKey>('iq_score');
   readonly sortAsc = signal(false);
 
+  readonly quickChips: { label: string; filter: Partial<{ cluster: number; rating: string; minScore: number; minYield: number }> }[] = [
+    { label: 'Score > 70', filter: { minScore: 70 } },
+    { label: 'Compra Forte', filter: { rating: 'STRONG_BUY' } },
+    { label: 'DY > 6%', filter: { minYield: 6 } },
+    { label: 'Financeiro', filter: { cluster: 1 } },
+    { label: 'Commodities', filter: { cluster: 2 } },
+    { label: 'Consumo', filter: { cluster: 3 } },
+    { label: 'TMT', filter: { cluster: 9 } },
+    { label: 'Utilities', filter: { cluster: 4 } },
+  ];
+
+  isChipActive(chip: typeof this.quickChips[0]): boolean {
+    const f = chip.filter;
+    if (f.cluster && this.selectedCluster() === f.cluster) return true;
+    if (f.rating && this.selectedRating() === f.rating) return true;
+    if (f.minScore && this.minScore() >= f.minScore) return true;
+    if (f.minYield && this.minYield() >= f.minYield) return true;
+    return false;
+  }
+
+  toggleChip(chip: typeof this.quickChips[0]): void {
+    const f = chip.filter;
+    if (f.cluster) {
+      this.selectedCluster.set(this.selectedCluster() === f.cluster ? undefined : f.cluster);
+    }
+    if (f.rating) {
+      this.selectedRating.set(this.selectedRating() === f.rating ? undefined : f.rating);
+    }
+    if (f.minScore) {
+      this.minScore.set(this.minScore() >= f.minScore ? 0 : f.minScore);
+    }
+    if (f.minYield) {
+      this.minYield.set(this.minYield() >= f.minYield ? 0 : f.minYield);
+    }
+    this.applyFilters();
+  }
+
   readonly ratingOptions: DropdownOption[] = [
     { label: 'Todos', value: '' },
     { label: 'Compra Forte', value: 'STRONG_BUY' },
@@ -163,6 +200,7 @@ export class ExplorerComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     this.tickerService.listClusters().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(res => {
       this.clusterOptions.set([{ label: 'Todos', value: '' }, ...res.clusters.map(c => ({ label: c.name, value: String(c.cluster_id) }))]);
     });

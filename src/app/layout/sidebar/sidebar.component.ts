@@ -4,7 +4,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 interface NavItem {
   label: string;
   route: string;
-  icon: string;
+  icon: string;       // Phosphor icon class (regular)
+  iconFill: string;   // Phosphor icon class (filled, for active state)
 }
 
 interface NavGroup {
@@ -28,35 +29,34 @@ export class SidebarComponent {
   }
 
   readonly groups: NavGroup[] = [
-    { title: 'COCKPIT', items: [
-      { label: 'Dashboard', route: '/dashboard', icon: 'grid' },
+    { title: 'Cockpit', items: [
+      { label: 'Dashboard', route: '/dashboard', icon: 'ph ph-squares-four', iconFill: 'ph-fill ph-squares-four' },
     ]},
-    { title: 'DESCOBERTA', items: [
-      { label: 'Explorar', route: '/explorar', icon: 'search' },
-      { label: 'Comparar', route: '/comparar', icon: 'columns' },
-      { label: 'Mapa', route: '/mapa', icon: 'map' },
+    { title: 'Descoberta', items: [
+      { label: 'Explorar', route: '/explorar', icon: 'ph ph-compass', iconFill: 'ph-fill ph-compass' },
+      { label: 'Comparar', route: '/comparar', icon: 'ph ph-columns', iconFill: 'ph-fill ph-columns' },
+      { label: 'Mapa', route: '/mapa', icon: 'ph ph-map-trifold', iconFill: 'ph-fill ph-map-trifold' },
     ]},
-    { title: 'PATRIMÔNIO', items: [
-      { label: 'Carteira', route: '/carteira', icon: 'briefcase' },
-      { label: 'Dividendos', route: '/dividendos', icon: 'dollar' },
-      { label: 'Decidir', route: '/decidir', icon: 'scale' },
-      { label: 'Income', route: '/income-planner', icon: 'trending' },
+    { title: 'Patrimonio', items: [
+      { label: 'Carteira', route: '/carteira', icon: 'ph ph-briefcase', iconFill: 'ph-fill ph-briefcase' },
+      { label: 'Dividendos', route: '/dividendos', icon: 'ph ph-currency-dollar', iconFill: 'ph-fill ph-currency-dollar' },
     ]},
-    { title: 'INTELIGÊNCIA', items: [
-      { label: 'Simulador', route: '/simulador', icon: 'sliders' },
-      { label: 'Se eu tivesse', route: '/simulador/comparar', icon: 'rewind' },
-      { label: 'Risk Scanner', route: '/risk-scanner', icon: 'shield' },
-      { label: 'Institucional', route: '/institucional', icon: 'building' },
+    { title: 'Inteligencia', items: [
+      { label: 'Estrategia', route: '/estrategia', icon: 'ph ph-brain', iconFill: 'ph-fill ph-brain' },
+      { label: 'Simulador', route: '/simulador', icon: 'ph ph-chart-line-up', iconFill: 'ph-fill ph-chart-line-up' },
+      { label: 'Risk Scanner', route: '/risk-scanner', icon: 'ph ph-shield-warning', iconFill: 'ph-fill ph-shield-warning' },
+      { label: 'Backtest', route: '/backtest', icon: 'ph ph-clock-counter-clockwise', iconFill: 'ph-fill ph-clock-counter-clockwise' },
     ]},
-    { title: 'MONITORAMENTO', items: [
-      { label: 'Radar', route: '/radar', icon: 'radio' },
-      { label: 'Macro', route: '/macro', icon: 'activity' },
-    ]},
-    { title: 'AVANÇADO', items: [
-      { label: 'Backtest', route: '/backtest', icon: 'clock' },
-      { label: 'Analytics', route: '/analytics', icon: 'bar-chart' },
+    { title: 'Monitoramento', items: [
+      { label: 'Radar', route: '/radar', icon: 'ph ph-broadcast', iconFill: 'ph-fill ph-broadcast' },
+      { label: 'Macro', route: '/macro', icon: 'ph ph-chart-bar', iconFill: 'ph-fill ph-chart-bar' },
     ]},
   ];
 
-  readonly settingsItem: NavItem = { label: 'Config', route: '/configuracoes', icon: 'settings' };
+  readonly settingsItem: NavItem = {
+    label: 'Config',
+    route: '/configuracoes',
+    icon: 'ph ph-gear',
+    iconFill: 'ph-fill ph-gear',
+  };
 }

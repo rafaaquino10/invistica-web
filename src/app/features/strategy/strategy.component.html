@@ -1,0 +1,242 @@
+@if (loading()) {
+  <div class="strat">
+    <iq-skeleton variant="rect" width="100%" height="48px" />
+    <div class="strat__grid">
+      <iq-skeleton variant="rect" width="100%" height="400px" />
+      <iq-skeleton variant="rect" width="100%" height="400px" />
+    </div>
+  </div>
+} @else {
+  <div class="strat" [class.strat--ready]="ready()">
+
+    <!-- Header -->
+    <div class="strat__header anim-item" style="--anim-order: 0">
+      <div class="strat__header-left">
+        <h1 class="strat__title">Motor Autonomo</h1>
+        <span class="strat__subtitle">Alocacao otima gerada pelo IQ-Cognit</span>
+      </div>
+      <div class="strat__header-right">
+        @if (rec()?.date) {
+          <span class="strat__date">Atualizado: {{ rec()!.date }}</span>
+        }
+      </div>
+    </div>
+
+    <!-- Tab Switcher -->
+    <div class="strat__tabs anim-item" style="--anim-order: 1">
+      <button class="strat__tab" [class.strat__tab--active]="activeTab() === 'recommendation'" (click)="setTab('recommendation')">
+        Carteira Otima
+      </button>
+      <button class="strat__tab" [class.strat__tab--active]="activeTab() === 'signals'" (click)="setTab('signals')">
+        Sinais
+        @if (signalCounts().buy > 0) {
+          <span class="strat__tab-badge strat__tab-badge--buy">{{ signalCounts().buy }}</span>
+        }
+      </button>
+      <button class="strat__tab" [class.strat__tab--active]="activeTab() === 'shorts'" (click)="setTab('shorts')">
+        Short Candidates
+        @if ((shorts()?.n_candidates ?? 0) > 0) {
+          <span class="strat__tab-badge strat__tab-badge--sell">{{ shorts()!.n_candidates }}</span>
+        }
+      </button>
+    </div>
+
+    <div class="strat__grid">
+
+      <!-- Main Column -->
+      <div class="strat__main anim-item" style="--anim-order: 2">
+
+        @switch (activeTab()) {
+
+          <!-- TAB: Carteira Otima -->
+          @case ('recommendation') {
+            @if (rec(); as r) {
+              <!-- Summary Bar -->
+              <div class="strat__summary">
+                <div class="strat__summary-item">
+                  <span class="strat__summary-label">Exposicao</span>
+                  <span class="strat__summary-val acid">{{ r.total_exposure }}</span>
+                </div>
+                <div class="strat__summary-item">
+                  <span class="strat__summary-label">Caixa</span>
+                  <span class="strat__summary-val">{{ r.cash_weight }}</span>
+                </div>
+                <div class="strat__summary-item">
+                  <span class="strat__summary-label">Oportunidades</span>
+                  <span class="strat__summary-val">{{ r.n_opportunities }}</span>
+                </div>
+                <div class="strat__summary-item">
+                  <span class="strat__summary-label">Posicoes</span>
+                  <span class="strat__summary-val">{{ r.long_positions.length }}</span>
+                </div>
+              </div>
+
+              <!-- Positions -->
+              @for (pos of r.long_positions; track pos.ticker; let i = $index) {
+                <a class="pos-card" [routerLink]="'/ativo/' + pos.ticker" [style.--pos-order]="i">
+                  <div class="pos-card__left">
+                    <span class="pos-card__rank">{{ i + 1 }}</span>
+                    <div class="pos-card__info">
+                      <span class="pos-card__ticker">{{ pos.ticker }}</span>
+                      <span class="pos-card__badge" [class]="ratingClass(pos.rating)">{{ ratingLabel(pos.rating) }}</span>
+                    </div>
+                  </div>
+                  <div class="pos-card__center">
+                    <div class="pos-card__metric">
+                      <span class="pos-card__metric-label">IQ Score</span>
+                      <span class="pos-card__metric-val" [style.color]="scoreColor(pos.iq_score)">{{ pos.iq_score }}</span>
+                    </div>
+                    <div class="pos-card__metric">
+                      <span class="pos-card__metric-label">Peso</span>
+                      <span class="pos-card__metric-val acid">{{ pos.weight }}</span>
+                    </div>
+                    <div class="pos-card__metric">
+                      <span class="pos-card__metric-label">Margem</span>
+                      <span class="pos-card__metric-val positive">{{ pos.margin_of_safety }}</span>
+                    </div>
+                    <div class="pos-card__metric">
+                      <span class="pos-card__metric-label">Opp Score</span>
+                      <span class="pos-card__metric-val">{{ pos.opportunity_score.toFixed(1) }}</span>
+                    </div>
+                  </div>
+                  <div class="pos-card__right">
+                    <span class="pos-card__reason">{{ pos.reason }}</span>
+                  </div>
+                </a>
+              }
+
+              <!-- Decisions Log -->
+              @if (r.decisions.length > 0) {
+                <details class="strat__decisions">
+                  <summary class="strat__decisions-title">Log de decisoes ({{ r.decisions.length }})</summary>
+                  <div class="strat__decisions-list">
+                    @for (d of r.decisions; track d) {
+                      <span class="strat__decision">{{ d }}</span>
+                    }
+                  </div>
+                </details>
+              }
+            } @else {
+              <iq-empty-state title="Motor indisponivel" description="A recomendacao do motor autonomo nao esta disponivel no momento." />
+            }
+          }
+
+          <!-- TAB: Sinais -->
+          @case ('signals') {
+            @if (signals(); as s) {
+              <div class="signals-summary">
+                <span class="signals-count signals-count--buy">{{ s.n_buy }} Comprar</span>
+                <span class="signals-count signals-count--hold">{{ s.n_hold }} Manter</span>
+                <span class="signals-count signals-count--sell">{{ s.n_sell }} Vender</span>
+              </div>
+              @for (sig of s.signals; track sig.ticker) {
+                <a class="signal-row" [routerLink]="'/ativo/' + sig.ticker">
+                  <span class="signal-row__action" [class]="actionClass(sig.action)">{{ actionLabel(sig.action) }}</span>
+                  <span class="signal-row__ticker">{{ sig.ticker }}</span>
+                  <span class="signal-row__reason">{{ sig.reason }}</span>
+                </a>
+              }
+              @if (s.signals.length === 0) {
+                <iq-empty-state title="Sem sinais" description="Nenhum sinal ativo no momento." />
+              }
+            } @else {
+              <iq-empty-state title="Sinais indisponiveis" />
+            }
+          }
+
+          <!-- TAB: Short Candidates -->
+          @case ('shorts') {
+            @if (shorts(); as sh) {
+              @if (!sh.short_recommended) {
+                <div class="short-warning">
+                  <span class="short-warning__icon">!</span>
+                  <span>Regime atual ({{ sh.regime }}) nao favorece posicoes short. Considere apenas para hedge.</span>
+                </div>
+              }
+              @for (c of sh.candidates; track c.ticker) {
+                <a class="short-card" [routerLink]="'/ativo/' + c.ticker">
+                  <span class="short-card__ticker">{{ c.ticker }}</span>
+                  <span class="short-card__score" [style.color]="scoreColor(c.iq_score)">{{ c.iq_score }}</span>
+                  <span class="short-card__badge badge--avoid">{{ ratingLabel(c.rating) }}</span>
+                  <span class="short-card__margin negative">{{ c.margin_of_safety }}</span>
+                  <span class="short-card__reason">{{ c.reason }}</span>
+                </a>
+              }
+              @if (sh.candidates.length === 0) {
+                <iq-empty-state title="Nenhum candidato" description="Nenhum ativo atende os criterios de short no momento." />
+              }
+            } @else {
+              <iq-empty-state title="Short indisponivel" />
+            }
+          }
+        }
+      </div>
+
+      <!-- Sidebar: Risk Status -->
+      <div class="strat__side anim-item" style="--anim-order: 3">
+        @if (risk(); as r) {
+          <!-- Regime Card -->
+          <div class="risk-card">
+            <span class="risk-card__label">Regime Macro</span>
+            <span class="risk-card__value" [style.color]="regimeColor()">{{ regimeLabel() }}</span>
+            <div class="risk-card__row">
+              <span>SELIC {{ r.selic }}</span>
+              <span>IPCA {{ r.ipca }}</span>
+            </div>
+          </div>
+
+          <!-- Volatility Card -->
+          <div class="risk-card">
+            <span class="risk-card__label">Volatilidade</span>
+            <div class="risk-card__gauge">
+              <div class="risk-gauge">
+                <div class="risk-gauge__fill" [style.width.%]="Math.min(r.vol_stress.ratio * 50, 100)" [style.background]="volStressColor()"></div>
+              </div>
+              <span class="risk-card__status" [style.color]="volStressColor()">{{ volStressLabel() }}</span>
+            </div>
+            <div class="risk-card__row">
+              <span>21d: {{ r.vol_stress.vol_21d }}</span>
+              <span>252d: {{ r.vol_stress.vol_252d }}</span>
+            </div>
+            <div class="risk-card__row">
+              <span>Ratio: {{ r.vol_stress.ratio.toFixed(2) }}x</span>
+              <span>Mult: {{ r.vol_stress.exposure_multiplier.toFixed(2) }}x</span>
+            </div>
+          </div>
+
+          <!-- Confidence Card -->
+          <div class="risk-card">
+            <span class="risk-card__label">Confianca do Motor</span>
+            <div class="risk-card__gauge">
+              <div class="risk-gauge">
+                <div class="risk-gauge__fill risk-gauge__fill--confidence" [style.width.%]="confidencePct()"></div>
+              </div>
+              <span class="risk-card__pct">{{ confidencePct() }}%</span>
+            </div>
+            <div class="risk-card__row">
+              <span>Hit Rate: {{ r.confidence.hit_rate }}</span>
+              <span>Decisoes: {{ r.confidence.total_decisions }}</span>
+            </div>
+            @if (r.confidence.forced_low) {
+              <span class="risk-card__alert">Confianca forcada baixa — drawdown recente {{ r.confidence.recent_dd }}</span>
+            }
+          </div>
+
+          <!-- Exposure Card -->
+          <div class="risk-card">
+            <span class="risk-card__label">Exposicao Alvo</span>
+            <span class="risk-card__value acid">{{ rec()?.total_exposure ?? '—' }}</span>
+            <span class="risk-card__sub">Caixa: {{ rec()?.cash_weight ?? '—' }}</span>
+          </div>
+        } @else {
+          <div class="risk-card">
+            <span class="risk-card__label">Risk Status</span>
+            <span class="risk-card__sub">Indisponivel no momento</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <iq-disclaimer />
+  </div>
+}

@@ -35,6 +35,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/checkout-page/checkout-pendente.component').then(m => m.CheckoutPendenteComponent),
   },
 
+  // ── Onboarding (authenticated, outside shell) ──
+  {
+    path: 'onboarding',
+    loadComponent: () => import('./features/onboarding/onboarding.component').then(m => m.OnboardingComponent),
+    canActivate: [authGuard],
+  },
+
   // ── Shell (authenticated) ──
   {
     path: '',
@@ -91,6 +98,11 @@ export const routes: Routes = [
       },
 
       // Inteligência
+      {
+        path: 'estrategia',
+        loadComponent: () => import('./features/strategy/strategy.component').then(m => m.StrategyComponent),
+        canActivate: [planGuard],
+      },
       {
         path: 'simulador',
         loadComponent: () => import('./features/scenario-simulator/scenario-simulator.component').then(m => m.ScenarioSimulatorComponent),

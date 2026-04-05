@@ -24,6 +24,11 @@
 }
 .macro__ind-label { font-size: t.$text-xs; color: var(--text-tertiary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
 .macro__ind-val { font-size: t.$text-xl; font-weight: 700; color: var(--text-primary); }
+.macro__ind-gauge {
+  height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; width: 80%; margin: 0 auto;
+}
+.macro__ind-gauge-fill { height: 100%; border-radius: 2px; transition: width 600ms ease-out; }
+.macro__ind-context { font-size: 10px; color: var(--text-quaternary); }
 
 .macro__kill {
   margin-top: var(--space-4); font-size: t.$text-sm; font-weight: 700; color: var(--negative);

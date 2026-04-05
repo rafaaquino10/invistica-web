@@ -53,6 +53,7 @@ export class MacroPageComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     forkJoin({
       rotation: this.analyticsService.getSectorRotation().pipe(catchError(() => of(null))),
       focus: this.tickerService.getFocusExpectations().pipe(catchError(() => of({ expectations: [] }))),

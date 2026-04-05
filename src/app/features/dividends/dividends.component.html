@@ -20,6 +20,22 @@
     <!-- CALENDÁRIO -->
     @if (activeTab() === 'calendario') {
       <div class="divs__section">
+        <!-- Mini Calendar Visual -->
+        @if (calendarDays().length > 0) {
+          <div class="divs__mini-cal">
+            <span class="divs__mini-cal-label">Proximos ex-dates no mes</span>
+            <div class="divs__mini-cal-grid">
+              @for (d of calendarDays(); track d.day) {
+                <div class="divs__mini-cal-day" [class.divs__mini-cal-day--event]="d.hasEvent"
+                     [title]="d.hasEvent ? d.tickers.join(', ') : ''">
+                  <span class="divs__mini-cal-num">{{ d.day }}</span>
+                  @if (d.hasEvent) { <span class="divs__mini-cal-dot"></span> }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
         @if (calendar().length > 0) {
           <div class="divs__table-wrap">
             <table class="divs__table">
@@ -102,6 +118,10 @@
           @if (summaryBars().length > 0) {
             <h3 class="divs__subtitle">Recebido por Ativo</h3>
             <iq-bar-chart [data]="summaryBars()" color="var(--positive)" />
+          }
+          @if (projectionBars().length > 0) {
+            <h3 class="divs__subtitle" style="margin-top: 24px">Projecao 12 Meses</h3>
+            <iq-bar-chart [data]="projectionBars()" color="var(--info)" />
           }
         } @else {
           <iq-empty-state title="Sem dados de resumo" description="Adicione posições à carteira para ver o resumo." />

@@ -61,8 +61,21 @@ export class PortfolioComponent implements OnInit {
   readonly editAvgPrice = signal(0);
 
   readonly sectorDonut = signal<DonutSlice[]>([]);
+  readonly smartContrib = signal<any>(null);
+  readonly smartAmount = signal(1000);
+  readonly loadingSmart = signal(false);
 
   private readonly COLORS = ['#3D3D3A', '#1A7A45', '#3B6B96', '#A07628', '#C23028', '#9C998F', '#6B6960', '#B8B5AD', '#DDD9D2'];
+
+  loadSmartContribution(): void {
+    this.loadingSmart.set(true);
+    this.portfolioService.smartContribution(this.smartAmount())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => { this.smartContrib.set(res); this.loadingSmart.set(false); },
+        error: () => this.loadingSmart.set(false),
+      });
+  }
 
   onSearch(q: string): void {
     if (q.length < 2) { this.searchResults.set([]); return; }
@@ -166,6 +179,7 @@ export class PortfolioComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     this.loadPortfolio();
     // Abrir modal automaticamente se veio com ?add=true
     this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(params => {

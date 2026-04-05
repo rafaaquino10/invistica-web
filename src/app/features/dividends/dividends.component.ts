@@ -46,6 +46,8 @@ export class DividendsComponent implements OnInit {
   readonly simulating = signal(false);
 
   readonly summaryBars = signal<BarDataPoint[]>([]);
+  readonly projectionBars = signal<BarDataPoint[]>([]);
+  readonly calendarDays = signal<{ day: number; hasEvent: boolean; tickers: string[] }[]>([]);
 
   onTabChange(tab: 'calendario' | 'radar' | 'resumo' | 'simulador'): void {
     this.activeTab.set(tab);
@@ -66,6 +68,7 @@ export class DividendsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     forkJoin({
       cal: this.dividendService.getCalendar(30).pipe(catchError(() => of({ days: 30, entries: [] }))),
       radar: this.dividendService.getRadar(70).pipe(catchError(() => of({ min_safety: 70, results: [] }))),
@@ -83,6 +86,33 @@ export class DividendsComponent implements OnInit {
           value: t.total,
         })));
       }
+
+      // Build projection bars
+      if (res.proj?.projections) {
+        this.projectionBars.set(res.proj.projections.map((p: any) => ({
+          label: p.month?.substring(5, 7) ?? '',
+          value: p.projected_value ?? 0,
+        })));
+      }
+
+      // Build calendar day dots
+      const cal = res.cal.entries ?? [];
+      if (cal.length > 0) {
+        const now = new Date();
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const dayMap: Record<number, string[]> = {};
+        cal.forEach(e => {
+          const d = new Date(e.ex_date).getDate();
+          if (!dayMap[d]) dayMap[d] = [];
+          dayMap[d].push(e.ticker);
+        });
+        const days = [];
+        for (let d = 1; d <= daysInMonth; d++) {
+          days.push({ day: d, hasEvent: !!dayMap[d], tickers: dayMap[d] ?? [] });
+        }
+        this.calendarDays.set(days);
+      }
+
       this.loading.set(false);
     });
   }

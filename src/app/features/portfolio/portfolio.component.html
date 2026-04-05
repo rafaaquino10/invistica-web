@@ -83,10 +83,44 @@
         </table>
       </div>
 
+      <!-- SMART CONTRIBUTION -->
+      <div class="port__smart">
+        <div class="port__smart-header">
+          <h3 class="port__card-title">Smart Contribution</h3>
+          <div class="port__smart-input">
+            <span class="port__smart-label">Aporte R$</span>
+            <input class="port__smart-amount mono" type="number"
+                   [ngModel]="smartAmount()" (ngModelChange)="smartAmount.set($event)" min="100" step="100" />
+            <button class="port__smart-btn" [disabled]="loadingSmart()" (click)="loadSmartContribution()">
+              {{ loadingSmart() ? '...' : 'Calcular' }}
+            </button>
+          </div>
+        </div>
+        @if (smartContrib(); as sc) {
+          <div class="port__smart-results">
+            @for (s of sc.suggestions; track s.ticker) {
+              <div class="port__smart-item">
+                <div class="port__smart-item-left">
+                  <iq-ticker-logo [ticker]="s.ticker" [size]="20" />
+                  <span class="port__smart-item-ticker mono">{{ s.ticker }}</span>
+                </div>
+                <div class="port__smart-item-bar-wrap">
+                  <div class="port__smart-item-bar">
+                    <div class="port__smart-item-fill" [style.width.%]="(s.suggested_amount / sc.aporte_total) * 100"></div>
+                  </div>
+                </div>
+                <span class="port__smart-item-val mono">R$ {{ s.suggested_amount.toFixed(0) }}</span>
+                <span class="port__smart-item-reason">{{ s.reason }}</span>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
       <!-- ANALYTICS -->
       <div class="port__analytics">
         <div class="port__analytics-card">
-          <h3 class="port__card-title">Exposição Setorial</h3>
+          <h3 class="port__card-title">Exposicao Setorial</h3>
           <iq-donut-chart [data]="sectorDonut()" />
         </div>
         <div class="port__analytics-card">
