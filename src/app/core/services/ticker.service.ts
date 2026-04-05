@@ -47,11 +47,31 @@ export class TickerService {
   }
 
   getInstitutionalHolders(ticker: string): Observable<InstitutionalHoldersResponse> {
-    return this.api.get(`/tickers/${ticker}/institutional-holders`);
+    return this.api.get<any>(`/tickers/${ticker}/institutional-holders`).pipe(
+      map(res => ({
+        ticker: res.ticker,
+        count: res.count ?? 0,
+        holders: (res.holders ?? []).map((h: any) => ({
+          name: h.fund_name ?? h.name ?? 'N/A',
+          shares: h.shares_held ?? h.shares ?? 0,
+          pct: h.pct ?? 0,
+          change_3m: h.change_3m ?? null,
+        })),
+      })),
+    );
   }
 
   getShortInterest(ticker: string): Observable<ShortInterestResponse> {
-    return this.api.get(`/tickers/${ticker}/short-interest`);
+    return this.api.get<any>(`/tickers/${ticker}/short-interest`).pipe(
+      map(res => ({
+        ticker: res.ticker,
+        short_interest: (res.short_interest ?? []).map((si: any) => ({
+          date: si.reference_date ?? si.date ?? '',
+          short_pct: si.short_pct ?? 0,
+          days_to_cover: si.days_to_cover ?? null,
+        })),
+      })),
+    );
   }
 
   getFocusExpectations(): Observable<FocusExpectationsResponse> {

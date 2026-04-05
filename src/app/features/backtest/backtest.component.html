@@ -68,7 +68,7 @@
 
     <!-- KPIS -->
     <div class="bt__kpis">
-      <div class="bt__kpi">
+      <div class="bt__kpi bt__kpi--hero">
         <span class="bt__kpi-label">Retorno Total</span>
         <span class="bt__kpi-value mono" [class.positive]="(result()!.strategy.total_return ?? 0) >= 0"
               [class.negative]="(result()!.strategy.total_return ?? 0) < 0">
@@ -88,7 +88,7 @@
         <span class="bt__kpi-value mono negative">{{ pct(result()!.strategy.max_drawdown) }}</span>
       </div>
       <div class="bt__kpi">
-        <span class="bt__kpi-label">Turnover Médio</span>
+        <span class="bt__kpi-label">Turnover Medio</span>
         <span class="bt__kpi-value mono">{{ pct(result()!.strategy.turnover_avg) }}</span>
       </div>
       <div class="bt__kpi">
@@ -96,6 +96,22 @@
         <span class="bt__kpi-value mono">{{ result()!.strategy.total_trades ?? '—' }}</span>
       </div>
     </div>
+
+    <!-- ALPHA vs BENCHMARKS -->
+    @if (result()!.benchmarks.length > 0) {
+      <div class="bt__alpha-strip">
+        @for (b of result()!.benchmarks; track b.name) {
+          <div class="bt__alpha-item">
+            <span class="bt__alpha-label">Alpha vs {{ b.name }}</span>
+            <span class="bt__alpha-val mono"
+                  [class.positive]="((result()!.strategy.total_return ?? 0) - (b.total_return ?? 0)) > 0"
+                  [class.negative]="((result()!.strategy.total_return ?? 0) - (b.total_return ?? 0)) < 0">
+              {{ ((result()!.strategy.total_return ?? 0) - (b.total_return ?? 0)) > 0 ? '+' : '' }}{{ (((result()!.strategy.total_return ?? 0) - (b.total_return ?? 0)) * 100).toFixed(2) }}pp
+            </span>
+          </div>
+        }
+      </div>
+    }
 
     <!-- BENCHMARKS TABLE -->
     @if (result()!.benchmarks.length > 0) {
@@ -125,6 +141,18 @@
               }
             </tbody>
           </table>
+        </div>
+      </div>
+    }
+
+    <!-- REBALANCE DATES -->
+    @if (result()!.rebalance_dates?.length) {
+      <div class="bt__card">
+        <h3 class="bt__card-title">Rebalanceamentos ({{ result()!.rebalance_dates.length }})</h3>
+        <div class="bt__rebal-grid">
+          @for (d of result()!.rebalance_dates; track d) {
+            <span class="bt__rebal-date mono">{{ d }}</span>
+          }
         </div>
       </div>
     }

@@ -5,11 +5,13 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { mockInterceptor } from './core/mock/mock.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
+    // Mock interceptor PRIMEIRO — intercepta antes do auth/error
+    provideHttpClient(withInterceptors([mockInterceptor, authInterceptor, errorInterceptor])),
   ],
 };

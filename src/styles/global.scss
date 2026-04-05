@@ -1,5 +1,5 @@
 // ============================================================
-// InvestIQ — Global Stylesheet
+// InvestIQ — Global Stylesheet (Acid Neon Design System)
 // ============================================================
 
 @use 'variables';
@@ -10,10 +10,50 @@
 @use 'mixins';
 
 body {
-  font-family: t.$font-ui;
-  font-size: t.$text-base;
+  font-family: t.$font-family;
+  font-size: t.$font-size-body;
   font-weight: 400;
+  line-height: 1.5;
   color: var(--text-primary);
   background-color: var(--surface-0);
-  transition: background-color var(--duration-normal) var(--ease), color var(--duration-normal) var(--ease);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-variant-numeric: tabular-nums;
 }
+
+// ── NO route transitions (terminal: instant) ──
+router-outlet + * {
+  display: block;
+}
+
+// ── Card base ──
+.card, .iq-card, [class*="__card"] {
+  box-shadow: var(--shadow-sm);
+}
+
+// ── Interactive elements (NO transitions per spec) ──
+a, button, [role="button"] {
+  cursor: pointer;
+}
+
+// ── Table hover ──
+tr:hover td, .table-row:hover {
+  background: var(--surface-2);
+}
+
+// ── Semantic colors ──
+.positive { color: var(--positive); }
+.negative { color: var(--negative); }
+.warning  { color: var(--warning); }
+.acid     { color: var(--acid-dark); }
+
+[data-theme="dark"] .acid { color: var(--acid); }
+
+// ── Score colors ──
+.score-strong-buy { color: var(--positive); }
+.score-buy { color: var(--acid-dark); }
+[data-theme="dark"] .score-buy { color: var(--acid); }
+.score-hold { color: var(--warning); }
+.score-reduce { color: var(--negative); }
+.score-avoid { color: var(--negative); }

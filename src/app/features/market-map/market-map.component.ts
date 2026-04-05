@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit, DestroyRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, of, catchError } from 'rxjs';
@@ -17,7 +17,10 @@ import { IqDisclaimerComponent } from '../../shared/components/iq-disclaimer/iq-
   template: `
     <div class="mmap">
       <div class="mmap__header">
-        <h1 class="mmap__title">Mapa de Mercado</h1>
+        <div class="mmap__header-left">
+          <h1 class="mmap__title">Mapa de Mercado</h1>
+          <span class="mmap__meta">{{ items().length }} ativos · {{ scoredCount() }} com score</span>
+        </div>
         <div class="mmap__toggles">
           @for (opt of colorOptions; track opt.value) {
             <button class="mmap__toggle"
@@ -30,6 +33,19 @@ import { IqDisclaimerComponent } from '../../shared/components/iq-disclaimer/iq-
         <iq-skeleton variant="rect" width="100%" height="500px" />
       } @else {
         <iq-treemap [data]="items()" [colorBy]="colorBy()" (itemClick)="onItemClick($event)" />
+        <div class="mmap__legend">
+          @if (colorBy() === 'score') {
+            <span class="mmap__legend-item"><span class="mmap__legend-dot" style="background: var(--negative)"></span> 0-29 Evitar</span>
+            <span class="mmap__legend-item"><span class="mmap__legend-dot" style="background: var(--warning)"></span> 30-69 Manter</span>
+            <span class="mmap__legend-item"><span class="mmap__legend-dot" style="background: var(--obsidian)"></span> 70-81 Acumular</span>
+            <span class="mmap__legend-item"><span class="mmap__legend-dot" style="background: var(--positive)"></span> 82+ Compra Forte</span>
+          }
+          @if (colorBy() === 'change') {
+            <span class="mmap__legend-item"><span class="mmap__legend-dot" style="background: var(--negative)"></span> Negativo</span>
+            <span class="mmap__legend-item"><span class="mmap__legend-dot" style="background: var(--text-quaternary)"></span> Neutro</span>
+            <span class="mmap__legend-item"><span class="mmap__legend-dot" style="background: var(--positive)"></span> Positivo</span>
+          }
+        </div>
       }
       <iq-disclaimer />
     </div>
@@ -37,7 +53,9 @@ import { IqDisclaimerComponent } from '../../shared/components/iq-disclaimer/iq-
   styles: [`
     .mmap { max-width: 1440px; margin: 0 auto; }
     .mmap__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .mmap__header-left { display: flex; flex-direction: column; gap: 2px; }
     .mmap__title { font-size: 1.5rem; font-weight: 600; color: var(--text-primary); }
+    .mmap__meta { font-size: 12px; color: var(--text-quaternary); }
     .mmap__toggles { display: flex; gap: 2px; }
     .mmap__toggle {
       border: none; background: transparent; padding: 6px 12px;
@@ -46,6 +64,9 @@ import { IqDisclaimerComponent } from '../../shared/components/iq-disclaimer/iq-
     }
     .mmap__toggle:hover { color: var(--text-primary); background: var(--surface-2); }
     .mmap__toggle--active { color: var(--obsidian); background: var(--obsidian-bg); font-weight: 600; }
+    .mmap__legend { display: flex; gap: 20px; margin-top: 12px; padding-top: 8px; }
+    .mmap__legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-tertiary); }
+    .mmap__legend-dot { width: 10px; height: 10px; border-radius: 2px; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -59,6 +80,8 @@ export class MarketMapComponent implements OnInit {
   readonly items = signal<TreemapItem[]>([]);
   readonly colorBy = signal<'change' | 'score' | 'sector'>('change');
 
+  readonly scoredCount = computed(() => this.items().filter(i => i.score > 0).length);
+
   readonly colorOptions = [
     { label: 'Variação', value: 'change' as const },
     { label: 'IQ-Score', value: 'score' as const },
@@ -70,6 +93,7 @@ export class MarketMapComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     this.scoreService.screener({ limit: 200 })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(res => {

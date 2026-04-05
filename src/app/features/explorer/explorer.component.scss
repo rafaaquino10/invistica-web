@@ -12,6 +12,61 @@
 .explorer__slider-wrap { display: flex; flex-direction: column; gap: 4px; min-width: 130px; }
 .explorer__slider-label { font-size: t.$text-xs; color: var(--text-tertiary); }
 
+// Quick Chips
+.explorer__chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+.explorer__chip {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 2px;
+  border: 1px solid var(--border-default);
+  background: var(--surface-1);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 150ms ease;
+
+  &:hover {
+    border-color: var(--obsidian);
+    color: var(--text-primary);
+  }
+}
+.explorer__chip--active {
+  background: var(--obsidian);
+  color: #fff;
+  border-color: var(--obsidian);
+
+  [data-theme="dark"] & {
+    background: var(--surface-3);
+    color: var(--text-primary);
+    border-color: var(--surface-3);
+  }
+}
+
+// Score bar cell
+.score-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.score-cell__val { font-weight: 700; font-size: t.$text-base; }
+.score-cell__bar {
+  width: 48px;
+  height: 3px;
+  background: var(--surface-3);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.score-cell__fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 400ms ease-out;
+}
+
 .explorer__meta {
   font-size: t.$text-xs; color: var(--text-tertiary); margin-bottom: var(--space-2);
 }
@@ -45,3 +100,9 @@
 
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
+
+// RESPONSIVE
+@media (max-width: 767px) {
+  .explorer__filters { padding: var(--space-3); }
+  .explorer__table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}

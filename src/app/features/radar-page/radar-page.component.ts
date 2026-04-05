@@ -125,6 +125,7 @@ export class RadarPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     this.loadFeed('all');
     this.radarService.getAlerts().pipe(
       catchError(() => of([])),

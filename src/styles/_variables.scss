@@ -1,49 +1,51 @@
 // ============================================================
-// InvestIQ Design System — Variables & Tokens
+// InvestIQ Design System — Variables & Tokens (Acid Neon)
 // ============================================================
 
 :root {
+  // ── ACID NEON (BRAND) ──
+  --acid: #D4E500;
+  --acid-dark: #6B7200;
+  --acid-bg: rgba(212, 229, 0, 0.10);
+  --acid-bg-dark: rgba(212, 229, 0, 0.08);
+
   // ── SURFACES ──
-  --surface-0: #F8F7F4;
+  --surface-0: #FAFAF6;
   --surface-1: #FFFFFF;
-  --surface-2: #F2F1EE;
-  --surface-3: #E8E6E1;
-  --surface-4: #DDD9D2;
+  --surface-2: #F5F5F0;
+  --surface-3: #EEEEE8;
+  --border: #E0DFD8;
+  --border-subtle: #ECECE6;
 
   // ── TEXT ──
-  --text-primary: #141413;
-  --text-secondary: #4A4840;
-  --text-tertiary: #76746A;
-  --text-quaternary: #A09D95;
-
-  // ── BRAND ──
-  --obsidian: #3D3D3A;
-  --obsidian-bg: rgba(61, 61, 58, 0.05);
-  --obsidian-border: rgba(61, 61, 58, 0.15);
+  --text-primary: #111110;
+  --text-secondary: #52524A;
+  --text-tertiary: #888880;
+  --text-quaternary: #BBBBAA;
 
   // ── SEMANTIC ──
-  --positive: #1A7A45;
-  --positive-bg: rgba(26, 122, 69, 0.06);
-  --positive-border: rgba(26, 122, 69, 0.15);
+  --positive: #16A34A;
+  --positive-bg: rgba(22, 163, 74, 0.08);
+  --positive-border: rgba(22, 163, 74, 0.12);
 
-  --negative: #C23028;
-  --negative-bg: rgba(194, 48, 40, 0.05);
-  --negative-border: rgba(194, 48, 40, 0.15);
+  --negative: #DC2626;
+  --negative-bg: rgba(220, 38, 38, 0.06);
+  --negative-border: rgba(220, 38, 38, 0.15);
 
-  --warning: #A07628;
-  --warning-bg: rgba(160, 118, 40, 0.06);
-  --warning-border: rgba(160, 118, 40, 0.15);
+  --warning: #A16207;
+  --warning-bg: rgba(161, 98, 7, 0.08);
+  --warning-border: rgba(161, 98, 7, 0.15);
 
   --info: #3B6B96;
   --info-bg: rgba(59, 107, 150, 0.06);
   --info-border: rgba(59, 107, 150, 0.15);
 
-  // ── BORDERS ──
-  --border-default: #E0DDD6;
+  // ── BORDERS (legacy compat) ──
+  --border-default: var(--border);
   --border-hover: #D4D1C9;
-  --border-focus: #3D3D3A;
+  --border-focus: #111110;
 
-  // ── SPACING (8px base grid) ──
+  // ── SPACING (4px base) ──
   --space-1: 0.25rem;   // 4px
   --space-2: 0.5rem;    // 8px
   --space-3: 0.75rem;   // 12px
@@ -57,71 +59,77 @@
   // ── RADIUS ──
   --radius: 2px;
 
-  // ── TRANSITIONS ──
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --duration-fast: 120ms;
-  --duration-normal: 200ms;
-
   // ── SHADOWS ──
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  // ── BUTTONS ──
+  --btn-primary-bg: #D4E500;
+  --btn-primary-text: #111110;
+  --btn-primary-hover: #C8D800;
+
+  // ── LOGO ──
+  --logo-bg: transparent;
+  --logo-text: var(--acid-dark);
+
+  // ── AVATAR ──
+  --avatar-bg: #111110;
+  --avatar-text: #FAFAF6;
+
+  // ── EASE (for charts only) ──
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast: 0ms;
+  --duration-normal: 0ms;
 }
 
 // ── DARK MODE ──
 [data-theme="dark"] {
-  --surface-0: #07080A;
-  --surface-1: #0D0E12;
-  --surface-2: #15161C;
-  --surface-3: #1E1F27;
-  --surface-4: #2A2B35;
+  --acid: #D4E500;
+  --acid-dark: #D4E500;
+  --acid-bg: rgba(212, 229, 0, 0.08);
+  --acid-bg-dark: rgba(212, 229, 0, 0.06);
 
-  --text-primary: #E8E6E1;
-  --text-secondary: #A09D95;
-  --text-tertiary: #6B6960;
-  --text-quaternary: #4A4840;
+  --surface-0: #08080A;
+  --surface-1: #0E0E10;
+  --surface-2: #141416;
+  --surface-3: #1A1A1E;
+  --border: #1E1E18;
+  --border-subtle: #161614;
 
-  --obsidian: #D4D3D0;
-  --obsidian-bg: rgba(212, 211, 208, 0.08);
-  --obsidian-border: rgba(212, 211, 208, 0.12);
+  --text-primary: #E8E8E0;
+  --text-secondary: #A0A098;
+  --text-tertiary: #666660;
+  --text-quaternary: #444440;
 
-  --positive: #3DB87A;
-  --positive-bg: rgba(61, 184, 122, 0.10);
-  --positive-border: rgba(61, 184, 122, 0.20);
+  --positive: #4ADE80;
+  --positive-bg: rgba(74, 222, 128, 0.10);
+  --positive-border: rgba(74, 222, 128, 0.20);
 
-  --negative: #E05248;
-  --negative-bg: rgba(224, 82, 72, 0.10);
-  --negative-border: rgba(224, 82, 72, 0.20);
+  --negative: #F87171;
+  --negative-bg: rgba(248, 113, 113, 0.08);
+  --negative-border: rgba(248, 113, 113, 0.15);
 
-  --warning: #E0A540;
-  --warning-bg: rgba(224, 165, 64, 0.10);
-  --warning-border: rgba(224, 165, 64, 0.20);
+  --warning: #FBBF24;
+  --warning-bg: rgba(251, 191, 36, 0.10);
+  --warning-border: rgba(251, 191, 36, 0.15);
 
-  --info: #6B9FCC;
-  --info-bg: rgba(107, 159, 204, 0.10);
-  --info-border: rgba(107, 159, 204, 0.20);
+  --info: #60A5E9;
+  --info-bg: rgba(96, 165, 233, 0.10);
+  --info-border: rgba(96, 165, 233, 0.15);
 
-  --border-default: #22232C;
-  --border-hover: #2E2F3A;
-  --border-focus: #D4D3D0;
+  --border-default: var(--border);
+  --border-hover: #2A2A24;
+  --border-focus: #E8E8E0;
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.15);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
 
-  // ── Dark-specific overrides ──
-  --logo-bg: #D4D3D0;
-  --logo-text: #07080A;
-  --btn-primary-bg: #D4D3D0;
-  --btn-primary-text: #07080A;
-  --avatar-bg: #D4D3D0;
-  --avatar-text: #07080A;
-}
+  --btn-primary-bg: #D4E500;
+  --btn-primary-text: #08080A;
+  --btn-primary-hover: #C8D800;
 
-// Light mode defaults for dark-specific vars
-:root {
-  --logo-bg: #3D3D3A;
-  --logo-text: #FFFFFF;
-  --btn-primary-bg: #3D3D3A;
-  --btn-primary-text: #FFFFFF;
-  --avatar-bg: #3D3D3A;
-  --avatar-text: #FFFFFF;
+  --logo-text: #D4E500;
+
+  --avatar-bg: #D4E500;
+  --avatar-text: #08080A;
 }

@@ -1,14 +1,10 @@
-import { CanActivateFn, Router } from '@angular/router';
-import { inject } from '@angular/core';
-import { map, catchError, of } from 'rxjs';
-import { ApiService } from '../services/api.service';
+import { CanActivateFn } from '@angular/router';
 
-interface BillingStatus {
-  plan: string;
-  active: boolean;
-}
-
+/**
+ * Plan guard — all features are free during early access.
+ * When billing is activated, this should check the user's plan
+ * and redirect to an upgrade page if the feature requires Pro.
+ */
 export const planGuard: CanActivateFn = () => {
-  // TODO: reativar quando billing estiver configurado
   return true;
 };

@@ -20,12 +20,46 @@
   &::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--obsidian); }
 }
 
-.radar__feed-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.radar__feed-list {
+  display: flex; flex-direction: column; gap: 0;
+  position: relative;
+  padding-left: 20px;
+
+  // Timeline connector line
+  &::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--border-default);
+  }
+}
 
 .radar__card {
   padding: var(--space-3) var(--space-4); border-left: 3px solid;
   background: var(--surface-1); border-radius: var(--radius);
   border-top: 1px solid var(--border-default); border-right: 1px solid var(--border-default); border-bottom: 1px solid var(--border-default);
+  margin-bottom: var(--space-2);
+  position: relative;
+  transition: box-shadow 150ms ease;
+
+  &:hover { box-shadow: var(--shadow-sm); }
+
+  // Timeline dot
+  &::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 14px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--surface-1);
+    border: 2px solid;
+    border-color: inherit;
+  }
 }
 .radar__card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
 .radar__tag { font-size: t.$text-xs; font-weight: 700; letter-spacing: 0.04em; }
@@ -67,3 +101,10 @@
   &:focus { border-color: var(--border-focus); }
 }
 .radar__form-selected { font-size: t.$text-sm; font-weight: 600; color: var(--obsidian); margin-top: 2px; }
+
+// RESPONSIVE
+@media (max-width: 767px) {
+  .radar__layout { grid-template-columns: 1fr; }
+  .radar__alerts { position: static; }
+  .radar__filters { overflow-x: auto; }
+}

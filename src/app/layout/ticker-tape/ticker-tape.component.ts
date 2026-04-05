@@ -2,7 +2,6 @@ import { Component, ChangeDetectionStrategy, signal, inject, OnInit, DestroyRef 
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, of, forkJoin } from 'rxjs';
-import { IqTickerLogoComponent } from '../../shared/components/iq-ticker-logo/iq-ticker-logo.component';
 import { TickerService } from '../../core/services/ticker.service';
 
 interface TapeItem {
@@ -20,7 +19,7 @@ const TOP_TICKERS = [
 @Component({
   selector: 'iq-ticker-tape',
   standalone: true,
-  imports: [IqTickerLogoComponent, RouterLink],
+  imports: [RouterLink],
   templateUrl: './ticker-tape.component.html',
   styleUrl: './ticker-tape.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

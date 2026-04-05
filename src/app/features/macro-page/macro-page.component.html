@@ -14,23 +14,43 @@
         </div>
         <p class="macro__regime-desc">{{ regime()!.description }}</p>
 
-        <!-- INDICATORS -->
+        <!-- INDICATORS with mini gauge bars -->
         <div class="macro__indicators">
           <div class="macro__ind">
             <span class="macro__ind-label">SELIC</span>
             <span class="macro__ind-val mono">{{ regime()!.macro.selic }}%</span>
+            <div class="macro__ind-gauge">
+              <div class="macro__ind-gauge-fill" [style.width.%]="regime()!.macro.selic * 100 / 20"
+                   [style.background]="regime()!.macro.selic > 12 ? 'var(--negative)' : regime()!.macro.selic > 8 ? 'var(--warning)' : 'var(--positive)'"></div>
+            </div>
+            <span class="macro__ind-context">{{ regime()!.macro.selic > 12 ? 'Restritivo' : regime()!.macro.selic > 8 ? 'Neutro' : 'Estimulativo' }}</span>
           </div>
           <div class="macro__ind">
             <span class="macro__ind-label">IPCA</span>
             <span class="macro__ind-val mono">{{ regime()!.macro.ipca }}%</span>
+            <div class="macro__ind-gauge">
+              <div class="macro__ind-gauge-fill" [style.width.%]="regime()!.macro.ipca * 100 / 15"
+                   [style.background]="regime()!.macro.ipca > 6 ? 'var(--negative)' : regime()!.macro.ipca > 4 ? 'var(--warning)' : 'var(--positive)'"></div>
+            </div>
+            <span class="macro__ind-context">Meta: 3,0% (1,5%-4,5%)</span>
           </div>
           <div class="macro__ind">
             <span class="macro__ind-label">USD/BRL</span>
             <span class="macro__ind-val mono">R$ {{ regime()!.macro.cambio_usd.toFixed(2) }}</span>
+            <div class="macro__ind-gauge">
+              <div class="macro__ind-gauge-fill" [style.width.%]="regime()!.macro.cambio_usd * 100 / 8"
+                   [style.background]="regime()!.macro.cambio_usd > 5.5 ? 'var(--negative)' : regime()!.macro.cambio_usd > 5 ? 'var(--warning)' : 'var(--positive)'"></div>
+            </div>
+            <span class="macro__ind-context">{{ regime()!.macro.cambio_usd > 5.5 ? 'Real depreciado' : 'Estavel' }}</span>
           </div>
           <div class="macro__ind">
             <span class="macro__ind-label">Brent</span>
             <span class="macro__ind-val mono">US$ {{ regime()!.macro.brent.toFixed(2) }}</span>
+            <div class="macro__ind-gauge">
+              <div class="macro__ind-gauge-fill" [style.width.%]="regime()!.macro.brent * 100 / 120"
+                   [style.background]="regime()!.macro.brent > 90 ? 'var(--negative)' : regime()!.macro.brent > 70 ? 'var(--warning)' : 'var(--positive)'"></div>
+            </div>
+            <span class="macro__ind-context">{{ regime()!.macro.brent > 90 ? 'Elevado' : regime()!.macro.brent > 70 ? 'Normal' : 'Baixo' }}</span>
           </div>
         </div>
 

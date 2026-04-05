@@ -1,0 +1,120 @@
+<div class="onb">
+  <!-- Progress Bar -->
+  <div class="onb__progress">
+    @for (s of [1, 2, 3]; track s) {
+      <div class="onb__step" [class.onb__step--active]="step() >= s" [class.onb__step--current]="step() === s">
+        <span class="onb__step-num">{{ s }}</span>
+        <span class="onb__step-label">{{ s === 1 ? 'Perfil' : s === 2 ? 'Ativos' : 'Pronto' }}</span>
+      </div>
+      @if (s < 3) { <div class="onb__step-line" [class.onb__step-line--done]="step() > s"></div> }
+    }
+  </div>
+
+  <!-- Content -->
+  <div class="onb__content">
+
+    @switch (step()) {
+
+      <!-- STEP 1: Perfil -->
+      @case (1) {
+        <div class="onb__section">
+          <h1 class="onb__title">Bem-vindo ao InvestIQ</h1>
+          <p class="onb__desc">Como voce se descreve como investidor?</p>
+
+          <div class="onb__profiles">
+            @for (p of profiles; track p.id) {
+              <button class="onb__profile" [class.onb__profile--selected]="selectedProfile() === p.id"
+                      (click)="selectProfile(p.id)">
+                <i [class]="p.icon" class="onb__profile-icon"></i>
+                <span class="onb__profile-label">{{ p.label }}</span>
+                <span class="onb__profile-desc">{{ p.desc }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- STEP 2: Adicionar ativos -->
+      @case (2) {
+        <div class="onb__section">
+          <h1 class="onb__title">Adicione seus ativos</h1>
+          <p class="onb__desc">Busque e adicione as acoes que voce possui. Voce pode ajustar depois.</p>
+
+          <div class="onb__search-wrap">
+            <iq-search placeholder="Buscar ticker... ex: PETR4, VALE3" [results]="searchResults()"
+                       [clearOnSelect]="true" (searchChange)="onSearch($event)" (resultSelect)="addTicker($event)" />
+          </div>
+
+          @if (positions().length > 0) {
+            <div class="onb__positions">
+              @for (pos of positions(); track pos.ticker) {
+                <div class="onb__pos">
+                  <div class="onb__pos-left">
+                    <iq-ticker-logo [ticker]="pos.ticker" [size]="28" />
+                    <span class="onb__pos-ticker mono">{{ pos.ticker }}</span>
+                  </div>
+                  <div class="onb__pos-fields">
+                    <div class="onb__pos-field">
+                      <label class="onb__pos-label">Qtd</label>
+                      <input class="onb__pos-input mono" type="number" [ngModel]="pos.quantity"
+                             (ngModelChange)="updateQty(pos.ticker, $event)" min="1" />
+                    </div>
+                    <div class="onb__pos-field">
+                      <label class="onb__pos-label">PM R$</label>
+                      <input class="onb__pos-input mono" type="number" [ngModel]="pos.avg_price"
+                             (ngModelChange)="updatePrice(pos.ticker, $event)" min="0.01" step="0.01" />
+                    </div>
+                  </div>
+                  <button class="onb__pos-remove" (click)="removePosition(pos.ticker)" title="Remover">
+                    <i class="ph ph-x"></i>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+
+          <p class="onb__hint">{{ positions().length }} {{ positions().length === 1 ? 'ativo adicionado' : 'ativos adicionados' }}</p>
+        </div>
+      }
+
+      <!-- STEP 3: Pronto -->
+      @case (3) {
+        <div class="onb__section onb__section--center">
+          <div class="onb__ready-icon">
+            <i class="ph ph-check-circle"></i>
+          </div>
+          <h1 class="onb__title">Tudo pronto!</h1>
+          <p class="onb__desc">
+            @if (positions().length > 0) {
+              {{ positions().length }} {{ positions().length === 1 ? 'ativo sera adicionado' : 'ativos serao adicionados' }} a sua carteira.
+              Seu dashboard personalizado estara pronto em instantes.
+            } @else {
+              Voce pode adicionar ativos a qualquer momento pela pagina da Carteira.
+            }
+          </p>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Footer Actions -->
+  <div class="onb__footer">
+    <div class="onb__footer-left">
+      @if (step() > 1) {
+        <button class="onb__btn-secondary" (click)="prevStep()">Voltar</button>
+      }
+      <button class="onb__btn-skip" (click)="skipTodashboard()">Pular</button>
+    </div>
+    <div class="onb__footer-right">
+      @if (step() < 3) {
+        <iq-button variant="primary" (clicked)="nextStep()" [disabled]="step() === 1 && !selectedProfile()">
+          Continuar
+        </iq-button>
+      } @else {
+        <iq-button variant="primary" [loading]="saving()" (clicked)="finish()">
+          {{ positions().length > 0 ? 'Salvar e ir ao Dashboard' : 'Ir ao Dashboard' }}
+        </iq-button>
+      }
+    </div>
+  </div>
+</div>

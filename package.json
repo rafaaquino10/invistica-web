@@ -17,6 +17,8 @@
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
+    "@fontsource-variable/onest": "^5.2.11",
+    "@phosphor-icons/web": "^2.1.2",
     "@supabase/supabase-js": "^2.101.0",
     "d3": "^7.9.0",
     "lightweight-charts": "^5.1.0",

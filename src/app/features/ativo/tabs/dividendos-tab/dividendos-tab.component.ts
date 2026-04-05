@@ -91,9 +91,10 @@ export class DividendosTabComponent implements OnInit {
   readonly trap = signal<TrapRisk | null>(null);
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     const t = this.ticker(); if (!t) return; // direct call
     of(t).pipe(
-      
+
       switchMap(t => forkJoin({
         divs: this.tickerService.getDividends(t).pipe(catchError(() => of({ ticker: t, dividends: [] }))),
         safety: this.dividendService.getSafety(t).pipe(catchError(() => of(null))),

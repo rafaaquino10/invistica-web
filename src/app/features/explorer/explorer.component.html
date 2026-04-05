@@ -1,15 +1,24 @@
 <div class="explorer">
   <h1 class="explorer__title">Explorar</h1>
 
+  <!-- Quick Chips -->
+  <div class="explorer__chips">
+    @for (chip of quickChips; track chip.label) {
+      <button class="explorer__chip"
+              [class.explorer__chip--active]="isChipActive(chip)"
+              (click)="toggleChip(chip)">{{ chip.label }}</button>
+    }
+  </div>
+
   <div class="explorer__filters">
     <iq-dropdown [options]="clusterOptions()" placeholder="Setor" (selectionChange)="onClusterChange($event)" />
     <iq-dropdown [options]="ratingOptions" placeholder="Rating" (selectionChange)="onRatingChange($event)" />
     <div class="explorer__slider-wrap">
-      <span class="explorer__slider-label">Score mín</span>
+      <span class="explorer__slider-label">Score min</span>
       <iq-slider [min]="0" [max]="100" [step]="5" [(value)]="minScore" />
     </div>
     <div class="explorer__slider-wrap">
-      <span class="explorer__slider-label">DY mín %</span>
+      <span class="explorer__slider-label">DY min %</span>
       <iq-slider [min]="0" [max]="20" [step]="1" [(value)]="minYield" />
     </div>
     <iq-button variant="primary" size="sm" (clicked)="applyFilters()">Filtrar</iq-button>
@@ -46,7 +55,16 @@
               <td class="ex-td ex-td--ticker"><iq-ticker-logo [ticker]="r.ticker" [size]="20" /><span class="mono">{{ r.ticker }}</span></td>
               <td class="ex-td ex-td--name">{{ r.company_name | slice:0:28 }}</td>
               <td class="ex-td ex-td--cluster">{{ r.cluster_name }}</td>
-              <td class="ex-td ex-td--score mono" [style.color]="r.iq_score ? scoreColor(r.iq_score) : ''">{{ fmt(r.iq_score) }}</td>
+              <td class="ex-td ex-td--score">
+                <div class="score-cell">
+                  <span class="score-cell__val mono" [style.color]="r.iq_score ? scoreColor(r.iq_score) : ''">{{ fmt(r.iq_score) }}</span>
+                  @if (r.iq_score > 0) {
+                    <div class="score-cell__bar">
+                      <div class="score-cell__fill" [style.width.%]="r.iq_score" [style.background]="scoreColor(r.iq_score)"></div>
+                    </div>
+                  }
+                </div>
+              </td>
               <td class="ex-td">@if (r.iq_score) { <iq-rating-badge [rating]="r.rating" /> } @else { <span class="ex-na">—</span> }</td>
               <td class="ex-td mono" [style.color]="r.score_quali ? scoreColor(r.score_quali) : ''">{{ fmt(r.score_quali) }}</td>
               <td class="ex-td mono" [style.color]="r.score_quanti ? scoreColor(r.score_quanti) : ''">{{ fmt(r.score_quanti) }}</td>

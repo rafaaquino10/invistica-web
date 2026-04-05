@@ -38,9 +38,10 @@ export class HistoricoTabComponent implements OnInit {
   readonly series = signal<LineSeries[]>([]);
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     const t = this.ticker(); if (!t) return; // direct call
     of(t).pipe(
-      
+
       switchMap(t => this.scoreService.getHistory(t, 12).pipe(catchError(() => of(null)))),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe(hist => {

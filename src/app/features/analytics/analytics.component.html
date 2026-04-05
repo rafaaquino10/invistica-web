@@ -8,7 +8,16 @@
     <!-- MODEL PERFORMANCE -->
     @if (performance()) {
       <div class="an__card">
-        <h3 class="an__card-title">Performance do Modelo</h3>
+        <div class="an__card-header">
+          <h3 class="an__card-title">Performance do Modelo</h3>
+          @if (performance()!.status !== 'Aguardando dados suficientes (mínimo 30 dias de histórico)') {
+            <span class="an__health" [class.an__health--good]="(performance()!.ic_spearman_1m ?? 0) > 0.05"
+                  [class.an__health--warn]="(performance()!.ic_spearman_1m ?? 0) > 0 && (performance()!.ic_spearman_1m ?? 0) <= 0.05"
+                  [class.an__health--bad]="(performance()!.ic_spearman_1m ?? 0) <= 0">
+              {{ (performance()!.ic_spearman_1m ?? 0) > 0.05 ? 'SAUDAVEL' : (performance()!.ic_spearman_1m ?? 0) > 0 ? 'ATENCAO' : 'DEGRADADO' }}
+            </span>
+          }
+        </div>
         @if (performance()!.status !== 'Aguardando dados suficientes (mínimo 30 dias de histórico)') {
           <div class="an__kpis">
             <div class="an__kpi">
@@ -42,22 +51,23 @@
       </div>
     }
 
-    <!-- IC TIMELINE -->
-    @if (icSeries().length > 0) {
-      <div class="an__card">
-        <h3 class="an__card-title">IC Timeline (24 meses)</h3>
-        <iq-line-chart [series]="icSeries()" />
-      </div>
-    }
-
-    <!-- SIGNAL DECAY -->
-    @if (decayBars().length > 0) {
-      <div class="an__card">
-        <h3 class="an__card-title">Signal Decay</h3>
-        <p class="an__card-desc">IC por lag em dias — quanto o sinal perde força ao longo do tempo.</p>
-        <iq-bar-chart [data]="decayBars()" color="var(--obsidian)" />
-      </div>
-    }
+    <!-- IC + SIGNAL DECAY side by side -->
+    <div class="an__grid">
+      @if (icSeries().length > 0) {
+        <div class="an__card">
+          <h3 class="an__card-title">IC Timeline (24 meses)</h3>
+          <p class="an__card-desc">Information Coefficient e Hit Rate ao longo do tempo.</p>
+          <iq-line-chart [series]="icSeries()" />
+        </div>
+      }
+      @if (decayBars().length > 0) {
+        <div class="an__card">
+          <h3 class="an__card-title">Signal Decay</h3>
+          <p class="an__card-desc">IC por lag em dias — quanto o sinal perde forca ao longo do tempo.</p>
+          <iq-bar-chart [data]="decayBars()" color="var(--obsidian)" />
+        </div>
+      }
+    </div>
 
     <!-- PORTFOLIO ATTRIBUTION -->
     @if (attribution()) {

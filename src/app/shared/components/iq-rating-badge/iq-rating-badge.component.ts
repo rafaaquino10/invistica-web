@@ -16,8 +16,8 @@ import { Rating, RATING_LABELS, RATING_COLORS } from '../../../core/models/score
     .badge {
       display: inline-flex;
       align-items: center;
-      padding: 2px 8px;
-      font-size: 0.6875rem;
+      padding: 3px 10px;
+      font-size: 0.75rem;
       font-weight: 600;
       border: 1px solid;
       border-radius: var(--radius);

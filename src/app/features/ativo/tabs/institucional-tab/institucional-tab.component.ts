@@ -91,9 +91,10 @@ export class InstitucionalTabComponent implements OnInit {
   readonly shortInterest = signal<ShortInterestEntry[]>([]);
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     const t = this.ticker(); if (!t) return; // direct call
     of(t).pipe(
-      
+
       switchMap(t => forkJoin({
         holders: this.tickerService.getInstitutionalHolders(t).pipe(catchError(() => of({ ticker: t, holders: [], count: 0 }))),
         short: this.tickerService.getShortInterest(t).pipe(catchError(() => of({ ticker: t, short_interest: [] }))),

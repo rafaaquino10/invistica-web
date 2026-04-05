@@ -111,6 +111,7 @@ export class ValuationTabComponent implements OnInit {
   readonly mcScenarios = signal<MonteCarloScenarios | null>(null);
 
   ngOnInit(): void {
+    setTimeout(() => { if (this.loading()) this.loading.set(false); }, 5000);
     const t = this.ticker();
     if (!t) return;
     forkJoin({

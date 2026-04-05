@@ -9,25 +9,24 @@
     <div class="sim__sliders">
       <div class="sim__slider-group">
         <span class="sim__slider-label">SELIC</span>
-        <iq-slider [min]="8" [max]="18" [step]="0.25" [(value)]="selic" />
+        <iq-slider [min]="8" [max]="18" [step]="0.25" [(value)]="selic" (valueChange)="onSliderChange()" />
         <span class="sim__slider-val mono">{{ selic().toFixed(2) }}%</span>
       </div>
       <div class="sim__slider-group">
         <span class="sim__slider-label">IPCA</span>
-        <iq-slider [min]="2" [max]="10" [step]="0.5" [(value)]="ipca" />
+        <iq-slider [min]="2" [max]="10" [step]="0.5" [(value)]="ipca" (valueChange)="onSliderChange()" />
         <span class="sim__slider-val mono">{{ ipca().toFixed(1) }}%</span>
       </div>
       <div class="sim__slider-group">
         <span class="sim__slider-label">Câmbio (USD)</span>
-        <iq-slider [min]="4" [max]="7" [step]="0.1" [(value)]="cambio" />
+        <iq-slider [min]="4" [max]="7" [step]="0.1" [(value)]="cambio" (valueChange)="onSliderChange()" />
         <span class="sim__slider-val mono">R$ {{ cambio().toFixed(2) }}</span>
       </div>
       <div class="sim__slider-group">
         <span class="sim__slider-label">Brent (USD)</span>
-        <iq-slider [min]="50" [max]="120" [step]="5" [(value)]="brent" />
+        <iq-slider [min]="50" [max]="120" [step]="5" [(value)]="brent" (valueChange)="onSliderChange()" />
         <span class="sim__slider-val mono">$ {{ brent().toFixed(0) }}</span>
       </div>
-      <button class="sim__apply" (click)="onSliderChange()">Simular</button>
     </div>
 
     <!-- ESTIMATED REGIME -->
@@ -51,8 +50,14 @@
                 <tr>
                   <td class="mono sim__ticker">{{ row.ticker }}</td>
                   <td class="sim__cluster">{{ row.cluster }}</td>
-                  <td class="mono" [class.positive]="row.impact > 0" [class.negative]="row.impact < 0">
-                    {{ row.impact > 0 ? '+' : '' }}{{ row.impact.toFixed(1) }}%
+                  <td class="mono sim__impact-cell">
+                    <div class="sim__impact-bar-wrap">
+                      <div class="sim__impact-bar" [class.sim__impact-bar--pos]="row.impact > 0" [class.sim__impact-bar--neg]="row.impact < 0"
+                           [style.width.%]="Math.min(Math.abs(row.impact) * 10, 100)"></div>
+                    </div>
+                    <span [class.positive]="row.impact > 0" [class.negative]="row.impact < 0">
+                      {{ row.impact > 0 ? '+' : '' }}{{ row.impact.toFixed(1) }}%
+                    </span>
                   </td>
                 </tr>
               }

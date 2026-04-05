@@ -1,168 +1,257 @@
 @if (loading()) {
   <div class="dash">
-    <iq-skeleton variant="rect" width="100%" height="160px" />
-    <div class="dash__row2-skel">
+    <iq-skeleton variant="rect" width="100%" height="40px" />
+    <iq-skeleton variant="rect" width="100%" height="120px" />
+    <div class="dash__skel-row">
       <iq-skeleton variant="rect" width="100%" height="340px" />
       <iq-skeleton variant="rect" width="100%" height="340px" />
     </div>
   </div>
 } @else {
-  <div class="dash">
+  <div class="dash" [class.dash--ready]="ready()">
 
-    <!-- ═══ SEÇÃO 1: HERO ═══ -->
+    <!-- ZONE 1: INTELLIGENCE STRIP -->
+    <div class="strip anim-item" style="--anim-order: 0">
+      <div class="strip__content">
+        <span class="strip__item">
+          <span class="strip__dot" [style.background]="regimeDotColor()"></span>
+          <span class="strip__text">{{ regimeLabel() }}</span>
+        </span>
+        @if (recommended().length > 0) {
+          <span class="strip__sep">&middot;</span>
+          <span class="strip__item strip__item--acid">
+            {{ recommended().length }} oportunidades detectadas
+          </span>
+        }
+        @if (alertCount() > 0) {
+          <span class="strip__sep">&middot;</span>
+          <span class="strip__item strip__item--neg">{{ alertCount() }} {{ alertCount() === 1 ? 'alerta' : 'alertas' }} na carteira</span>
+        }
+      </div>
+      <div class="strip__accent"></div>
+    </div>
+
+    <!-- ZONE 2: PORTFOLIO COMMAND -->
     @if (hasPortfolio()) {
-      <dash-hero
-        [userName]="userName()"
-        [score]="portfolioScore()"
-        [rating]="portfolioRating()"
-        [totalValue]="portfolio()!.total_value"
-        [plToday]="0"
-        [plTotal]="portfolio()!.total_gain_loss"
-        [plTotalPct]="portfolio()!.total_gain_loss_pct"
-        [dividends12m]="divTotal()"
-        [yieldOnCost]="divYield()"
-        [regimeType]="regimeType()"
-        [selic]="selic()"
-        [ipca]="ipca()" />
+      <section class="command anim-item" style="--anim-order: 1">
+        <!-- Score Gauge -->
+        <div class="command__gauge">
+          <svg width="120" height="75" viewBox="0 0 120 75" class="gauge-svg">
+            <path d="M12 68 A48 48 0 0 1 108 68" fill="none" stroke="var(--border)" stroke-width="8" stroke-linecap="round"/>
+            <path d="M12 68 A48 48 0 0 1 108 68" fill="none"
+                  [attr.stroke]="gaugeStrokeColor()"
+                  stroke-width="8" stroke-linecap="round"
+                  stroke-dasharray="151" [attr.stroke-dashoffset]="gaugeDashOffset()"
+                  class="gauge-svg__arc" />
+            <text x="60" y="58" text-anchor="middle" font-size="32" font-weight="700"
+                  [attr.fill]="gaugeStrokeColor()" class="gauge-svg__number">
+              {{ portfolioScore() }}
+            </text>
+          </svg>
+          <span class="command__badge" [class]="ratingBadgeClass(portfolioScore())">{{ ratingLabel() }}</span>
+        </div>
+
+        <!-- KPIs — real data -->
+        <div class="command__kpis">
+          <div class="command__kpi">
+            <span class="command__kpi-label">Patrimonio</span>
+            <span class="command__kpi-value">R$ {{ formatBrl(totalValue()) }}</span>
+            <span class="command__kpi-sub">{{ positionCount() }} {{ positionCount() === 1 ? 'posicao' : 'posicoes' }}</span>
+          </div>
+          <div class="command__kpi">
+            <span class="command__kpi-label">P&L total</span>
+            <span class="command__kpi-value" [class.positive]="plTotalPct() >= 0" [class.negative]="plTotalPct() < 0">
+              {{ plTotalPct() >= 0 ? '+' : '' }}{{ (plTotalPct() * 100).toFixed(2) }}%
+            </span>
+            <span class="command__kpi-sub">{{ plTotal() >= 0 ? '+' : '' }}R$ {{ formatBrl(plTotal()) }}</span>
+          </div>
+          <div class="command__kpi">
+            <span class="command__kpi-label">Dividendos 12M</span>
+            <span class="command__kpi-value positive">R$ {{ formatBrl(divTotal()) }}</span>
+            <span class="command__kpi-sub">Yield {{ (divYield() * 100).toFixed(1) }}%</span>
+          </div>
+          @if (portfolioBeta() != null) {
+            <div class="command__kpi">
+              <span class="command__kpi-label">Beta</span>
+              <span class="command__kpi-value">{{ portfolioBeta()!.toFixed(2) }}</span>
+              <span class="command__kpi-sub">{{ betaLabel() }}</span>
+            </div>
+          }
+          @if (portfolioSharpe() != null) {
+            <div class="command__kpi">
+              <span class="command__kpi-label">Sharpe</span>
+              <span class="command__kpi-value">{{ portfolioSharpe()!.toFixed(2) }}</span>
+              <span class="command__kpi-sub">12 meses</span>
+            </div>
+          }
+          @if (portfolioMaxDD() != null) {
+            <div class="command__kpi">
+              <span class="command__kpi-label">Max Drawdown</span>
+              <span class="command__kpi-value negative">{{ (portfolioMaxDD()! * 100).toFixed(1) }}%</span>
+              <span class="command__kpi-sub">12 meses</span>
+            </div>
+          }
+        </div>
+
+        <div class="command__accent"></div>
+      </section>
     } @else {
-      <section class="dash__empty-hero">
+      <section class="dash__empty-hero anim-item" style="--anim-order: 1">
         <div class="dash__empty-hero-content">
-          <h1 class="dash__empty-hero-title">{{ userName() ? 'Olá, ' + userName() + '.' : 'Bem-vindo ao InvestIQ.' }}</h1>
-          <p class="dash__empty-hero-desc">Adicione suas posições para ver seu briefing personalizado.</p>
-          <iq-button variant="primary" routerLink="/carteira" [queryParams]="{ add: true }">Adicionar primeira posição</iq-button>
+          <h1 class="dash__empty-hero-title">{{ userName() ? 'Ola, ' + userName() + '.' : 'Bem-vindo ao InvestIQ.' }}</h1>
+          <p class="dash__empty-hero-desc">Adicione suas posicoes para ver seu briefing personalizado.</p>
+          <iq-button variant="primary" routerLink="/carteira" [queryParams]="{ add: true }">Adicionar primeira posicao</iq-button>
         </div>
       </section>
     }
 
-    <!-- ═══ SEÇÃO 2: EVOLUÇÃO PATRIMONIAL + SIDEBAR MERCADO ═══ -->
-    <section class="dash__row2">
-      <!-- EVOLUÇÃO PATRIMONIAL -->
-      <div class="dash__equity-card">
-        <div class="dash__equity-header">
-          <h3 class="dash__section-title mono">EVOLUÇÃO PATRIMONIAL</h3>
-          <div class="dash__period-sel">
+    <!-- ZONE 3: PERFORMANCE CHARTS -->
+    <section class="perf anim-item" style="--anim-order: 2">
+      <!-- Main: Equity Curve -->
+      <div class="perf__main">
+        <div class="perf__header">
+          <span class="perf__title">Evolucao patrimonial</span>
+          <div class="perf__periods">
             @for (p of ['1M','3M','6M','12M','Max']; track p) {
-              <button class="dash__period-btn mono" [class.dash__period-btn--active]="p === '12M'">{{ p }}</button>
+              <button class="perf__period" [class.perf__period--active]="activePeriod() === p" (click)="setPeriod(p)">{{ p }}</button>
             }
           </div>
         </div>
-        <iq-line-chart [series]="equitySeries()" />
-        <div class="dash__equity-metrics">
-          <div class="dash__eq-metric">
-            <span class="dash__eq-metric-label mono">CARTEIRA</span>
-            <span class="dash__eq-metric-val mono positive">+15.0%</span>
-          </div>
-          <div class="dash__eq-metric">
-            <span class="dash__eq-metric-label mono">CDI</span>
-            <span class="dash__eq-metric-val mono">+8.0%</span>
-          </div>
-          <div class="dash__eq-metric">
-            <span class="dash__eq-metric-label mono">IBOV</span>
-            <span class="dash__eq-metric-val mono">+10.0%</span>
-          </div>
-          <div class="dash__eq-metric">
-            <span class="dash__eq-metric-label mono">ALPHA</span>
-            <span class="dash__eq-metric-val mono positive">+7.0pp</span>
-          </div>
+        <div class="perf__chart" #equityChart></div>
+        <div class="perf__legend">
+          <span class="perf__legend-item"><span class="perf__legend-dot perf__legend-dot--acid"></span> Carteira</span>
+          <span class="perf__legend-item"><span class="perf__legend-dot perf__legend-dot--cdi"></span> CDI</span>
+          <span class="perf__legend-item"><span class="perf__legend-dot perf__legend-dot--ibov"></span> Ibovespa</span>
         </div>
+        @if (hasPortfolio()) {
+          <div class="perf__metrics">
+            <div class="perf__metric">
+              <span class="perf__metric-val" [class.positive]="plTotalPct() >= 0" [class.negative]="plTotalPct() < 0">
+                {{ plTotalPct() >= 0 ? '+' : '' }}{{ (plTotalPct() * 100).toFixed(1) }}%
+              </span>
+              <span class="perf__metric-label">Carteira</span>
+            </div>
+            @if (portfolioSharpe() != null) {
+              <div class="perf__metric">
+                <span class="perf__metric-val muted">{{ portfolioSharpe()!.toFixed(2) }}</span>
+                <span class="perf__metric-label">Sharpe</span>
+              </div>
+            }
+            @if (portfolioMaxDD() != null) {
+              <div class="perf__metric">
+                <span class="perf__metric-val muted">{{ (portfolioMaxDD()! * 100).toFixed(1) }}%</span>
+                <span class="perf__metric-label">Max Drawdown</span>
+              </div>
+            }
+          </div>
+        }
       </div>
 
-      <!-- SIDEBAR: IBOV + MOVERS -->
-      <div class="dash__sidebar">
-        <dash-ibov />
-        <dash-movers [gainers]="gainers()" [losers]="losers()" />
+      <!-- Sidebar: IBOV + Treemap + Dividendos -->
+      <div class="perf__side">
+        <!-- IBOV Intraday -->
+        <div class="side-card">
+          <span class="side-card__label">Ibovespa</span>
+          <span class="side-card__value">131.842</span>
+          <div class="side-card__row">
+            <span class="side-card__pct positive">+0,87%</span>
+            <span class="side-card__pts">+1.138 pts</span>
+          </div>
+          <div class="side-card__chart" #ibovChart></div>
+        </div>
+
+        <!-- Sector Treemap -->
+        @if (sectorExposure().length > 0) {
+          <div class="side-card">
+            <span class="side-card__label">Exposicao setorial</span>
+            <div class="side-card__chart" #treemapChart></div>
+          </div>
+        }
+
+        <!-- Dividendos Recebidos -->
+        <div class="side-card">
+          <span class="side-card__label">Dividendos recebidos</span>
+          <div class="side-card__chart" #divBarsChart></div>
+        </div>
       </div>
     </section>
 
-    <!-- ═══ SEÇÃO 3: EXPOSIÇÃO + DIVIDENDOS + MOTOR ═══ -->
-    @if (hasPortfolio()) {
-      <section class="dash__row3">
-        <!-- EXPOSIÇÃO SETORIAL -->
-        <div class="dash__card">
-          <div class="dash__card-header">
-            <h3 class="dash__section-title mono">EXPOSIÇÃO SETORIAL</h3>
-            <a class="dash__card-link" routerLink="/carteira">Carteira →</a>
-          </div>
-          @if (sectorExposure().length > 0) {
-            @for (s of sectorExposure(); track s.name) {
-              <div class="dash__sector-row">
-                <span class="dash__sector-name">{{ s.name }}</span>
-                <div class="dash__sector-bar-wrap">
-                  <div class="dash__sector-bar" [style.width.%]="s.pct"></div>
-                </div>
-                <span class="dash__sector-pct mono">{{ s.pct.toFixed(0) }}%</span>
-              </div>
-            }
-          } @else {
-            <p class="dash__muted">Sem dados de exposição.</p>
-          }
-        </div>
+    <!-- ZONE 4: MARKET -->
+    <section class="market anim-item" style="--anim-order: 3">
+      <!-- Maiores Altas -->
+      <div class="market__col">
+        <span class="market__title">Maiores altas</span>
+        @for (item of gainers(); track item.ticker; let i = $index) {
+          <a class="mover" [routerLink]="'/ativo/' + item.ticker">
+            <span class="mover__rank">{{ i + 1 }}</span>
+            <span class="mover__ticker">{{ item.ticker }}</span>
+            <svg viewBox="0 0 48 18" class="mover__spark" preserveAspectRatio="none">
+              <polyline [attr.points]="genSpark(true)" fill="none" stroke="var(--positive)" stroke-width="1.2" stroke-linecap="round" />
+            </svg>
+            <span class="mover__change positive">+{{ item.change.toFixed(1) }}%</span>
+            <span class="mover__score" [style.color]="scoreColor(item.score)">{{ item.score }}</span>
+            <span class="mover__dot" [style.background]="scoreColor(item.score)"></span>
+          </a>
+        }
+      </div>
 
-        <!-- DIVIDENDOS MENSAIS -->
-        <div class="dash__card">
-          <h3 class="dash__section-title mono">DIVIDENDOS MENSAIS</h3>
-          <iq-bar-chart [data]="dividendBarsData()" color="var(--positive)" />
-          <div class="dash__div-metrics">
-            <div class="dash__div-metric">
-              <span class="dash__div-metric-label mono">RECEBIDO</span>
-              <span class="dash__div-metric-val mono">{{ divTotal() | currencyBrl }}</span>
-            </div>
-            <div class="dash__div-metric">
-              <span class="dash__div-metric-label mono">MÉDIA/MÊS</span>
-              <span class="dash__div-metric-val mono">{{ divMonthlyAvg() | currencyBrl }}</span>
-            </div>
-            <div class="dash__div-metric">
-              <span class="dash__div-metric-label mono">YIELD</span>
-              <span class="dash__div-metric-val mono positive">{{ (divYield() * 100).toFixed(1) }}%</span>
-            </div>
-          </div>
-        </div>
+      <!-- Maiores Baixas -->
+      <div class="market__col">
+        <span class="market__title">Maiores baixas</span>
+        @for (item of losers(); track item.ticker; let i = $index) {
+          <a class="mover" [routerLink]="'/ativo/' + item.ticker">
+            <span class="mover__rank">{{ i + 1 }}</span>
+            <span class="mover__ticker">{{ item.ticker }}</span>
+            <svg viewBox="0 0 48 18" class="mover__spark" preserveAspectRatio="none">
+              <polyline [attr.points]="genSpark(false)" fill="none" stroke="var(--negative)" stroke-width="1.2" stroke-linecap="round" />
+            </svg>
+            <span class="mover__change negative">{{ item.change.toFixed(1) }}%</span>
+            <span class="mover__score" [style.color]="scoreColor(item.score)">{{ item.score }}</span>
+            <span class="mover__dot" [style.background]="scoreColor(item.score)"></span>
+          </a>
+        }
+      </div>
 
-        <!-- MOTOR RECOMENDA -->
-        <div class="dash__card">
-          <div class="dash__card-header">
-            <h3 class="dash__section-title mono">MOTOR RECOMENDA</h3>
-            <a class="dash__card-link" routerLink="/explorar">Explorar →</a>
-          </div>
-          @if (recommended().length > 0) {
-            @for (a of recommended(); track a.ticker) {
-              <a class="dash__rec-item" [routerLink]="'/ativo/' + a.ticker">
-                <iq-ticker-logo [ticker]="a.ticker" [size]="22" />
-                <div class="dash__rec-info">
-                  <span class="dash__rec-ticker mono">{{ a.ticker }}</span>
-                  <span class="dash__rec-name">{{ a.company_name }}</span>
-                </div>
-                <span class="dash__rec-score mono" [style.color]="scoreColor(a.iq_score)">{{ a.iq_score }}</span>
-                @if (a.safety_margin != null && a.safety_margin > 0) {
-                  <span class="dash__rec-margin mono positive">+{{ (a.safety_margin * 100).toFixed(0) }}%</span>
-                }
-              </a>
-            }
-          } @else {
-            <p class="dash__muted">Sem recomendações disponíveis.</p>
-          }
-        </div>
-      </section>
-    } @else {
-      <!-- SEM CARTEIRA: TOP 10 -->
-      <section class="dash__top10">
-        <div class="dash__card dash__card--wide">
-          <div class="dash__card-header">
-            <h3 class="dash__section-title mono">TOP 10 IQ-SCORE</h3>
-            <a class="dash__card-link" routerLink="/explorar">Explorar →</a>
-          </div>
-          @for (a of topAssets(); track a.ticker) {
-            <a class="dash__rec-item" [routerLink]="'/ativo/' + a.ticker">
-              <iq-ticker-logo [ticker]="a.ticker" [size]="22" />
-              <div class="dash__rec-info">
-                <span class="dash__rec-ticker mono">{{ a.ticker }}</span>
-                <span class="dash__rec-name">{{ a.company_name }}</span>
+      <!-- IQ Radar -->
+      <div class="market__col market__col--radar">
+        <span class="market__title">IQ Radar - Fora da carteira</span>
+        @for (item of recommended(); track item.ticker) {
+          <a class="radar-item" [routerLink]="'/ativo/' + item.ticker">
+            <span class="radar-item__ticker">{{ item.ticker }}</span>
+            <span class="radar-item__score" [style.color]="scoreColor(item.iq_score)">{{ item.iq_score }}</span>
+            <div class="radar-item__bar-wrap">
+              <span class="radar-item__bar-label">Margem de seguranca</span>
+              <div class="radar-item__bar-track">
+                <div class="radar-item__bar-fill" [style.width.%]="Math.min((item.safety_margin ?? 0) * 100, 100)"></div>
               </div>
-              <span class="dash__rec-score mono" [style.color]="scoreColor(a.iq_score)">{{ a.iq_score }}</span>
-              @if (a.rating) {
-                <iq-rating-badge [rating]="a.rating" />
+            </div>
+            @if (item.safety_margin != null && item.safety_margin > 0) {
+              <span class="radar-item__margin positive">+{{ (item.safety_margin * 100).toFixed(0) }}%</span>
+            }
+          </a>
+        }
+        @if (recommended().length === 0) {
+          <p class="market__empty">Nenhuma oportunidade detectada no momento.</p>
+        }
+      </div>
+    </section>
+
+    <!-- ZONE 5: IQ SIGNALS -->
+    @if (signals().length > 0) {
+      <section class="signals anim-item" style="--anim-order: 4">
+        <span class="signals__title">IQ Signals</span>
+        <div class="signals__grid">
+          @for (sig of signals(); track sig.ticker + sig.type) {
+            <div class="signal" [style.border-left-color]="signalBorderColor(sig.type)">
+              <div class="signal__top">
+                <span class="signal__tag" [class]="signalTagClass(sig.type)">{{ sig.tag }}</span>
+              </div>
+              @if (sig.ticker) {
+                <span class="signal__ticker">{{ sig.ticker }}</span>
               }
-            </a>
+              <span class="signal__main" [style.color]="signalMainColor(sig.type)">{{ sig.main }}</span>
+              <span class="signal__context">{{ sig.context }}</span>
+            </div>
           }
         </div>
       </section>
