@@ -24,8 +24,22 @@ export class LoginComponent implements OnInit, AfterViewInit {
   readonly error = signal('');
 
   ngOnInit(): void {
+    // If already authenticated, skip login page
     if (this.auth.isAuthenticated()) {
       this.router.navigate(['/dashboard']);
+      return;
+    }
+    // If still loading (e.g. OAuth callback being processed), wait
+    if (this.auth.isLoading()) {
+      const check = setInterval(() => {
+        if (!this.auth.isLoading()) {
+          clearInterval(check);
+          if (this.auth.isAuthenticated()) {
+            this.router.navigate(['/dashboard']);
+          }
+        }
+      }, 100);
+      setTimeout(() => clearInterval(check), 5000);
     }
   }
 
