@@ -1,7 +1,7 @@
 @use 'typography' as t;
 @use 'mixins' as m;
 
-.explorer { max-width: 1440px; margin: 0 auto; }
+.explorer { width: 100%; }
 .explorer__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
 
 .explorer__filters {
@@ -30,100 +30,101 @@
   cursor: pointer;
   transition: all 150ms ease;
 
-  &:hover {
-    border-color: var(--obsidian);
-    color: var(--text-primary);
-  }
+  &:hover { border-color: var(--obsidian); color: var(--text-primary); }
 }
 .explorer__chip--active {
   background: var(--obsidian);
   color: #fff;
   border-color: var(--obsidian);
-
-  [data-theme="dark"] & {
-    background: var(--surface-3);
-    color: var(--text-primary);
-    border-color: var(--surface-3);
-  }
-}
-
-// Score bar cell
-.score-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-.score-cell__val { font-weight: 700; font-size: t.$text-base; }
-.score-cell__bar {
-  width: 48px;
-  height: 3px;
-  background: var(--surface-3);
-  border-radius: 1px;
-  overflow: hidden;
-}
-.score-cell__fill {
-  height: 100%;
-  border-radius: 1px;
-  transition: width 400ms ease-out;
+  [data-theme="dark"] & { background: var(--surface-3); color: var(--text-primary); border-color: var(--surface-3); }
 }
 
 .explorer__meta {
   font-size: t.$text-xs; color: var(--text-tertiary); margin-bottom: var(--space-2);
 }
 
-.explorer__table-wrap { @include m.iq-table-wrap; max-height: 75vh; }
+.explorer__table-wrap {
+  @include m.iq-table-wrap;
+  max-height: 78vh;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .explorer__table {
   @include m.iq-table;
-  // 14 colunas
-  th:nth-child(1) { width: 9%; }   // Ticker
-  th:nth-child(2) { width: 13%; }  // Empresa
-  th:nth-child(3) { width: 7%; }   // Setor
-  th:nth-child(4) { width: 7%; }   // Preco
-  th:nth-child(5) { width: 10%; }  // Dia (spark + %)
-  th:nth-child(6) { width: 7%; }   // IQ-Score
-  th:nth-child(7) { width: 7%; }   // Rating
-  th:nth-child(8),
-  th:nth-child(9),
-  th:nth-child(10) { width: 6%; }  // Quali, Quanti, Valuation
-  th:nth-child(11) { width: 7%; }  // Fair Value
-  th:nth-child(12),
-  th:nth-child(13),
-  th:nth-child(14) { width: 5%; }  // Margem, DY Proj, Safety
+  width: 100%;
+  table-layout: auto;
 }
 
-// Price + Day cells
-.ex-td--price { font-weight: 600; font-size: t.$text-sm; white-space: nowrap; }
+// ═══ ASSET CELL (unified ticker + company) ═══
+.ex-td--asset {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 180px;
+}
+.ex-asset-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.ex-asset-tk {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.ex-asset-nm {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
 
+// ═══ OTHER CELLS ═══
+.ex-td--cluster { font-size: t.$text-xs; color: var(--text-tertiary); white-space: nowrap; }
+.ex-td--price { font-weight: 600; font-size: t.$text-sm; white-space: nowrap; }
+.ex-td--score { font-weight: 700; font-size: t.$text-base; }
+
+// Score bar
+.score-cell { display: flex; flex-direction: column; gap: 3px; }
+.score-cell__val { font-weight: 700; font-size: t.$text-base; }
+.score-cell__bar { width: 48px; height: 3px; background: var(--surface-3); border-radius: 1px; overflow: hidden; }
+.score-cell__fill { height: 100%; border-radius: 1px; transition: width 400ms ease-out; }
+
+// ═══ DAY CELL (sparkline + %) ═══
 .day-cell {
   display: flex;
   align-items: center;
   gap: 6px;
   white-space: nowrap;
+  min-width: 120px;
 }
 .day-cell__spark {
-  width: 48px;
-  height: 18px;
+  width: 56px;
+  height: 20px;
   flex-shrink: 0;
 }
 .day-cell__pct {
-  font-size: t.$text-xs;
+  font-size: 12px;
   font-weight: 600;
 }
 
+// ═══ SORT + MISC ═══
 .ex-th--sort { @include m.iq-table-sortable; }
 .ex-th--active { @include m.iq-table-sortable-active; }
 .ex-row { cursor: pointer; }
-.ex-td--ticker { @include m.iq-table-ticker; }
-.ex-td--name { @include m.iq-table-name; }
-.ex-td--cluster { font-size: t.$text-xs; color: var(--text-tertiary); }
-.ex-td--score { font-weight: 700; font-size: t.$text-base; }
 .ex-na { @include m.iq-table-na; }
-
 .positive { color: var(--positive); }
 .negative { color: var(--negative); }
 
-// RESPONSIVE
+// ═══ RESPONSIVE ═══
 @media (max-width: 767px) {
-  .explorer__filters { padding: var(--space-3); }
+  .explorer__filters { padding: var(--space-3); flex-direction: column; }
   .explorer__table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .ex-asset-nm { max-width: 120px; }
+  .day-cell__spark { width: 40px; }
 }

@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit, DestroyRef, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { SlicePipe } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScoreService, ScreenerParams } from '../../core/services/score.service';
 import { TickerService } from '../../core/services/ticker.service';
@@ -30,7 +29,7 @@ interface ExplorerRow extends ScreenerResult {
   standalone: true,
   imports: [
     RouterLink, IqTickerLogoComponent, IqDropdownComponent, IqSliderComponent, IqButtonComponent,
-    IqRatingBadgeComponent, IqSkeletonComponent, IqDisclaimerComponent, SlicePipe,
+    IqRatingBadgeComponent, IqSkeletonComponent, IqDisclaimerComponent,
   ],
   templateUrl: './explorer.component.html',
   styleUrl: './explorer.component.scss',
@@ -204,34 +203,51 @@ export class ExplorerComponent implements OnInit {
   }
 
   private loadQuotes(tickers: string[]): void {
-    // Batch fetch quotes for first 30 tickers (avoid N+1 overload)
     const batch = tickers.slice(0, 30);
     batch.forEach(ticker => {
       this.tickerService.getQuote(ticker).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(q => {
         if (!q?.close) return;
         const changePct = q.open > 0 ? ((q.close - q.open) / q.open) * 100 : 0;
+        // Generate 2-point sparkline from open->close as immediate fallback
+        const fallbackSpark = this.buildSparkFromQuote(q.open, q.close, q.low, q.high);
         this.results.update(rows => rows.map(r => {
           if (r.ticker !== ticker) return r;
-          return { ...r, price: q.close, change_pct: changePct };
+          return { ...r, price: q.close, change_pct: changePct, spark_points: r.spark_points || fallbackSpark };
         }));
       });
 
-      // Fetch 5-day history for sparkline
-      this.tickerService.getHistory(ticker, 5).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(h => {
+      // Also try 5-day history for richer sparkline (overwrites fallback if available)
+      this.tickerService.getHistory(ticker, 7).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(h => {
         const data = h?.data ?? [];
         if (data.length < 2) return;
         const closes = data.map(d => d.close);
-        const min = Math.min(...closes);
-        const max = Math.max(...closes);
-        const range = max - min || 1;
-        const pts = closes.map((c, i) => {
-          const x = (i / (closes.length - 1)) * 48;
-          const y = 16 - ((c - min) / range) * 14;
-          return `${x.toFixed(1)},${y.toFixed(1)}`;
-        }).join(' ');
-        this.results.update(rows => rows.map(r => r.ticker === ticker ? { ...r, spark_points: pts } : r));
+        const pts = this.buildSparkPoints(closes);
+        if (pts) {
+          this.results.update(rows => rows.map(r => r.ticker === ticker ? { ...r, spark_points: pts } : r));
+        }
       });
     });
+  }
+
+  private buildSparkPoints(closes: number[]): string {
+    if (closes.length < 2) return '';
+    const min = Math.min(...closes);
+    const max = Math.max(...closes);
+    const range = max - min || 1;
+    return closes.map((c, i) => {
+      const x = (i / (closes.length - 1)) * 48;
+      const y = 16 - ((c - min) / range) * 14;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+  }
+
+  private buildSparkFromQuote(open: number, close: number, low: number, high: number): string {
+    if (!open || !close) return '';
+    // 5-point mini curve: open -> low/high -> mid -> high/low -> close
+    const vals = open < close
+      ? [open, Math.max(low, open * 0.99), (open + close) / 2, Math.min(high, close * 1.01), close]
+      : [open, Math.min(high, open * 1.01), (open + close) / 2, Math.max(low, close * 0.99), close];
+    return this.buildSparkPoints(vals);
   }
 
   onClusterChange(opt: DropdownOption | DropdownOption[]): void {

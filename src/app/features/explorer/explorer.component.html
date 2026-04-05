@@ -28,15 +28,14 @@
     <iq-skeleton variant="rect" width="100%" height="400px" />
   } @else {
     <div class="explorer__meta mono">
-      {{ sorted().length }} ativos · {{ scoredCount() }} com score · {{ sortKey() }} {{ sortAsc() ? '▲' : '▼' }}
+      {{ sorted().length }} ativos · {{ scoredCount() }} com score · {{ sortKey() }} {{ sortAsc() ? '&#9650;' : '&#9660;' }}
     </div>
 
     <div class="explorer__table-wrap">
       <table class="explorer__table">
         <thead>
           <tr>
-            <th class="ex-th ex-th--sort" (click)="toggleSort('ticker')" [class.ex-th--active]="sortKey() === 'ticker'">Ticker{{ sortIcon('ticker') }}</th>
-            <th class="ex-th ex-th--sort" (click)="toggleSort('company_name')" [class.ex-th--active]="sortKey() === 'company_name'">Empresa{{ sortIcon('company_name') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('ticker')" [class.ex-th--active]="sortKey() === 'ticker'">Ativo{{ sortIcon('ticker') }}</th>
             <th class="ex-th ex-th--sort" (click)="toggleSort('cluster_name')" [class.ex-th--active]="sortKey() === 'cluster_name'">Setor{{ sortIcon('cluster_name') }}</th>
             <th class="ex-th ex-th--sort" (click)="toggleSort('price')" [class.ex-th--active]="sortKey() === 'price'">Preco{{ sortIcon('price') }}</th>
             <th class="ex-th">Dia</th>
@@ -54,26 +53,29 @@
         <tbody>
           @for (r of sorted(); track r.ticker) {
             <tr class="ex-row" (click)="goToAsset(r.ticker)">
-              <td class="ex-td ex-td--ticker"><iq-ticker-logo [ticker]="r.ticker" [size]="20" /><span class="mono">{{ r.ticker }}</span></td>
-              <td class="ex-td ex-td--name">{{ r.company_name | slice:0:28 }}</td>
+              <!-- Ativo: logo + ticker + company name -->
+              <td class="ex-td ex-td--asset">
+                <iq-ticker-logo [ticker]="r.ticker" [size]="24" />
+                <div class="ex-asset-info">
+                  <span class="ex-asset-tk mono">{{ r.ticker }}</span>
+                  <span class="ex-asset-nm">{{ r.company_name }}</span>
+                </div>
+              </td>
               <td class="ex-td ex-td--cluster">{{ r.cluster_name }}</td>
               <td class="ex-td ex-td--price mono">{{ r.price ? 'R$ ' + r.price.toFixed(2) : '--' }}</td>
+              <!-- Dia: sparkline + variacao -->
               <td class="ex-td ex-td--day">
                 <div class="day-cell">
-                  @if (r.spark_points) {
-                    <svg viewBox="0 0 48 18" class="day-cell__spark" preserveAspectRatio="none">
+                  <svg viewBox="0 0 48 18" class="day-cell__spark" preserveAspectRatio="none">
+                    @if (r.spark_points) {
                       <polyline [attr.points]="r.spark_points" fill="none"
                                 [attr.stroke]="(r.change_pct ?? 0) >= 0 ? 'var(--positive)' : 'var(--negative)'"
                                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  }
-                  @if (r.change_pct != null) {
-                    <span class="day-cell__pct mono" [class.positive]="r.change_pct >= 0" [class.negative]="r.change_pct < 0">
-                      {{ r.change_pct >= 0 ? '+' : '' }}{{ r.change_pct.toFixed(2) }}%
-                    </span>
-                  } @else {
-                    <span class="day-cell__pct mono">--</span>
-                  }
+                    }
+                  </svg>
+                  <span class="day-cell__pct mono" [class.positive]="(r.change_pct ?? 0) >= 0" [class.negative]="(r.change_pct ?? 0) < 0">
+                    {{ r.change_pct != null ? (r.change_pct >= 0 ? '+' : '') + r.change_pct.toFixed(2) + '%' : '--' }}
+                  </span>
                 </div>
               </td>
               <td class="ex-td ex-td--score">
@@ -86,7 +88,7 @@
                   }
                 </div>
               </td>
-              <td class="ex-td">@if (r.iq_score) { <iq-rating-badge [rating]="r.rating" /> } @else { <span class="ex-na">—</span> }</td>
+              <td class="ex-td">@if (r.iq_score) { <iq-rating-badge [rating]="r.rating" /> } @else { <span class="ex-na">--</span> }</td>
               <td class="ex-td mono" [style.color]="r.score_quali ? scoreColor(r.score_quali) : ''">{{ fmt(r.score_quali) }}</td>
               <td class="ex-td mono" [style.color]="r.score_quanti ? scoreColor(r.score_quanti) : ''">{{ fmt(r.score_quanti) }}</td>
               <td class="ex-td mono" [style.color]="r.score_valuation ? scoreColor(r.score_valuation) : ''">{{ fmt(r.score_valuation) }}</td>
