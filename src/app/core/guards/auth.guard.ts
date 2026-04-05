@@ -6,33 +6,22 @@ export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  // Still loading session — wait (Supabase auto-refresh may be in-flight)
+  if (auth.isAuthenticated()) return true;
+
   if (auth.isLoading()) {
-    // Return a promise that resolves once loading finishes
-    return new Promise<boolean>((resolve) => {
+    return new Promise<boolean | import('@angular/router').UrlTree>((resolve) => {
       const check = setInterval(() => {
         if (!auth.isLoading()) {
           clearInterval(check);
-          if (auth.isAuthenticated()) {
-            resolve(true);
-          } else {
-            router.navigate(['/login']);
-            resolve(false);
-          }
+          resolve(auth.isAuthenticated() ? true : router.createUrlTree(['/login']));
         }
       }, 50);
-      // Timeout after 5s — let them through (graceful degradation)
       setTimeout(() => {
         clearInterval(check);
-        resolve(true);
+        resolve(auth.isAuthenticated() ? true : router.createUrlTree(['/login']));
       }, 5000);
     });
   }
 
-  if (auth.isAuthenticated()) {
-    return true;
-  }
-
-  router.navigate(['/login']);
-  return false;
+  return router.createUrlTree(['/login']);
 };

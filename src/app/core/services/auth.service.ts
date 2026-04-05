@@ -52,6 +52,9 @@ export class AuthService {
     if (!this.supabase) return { error: { message: 'Supabase não configurado' } as any, data: null as any };
     this._isLoading.set(true);
     const result = await this.supabase.auth.signInWithPassword({ email, password });
+    if (!result.error && result.data?.user) {
+      this._currentUser.set(result.data.user);
+    }
     this._isLoading.set(false);
     return result;
   }

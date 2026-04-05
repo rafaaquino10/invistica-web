@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, AfterViewInit, ElementRef, viewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit, AfterViewInit, ElementRef, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
@@ -12,7 +12,7 @@ import { IqButtonComponent } from '../../shared/components/iq-button/iq-button.c
   styleUrl: './auth.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements AfterViewInit {
+export class LoginComponent implements OnInit, AfterViewInit {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
@@ -22,6 +22,12 @@ export class LoginComponent implements AfterViewInit {
   readonly password = signal('');
   readonly loading = signal(false);
   readonly error = signal('');
+
+  ngOnInit(): void {
+    if (this.auth.isAuthenticated()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
 
   ngAfterViewInit(): void {
     this.drawChart();
