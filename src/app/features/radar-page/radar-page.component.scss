@@ -1,6 +1,6 @@
 @use 'typography' as t;
 
-.radar { max-width: 1280px; margin: 0 auto; }
+.radar { width: 100%; }
 .radar__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
 .radar__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); }
 

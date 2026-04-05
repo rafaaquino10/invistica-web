@@ -1,7 +1,7 @@
 @use 'typography' as t;
 @use 'mixins' as m;
 
-.port { max-width: 1440px; margin: 0 auto; }
+.port { width: 100%; }
 
 .port__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); }
 .port__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); }

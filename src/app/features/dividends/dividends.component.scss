@@ -1,7 +1,7 @@
 @use 'typography' as t;
 @use 'mixins' as m;
 
-.divs { max-width: 1440px; margin: 0 auto; }
+.divs { width: 100%; }
 .divs__title { font-size: t.$text-2xl; font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-4); }
 
 .divs__tabs {

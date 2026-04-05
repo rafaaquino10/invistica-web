@@ -51,7 +51,7 @@ import { IqDisclaimerComponent } from '../../shared/components/iq-disclaimer/iq-
     </div>
   `,
   styles: [`
-    .mmap { max-width: 1440px; margin: 0 auto; }
+    .mmap { width: 100%; }
     .mmap__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .mmap__header-left { display: flex; flex-direction: column; gap: 2px; }
     .mmap__title { font-size: 1.5rem; font-weight: 600; color: var(--text-primary); }
