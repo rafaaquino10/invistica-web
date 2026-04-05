@@ -87,7 +87,7 @@
 .opp-card__top { display: flex; align-items: center; justify-content: space-between; }
 .opp-card__ticker { font-size: 15px; font-weight: 700; color: var(--text-primary); }
 .opp-card__name { font-size: 11px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.opp-card__metrics { display: flex; gap: 16px; }
+.opp-card__metrics { display: flex; gap: 12px; flex-wrap: wrap; }
 .opp-card__metric { display: flex; flex-direction: column; gap: 1px; }
 .opp-card__metric-val { font-size: 16px; font-weight: 700; color: var(--text-primary); }
 .opp-card__metric-label { font-size: 9px; color: var(--text-quaternary); text-transform: uppercase; letter-spacing: 0.04em; }
@@ -185,6 +185,8 @@
   background: var(--surface-1);
   border: 1px solid var(--border-default);
   border-radius: var(--radius);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   overflow: hidden;
 }
 .positions__table {
@@ -266,14 +268,26 @@
 
 // ═══ RESPONSIVE ═══
 @media (max-width: 767px) {
-  .dash { gap: 16px; }
+  .dash { gap: 12px; }
   .dash__skel-grid { grid-template-columns: 1fr; }
   .main-grid { grid-template-columns: 1fr; }
   .opps__grid { grid-template-columns: 1fr; }
-  .signals__grid { grid-template-columns: 1fr 1fr; }
-  .risk-side { position: static; flex-direction: row; flex-wrap: wrap; }
-  .risk-card { flex: 1; min-width: 140px; }
-  .strip__content { font-size: 11px; gap: 6px; }
+  .opps__header { flex-direction: column; gap: 4px; align-items: flex-start; }
+  .signals__grid { grid-template-columns: 1fr; }
+  .sig-card__header { gap: 8px; }
+  .risk-side { position: static; flex-direction: column; }
+  .risk-card { min-width: 0; }
+  .strip { padding: 8px 12px; }
+  .strip__content { font-size: 10px; gap: 4px; }
+  .strip__sep { display: none; }
+  .section-title { font-size: 13px; }
+  .opp-card { padding: 12px; }
+  .opp-card__metric-val { font-size: 14px; }
+  .opp-card__metric-label { font-size: 8px; }
+  .positions__table { font-size: 12px; }
+  .positions__table th { font-size: 9px; padding: 6px 8px; }
+  .positions__table td { padding: 6px 8px; }
+  .positions__summary { flex-direction: column; gap: 4px; }
 }
 
 @media (min-width: 768px) and (max-width: 1279px) {

@@ -18,6 +18,7 @@
              [routerLink]="item.route"
              routerLinkActive="sidebar__item--active"
              [title]="expanded() ? '' : item.label"
+             (click)="navigated.emit()"
              #rla="routerLinkActive">
             <i [class]="rla.isActive ? item.iconFill : item.icon" class="sidebar__icon"></i>
             @if (expanded()) { <span class="sidebar__label">{{ item.label }}</span> }
@@ -32,6 +33,7 @@
        [routerLink]="settingsItem.route"
        routerLinkActive="sidebar__item--active"
        [title]="expanded() ? '' : settingsItem.label"
+       (click)="navigated.emit()"
        #rlaSettings="routerLinkActive">
       <i [class]="rlaSettings.isActive ? settingsItem.iconFill : settingsItem.icon" class="sidebar__icon"></i>
       @if (expanded()) { <span class="sidebar__label">{{ settingsItem.label }}</span> }

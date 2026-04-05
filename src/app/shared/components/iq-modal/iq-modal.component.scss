@@ -67,7 +67,7 @@
 // RESPONSIVE
 @media (max-width: 767px) {
   .modal-overlay { padding: 12px; }
-  .modal { max-width: calc(100vw - 24px); }
+  .modal { max-width: calc(100% - 24px); }
   .modal__header { padding: var(--space-3); }
   .modal__body { padding: var(--space-3); }
 }

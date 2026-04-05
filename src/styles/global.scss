@@ -9,6 +9,10 @@
 @use 'scrollbar';
 @use 'mixins';
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   font-family: t.$font-family;
   font-size: t.$font-size-body;
@@ -18,6 +22,7 @@ body {
   background-color: var(--surface-0);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
   text-rendering: optimizeLegibility;
   font-variant-numeric: tabular-nums;
 }

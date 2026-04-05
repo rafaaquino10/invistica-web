@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 interface NavItem {
@@ -23,6 +23,7 @@ interface NavGroup {
 })
 export class SidebarComponent {
   readonly expanded = signal(false);
+  readonly navigated = output<void>();
 
   toggle(): void {
     this.expanded.update(v => !v);
