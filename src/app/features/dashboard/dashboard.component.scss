@@ -1,3 +1,5 @@
+@use 'mixins' as m;
+
 .dash {
   width: 100%;
   display: flex;
@@ -75,21 +77,18 @@
 }
 
 .opp-card {
+  @include m.iq-card;
+  @include m.iq-card-hover;
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 16px;
-  background: var(--surface-1);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius);
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
-
-  &:hover { border-color: var(--obsidian); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
 }
 .opp-card__top { display: flex; align-items: center; justify-content: space-between; }
+.opp-card__asset { display: flex; align-items: center; gap: 8px; }
 .opp-card__ticker { font-size: 15px; font-weight: 700; color: var(--text-primary); }
 .opp-card__name { font-size: 11px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .opp-card__metrics { display: flex; gap: 12px; flex-wrap: wrap; }
@@ -109,9 +108,7 @@
 }
 
 .risk-card {
-  background: var(--surface-1);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius);
+  @include m.iq-card;
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
@@ -159,6 +156,8 @@
 .risk-gauge__fill--conf { background: var(--obsidian); }
 
 .risk-cta {
+  @include m.iq-card;
+  @include m.iq-card-hover;
   display: block;
   text-align: center;
   padding: 10px;
@@ -166,11 +165,6 @@
   font-weight: 600;
   color: var(--obsidian);
   text-decoration: none;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius);
-  background: var(--surface-1);
-  transition: background 150ms ease;
-  &:hover { background: var(--surface-2); }
 }
 
 // ═══ POSITIONS ═══
@@ -187,9 +181,7 @@
 .positions__pl { font-size: 14px; font-weight: 700; }
 
 .positions__table-wrap {
-  background: var(--surface-1);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius);
+  @include m.iq-card;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   overflow: hidden;
@@ -222,14 +214,12 @@
 .positions__ticker { font-weight: 700; }
 
 .positions__empty {
+  @include m.iq-card;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
   padding: 40px 20px;
-  background: var(--surface-1);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius);
   text-align: center;
 }
 .positions__empty-desc { font-size: 13px; color: var(--text-tertiary); max-width: 360px; line-height: 1.5; }
@@ -239,19 +229,15 @@
 .signals__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 
 .sig-card {
+  @include m.iq-card;
+  @include m.iq-card-hover;
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 14px 16px;
-  background: var(--surface-1);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius);
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: border-color 150ms ease;
-
-  &:hover { border-color: var(--obsidian); }
 }
 .sig-card__header { display: flex; align-items: center; justify-content: space-between; }
 .sig-card__ticker { font-size: 14px; font-weight: 700; color: var(--text-primary); }

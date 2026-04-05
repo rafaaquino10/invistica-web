@@ -66,7 +66,10 @@
             @for (asset of opportunities(); track asset.ticker) {
               <a class="opp-card" [routerLink]="'/ativo/' + asset.ticker">
                 <div class="opp-card__top">
-                  <iq-ticker-logo [ticker]="asset.ticker" [size]="20" /><span class="opp-card__ticker mono">{{ asset.ticker }}</span>
+                  <div class="opp-card__asset">
+                    <iq-ticker-logo [ticker]="asset.ticker" [size]="22" />
+                    <span class="opp-card__ticker mono">{{ asset.ticker }}</span>
+                  </div>
                   <iq-rating-badge [rating]="$any(asset.rating)" />
                 </div>
                 <span class="opp-card__name">{{ asset.company_name }}</span>

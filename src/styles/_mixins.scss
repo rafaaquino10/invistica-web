@@ -2,6 +2,27 @@
 // InvestIQ — SCSS Mixins
 // ============================================================
 
+// ── Card base (shadow instead of borders) ──
+@mixin iq-card {
+  background: var(--surface-1);
+  border: none;
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 0 1px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 200ms ease;
+
+  [data-theme="dark"] & {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+  }
+}
+
+@mixin iq-card-hover {
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+    [data-theme="dark"] & { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5); }
+  }
+}
+
 // ── Breakpoints ──
 $breakpoint-desktop: 1280px;
 $breakpoint-tablet: 768px;

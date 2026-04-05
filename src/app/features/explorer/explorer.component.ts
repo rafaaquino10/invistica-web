@@ -203,7 +203,7 @@ export class ExplorerComponent implements OnInit {
   }
 
   private loadQuotes(tickers: string[]): void {
-    const batch = tickers.slice(0, 30);
+    const batch = tickers.slice(0, 15);
     batch.forEach(ticker => {
       this.tickerService.getQuote(ticker).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(q => {
         if (!q?.close) return;
