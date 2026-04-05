@@ -15,11 +15,14 @@ import { IqRatingBadgeComponent } from '../../shared/components/iq-rating-badge/
 import { IqSkeletonComponent } from '../../shared/components/iq-skeleton/iq-skeleton.component';
 import { IqDisclaimerComponent } from '../../shared/components/iq-disclaimer/iq-disclaimer.component';
 
-type SortKey = 'ticker' | 'company_name' | 'cluster_name' | 'iq_score' | 'score_quanti' | 'score_quali' |
+type SortKey = 'ticker' | 'company_name' | 'cluster_name' | 'price' | 'change_pct' | 'iq_score' | 'score_quanti' | 'score_quali' |
   'score_valuation' | 'fair_value_final' | 'safety_margin' | 'dividend_yield_proj' | 'dividend_safety';
 
 interface ExplorerRow extends ScreenerResult {
   cluster_name: string;
+  price: number | null;
+  change_pct: number | null;
+  spark_points: string;
 }
 
 @Component({
@@ -170,6 +173,7 @@ export class ExplorerComponent implements OnInit {
       if (scored.length >= 5) {
         this.results.set(this.enrich(scored));
         this.loading.set(false);
+        this.loadQuotes(scored.map(r => r.ticker));
       } else {
         this.tickerService.list({ limit: 200 }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(tr => {
           const fallback: ScreenerResult[] = (tr.tickers ?? []).map(t => ({
@@ -180,15 +184,54 @@ export class ExplorerComponent implements OnInit {
             company_name: t.company_name, cluster_id: t.cluster_id, rating_label: '',
           }));
           const set = new Set(scored.map(r => r.ticker));
-          this.results.set(this.enrich([...scored, ...fallback.filter(f => !set.has(f.ticker))]));
+          const merged = [...scored, ...fallback.filter(f => !set.has(f.ticker))];
+          this.results.set(this.enrich(merged));
           this.loading.set(false);
+          this.loadQuotes(merged.map(r => r.ticker));
         });
       }
     });
   }
 
   private enrich(rows: ScreenerResult[]): ExplorerRow[] {
-    return rows.map(r => ({ ...r, cluster_name: CLUSTER_NAMES[r.cluster_id as ClusterId] ?? `C${r.cluster_id}` }));
+    return rows.map(r => ({
+      ...r,
+      cluster_name: CLUSTER_NAMES[r.cluster_id as ClusterId] ?? `C${r.cluster_id}`,
+      price: null,
+      change_pct: null,
+      spark_points: '',
+    }));
+  }
+
+  private loadQuotes(tickers: string[]): void {
+    // Batch fetch quotes for first 30 tickers (avoid N+1 overload)
+    const batch = tickers.slice(0, 30);
+    batch.forEach(ticker => {
+      this.tickerService.getQuote(ticker).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(q => {
+        if (!q?.close) return;
+        const changePct = q.open > 0 ? ((q.close - q.open) / q.open) * 100 : 0;
+        this.results.update(rows => rows.map(r => {
+          if (r.ticker !== ticker) return r;
+          return { ...r, price: q.close, change_pct: changePct };
+        }));
+      });
+
+      // Fetch 5-day history for sparkline
+      this.tickerService.getHistory(ticker, 5).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(h => {
+        const data = h?.data ?? [];
+        if (data.length < 2) return;
+        const closes = data.map(d => d.close);
+        const min = Math.min(...closes);
+        const max = Math.max(...closes);
+        const range = max - min || 1;
+        const pts = closes.map((c, i) => {
+          const x = (i / (closes.length - 1)) * 48;
+          const y = 16 - ((c - min) / range) * 14;
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(' ');
+        this.results.update(rows => rows.map(r => r.ticker === ticker ? { ...r, spark_points: pts } : r));
+      });
+    });
   }
 
   onClusterChange(opt: DropdownOption | DropdownOption[]): void {

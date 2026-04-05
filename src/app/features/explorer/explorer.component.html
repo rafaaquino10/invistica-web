@@ -38,6 +38,8 @@
             <th class="ex-th ex-th--sort" (click)="toggleSort('ticker')" [class.ex-th--active]="sortKey() === 'ticker'">Ticker{{ sortIcon('ticker') }}</th>
             <th class="ex-th ex-th--sort" (click)="toggleSort('company_name')" [class.ex-th--active]="sortKey() === 'company_name'">Empresa{{ sortIcon('company_name') }}</th>
             <th class="ex-th ex-th--sort" (click)="toggleSort('cluster_name')" [class.ex-th--active]="sortKey() === 'cluster_name'">Setor{{ sortIcon('cluster_name') }}</th>
+            <th class="ex-th ex-th--sort" (click)="toggleSort('price')" [class.ex-th--active]="sortKey() === 'price'">Preco{{ sortIcon('price') }}</th>
+            <th class="ex-th">Dia</th>
             <th class="ex-th ex-th--sort" (click)="toggleSort('iq_score')" [class.ex-th--active]="sortKey() === 'iq_score'">IQ-Score{{ sortIcon('iq_score') }}</th>
             <th class="ex-th">Rating</th>
             <th class="ex-th ex-th--sort" (click)="toggleSort('score_quali')" [class.ex-th--active]="sortKey() === 'score_quali'">Quali{{ sortIcon('score_quali') }}</th>
@@ -55,6 +57,25 @@
               <td class="ex-td ex-td--ticker"><iq-ticker-logo [ticker]="r.ticker" [size]="20" /><span class="mono">{{ r.ticker }}</span></td>
               <td class="ex-td ex-td--name">{{ r.company_name | slice:0:28 }}</td>
               <td class="ex-td ex-td--cluster">{{ r.cluster_name }}</td>
+              <td class="ex-td ex-td--price mono">{{ r.price ? 'R$ ' + r.price.toFixed(2) : '--' }}</td>
+              <td class="ex-td ex-td--day">
+                <div class="day-cell">
+                  @if (r.spark_points) {
+                    <svg viewBox="0 0 48 18" class="day-cell__spark" preserveAspectRatio="none">
+                      <polyline [attr.points]="r.spark_points" fill="none"
+                                [attr.stroke]="(r.change_pct ?? 0) >= 0 ? 'var(--positive)' : 'var(--negative)'"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  }
+                  @if (r.change_pct != null) {
+                    <span class="day-cell__pct mono" [class.positive]="r.change_pct >= 0" [class.negative]="r.change_pct < 0">
+                      {{ r.change_pct >= 0 ? '+' : '' }}{{ r.change_pct.toFixed(2) }}%
+                    </span>
+                  } @else {
+                    <span class="day-cell__pct mono">--</span>
+                  }
+                </div>
+              </td>
               <td class="ex-td ex-td--score">
                 <div class="score-cell">
                   <span class="score-cell__val mono" [style.color]="r.iq_score ? scoreColor(r.iq_score) : ''">{{ fmt(r.iq_score) }}</span>

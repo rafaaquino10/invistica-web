@@ -74,19 +74,40 @@
 .explorer__table-wrap { @include m.iq-table-wrap; max-height: 75vh; }
 .explorer__table {
   @include m.iq-table;
-  // 12 colunas — larguras proporcionais
-  th:nth-child(1) { width: 10%; }  // Ticker
-  th:nth-child(2) { width: 16%; }  // Empresa
-  th:nth-child(3) { width: 9%; }   // Setor
-  th:nth-child(4) { width: 8%; }   // IQ-Score
-  th:nth-child(5) { width: 8%; }   // Rating
-  th:nth-child(6),
-  th:nth-child(7),
-  th:nth-child(8) { width: 7%; }   // Quali, Quanti, Valuation
-  th:nth-child(9) { width: 8%; }   // Fair Value
-  th:nth-child(10),
-  th:nth-child(11),
-  th:nth-child(12) { width: 7%; }  // Margem, DY Proj, Safety
+  // 14 colunas
+  th:nth-child(1) { width: 9%; }   // Ticker
+  th:nth-child(2) { width: 13%; }  // Empresa
+  th:nth-child(3) { width: 7%; }   // Setor
+  th:nth-child(4) { width: 7%; }   // Preco
+  th:nth-child(5) { width: 10%; }  // Dia (spark + %)
+  th:nth-child(6) { width: 7%; }   // IQ-Score
+  th:nth-child(7) { width: 7%; }   // Rating
+  th:nth-child(8),
+  th:nth-child(9),
+  th:nth-child(10) { width: 6%; }  // Quali, Quanti, Valuation
+  th:nth-child(11) { width: 7%; }  // Fair Value
+  th:nth-child(12),
+  th:nth-child(13),
+  th:nth-child(14) { width: 5%; }  // Margem, DY Proj, Safety
+}
+
+// Price + Day cells
+.ex-td--price { font-weight: 600; font-size: t.$text-sm; white-space: nowrap; }
+
+.day-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.day-cell__spark {
+  width: 48px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.day-cell__pct {
+  font-size: t.$text-xs;
+  font-weight: 600;
 }
 
 .ex-th--sort { @include m.iq-table-sortable; }
