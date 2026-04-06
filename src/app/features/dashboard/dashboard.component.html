@@ -10,7 +10,8 @@
 } @else {
   <div class="dash" [class.dash--ready]="ready()">
 
-    <!-- ═══ ZONE 1: HERO ═══ -->
+    <!-- ═══ ZONE 1: HERO (only with portfolio) ═══ -->
+    @if (hasPortfolio()) {
     <dash-hero class="anim-item" style="--anim-order: 0"
       [userName]="userName()"
       [score]="portfolioScore()"
@@ -25,6 +26,7 @@
       [selic]="regime()?.macro?.selic ?? null"
       [ipca]="regime()?.macro?.ipca ?? null"
     />
+    }
 
     <!-- ═══ ZONE 2: INTELLIGENCE STRIP ═══ -->
     <div class="strip anim-item" style="--anim-order: 1">
