@@ -57,20 +57,18 @@
 .strip__dot { width: 7px; height: 7px; border-radius: 50%; }
 .strip__sep { color: var(--text-quaternary); }
 
-// ═══ CHART FULL WIDTH ═══
-.chart-card--full { width: 100%; }
-
-// ═══ ALLOCATION GRID (2 donuts side by side) ═══
-.alloc-grid {
+// ═══ DASH ROW (2 colunas, nenhum grafico full width sozinho) ═══
+.dash-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+  align-items: start;
 }
 
-// ═══ SECONDARY GRID (intraday + risk status side by side) ═══
-.secondary-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+// Coluna empilhada (intraday + risk dentro de uma celula do grid)
+.dash-col {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 
@@ -426,8 +424,7 @@
 @media (max-width: 767px) {
   .dash { gap: 12px; }
   .dash__skel-grid { grid-template-columns: 1fr; }
-  .alloc-grid { grid-template-columns: 1fr; }
-  .secondary-grid { grid-template-columns: 1fr; }
+  .dash-row { grid-template-columns: 1fr; }
   .chart-card__metrics { gap: 10px; }
   .chart-card__metric-val { font-size: 14px; }
   .main-grid { grid-template-columns: 1fr; }

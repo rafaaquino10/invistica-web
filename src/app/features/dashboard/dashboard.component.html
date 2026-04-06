@@ -54,61 +54,66 @@
       </div>
     </div>
 
-    <!-- ═══ ZONE 3: RENTABILIDADE (full width) ═══ -->
-    @if (perfSeries().length > 0) {
-      <div class="chart-card chart-card--full anim-item" style="--anim-order: 2">
-        <div class="chart-card__head">
-          <span class="chart-card__title">Rentabilidade vs Benchmarks</span>
-          <div class="chart-card__periods">
-            @for (p of ['1M','3M','6M','12M','MAX']; track p) {
-              <button class="chart-card__period" [class.chart-card__period--active]="perfPeriod() === p"
-                      (click)="changePerfPeriod(p)">{{ p }}</button>
-            }
+    <!-- ═══ ROW 3: RENTABILIDADE | ALOCACAO POR ATIVO ═══ -->
+    <div class="dash-row anim-item" style="--anim-order: 2">
+      <!-- Rentabilidade vs Benchmarks -->
+      @if (perfSeries().length > 0) {
+        <div class="chart-card">
+          <div class="chart-card__head">
+            <span class="chart-card__title">Rentabilidade vs Benchmarks</span>
+            <div class="chart-card__periods">
+              @for (p of ['1M','3M','6M','12M','MAX']; track p) {
+                <button class="chart-card__period" [class.chart-card__period--active]="perfPeriod() === p"
+                        (click)="changePerfPeriod(p)">{{ p }}</button>
+              }
+            </div>
           </div>
+          <iq-line-chart [series]="perfSeries()" [labels]="perfLabels()" />
+          @if (perfMetrics(); as m) {
+            <div class="chart-card__metrics">
+              <div class="chart-card__metric">
+                <span class="chart-card__metric-val mono" [class.positive]="m.carteira_return >= 0" [class.negative]="m.carteira_return < 0">
+                  {{ m.carteira_return >= 0 ? '+' : '' }}{{ (m.carteira_return * 100).toFixed(2) }}%
+                </span>
+                <span class="chart-card__metric-label">Carteira</span>
+              </div>
+              <div class="chart-card__metric">
+                <span class="chart-card__metric-val mono">{{ (m.ibov_return * 100).toFixed(2) }}%</span>
+                <span class="chart-card__metric-label">IBOV</span>
+              </div>
+              <div class="chart-card__metric">
+                <span class="chart-card__metric-val mono">{{ (m.cdi_return * 100).toFixed(2) }}%</span>
+                <span class="chart-card__metric-label">CDI</span>
+              </div>
+              <div class="chart-card__metric">
+                <span class="chart-card__metric-val mono" [class.positive]="m.alpha_ibov > 0" [class.negative]="m.alpha_ibov < 0">
+                  {{ m.alpha_ibov > 0 ? '+' : '' }}{{ (m.alpha_ibov * 100).toFixed(2) }}pp
+                </span>
+                <span class="chart-card__metric-label">Alpha IBOV</span>
+              </div>
+              <div class="chart-card__metric">
+                <span class="chart-card__metric-val mono negative">{{ (m.max_drawdown * 100).toFixed(1) }}%</span>
+                <span class="chart-card__metric-label">Max DD</span>
+              </div>
+            </div>
+          }
         </div>
-        <iq-line-chart [series]="perfSeries()" [labels]="perfLabels()" />
-        @if (perfMetrics(); as m) {
-          <div class="chart-card__metrics">
-            <div class="chart-card__metric">
-              <span class="chart-card__metric-val mono" [class.positive]="m.carteira_return >= 0" [class.negative]="m.carteira_return < 0">
-                {{ m.carteira_return >= 0 ? '+' : '' }}{{ (m.carteira_return * 100).toFixed(2) }}%
-              </span>
-              <span class="chart-card__metric-label">Carteira</span>
-            </div>
-            <div class="chart-card__metric">
-              <span class="chart-card__metric-val mono">{{ (m.ibov_return * 100).toFixed(2) }}%</span>
-              <span class="chart-card__metric-label">IBOV</span>
-            </div>
-            <div class="chart-card__metric">
-              <span class="chart-card__metric-val mono">{{ (m.cdi_return * 100).toFixed(2) }}%</span>
-              <span class="chart-card__metric-label">CDI</span>
-            </div>
-            <div class="chart-card__metric">
-              <span class="chart-card__metric-val mono" [class.positive]="m.alpha_ibov > 0" [class.negative]="m.alpha_ibov < 0">
-                {{ m.alpha_ibov > 0 ? '+' : '' }}{{ (m.alpha_ibov * 100).toFixed(2) }}pp
-              </span>
-              <span class="chart-card__metric-label">Alpha IBOV</span>
-            </div>
-            <div class="chart-card__metric">
-              <span class="chart-card__metric-val mono negative">{{ (m.max_drawdown * 100).toFixed(1) }}%</span>
-              <span class="chart-card__metric-label">Max DD</span>
-            </div>
-          </div>
-        }
-      </div>
-    }
-
-    <!-- ═══ ZONE 3b: ALOCACAO POR ATIVO | ALOCACAO POR SETOR (lado a lado) ═══ -->
-    @if (hasPortfolio() && allocationByAsset().length > 0) {
-      <div class="alloc-grid anim-item" style="--anim-order: 3">
-        <!-- Por Ativo -->
+      }
+      <!-- Alocacao por Ativo -->
+      @if (hasPortfolio() && allocationByAsset().length > 0) {
         <div class="chart-card">
           <div class="chart-card__head">
             <span class="chart-card__title">Alocacao por Ativo</span>
           </div>
           <iq-donut-chart [data]="allocationByAsset()" />
         </div>
-        <!-- Por Setor -->
+      }
+    </div>
+
+    <!-- ═══ ROW 4: ALOCACAO POR SETOR | INTRADAY + RISK ═══ -->
+    <div class="dash-row anim-item" style="--anim-order: 3">
+      <!-- Alocacao por Setor -->
+      @if (hasPortfolio() && allocationBySector().length > 0) {
         <div class="chart-card">
           <div class="chart-card__head">
             <span class="chart-card__title">Alocacao por Setor</span>
@@ -118,12 +123,10 @@
             <div class="alloc-card__warning">Concentracao elevada (HHI > 25%)</div>
           }
         </div>
-      </div>
-    }
+      }
 
-    <!-- ═══ ZONE 3c: INTRADAY | RISK STATUS (dividindo vertical) ═══ -->
-    <div class="secondary-grid anim-item" style="--anim-order: 4">
-      <!-- Intraday -->
+      <!-- Intraday + Risk empilhados na coluna direita -->
+      <div class="dash-col">
       @if (intradaySeries().length > 0) {
         <div class="chart-card">
           <div class="chart-card__head">
@@ -182,6 +185,7 @@
           </div>
         </div>
       }
+      </div>
     </div>
 
     <!-- ═══ MERCADO AGORA (quando sem carteira) ═══ -->
