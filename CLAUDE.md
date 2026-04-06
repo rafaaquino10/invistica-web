@@ -344,6 +344,70 @@ src/
 
 ---
 
+## BIBLIOTECA DE GRÁFICOS — APACHE ECHARTS
+
+Usar apache-echarts + ngx-echarts (wrapper Angular oficial).
+Instalar: npm install echarts ngx-echarts
+
+Tipos de gráfico usados no InvestIQ:
+- Line/Area: equity curves, performance, evolução de score, projeções
+- Bar: composição setorial, atribuição de performance, dividendos mensais
+- Treemap: mapa de mercado (tamanho = market cap, cor = variação ou score)
+- Radar: comparação de pilares entre ativos
+- Gauge: score hero na tela de ativo
+
+Zero gráficos de candlestick. InvestIQ NÃO é plataforma de day trade.
+
+Requisitos visuais (TODOS os gráficos):
+- Fundo transparente (herda --bg do tema)
+- Zero grid lines pesadas. Apenas linhas sutis rgba(255,255,255,0.03) em dark, rgba(0,0,0,0.04) em light
+- Crosshair de precisão com snap nos datapoints
+- Tooltip rico: fundo glassmorphism, números em IBM Plex Mono
+- Dark mode: linha principal em volt #d0f364, área com gradiente volt→transparente, benchmarks em cinza pontilhado
+- Light mode: linha principal em #5A6B10, mesma estrutura
+- Responsivo: gráfico ocupa 100% da largura do container, resize automático
+- Zoom com scroll do mouse nos gráficos de série temporal
+- Períodos selecionáveis via botões (1M, 3M, 6M, 12M, MAX)
+- Animação de entrada suave (400ms ease-out) — única animação permitida
+- Legenda minimalista abaixo do gráfico
+- Tema ECharts registrado globalmente (dark-volt e light-volt) para consistência total
+
+---
+
+## PLUGGY OPEN FINANCE
+
+InvestIQ usa Pluggy (pluggy.ai) para importar carteiras automaticamente das corretoras brasileiras.
+Trial: 14 dias free, até 20 conexões.
+
+### Frontend
+- Embutir Pluggy Connect Widget para o usuário autorizar conexão com sua corretora
+- Após autorização, enviar accessToken para o backend
+- Widget deve seguir a paleta Volt Carbon onde possível (Pluggy permite customização de cores)
+
+### Backend (PENDENTE — não implementado ainda)
+- Endpoint POST /portfolio/import-pluggy que recebe accessToken
+- Chama Pluggy API para buscar investments do usuário
+- Converte para formato de posições do InvestIQ
+- Salva no portfolio do usuário
+
+### UX
+- Na tela de Carteira: botão "Importar da Corretora" que abre o widget Pluggy
+- Também disponível no Dashboard quando o usuário não tem carteira
+
+---
+
+## EMPTY STATES
+
+Quando o usuário não tem carteira montada:
+- Dashboard: mostra dados de mercado + top scores + regime macro. Seção de carteira NÃO aparece. No lugar, card com CTA "Importe sua carteira" (abre Pluggy) ou "Monte manualmente".
+- Carteira: estado vazio elegante + botão "Importar da Corretora" + "Adicionar posição manual"
+- Dividendos: mostra calendário geral do mercado, sem seção pessoal
+- Radar: mostra feed de mercado, sem alertas pessoais até criar
+
+NUNCA mostrar zeros, tabelas vazias ou "Nenhum dado encontrado". Sempre conteúdo útil de mercado + CTA claro.
+
+---
+
 ## ORDEM DE EXECUÇÃO
 
 1. ~~Clean slate~~ ✅
