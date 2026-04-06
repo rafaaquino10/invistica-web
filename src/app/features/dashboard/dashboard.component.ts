@@ -11,7 +11,9 @@ import { ScoreService } from '../../core/services/score.service';
 import { DividendService } from '../../core/services/dividend.service';
 import { RegimeService } from '../../core/services/regime.service';
 import { StrategyService, RiskStatus } from '../../core/services/strategy.service';
-import type { PortfolioResult, PortfolioAlert, PerformanceResult, IntradayResult } from '../../core/models/portfolio.model';
+import type { PortfolioResult, PortfolioAlert, PerformanceResult, IntradayResult, PortfolioAnalytics } from '../../core/models/portfolio.model';
+import { IqDonutChartComponent, DonutSlice } from '../../shared/components/iq-donut-chart/iq-donut-chart.component';
+import { CLUSTER_NAMES, ClusterId } from '../../core/models/cluster.model';
 import { IqLineChartComponent, LineSeries } from '../../shared/components/iq-line-chart/iq-line-chart.component';
 import type { ScreenerResult } from '../../core/models/score.model';
 import type { RegimeResult } from '../../core/models/regime.model';
@@ -28,7 +30,7 @@ import { CurrencyBrlPipe } from '../../shared/pipes/currency-brl.pipe';
   selector: 'iq-dashboard',
   standalone: true,
   imports: [
-    IqTickerLogoComponent, IqLineChartComponent,
+    IqTickerLogoComponent, IqLineChartComponent, IqDonutChartComponent,
     RouterLink, DashboardHeroComponent, IqRatingBadgeComponent,
     IqSkeletonComponent, IqDisclaimerComponent, IqButtonComponent,
     IqEmptyStateComponent, CurrencyBrlPipe,
@@ -56,6 +58,67 @@ export class DashboardComponent implements OnInit {
   readonly alerts = signal<PortfolioAlert[]>([]);
   readonly divTotal = signal(0);
   readonly divYield = signal(0);
+  readonly analytics = signal<PortfolioAnalytics | null>(null);
+  readonly allocationView = signal<'ativo' | 'setor'>('ativo');
+
+  private readonly SECTOR_COLORS: Record<number, string> = {
+    1: '#1565C0', 2: '#E65100', 3: '#7B1FA2', 4: '#00838F',
+    5: '#2E7D32', 6: '#AD1457', 7: '#F57F17', 8: '#4527A0', 9: '#00695C',
+  };
+
+  readonly allocationByAsset = computed((): DonutSlice[] => {
+    const p = this.portfolio();
+    if (!p?.positions?.length) return [];
+    return p.positions.map(pos => ({
+      label: pos.ticker,
+      value: pos.market_value || 0,
+      color: this.SECTOR_COLORS[pos.cluster_id] || '#888',
+    }));
+  });
+
+  readonly allocationBySector = computed((): DonutSlice[] => {
+    const p = this.portfolio();
+    if (!p?.positions?.length) return [];
+    const clusters: Record<number, number> = {};
+    p.positions.forEach(pos => {
+      clusters[pos.cluster_id] = (clusters[pos.cluster_id] || 0) + (pos.market_value || 0);
+    });
+    return Object.entries(clusters)
+      .map(([id, val]) => ({
+        label: CLUSTER_NAMES[Number(id) as ClusterId] || `Setor ${id}`,
+        value: val,
+        color: this.SECTOR_COLORS[Number(id)] || '#888',
+      }))
+      .sort((a, b) => b.value - a.value);
+  });
+
+  readonly activeAllocation = computed(() =>
+    this.allocationView() === 'ativo' ? this.allocationByAsset() : this.allocationBySector()
+  );
+
+  readonly concentrationWarning = computed(() => {
+    const hhi = this.analytics()?.herfindahl_index;
+    return hhi != null && hhi > 0.25;
+  });
+
+  readonly allocationDetails = computed(() => {
+    const p = this.portfolio();
+    if (!p?.positions?.length) return [];
+    const total = p.total_value || 1;
+    return p.positions.map(pos => ({
+      ticker: pos.ticker,
+      name: pos.company_name,
+      pct: ((pos.market_value || 0) / total) * 100,
+      value: pos.market_value || 0,
+      score: pos.iq_score,
+      color: this.SECTOR_COLORS[pos.cluster_id] || '#888',
+      sector: CLUSTER_NAMES[pos.cluster_id as ClusterId] || '',
+    })).sort((a, b) => b.pct - a.pct);
+  });
+
+  toggleAllocationView(): void {
+    this.allocationView.update(v => v === 'ativo' ? 'setor' : 'ativo');
+  }
 
   // ── Charts ──
   readonly perfSeries = signal<LineSeries[]>([]);
@@ -259,6 +322,7 @@ export class DashboardComponent implements OnInit {
       top: this.scoreService.getTop(10).pipe(catchError(() => of({ top: [] }))),
       divSummary: this.dividendService.getSummary(12).pipe(catchError(() => of(null))),
       alerts: this.portfolioService.getAlerts().pipe(catchError(() => of([]))),
+      analytics: this.portfolioService.getAnalytics().pipe(catchError(() => of(null))),
       risk: this.strategyService.getRiskStatus().pipe(catchError(() => of(null))),
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(res => {
       if (res.portfolio && res.portfolio.positions?.length > 0) {
@@ -277,6 +341,7 @@ export class DashboardComponent implements OnInit {
       }
 
       this.risk.set(res.risk as RiskStatus | null);
+      if (res.analytics) this.analytics.set(res.analytics as PortfolioAnalytics);
       this.loading.set(false);
       setTimeout(() => this.ready.set(true), 50);
     });

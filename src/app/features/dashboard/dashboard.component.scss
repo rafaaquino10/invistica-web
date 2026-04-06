@@ -145,6 +145,67 @@
   letter-spacing: 0.04em;
 }
 
+// ═══ ALLOCATION CARD ═══
+.alloc-card {
+  @include m.iq-card;
+  padding: 16px;
+}
+.alloc-card__head {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+}
+.alloc-toggle { display: flex; gap: 2px; }
+.alloc-toggle__btn {
+  font-size: 11px; font-weight: 500; padding: 4px 12px; border: 1px solid var(--border-default);
+  background: transparent; color: var(--text-tertiary); cursor: pointer; border-radius: var(--radius);
+  font-family: inherit;
+  &:hover { color: var(--text-primary); border-color: var(--text-tertiary); }
+}
+.alloc-toggle__btn--active {
+  background: var(--obsidian); color: var(--obsidian-bg); border-color: var(--obsidian);
+  font-weight: 600;
+}
+.alloc-card__body {
+  display: grid; grid-template-columns: 200px 1fr; gap: 24px; align-items: start;
+}
+.alloc-card__chart { display: flex; justify-content: center; }
+.alloc-card__legend { display: flex; flex-direction: column; gap: 6px; }
+.alloc-legend-row {
+  display: flex; align-items: center; gap: 8px; padding: 4px 0;
+  border-bottom: 1px solid var(--border-default);
+  &:last-child { border-bottom: none; }
+}
+.alloc-legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.alloc-legend-info { display: flex; flex-direction: column; gap: 1px; min-width: 60px; }
+.alloc-legend-tk { font-size: 12px; font-weight: 700; color: var(--text-primary); }
+.alloc-legend-sector { font-size: 9px; color: var(--text-tertiary); }
+.alloc-legend-bar-wrap { flex: 1; min-width: 60px; }
+.alloc-legend-bar { height: 4px; background: var(--surface-3); border-radius: 2px; overflow: hidden; }
+.alloc-legend-bar-fill { height: 100%; border-radius: 2px; }
+.alloc-legend-pct { font-size: 12px; font-weight: 700; color: var(--text-primary); min-width: 40px; text-align: right; }
+.alloc-legend-val { font-size: 11px; color: var(--text-tertiary); min-width: 70px; text-align: right; }
+.alloc-legend-score { font-size: 12px; font-weight: 700; min-width: 28px; text-align: right; }
+.alloc-card__warning {
+  margin-top: 12px; padding: 8px 12px; font-size: 12px; font-weight: 500;
+  background: var(--warning-bg); color: var(--warning); border-radius: var(--radius);
+  border-left: 3px solid var(--warning);
+}
+
+// ═══ MERCADO AGORA (sem carteira) ═══
+.market-now {
+  @include m.iq-card;
+  padding: 20px;
+}
+.market-now__head { margin-bottom: 12px; }
+.market-now__regime {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 12px 0; border-bottom: 1px solid var(--border-default); margin-bottom: 16px;
+}
+.market-now__regime-dot { width: 8px; height: 8px; border-radius: 50%; }
+.market-now__regime-label { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.market-now__macro { font-size: 12px; color: var(--text-secondary); }
+.market-now__cta { text-align: center; padding: 20px 0; }
+.market-now__cta-text { font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.5; max-width: 500px; margin-left: auto; margin-right: auto; }
+
 // ═══ MAIN GRID (opportunities + risk sidebar) ═══
 .main-grid {
   display: grid;
@@ -349,6 +410,10 @@
   .charts-grid { grid-template-columns: 1fr; }
   .chart-card__metrics { gap: 10px; }
   .chart-card__metric-val { font-size: 14px; }
+  .alloc-card__body { grid-template-columns: 1fr; }
+  .alloc-card__chart { margin-bottom: 12px; }
+  .alloc-legend-bar-wrap { display: none; }
+  .alloc-legend-val { display: none; }
   .main-grid { grid-template-columns: 1fr; }
   .opps__grid { grid-template-columns: 1fr; }
   .opps__header { flex-direction: column; gap: 4px; align-items: flex-start; }

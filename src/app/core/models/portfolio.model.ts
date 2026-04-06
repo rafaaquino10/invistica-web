@@ -55,6 +55,7 @@ export interface PortfolioAnalytics {
   portfolio_id: string;
   total_value: number;
   diversification_score: number | null;
+  herfindahl_index: number | null;
   cluster_allocation: Record<string, number>;
   risk_metrics: {
     volatility: number | null;

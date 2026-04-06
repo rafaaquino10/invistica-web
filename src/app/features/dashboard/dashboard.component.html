@@ -132,6 +132,74 @@
         }
       </div>
 
+    <!-- ═══ ZONE 3b: ALOCACAO DA CARTEIRA ═══ -->
+    @if (hasPortfolio() && activeAllocation().length > 0) {
+      <div class="alloc-card anim-item" style="--anim-order: 3">
+        <div class="alloc-card__head">
+          <h2 class="section-title">Alocacao da Carteira</h2>
+          <div class="alloc-toggle">
+            <button class="alloc-toggle__btn" [class.alloc-toggle__btn--active]="allocationView() === 'ativo'" (click)="allocationView.set('ativo')">Por Ativo</button>
+            <button class="alloc-toggle__btn" [class.alloc-toggle__btn--active]="allocationView() === 'setor'" (click)="allocationView.set('setor')">Por Setor</button>
+          </div>
+        </div>
+        <div class="alloc-card__body">
+          <div class="alloc-card__chart">
+            <iq-donut-chart [data]="activeAllocation()" />
+          </div>
+          <div class="alloc-card__legend">
+            @for (item of allocationDetails(); track item.ticker) {
+              <div class="alloc-legend-row">
+                <span class="alloc-legend-dot" [style.background]="item.color"></span>
+                <div class="alloc-legend-info">
+                  <span class="alloc-legend-tk mono">{{ item.ticker }}</span>
+                  <span class="alloc-legend-sector">{{ item.sector }}</span>
+                </div>
+                <div class="alloc-legend-bar-wrap">
+                  <div class="alloc-legend-bar">
+                    <div class="alloc-legend-bar-fill" [style.width.%]="item.pct" [style.background]="item.color"></div>
+                  </div>
+                </div>
+                <span class="alloc-legend-pct mono">{{ item.pct.toFixed(1) }}%</span>
+                <span class="alloc-legend-val mono">R$ {{ fmtBrl(item.value) }}</span>
+                @if (item.score) {
+                  <span class="alloc-legend-score mono" [style.color]="scoreColor(item.score)">{{ item.score }}</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+        @if (concentrationWarning()) {
+          <div class="alloc-card__warning">
+            Concentracao elevada detectada (HHI > 25%). Considere diversificar.
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ═══ MERCADO AGORA (quando sem carteira) ═══ -->
+    @if (!hasPortfolio()) {
+      <div class="market-now anim-item" style="--anim-order: 3">
+        <div class="market-now__head">
+          <h2 class="section-title">Mercado Agora</h2>
+        </div>
+        @if (regime()) {
+          <div class="market-now__regime">
+            <span class="market-now__regime-dot" [style.background]="regimeDotColor()"></span>
+            <span class="market-now__regime-label">{{ regimeLabel() }}</span>
+            @if (regime()!.macro) {
+              <span class="market-now__macro mono">SELIC {{ regime()!.macro.selic }}%</span>
+              <span class="market-now__macro mono">IPCA {{ regime()!.macro.ipca }}%</span>
+              <span class="market-now__macro mono">USD R$ {{ regime()!.macro.cambio_usd.toFixed(2) }}</span>
+            }
+          </div>
+        }
+        <div class="market-now__cta">
+          <p class="market-now__cta-text">Monte sua carteira e veja como ela performa vs IBOV e CDI. Receba sinais personalizados do motor IQ-Cognit.</p>
+          <iq-button variant="primary" routerLink="/carteira" [queryParams]="{ add: true }">Importar minha carteira</iq-button>
+        </div>
+      </div>
+    }
+
     <!-- ═══ ZONE 4: OPORTUNIDADES + RISK STATUS ═══ -->
     <div class="main-grid anim-item" style="--anim-order: 2">
 
