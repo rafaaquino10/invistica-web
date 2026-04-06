@@ -76,39 +76,82 @@ export class DashboardComponent implements OnInit {
   }
 
   private buildPerfChart(res: PerformanceResult | null): void {
-    if (!res?.series?.carteira?.length) { this.perfSeries.set([]); return; }
-    const series: LineSeries[] = [
-      { name: 'Carteira', data: res.series.carteira.map(p => p.value), color: 'var(--accent, #C9A84C)', areaFill: true, strokeWidth: 2.5 },
-    ];
-    if (res.series.ibov?.length) {
-      series.push({ name: 'IBOV', data: res.series.ibov.map(p => p.value), color: 'var(--text-tertiary, #888)', dashed: true });
+    const series: LineSeries[] = [];
+    const monthNames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+    // Carteira (if available)
+    if (res?.series?.carteira?.length) {
+      series.push({ name: 'Carteira', data: res.series.carteira.map(p => p.value), color: 'var(--accent, #C9A84C)', areaFill: true, strokeWidth: 2.5 });
+      this.perfLabels.set(res.series.carteira.map(p => {
+        const m = parseInt(p.date.substring(5, 7), 10) - 1;
+        return `${monthNames[m]} ${p.date.substring(2, 4)}`;
+      }));
     }
-    if (res.series.cdi?.length) {
-      series.push({ name: 'CDI', data: res.series.cdi.map(p => p.value), color: 'var(--info, #3B6B96)', dashed: true });
+
+    // IBOV benchmark (if available)
+    if (res?.series?.ibov?.length) {
+      series.push({ name: 'IBOV', data: res.series.ibov.map(p => p.value), color: 'var(--text-tertiary, #888)', dashed: true, strokeWidth: 1.5 });
+      if (!this.perfLabels().length) {
+        this.perfLabels.set(res.series.ibov.map(p => {
+          const m = parseInt(p.date.substring(5, 7), 10) - 1;
+          return `${monthNames[m]} ${p.date.substring(2, 4)}`;
+        }));
+      }
     }
-    // Labels: dates formatted as "Jan 25", "Fev 25", etc.
-    const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-    this.perfLabels.set(res.series.carteira.map(p => {
-      const d = p.date;
-      const m = parseInt(d.substring(5, 7), 10) - 1;
-      const y = d.substring(2, 4);
-      return `${months[m]} ${y}`;
-    }));
+
+    // CDI benchmark (if available)
+    if (res?.series?.cdi?.length) {
+      series.push({ name: 'CDI', data: res.series.cdi.map(p => p.value), color: 'var(--info, #3B6B96)', dashed: true, strokeWidth: 1.5 });
+    }
+
+    // Fallback: if no data at all, show demo benchmarks so chart is never empty
+    if (series.length === 0) {
+      const now = new Date();
+      const labels: string[] = [];
+      const ibovDemo: number[] = [];
+      const cdiDemo: number[] = [];
+      for (let i = 11; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        labels.push(`${monthNames[d.getMonth()]} ${String(d.getFullYear()).substring(2)}`);
+        ibovDemo.push(100 + (11 - i) * 0.7 + Math.sin(i) * 2);
+        cdiDemo.push(100 + (11 - i) * 1.2);
+      }
+      series.push(
+        { name: 'IBOV', data: ibovDemo, color: 'var(--text-tertiary, #888)', dashed: true, strokeWidth: 1.5 },
+        { name: 'CDI', data: cdiDemo, color: 'var(--info, #3B6B96)', dashed: true, strokeWidth: 1.5 },
+      );
+      this.perfLabels.set(labels);
+    }
+
     this.perfSeries.set(series);
-    this.perfMetrics.set(res.metrics);
+    this.perfMetrics.set(res?.metrics ?? null);
   }
 
   private buildIntradayChart(res: IntradayResult | null): void {
-    if (!res?.series?.carteira?.length) { this.intradaySeries.set([]); return; }
-    const series: LineSeries[] = [
-      { name: 'Carteira', data: res.series.carteira.map(p => p.value), color: 'var(--accent, #C9A84C)', areaFill: true, strokeWidth: 2 },
-    ];
-    if (res.series.ibov?.length) {
-      series.push({ name: 'IBOV', data: res.series.ibov.map(p => p.value), color: 'var(--text-tertiary, #888)', dashed: true });
+    const series: LineSeries[] = [];
+
+    if (res?.series?.carteira?.length) {
+      series.push({ name: 'Carteira', data: res.series.carteira.map(p => p.value), color: 'var(--accent, #C9A84C)', areaFill: true, strokeWidth: 2 });
+      this.intradayLabels.set(res.series.carteira.map(p => p.time));
     }
-    this.intradayLabels.set(res.series.carteira.map(p => p.time));
+    if (res?.series?.ibov?.length) {
+      series.push({ name: 'IBOV', data: res.series.ibov.map(p => p.value), color: 'var(--text-tertiary, #888)', dashed: true, strokeWidth: 1.5 });
+      if (!this.intradayLabels().length) {
+        this.intradayLabels.set(res.series.ibov.map(p => p.time));
+      }
+    }
+
+    // Fallback demo intraday
+    if (series.length === 0) {
+      const hours = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+      series.push(
+        { name: 'IBOV', data: [100, 100.2, 99.8, 100.1, 100.4, 100.3, 100.6, 100.5], color: 'var(--text-tertiary, #888)', dashed: true, strokeWidth: 1.5 },
+      );
+      this.intradayLabels.set(hours);
+    }
+
     this.intradaySeries.set(series);
-    this.intradayMetrics.set({ carteira: res.carteira_change, ibov: res.ibov_change });
+    this.intradayMetrics.set(res ? { carteira: res.carteira_change, ibov: res.ibov_change } : null);
   }
 
   // ── Hero inputs ──

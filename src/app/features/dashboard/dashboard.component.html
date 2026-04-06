@@ -53,10 +53,9 @@
     </div>
 
     <!-- ═══ ZONE 3: GRAFICOS DE PERFORMANCE ═══ -->
-    @if (perfSeries().length > 0 || intradaySeries().length > 0) {
-      <div class="charts-grid anim-item" style="--anim-order: 2">
-        <!-- Rentabilidade vs Benchmarks -->
-        @if (perfSeries().length > 0) {
+    <div class="charts-grid anim-item" style="--anim-order: 2">
+      <!-- Rentabilidade vs Benchmarks -->
+      @if (perfSeries().length > 0) {
           <div class="chart-card">
             <div class="chart-card__head">
               <span class="chart-card__title">Rentabilidade vs Benchmarks</span>
@@ -132,7 +131,6 @@
           </div>
         }
       </div>
-    }
 
     <!-- ═══ ZONE 4: OPORTUNIDADES + RISK STATUS ═══ -->
     <div class="main-grid anim-item" style="--anim-order: 2">
