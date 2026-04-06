@@ -1,0 +1,63 @@
+<header class="header glass">
+  <!-- Left: Logo -->
+  <a class="header-logo" routerLink="/dashboard">
+    <span class="logo-mark mono">IQ</span>
+    <span class="logo-text">INVESTIQ</span>
+  </a>
+
+  <!-- Center: Search -->
+  <div class="header-search">
+    <i class="ph ph-magnifying-glass search-icon"></i>
+    <input
+      type="text"
+      class="search-input"
+      placeholder="Buscar ticker ou empresa..."
+      [value]="query()"
+      (input)="onSearch($event)"
+      (blur)="closeSearch()" />
+
+    @if (showResults()) {
+      <div class="search-results">
+        @for (r of results(); track r.ticker) {
+          <button class="search-result-item" (mousedown)="selectResult(r.ticker)">
+            <span class="ticker mono">{{ r.ticker }}</span>
+            <span class="result-name">{{ r.name }}</span>
+          </button>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Right: Actions -->
+  <div class="header-actions">
+    <!-- Theme toggle -->
+    <button class="action-btn" (click)="theme.toggle()" aria-label="Toggle theme">
+      @if (theme.theme() === 'dark') {
+        <i class="ph ph-sun"></i>
+      } @else {
+        <i class="ph ph-moon"></i>
+      }
+    </button>
+
+    <!-- Avatar -->
+    <div class="avatar-wrapper">
+      <button class="avatar-btn" (click)="toggleUserMenu()" (blur)="closeUserMenu()">
+        <i class="ph ph-user"></i>
+      </button>
+
+      @if (showUserMenu()) {
+        <div class="user-menu glass">
+          <button class="menu-item" (mousedown)="showUserMenu.set(false)">
+            <i class="ph ph-gear"></i>
+            <span>Configurações</span>
+          </button>
+          <div class="menu-divider"></div>
+          <button class="menu-item" (mousedown)="showUserMenu.set(false)">
+            <i class="ph ph-sign-out"></i>
+            <span>Sair</span>
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</header>

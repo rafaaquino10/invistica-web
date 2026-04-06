@@ -32,6 +32,8 @@
               }
             ],
             "styles": [
+              "node_modules/@phosphor-icons/web/src/regular/style.css",
+              "node_modules/@phosphor-icons/web/src/fill/style.css",
               "src/styles.scss"
             ],
             "scripts": []
@@ -91,6 +93,8 @@
               }
             ],
             "styles": [
+              "node_modules/@phosphor-icons/web/src/regular/style.css",
+              "node_modules/@phosphor-icons/web/src/fill/style.css",
               "src/styles.scss"
             ],
             "scripts": []
