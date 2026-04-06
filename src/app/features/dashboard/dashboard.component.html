@@ -99,7 +99,7 @@
           }
         </div>
       }
-      <!-- Alocacao (UM donut com toggle) -->
+      <!-- Coluna direita: Alocacao (com carteira) ou Mercado Agora (sem carteira) -->
       @if (hasPortfolio() && activeAllocation().length > 0) {
         <div class="chart-card">
           <div class="chart-card__head">
@@ -113,6 +113,31 @@
           @if (concentrationWarning()) {
             <div class="alloc-card__warning">Concentracao elevada (HHI > 25%)</div>
           }
+        </div>
+      } @else {
+        <div class="chart-card">
+          <div class="chart-card__head">
+            <span class="chart-card__title">Mercado Agora</span>
+          </div>
+          @if (regime()) {
+            <div class="market-compact">
+              <div class="market-compact__row">
+                <span class="market-compact__dot" [style.background]="regimeDotColor()"></span>
+                <span class="market-compact__label">{{ regimeLabel() }}</span>
+              </div>
+              @if (regime()!.macro) {
+                <div class="market-compact__metrics">
+                  <div class="market-compact__item"><span class="market-compact__key mono">SELIC</span><span class="market-compact__val mono">{{ regime()!.macro.selic }}%</span></div>
+                  <div class="market-compact__item"><span class="market-compact__key mono">IPCA</span><span class="market-compact__val mono">{{ regime()!.macro.ipca }}%</span></div>
+                  <div class="market-compact__item"><span class="market-compact__key mono">USD</span><span class="market-compact__val mono">R$ {{ regime()!.macro.cambio_usd.toFixed(2) }}</span></div>
+                  <div class="market-compact__item"><span class="market-compact__key mono">BRENT</span><span class="market-compact__val mono">US$ {{ regime()!.macro.brent.toFixed(0) }}</span></div>
+                </div>
+              }
+            </div>
+          }
+          <div class="market-compact__cta">
+            <iq-button variant="primary" routerLink="/carteira" [queryParams]="{ add: true }">Importar minha carteira</iq-button>
+          </div>
         </div>
       }
     </div>
@@ -179,29 +204,7 @@
       }
     </div>
 
-    <!-- ═══ MERCADO AGORA (quando sem carteira) ═══ -->
-    @if (!hasPortfolio()) {
-      <div class="market-now anim-item" style="--anim-order: 3">
-        <div class="market-now__head">
-          <h2 class="section-title">Mercado Agora</h2>
-        </div>
-        @if (regime()) {
-          <div class="market-now__regime">
-            <span class="market-now__regime-dot" [style.background]="regimeDotColor()"></span>
-            <span class="market-now__regime-label">{{ regimeLabel() }}</span>
-            @if (regime()!.macro) {
-              <span class="market-now__macro mono">SELIC {{ regime()!.macro.selic }}%</span>
-              <span class="market-now__macro mono">IPCA {{ regime()!.macro.ipca }}%</span>
-              <span class="market-now__macro mono">USD R$ {{ regime()!.macro.cambio_usd.toFixed(2) }}</span>
-            }
-          </div>
-        }
-        <div class="market-now__cta">
-          <p class="market-now__cta-text">Monte sua carteira e veja como ela performa vs IBOV e CDI. Receba sinais personalizados do motor IQ-Cognit.</p>
-          <iq-button variant="primary" routerLink="/carteira" [queryParams]="{ add: true }">Importar minha carteira</iq-button>
-        </div>
-      </div>
-    }
+    <!-- Mercado Agora agora esta integrado na ROW 3 como coluna direita -->
 
     <!-- ═══ ZONE 4: OPORTUNIDADES ═══ -->
     <div class="anim-item" style="--anim-order: 5">
