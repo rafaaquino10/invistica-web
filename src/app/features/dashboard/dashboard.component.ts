@@ -59,8 +59,10 @@ export class DashboardComponent implements OnInit {
 
   // ── Charts ──
   readonly perfSeries = signal<LineSeries[]>([]);
+  readonly perfLabels = signal<string[]>([]);
   readonly perfMetrics = signal<any>(null);
   readonly intradaySeries = signal<LineSeries[]>([]);
+  readonly intradayLabels = signal<string[]>([]);
   readonly intradayMetrics = signal<{ carteira: number; ibov: number } | null>(null);
   readonly perfPeriod = signal('12M');
 
@@ -84,6 +86,14 @@ export class DashboardComponent implements OnInit {
     if (res.series.cdi?.length) {
       series.push({ name: 'CDI', data: res.series.cdi.map(p => p.value), color: 'var(--info, #3B6B96)', dashed: true });
     }
+    // Labels: dates formatted as "Jan 25", "Fev 25", etc.
+    const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    this.perfLabels.set(res.series.carteira.map(p => {
+      const d = p.date;
+      const m = parseInt(d.substring(5, 7), 10) - 1;
+      const y = d.substring(2, 4);
+      return `${months[m]} ${y}`;
+    }));
     this.perfSeries.set(series);
     this.perfMetrics.set(res.metrics);
   }
@@ -96,6 +106,7 @@ export class DashboardComponent implements OnInit {
     if (res.series.ibov?.length) {
       series.push({ name: 'IBOV', data: res.series.ibov.map(p => p.value), color: 'var(--text-tertiary, #888)', dashed: true });
     }
+    this.intradayLabels.set(res.series.carteira.map(p => p.time));
     this.intradaySeries.set(series);
     this.intradayMetrics.set({ carteira: res.carteira_change, ibov: res.ibov_change });
   }

@@ -67,7 +67,7 @@
                 }
               </div>
             </div>
-            <iq-line-chart [series]="perfSeries()" />
+            <iq-line-chart [series]="perfSeries()" [labels]="perfLabels()" />
             @if (perfMetrics(); as m) {
               <div class="chart-card__metrics">
                 <div class="chart-card__metric">
@@ -106,7 +106,7 @@
               <span class="chart-card__title">Intraday - Carteira vs IBOV</span>
               <span class="chart-card__subtitle mono">Hoje</span>
             </div>
-            <iq-line-chart [series]="intradaySeries()" />
+            <iq-line-chart [series]="intradaySeries()" [labels]="intradayLabels()" />
             @if (intradayMetrics(); as im) {
               <div class="chart-card__metrics">
                 <div class="chart-card__metric">
