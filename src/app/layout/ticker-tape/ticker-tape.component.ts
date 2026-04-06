@@ -1,9 +1,26 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { ApiService } from '../../core/services/api.service';
+import { forkJoin } from 'rxjs';
+
+interface TopAsset {
+  ticker: string;
+  company_name: string;
+}
+
+interface Quote {
+  ticker: string;
+  open: number;
+  close: number;
+}
 
 interface TapeItem {
-  label: string;
-  value: string;
+  ticker: string;
+  name: string;
+  price: number;
   change: number;
+  logoUrl: string;
+  initials: string;
+  logoError: boolean;
 }
 
 @Component({
@@ -11,29 +28,59 @@ interface TapeItem {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="tape">
-      <div class="tape-track">
-        @for (item of items; track item.label) {
-          <span class="tape-item">
-            <span class="tape-label">{{ item.label }}</span>
-            <span class="tape-value mono">{{ item.value }}</span>
-            <span class="tape-change mono" [class.pos]="item.change >= 0" [class.neg]="item.change < 0">
-              {{ item.change >= 0 ? '+' : '' }}{{ item.change.toFixed(2) }}%
+    @if (items().length > 0) {
+      <div class="tape">
+        <div class="tape-track">
+          @for (item of items(); track item.ticker) {
+            <span class="tape-item">
+              @if (!item.logoError) {
+                <img class="tape-logo"
+                     [src]="item.logoUrl"
+                     [alt]="item.ticker"
+                     (error)="onLogoError(item)"
+                     loading="lazy" />
+              } @else {
+                <span class="tape-logo-fallback">
+                  <span>{{ item.initials }}</span>
+                </span>
+              }
+              <span class="tape-ticker mono">{{ item.ticker }}</span>
+              <span class="tape-name">{{ item.name }}</span>
+              <span class="tape-price mono">{{ formatPrice(item.price) }}</span>
+              <span class="tape-change mono"
+                    [class.pos]="item.change >= 0"
+                    [class.neg]="item.change < 0">
+                {{ item.change >= 0 ? '+' : '' }}{{ item.change.toFixed(2) }}%
+              </span>
             </span>
-          </span>
-        }
-        <!-- Duplicate for seamless loop -->
-        @for (item of items; track item.label + '-dup') {
-          <span class="tape-item">
-            <span class="tape-label">{{ item.label }}</span>
-            <span class="tape-value mono">{{ item.value }}</span>
-            <span class="tape-change mono" [class.pos]="item.change >= 0" [class.neg]="item.change < 0">
-              {{ item.change >= 0 ? '+' : '' }}{{ item.change.toFixed(2) }}%
+          }
+          <!-- Duplicate for seamless loop -->
+          @for (item of items(); track item.ticker + '-dup') {
+            <span class="tape-item">
+              @if (!item.logoError) {
+                <img class="tape-logo"
+                     [src]="item.logoUrl"
+                     [alt]="item.ticker"
+                     (error)="onLogoError(item)"
+                     loading="lazy" />
+              } @else {
+                <span class="tape-logo-fallback">
+                  <span>{{ item.initials }}</span>
+                </span>
+              }
+              <span class="tape-ticker mono">{{ item.ticker }}</span>
+              <span class="tape-name">{{ item.name }}</span>
+              <span class="tape-price mono">{{ formatPrice(item.price) }}</span>
+              <span class="tape-change mono"
+                    [class.pos]="item.change >= 0"
+                    [class.neg]="item.change < 0">
+                {{ item.change >= 0 ? '+' : '' }}{{ item.change.toFixed(2) }}%
+              </span>
             </span>
-          </span>
-        }
+          }
+        </div>
       </div>
-    </div>
+    }
   `,
   styles: [`
     :host {
@@ -57,26 +104,55 @@ interface TapeItem {
 
     .tape-track {
       display: flex;
-      gap: 32px;
+      gap: 28px;
       white-space: nowrap;
-      animation: scroll 40s linear infinite;
+      animation: scroll 60s linear infinite;
       padding-left: 16px;
     }
 
     .tape-item {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
-    .tape-label {
+    .tape-logo {
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      object-fit: cover;
+    }
+
+    .tape-logo-fallback {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      background: var(--elevated);
       font-family: var(--font-ui);
-      font-size: 11px;
-      font-weight: 600;
+      font-size: 7px;
+      font-weight: 700;
       color: var(--t3);
     }
 
-    .tape-value {
+    .tape-ticker {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--t1);
+    }
+
+    .tape-name {
+      font-family: var(--font-ui);
+      font-size: 10px;
+      color: var(--t3);
+      max-width: 100px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .tape-price {
       font-size: 11px;
       font-weight: 600;
       color: var(--t1);
@@ -93,14 +169,80 @@ interface TapeItem {
     }
   `]
 })
-export class TickerTapeComponent {
-  readonly items: TapeItem[] = [
-    { label: 'IBOV', value: '128.450', change: 1.23 },
-    { label: 'IFIX', value: '3.210', change: 0.15 },
-    { label: 'USD/BRL', value: '5,12', change: -0.48 },
-    { label: 'SELIC', value: '14,25%', change: 0.00 },
-    { label: 'IPCA', value: '4,87%', change: 0.12 },
-    { label: 'S&P 500', value: '5.248', change: 0.67 },
-    { label: 'BTC', value: '$67.840', change: 2.34 },
-  ];
+export class TickerTapeComponent implements OnInit, OnDestroy {
+  private readonly api = inject(ApiService);
+  private intervalId: ReturnType<typeof setInterval> | null = null;
+
+  readonly items = signal<TapeItem[]>([]);
+
+  ngOnInit(): void {
+    this.loadData();
+    this.intervalId = setInterval(() => this.loadData(), 60_000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) clearInterval(this.intervalId);
+  }
+
+  onLogoError(item: TapeItem): void {
+    item.logoError = true;
+    this.items.update(list => [...list]);
+  }
+
+  formatPrice(price: number): string {
+    return price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  private loadData(): void {
+    this.api.get<{ top: TopAsset[] }>('/scores/top', { limit: 15 }).subscribe({
+      next: (res) => {
+        const tickers = (res.top || []).map(a => a.ticker).filter(Boolean);
+        if (tickers.length === 0) return;
+
+        const quoteRequests = tickers.reduce((acc, t) => {
+          acc[t] = this.api.get<Quote>(`/tickers/${t}/quote`);
+          return acc;
+        }, {} as Record<string, ReturnType<typeof this.api.get<Quote>>>);
+
+        forkJoin(quoteRequests).subscribe({
+          next: (quotes) => {
+            const topMap = new Map(res.top.map(a => [a.ticker, a]));
+            const tape: TapeItem[] = [];
+
+            for (const ticker of tickers) {
+              const q = quotes[ticker];
+              const asset = topMap.get(ticker);
+              if (!q || !asset || !q.close || !q.open) continue;
+
+              const change = ((q.close - q.open) / q.open) * 100;
+              const baseTicker = ticker.replace(/\d+$/, '');
+
+              tape.push({
+                ticker,
+                name: this.shortenName(asset.company_name),
+                price: q.close,
+                change,
+                logoUrl: `https://raw.githubusercontent.com/StatusInvest/Content/master/img/company/${ticker}.jpg`,
+                initials: baseTicker.slice(0, 2),
+                logoError: false,
+              });
+            }
+
+            if (tape.length > 0) {
+              this.items.set(tape);
+            }
+          },
+        });
+      },
+    });
+  }
+
+  private shortenName(name: string): string {
+    if (!name) return '';
+    return name
+      .replace(/\b(S\.?A\.?|LTDA|CIA|HOLDING|PARTICIPACOES|PARTICIPAÇÕES|INVESTIMENTOS)\b\.?/gi, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim()
+      .slice(0, 20);
+  }
 }
