@@ -105,8 +105,8 @@ const PAD = { top: 20, right: 24, bottom: 44, left: 60 };
   `,
   styles: [`
     :host { display: block; width: 100%; }
-    .lc-wrap { position: relative; width: 100%; height: 0; padding-bottom: min(38%, 260px); }
-    .lc { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    .lc-wrap { position: relative; width: 100%; height: 0; padding-bottom: min(38%, 260px); overflow: visible; }
+    .lc { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
     .lc__grid { stroke: var(--border, #E0E0E0); stroke-width: 0.5; opacity: 0.6; }
     .lc__grid--v { opacity: 0.3; }
     .lc__axis { stroke: var(--border-strong, var(--border, #CCC)); stroke-width: 1; }

@@ -99,34 +99,26 @@
           }
         </div>
       }
-      <!-- Alocacao por Ativo -->
-      @if (hasPortfolio() && allocationByAsset().length > 0) {
+      <!-- Alocacao (UM donut com toggle) -->
+      @if (hasPortfolio() && activeAllocation().length > 0) {
         <div class="chart-card">
           <div class="chart-card__head">
-            <span class="chart-card__title">Alocacao por Ativo</span>
+            <span class="chart-card__title">Alocacao</span>
+            <div class="alloc-toggle">
+              <button class="alloc-toggle__btn" [class.alloc-toggle__btn--active]="allocationView() === 'ativo'" (click)="allocationView.set('ativo')">Ativo</button>
+              <button class="alloc-toggle__btn" [class.alloc-toggle__btn--active]="allocationView() === 'setor'" (click)="allocationView.set('setor')">Setor</button>
+            </div>
           </div>
-          <iq-donut-chart [data]="allocationByAsset()" />
-        </div>
-      }
-    </div>
-
-    <!-- ═══ ROW 4: ALOCACAO POR SETOR | INTRADAY + RISK ═══ -->
-    <div class="dash-row anim-item" style="--anim-order: 3">
-      <!-- Alocacao por Setor -->
-      @if (hasPortfolio() && allocationBySector().length > 0) {
-        <div class="chart-card">
-          <div class="chart-card__head">
-            <span class="chart-card__title">Alocacao por Setor</span>
-          </div>
-          <iq-donut-chart [data]="allocationBySector()" />
+          <iq-donut-chart [data]="activeAllocation()" />
           @if (concentrationWarning()) {
             <div class="alloc-card__warning">Concentracao elevada (HHI > 25%)</div>
           }
         </div>
       }
+    </div>
 
-      <!-- Intraday + Risk empilhados na coluna direita -->
-      <div class="dash-col">
+    <!-- ═══ ROW 4: INTRADAY | RISK STATUS ═══ -->
+    <div class="dash-row anim-item" style="--anim-order: 3">
       @if (intradaySeries().length > 0) {
         <div class="chart-card">
           <div class="chart-card__head">
@@ -185,7 +177,6 @@
           </div>
         </div>
       }
-      </div>
     </div>
 
     <!-- ═══ MERCADO AGORA (quando sem carteira) ═══ -->
