@@ -1,0 +1,88 @@
+// ============================================================
+// TOKENS — InvestIQ Volt Carbon Design System
+// ============================================================
+
+:root {
+  // ── Typography ──
+  --font-ui: 'General Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Roboto Mono', monospace;
+
+  // ── Radius ──
+  --radius: 4px;
+
+  // ── Transitions ──
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+
+  // ── Layout ──
+  --header-h: 52px;
+  --ticker-h: 32px;
+  --sidebar-w: 220px;
+  --sidebar-w-collapsed: 64px;
+  --content-max-w: 1440px;
+
+  // ── Dark Mode (default) ──
+  --bg: #050505;
+  --bg-alt: #0A0C14;
+  --card: #12141C;
+  --card-hover: #1A1C26;
+  --elevated: #242630;
+
+  --t1: #F8FAFC;
+  --t2: #A0A8B8;
+  --t3: #606878;
+  --t4: #383E4A;
+
+  --border: rgba(255, 255, 255, 0.04);
+  --border-hover: rgba(208, 243, 100, 0.06);
+  --border-active: rgba(208, 243, 100, 0.12);
+
+  --volt: #d0f364;
+  --volt-muted: #a8c450;
+  --volt-dim: rgba(208, 243, 100, 0.12);
+  --volt-glow: 0 0 16px rgba(208, 243, 100, 0.25);
+
+  --pos: #34D399;
+  --pos-dim: rgba(52, 211, 153, 0.12);
+  --neg: #EF4444;
+  --neg-dim: rgba(239, 68, 68, 0.12);
+  --warn: #F59E0B;
+  --warn-dim: rgba(245, 158, 11, 0.08);
+
+  --glass-bg: rgba(18, 20, 28, 0.8);
+  --glass-blur: blur(12px);
+  --glass-border: rgba(255, 255, 255, 0.04);
+}
+
+// ── Light Mode ──
+[data-theme='light'] {
+  --bg: #F4F5F0;
+  --bg-alt: #EAEBE6;
+  --card: #FFFFFF;
+  --card-hover: #F8F8F4;
+  --elevated: #EEEFE8;
+
+  --t1: #0A0C10;
+  --t2: #3A3E48;
+  --t3: #6A6E78;
+  --t4: #9A9EA8;
+
+  --border: rgba(0, 0, 0, 0.06);
+  --border-hover: rgba(100, 120, 20, 0.08);
+  --border-active: rgba(100, 120, 20, 0.15);
+
+  --volt: #5A6B10;
+  --volt-muted: #6E8218;
+  --volt-dim: rgba(90, 107, 16, 0.06);
+  --volt-glow: 0 0 12px rgba(90, 107, 16, 0.15);
+
+  --pos: #16804A;
+  --pos-dim: rgba(22, 128, 74, 0.08);
+  --neg: #CC2828;
+  --neg-dim: rgba(204, 40, 40, 0.08);
+  --warn: #B07A08;
+  --warn-dim: rgba(176, 122, 8, 0.06);
+
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.06);
+}
