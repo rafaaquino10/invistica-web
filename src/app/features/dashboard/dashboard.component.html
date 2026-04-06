@@ -52,129 +52,135 @@
       </div>
     </div>
 
-    <!-- ═══ ZONE 3: GRAFICOS DE PERFORMANCE ═══ -->
-    <div class="charts-grid anim-item" style="--anim-order: 2">
-      <!-- Rentabilidade vs Benchmarks -->
-      @if (perfSeries().length > 0) {
-          <div class="chart-card">
-            <div class="chart-card__head">
-              <span class="chart-card__title">Rentabilidade vs Benchmarks</span>
-              <div class="chart-card__periods">
-                @for (p of ['1M','3M','6M','12M','MAX']; track p) {
-                  <button class="chart-card__period" [class.chart-card__period--active]="perfPeriod() === p"
-                          (click)="changePerfPeriod(p)">{{ p }}</button>
-                }
-              </div>
-            </div>
-            <iq-line-chart [series]="perfSeries()" [labels]="perfLabels()" />
-            @if (perfMetrics(); as m) {
-              <div class="chart-card__metrics">
-                <div class="chart-card__metric">
-                  <span class="chart-card__metric-val mono" [class.positive]="m.carteira_return >= 0" [class.negative]="m.carteira_return < 0">
-                    {{ m.carteira_return >= 0 ? '+' : '' }}{{ (m.carteira_return * 100).toFixed(2) }}%
-                  </span>
-                  <span class="chart-card__metric-label">Carteira</span>
-                </div>
-                <div class="chart-card__metric">
-                  <span class="chart-card__metric-val mono">{{ (m.ibov_return * 100).toFixed(2) }}%</span>
-                  <span class="chart-card__metric-label">IBOV</span>
-                </div>
-                <div class="chart-card__metric">
-                  <span class="chart-card__metric-val mono">{{ (m.cdi_return * 100).toFixed(2) }}%</span>
-                  <span class="chart-card__metric-label">CDI</span>
-                </div>
-                <div class="chart-card__metric">
-                  <span class="chart-card__metric-val mono" [class.positive]="m.alpha_ibov > 0" [class.negative]="m.alpha_ibov < 0">
-                    {{ m.alpha_ibov > 0 ? '+' : '' }}{{ (m.alpha_ibov * 100).toFixed(2) }}pp
-                  </span>
-                  <span class="chart-card__metric-label">Alpha IBOV</span>
-                </div>
-                <div class="chart-card__metric">
-                  <span class="chart-card__metric-val mono negative">{{ (m.max_drawdown * 100).toFixed(1) }}%</span>
-                  <span class="chart-card__metric-label">Max DD</span>
-                </div>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- Intraday: Carteira vs IBOV -->
-        @if (intradaySeries().length > 0) {
-          <div class="chart-card">
-            <div class="chart-card__head">
-              <span class="chart-card__title">Intraday - Carteira vs IBOV</span>
-              <span class="chart-card__subtitle mono">Hoje</span>
-            </div>
-            <iq-line-chart [series]="intradaySeries()" [labels]="intradayLabels()" />
-            @if (intradayMetrics(); as im) {
-              <div class="chart-card__metrics">
-                <div class="chart-card__metric">
-                  <span class="chart-card__metric-val mono" [class.positive]="im.carteira >= 0" [class.negative]="im.carteira < 0">
-                    {{ im.carteira >= 0 ? '+' : '' }}{{ (im.carteira * 100).toFixed(2) }}%
-                  </span>
-                  <span class="chart-card__metric-label">Carteira hoje</span>
-                </div>
-                <div class="chart-card__metric">
-                  <span class="chart-card__metric-val mono" [class.positive]="im.ibov >= 0" [class.negative]="im.ibov < 0">
-                    {{ im.ibov >= 0 ? '+' : '' }}{{ (im.ibov * 100).toFixed(2) }}%
-                  </span>
-                  <span class="chart-card__metric-label">IBOV hoje</span>
-                </div>
-                <div class="chart-card__metric">
-                  <span class="chart-card__metric-val mono" [class.positive]="im.carteira - im.ibov > 0" [class.negative]="im.carteira - im.ibov < 0">
-                    {{ im.carteira - im.ibov > 0 ? '+' : '' }}{{ ((im.carteira - im.ibov) * 100).toFixed(2) }}pp
-                  </span>
-                  <span class="chart-card__metric-label">Spread</span>
-                </div>
-              </div>
-            }
-          </div>
-        }
-      </div>
-
-    <!-- ═══ ZONE 3b: ALOCACAO DA CARTEIRA ═══ -->
-    @if (hasPortfolio() && activeAllocation().length > 0) {
-      <div class="alloc-card anim-item" style="--anim-order: 3">
-        <div class="alloc-card__head">
-          <h2 class="section-title">Alocacao da Carteira</h2>
-          <div class="alloc-toggle">
-            <button class="alloc-toggle__btn" [class.alloc-toggle__btn--active]="allocationView() === 'ativo'" (click)="allocationView.set('ativo')">Por Ativo</button>
-            <button class="alloc-toggle__btn" [class.alloc-toggle__btn--active]="allocationView() === 'setor'" (click)="allocationView.set('setor')">Por Setor</button>
-          </div>
-        </div>
-        <div class="alloc-card__body">
-          <div class="alloc-card__chart">
-            <iq-donut-chart [data]="activeAllocation()" />
-          </div>
-          <div class="alloc-card__legend">
-            @for (item of allocationDetails(); track item.ticker) {
-              <div class="alloc-legend-row">
-                <span class="alloc-legend-dot" [style.background]="item.color"></span>
-                <div class="alloc-legend-info">
-                  <span class="alloc-legend-tk mono">{{ item.ticker }}</span>
-                  <span class="alloc-legend-sector">{{ item.sector }}</span>
-                </div>
-                <div class="alloc-legend-bar-wrap">
-                  <div class="alloc-legend-bar">
-                    <div class="alloc-legend-bar-fill" [style.width.%]="item.pct" [style.background]="item.color"></div>
-                  </div>
-                </div>
-                <span class="alloc-legend-pct mono">{{ item.pct.toFixed(1) }}%</span>
-                <span class="alloc-legend-val mono">R$ {{ fmtBrl(item.value) }}</span>
-                @if (item.score) {
-                  <span class="alloc-legend-score mono" [style.color]="scoreColor(item.score)">{{ item.score }}</span>
-                }
-              </div>
+    <!-- ═══ ZONE 3: RENTABILIDADE (full width) ═══ -->
+    @if (perfSeries().length > 0) {
+      <div class="chart-card chart-card--full anim-item" style="--anim-order: 2">
+        <div class="chart-card__head">
+          <span class="chart-card__title">Rentabilidade vs Benchmarks</span>
+          <div class="chart-card__periods">
+            @for (p of ['1M','3M','6M','12M','MAX']; track p) {
+              <button class="chart-card__period" [class.chart-card__period--active]="perfPeriod() === p"
+                      (click)="changePerfPeriod(p)">{{ p }}</button>
             }
           </div>
         </div>
-        @if (concentrationWarning()) {
-          <div class="alloc-card__warning">
-            Concentracao elevada detectada (HHI > 25%). Considere diversificar.
+        <iq-line-chart [series]="perfSeries()" [labels]="perfLabels()" />
+        @if (perfMetrics(); as m) {
+          <div class="chart-card__metrics">
+            <div class="chart-card__metric">
+              <span class="chart-card__metric-val mono" [class.positive]="m.carteira_return >= 0" [class.negative]="m.carteira_return < 0">
+                {{ m.carteira_return >= 0 ? '+' : '' }}{{ (m.carteira_return * 100).toFixed(2) }}%
+              </span>
+              <span class="chart-card__metric-label">Carteira</span>
+            </div>
+            <div class="chart-card__metric">
+              <span class="chart-card__metric-val mono">{{ (m.ibov_return * 100).toFixed(2) }}%</span>
+              <span class="chart-card__metric-label">IBOV</span>
+            </div>
+            <div class="chart-card__metric">
+              <span class="chart-card__metric-val mono">{{ (m.cdi_return * 100).toFixed(2) }}%</span>
+              <span class="chart-card__metric-label">CDI</span>
+            </div>
+            <div class="chart-card__metric">
+              <span class="chart-card__metric-val mono" [class.positive]="m.alpha_ibov > 0" [class.negative]="m.alpha_ibov < 0">
+                {{ m.alpha_ibov > 0 ? '+' : '' }}{{ (m.alpha_ibov * 100).toFixed(2) }}pp
+              </span>
+              <span class="chart-card__metric-label">Alpha IBOV</span>
+            </div>
+            <div class="chart-card__metric">
+              <span class="chart-card__metric-val mono negative">{{ (m.max_drawdown * 100).toFixed(1) }}%</span>
+              <span class="chart-card__metric-label">Max DD</span>
+            </div>
           </div>
         }
       </div>
     }
+
+    <!-- ═══ ZONE 3b: ALOCACAO POR ATIVO | ALOCACAO POR SETOR (lado a lado) ═══ -->
+    @if (hasPortfolio() && allocationByAsset().length > 0) {
+      <div class="alloc-grid anim-item" style="--anim-order: 3">
+        <!-- Por Ativo -->
+        <div class="chart-card">
+          <div class="chart-card__head">
+            <span class="chart-card__title">Alocacao por Ativo</span>
+          </div>
+          <iq-donut-chart [data]="allocationByAsset()" />
+        </div>
+        <!-- Por Setor -->
+        <div class="chart-card">
+          <div class="chart-card__head">
+            <span class="chart-card__title">Alocacao por Setor</span>
+          </div>
+          <iq-donut-chart [data]="allocationBySector()" />
+          @if (concentrationWarning()) {
+            <div class="alloc-card__warning">Concentracao elevada (HHI > 25%)</div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ═══ ZONE 3c: INTRADAY | RISK STATUS (dividindo vertical) ═══ -->
+    <div class="secondary-grid anim-item" style="--anim-order: 4">
+      <!-- Intraday -->
+      @if (intradaySeries().length > 0) {
+        <div class="chart-card">
+          <div class="chart-card__head">
+            <span class="chart-card__title">Intraday - Carteira vs IBOV</span>
+            <span class="chart-card__subtitle mono">Hoje</span>
+          </div>
+          <iq-line-chart [series]="intradaySeries()" [labels]="intradayLabels()" />
+          @if (intradayMetrics(); as im) {
+            <div class="chart-card__metrics">
+              <div class="chart-card__metric">
+                <span class="chart-card__metric-val mono" [class.positive]="im.carteira >= 0" [class.negative]="im.carteira < 0">
+                  {{ im.carteira >= 0 ? '+' : '' }}{{ (im.carteira * 100).toFixed(2) }}%
+                </span>
+                <span class="chart-card__metric-label">Carteira</span>
+              </div>
+              <div class="chart-card__metric">
+                <span class="chart-card__metric-val mono" [class.positive]="im.ibov >= 0" [class.negative]="im.ibov < 0">
+                  {{ im.ibov >= 0 ? '+' : '' }}{{ (im.ibov * 100).toFixed(2) }}%
+                </span>
+                <span class="chart-card__metric-label">IBOV</span>
+              </div>
+              <div class="chart-card__metric">
+                <span class="chart-card__metric-val mono" [class.positive]="im.carteira - im.ibov > 0" [class.negative]="im.carteira - im.ibov < 0">
+                  {{ im.carteira - im.ibov > 0 ? '+' : '' }}{{ ((im.carteira - im.ibov) * 100).toFixed(2) }}pp
+                </span>
+                <span class="chart-card__metric-label">Spread</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Risk Status (ao lado do Intraday) -->
+      @if (risk(); as r) {
+        <div class="chart-card">
+          <div class="chart-card__head">
+            <span class="chart-card__title">Risk Status</span>
+            <a class="section-link" routerLink="/estrategia">Estrategia ></a>
+          </div>
+          <div class="risk-compact">
+            <div class="risk-compact__item">
+              <span class="risk-compact__label mono">REGIME</span>
+              <span class="risk-compact__val" [style.color]="regimeDotColor()">{{ regimeLabel() }}</span>
+              <span class="risk-compact__sub mono">SELIC {{ r.selic }} · IPCA {{ r.ipca }}</span>
+            </div>
+            <div class="risk-compact__item">
+              <span class="risk-compact__label mono">VOLATILIDADE</span>
+              <div class="risk-compact__gauge"><div class="risk-compact__gauge-fill" [style.width.%]="Math.min(r.vol_stress.ratio * 50, 100)" [style.background]="volColor()"></div></div>
+              <span class="risk-compact__sub mono" [style.color]="volColor()">{{ volLabel() }} · 21d {{ r.vol_stress.vol_21d }} · Ratio {{ r.vol_stress.ratio.toFixed(2) }}x</span>
+            </div>
+            <div class="risk-compact__item">
+              <span class="risk-compact__label mono">CONFIANCA DO MOTOR</span>
+              <div class="risk-compact__gauge"><div class="risk-compact__gauge-fill risk-compact__gauge-fill--accent" [style.width.%]="confidencePct()"></div></div>
+              <span class="risk-compact__sub mono">{{ confidencePct() }}% · Hit Rate {{ r.confidence.hit_rate }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
 
     <!-- ═══ MERCADO AGORA (quando sem carteira) ═══ -->
     @if (!hasPortfolio()) {
@@ -200,10 +206,8 @@
       </div>
     }
 
-    <!-- ═══ ZONE 4: OPORTUNIDADES + RISK STATUS ═══ -->
-    <div class="main-grid anim-item" style="--anim-order: 2">
-
-      <!-- Top Oportunidades -->
+    <!-- ═══ ZONE 4: OPORTUNIDADES ═══ -->
+    <div class="anim-item" style="--anim-order: 5">
       <div class="opps">
         <div class="opps__header">
           <h2 class="section-title">Top Oportunidades IQ-Score</h2>
@@ -256,63 +260,6 @@
           </div>
         } @else {
           <iq-empty-state title="Sem oportunidades" description="O motor nao detectou oportunidades com IQ-Score elevado no momento." />
-        }
-      </div>
-
-      <!-- Risk Status Sidebar -->
-      <div class="risk-side">
-        @if (risk(); as r) {
-          <!-- Regime -->
-          <div class="risk-card">
-            <span class="risk-card__label mono">REGIME</span>
-            <span class="risk-card__value" [style.color]="regimeDotColor()">{{ regimeLabel() }}</span>
-            <div class="risk-card__row">
-              <span class="mono">SELIC {{ r.selic }}</span>
-              <span class="mono">IPCA {{ r.ipca }}</span>
-            </div>
-          </div>
-
-          <!-- Volatilidade -->
-          <div class="risk-card">
-            <span class="risk-card__label mono">VOLATILIDADE</span>
-            <div class="risk-card__gauge-row">
-              <div class="risk-gauge">
-                <div class="risk-gauge__fill" [style.width.%]="Math.min(r.vol_stress.ratio * 50, 100)" [style.background]="volColor()"></div>
-              </div>
-              <span class="risk-card__status mono" [style.color]="volColor()">{{ volLabel() }}</span>
-            </div>
-            <div class="risk-card__row">
-              <span class="mono">21d: {{ r.vol_stress.vol_21d }}</span>
-              <span class="mono">Ratio: {{ r.vol_stress.ratio.toFixed(2) }}x</span>
-            </div>
-          </div>
-
-          <!-- Confianca -->
-          <div class="risk-card">
-            <span class="risk-card__label mono">CONFIANCA DO MOTOR</span>
-            <div class="risk-card__gauge-row">
-              <div class="risk-gauge">
-                <div class="risk-gauge__fill risk-gauge__fill--conf" [style.width.%]="confidencePct()"></div>
-              </div>
-              <span class="risk-card__pct mono">{{ confidencePct() }}%</span>
-            </div>
-            <div class="risk-card__row">
-              <span class="mono">Hit Rate: {{ r.confidence.hit_rate }}</span>
-            </div>
-            @if (r.confidence.forced_low) {
-              <span class="risk-card__alert mono">Confianca forcada baixa</span>
-            }
-          </div>
-
-          <!-- CTA -->
-          <a class="risk-cta" routerLink="/estrategia">
-            Ver estrategia completa ->
-          </a>
-        } @else {
-          <div class="risk-card">
-            <span class="risk-card__label mono">RISK STATUS</span>
-            <span class="risk-card__sub">Carregando...</span>
-          </div>
         }
       </div>
     </div>
