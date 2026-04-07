@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DecimalPipe } from '@angular/common';
 import { ApiService } from '../../../core/services/api.service';
 
 interface TopAsset {
@@ -12,7 +11,7 @@ interface TopAsset {
 @Component({
   selector: 'iq-hero-section',
   standalone: true,
-  imports: [RouterLink, DecimalPipe],
+  imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './hero-section.component.html',
   styleUrl: './hero-section.component.scss',
@@ -25,11 +24,10 @@ export class HeroSectionComponent implements OnInit {
   ngOnInit(): void {
     this.api.get<{ top: TopAsset[] }>('/scores/top', { limit: 4 }).subscribe({
       next: d => this.cards.set(d.top || []),
-      error: () => {},
     });
   }
 
-  getBandColor(score: number): string {
+  bandColor(score: number): string {
     if (score >= 82) return '#d0f364';
     if (score >= 70) return '#34D399';
     if (score >= 45) return '#F59E0B';

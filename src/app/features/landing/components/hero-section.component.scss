@@ -2,148 +2,42 @@
   position: relative;
   min-height: 100vh;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
   overflow: hidden;
   background: #050505;
-  padding: 80px 32px 60px;
+  padding: 100px 48px 48px;
+  gap: 48px;
 }
 
-// ── Camada 1: Curva SVG ──
+// ── SVG Curve (absolute behind everything) ──
 .hero-curve {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   z-index: 0;
-}
-
-.curve-line {
-  stroke-dasharray: 2200;
-  stroke-dashoffset: 2200;
-  animation: drawCurve 3s ease-in-out forwards;
-}
-
-@keyframes drawCurve {
-  to { stroke-dashoffset: 0; }
-}
-
-// ── Camada 2: Tickers flutuando ──
-.floating-tickers {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 30%;
-  z-index: 1;
   pointer-events: none;
 }
-
-.floating-ticker {
-  position: absolute;
-  left: -100px;
-  font-size: 13px;
-  color: #606878;
-  opacity: 0;
-  animation: floatIn 4s ease-in-out infinite;
+.curve-stroke {
+  stroke-dasharray: 2400;
+  stroke-dashoffset: 2400;
+  animation: drawLine 3s ease-in-out forwards;
 }
+@keyframes drawLine { to { stroke-dashoffset: 0; } }
 
-@keyframes floatIn {
-  0% { transform: translateX(0); opacity: 0; }
-  20% { opacity: 0.6; }
-  60% { opacity: 0.6; }
-  80% { transform: translateX(calc(100vw * 0.25)); opacity: 0; }
-  100% { transform: translateX(calc(100vw * 0.25)); opacity: 0; }
-}
-
-// ── Camada 3: Logo IQ ──
-.iq-core {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  z-index: 2;
-}
-
-.iq-logo {
-  width: 80px;
-  height: 80px;
-  border-radius: 16px;
-  background: #12141C;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: pulse 2s ease-in-out infinite;
-  box-shadow: 0 0 20px rgba(208, 243, 100, 0.25);
-}
-
-.iq-text {
-  font-size: 28px;
-  font-weight: 800;
-  color: #d0f364;
-}
-
-.iq-label {
-  color: #606878;
-  letter-spacing: 0.2em;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(208, 243, 100, 0.25); }
-  50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(208, 243, 100, 0.4); }
-}
-
-// ── Camada 4: Cards analisados ──
-.analyzed-cards {
-  position: absolute;
-  right: 5%;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 12px;
-  z-index: 1;
-}
-
-.acard {
-  width: 160px;
-  padding: 12px;
-  border-radius: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  opacity: 0;
-  transform: translateX(-30px) scale(0.95);
-  animation: cardEmerge 600ms ease-out forwards;
-}
-
-@keyframes cardEmerge {
-  to { opacity: 1; transform: translateX(0) scale(1); }
-}
-
-.acard-top { display: flex; align-items: center; gap: 6px; }
-.acard-logo { width: 20px; height: 20px; border-radius: 2px; object-fit: cover; }
-.acard-ticker { font-size: 12px; font-weight: 700; color: #F8FAFC; }
-.acard-score { font-size: 24px; font-weight: 700; }
-.acard-bar { height: 4px; background: #242630; border-radius: 2px; overflow: hidden; }
-.acard-bar-fill { height: 100%; border-radius: 2px; transition: width 800ms ease-out; }
-.acard-pillars { display: flex; gap: 6px; }
-.pillar-mini { font-size: 9px; color: #606878; }
-
-// ── Camada 5: Texto Hero ──
+// ── TOP: Text ──
 .hero-text {
   position: relative;
   z-index: 3;
   text-align: center;
-  max-width: 700px;
+  max-width: 720px;
+  margin: 0 auto;
 }
 
-h1 {
+.headline {
   font-family: var(--font-ui);
-  font-size: 44px;
+  font-size: 48px;
   font-weight: 700;
   color: #F8FAFC;
   line-height: 1.15;
@@ -152,61 +46,144 @@ h1 {
 
 .word {
   display: inline-block;
+  margin-right: 0.3em;
   opacity: 0;
   transform: translateY(20px);
-  animation: wordIn 500ms ease-out forwards;
+  animation: fadeUp 500ms ease-out forwards;
 }
 .w1 { animation-delay: 0.3s; }
-.w2 { animation-delay: 0.45s; }
-.w3 { animation-delay: 0.6s; }
-
-@keyframes wordIn {
-  to { opacity: 1; transform: translateY(0); }
-}
+.w2 { animation-delay: 0.5s; }
+.w3 { animation-delay: 0.7s; margin-right: 0; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
 .subtitle {
   font-family: var(--font-ui);
-  font-size: 20px;
+  font-size: 18px;
   color: #A0A8B8;
   line-height: 1.5;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   opacity: 0;
-  animation: wordIn 500ms ease-out 1s forwards;
+  animation: fadeUp 500ms ease-out 1s forwards;
 }
 
 .hero-ctas {
-  display: flex; gap: 12px; justify-content: center;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
   opacity: 0;
-  animation: wordIn 500ms ease-out 1.3s forwards;
+  animation: fadeUp 500ms ease-out 1.3s forwards;
 }
 
 .btn-volt {
-  padding: 12px 28px;
-  background: #d0f364;
-  color: #050505;
-  border-radius: 4px;
-  font-weight: 700;
-  font-size: 14px;
+  padding: 14px 32px; background: #d0f364; color: #050505;
+  border-radius: 4px; font-family: var(--font-ui); font-weight: 700; font-size: 15px;
   transition: opacity 150ms;
+  &:hover { opacity: 0.9; }
 }
-.btn-volt:hover { opacity: 0.9; }
-
 .btn-ghost {
-  padding: 12px 28px;
-  color: #A0A8B8;
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 14px 32px; color: #A0A8B8;
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 4px;
+  font-family: var(--font-ui); font-size: 15px;
   transition: color 150ms, border-color 150ms;
+  &:hover { color: #F8FAFC; border-color: rgba(255,255,255,0.15); }
 }
-.btn-ghost:hover { color: #F8FAFC; border-color: rgba(255,255,255,0.15); }
+
+// ── BOTTOM: Motor animation area ──
+.motor-area {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  gap: 0;
+}
+
+// Floating tickers (left zone)
+.floating-zone {
+  position: relative;
+  width: 20%;
+  height: 260px;
+  overflow: hidden;
+}
+.float-ticker {
+  position: absolute;
+  left: -60px;
+  font-size: 13px;
+  color: #606878;
+  opacity: 0;
+  animation: tickerFloat 5s ease-in-out infinite;
+}
+@keyframes tickerFloat {
+  0%   { transform: translateX(0); opacity: 0; }
+  15%  { opacity: 0.5; }
+  50%  { opacity: 0.5; }
+  70%  { transform: translateX(180px); opacity: 0; }
+  100% { transform: translateX(180px); opacity: 0; }
+}
+
+// IQ Core (center)
+.iq-core {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 2;
+  flex-shrink: 0;
+}
+.iq-logo {
+  width: 80px; height: 80px; border-radius: 16px;
+  background: #12141C;
+  display: flex; align-items: center; justify-content: center;
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(208,243,100,0.25);
+}
+.iq-text { font-size: 28px; font-weight: 800; color: #d0f364; }
+.iq-label {
+  font-family: var(--font-ui); font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.2em; color: #606878;
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); box-shadow: 0 0 20px rgba(208,243,100,0.25); }
+  50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(208,243,100,0.4); }
+}
+
+// Analyzed cards (right zone)
+.cards-zone {
+  display: flex;
+  gap: 12px;
+  padding-left: 32px;
+}
+.acard {
+  width: 168px;
+  padding: 14px;
+  background: rgba(18,20,28,0.8);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 4px;
+  display: flex; flex-direction: column; gap: 8px;
+  opacity: 0; transform: translateX(-20px) scale(0.96);
+  animation: cardSlide 600ms ease-out forwards;
+}
+@keyframes cardSlide { to { opacity: 1; transform: translateX(0) scale(1); } }
+
+.acard-header { display: flex; align-items: center; gap: 6px; }
+.acard-logo { width: 20px; height: 20px; border-radius: 2px; object-fit: cover; }
+.acard-ticker { font-size: 12px; font-weight: 700; color: #F8FAFC; }
+.acard-score { font-size: 24px; font-weight: 700; line-height: 1; }
+.acard-bar { height: 4px; background: #242630; border-radius: 2px; overflow: hidden; }
+.acard-fill { height: 100%; border-radius: 2px; }
+.acard-pillars { display: flex; gap: 8px; }
+.p-mini { font-size: 10px; color: #606878; }
+.acard-rating { font-family: var(--font-ui); font-size: 9px; color: #A0A8B8; text-transform: uppercase; letter-spacing: 0.04em; }
 
 // ── Responsive ──
 @media (max-width: 900px) {
-  .floating-tickers { display: none; }
-  .analyzed-cards { position: relative; right: auto; top: auto; transform: none; flex-wrap: wrap; justify-content: center; margin-top: 32px; }
-  .iq-core { position: relative; left: auto; top: auto; transform: none; margin-bottom: 24px; }
-  .hero { flex-direction: column; padding-top: 100px; }
-  h1 { font-size: 32px; }
+  .hero { padding: 100px 24px 32px; gap: 32px; }
+  .headline { font-size: 32px; }
   .subtitle { font-size: 16px; }
+  .motor-area { flex-direction: column; gap: 24px; min-height: auto; }
+  .floating-zone { display: none; }
+  .cards-zone { padding-left: 0; flex-wrap: wrap; justify-content: center; }
+  .acard { width: 140px; }
 }

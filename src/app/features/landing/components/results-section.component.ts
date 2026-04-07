@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
@@ -11,8 +11,6 @@ import { CountUpDirective } from '../../../shared/directives/count-up.directive'
 
 echarts.use([BarChart, GridComponent, TooltipComponent, CanvasRenderer]);
 
-interface Quintile { quintile: string; label: string; avg_iq_score: number; count: number; }
-
 @Component({
   selector: 'iq-results-section',
   standalone: true,
@@ -23,53 +21,29 @@ interface Quintile { quintile: string; label: string; avg_iq_score: number; coun
     <section id="resultados" class="section" iqInView>
       <span class="overline volt">RESULTADOS</span>
       <h2>Dados reais. Zero marketing.</h2>
-
-      <div class="hero-numbers">
-        <div class="hero-num">
-          <span class="num mono" [iqCountUp]="298" countSuffix="+">0</span>
-          <span class="num-label label">Ações analisadas</span>
-        </div>
-        <div class="hero-num">
-          <span class="num mono" [iqCountUp]="9">0</span>
-          <span class="num-label label">Clusters setoriais</span>
-        </div>
-        <div class="hero-num">
-          <span class="num mono" [iqCountUp]="4">0</span>
-          <span class="num-label label">Regimes macro</span>
-        </div>
-        <div class="hero-num">
-          <span class="num mono" [iqCountUp]="6">0</span>
-          <span class="num-label label">Pilares de análise</span>
-        </div>
+      <div class="nums">
+        <div class="num-block"><span class="num mono" [iqCountUp]="298" countSuffix="+">0</span><span class="num-label">Ações analisadas</span></div>
+        <div class="num-block"><span class="num mono" [iqCountUp]="9">0</span><span class="num-label">Clusters setoriais</span></div>
+        <div class="num-block"><span class="num mono" [iqCountUp]="4">0</span><span class="num-label">Regimes macro</span></div>
+        <div class="num-block"><span class="num mono" [iqCountUp]="6">0</span><span class="num-label">Pilares de análise</span></div>
       </div>
-
       @if (chartOpts()) {
-        <div class="chart-wrapper">
-          <span class="chart-title label">Retorno por faixa de score</span>
-          <div class="chart" echarts [options]="chartOpts()!" theme="dark-volt" [autoResize]="true"></div>
-        </div>
+        <div class="chart-wrap"><div class="chart" echarts [options]="chartOpts()!" theme="dark-volt" [autoResize]="true"></div></div>
       }
     </section>
   `,
   styles: [`
-    .section { padding: 100px 32px; text-align: center; background: #050505; }
-    .section.in-view .hero-numbers, .section.in-view .chart-wrapper { opacity: 1; transform: translateY(0); }
+    .section { padding: 100px 48px; text-align: center; background: #050505; }
+    .section.in-view .nums, .section.in-view .chart-wrap { opacity: 1; transform: translateY(0); }
     .volt { color: #d0f364; }
-    h2 { font-family: var(--font-ui); font-size: 32px; font-weight: 700; color: #F8FAFC; margin: 12px 0 40px; }
-    .hero-numbers {
-      display: flex; justify-content: center; gap: 48px; margin-bottom: 48px;
-      opacity: 0; transform: translateY(30px); transition: all 500ms ease-out;
-    }
-    .hero-num { display: flex; flex-direction: column; gap: 4px; }
+    h2 { font-family: var(--font-ui); font-size: 28px; font-weight: 700; color: #F8FAFC; margin: 12px 0 40px; }
+    .nums { display: flex; justify-content: center; gap: 48px; margin-bottom: 40px; opacity: 0; transform: translateY(20px); transition: all 500ms ease-out; }
+    .num-block { display: flex; flex-direction: column; gap: 4px; }
     .num { font-size: 36px; font-weight: 700; color: #d0f364; text-shadow: 0 0 16px rgba(208,243,100,0.25); }
-    .num-label { color: #606878; }
-    .chart-wrapper {
-      max-width: 600px; margin: 0 auto;
-      opacity: 0; transform: translateY(30px); transition: all 500ms ease-out 200ms;
-    }
-    .chart-title { color: #A0A8B8; margin-bottom: 8px; display: block; }
-    .chart { width: 100%; height: 250px; }
-    @media (max-width: 600px) { .hero-numbers { flex-wrap: wrap; gap: 24px; } .num { font-size: 28px; } }
+    .num-label { font-family: var(--font-ui); font-size: 11px; color: #606878; }
+    .chart-wrap { max-width: 560px; margin: 0 auto; opacity: 0; transform: translateY(20px); transition: all 500ms ease-out 200ms; }
+    .chart { width: 100%; height: 240px; }
+    @media (max-width: 600px) { .nums { flex-wrap: wrap; gap: 24px; } .num { font-size: 28px; } }
   `]
 })
 export class ResultsSectionComponent implements OnInit {
@@ -77,7 +51,7 @@ export class ResultsSectionComponent implements OnInit {
   readonly chartOpts = signal<EChartsOption | null>(null);
 
   ngOnInit(): void {
-    this.api.get<{ quintiles: Quintile[] }>('/analytics/signal-decay').subscribe({
+    this.api.get<{ quintiles: { label: string; avg_iq_score: number }[] }>('/analytics/signal-decay').subscribe({
       next: d => {
         const q = d.quintiles || [];
         if (!q.length) return;
