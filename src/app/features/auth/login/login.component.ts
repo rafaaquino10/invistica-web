@@ -2,18 +2,18 @@ import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@ang
 import { FormsModule } from '@angular/forms';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { LogoComponent } from '../../../shared/components/logo/logo.component';
 
 @Component({
   selector: 'iq-login',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, LogoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="auth-page">
       <div class="auth-card glass">
         <div class="auth-logo">
-          <div class="logo-box"><span class="mono logo-iq">IQ</span></div>
-          <span class="brand">INVESTIQ</span>
+          <iq-logo size="lg" />
         </div>
 
         <h2>Entrar na sua conta</h2>

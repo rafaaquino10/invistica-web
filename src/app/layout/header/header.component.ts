@@ -4,6 +4,7 @@ import { ThemeService } from '../../core/services/theme.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
 import { SettingsModalComponent } from '../../features/auth/settings/settings-modal.component';
+import { LogoComponent } from '../../shared/components/logo/logo.component';
 
 interface SearchResult {
   ticker: string;
@@ -13,7 +14,7 @@ interface SearchResult {
 @Component({
   selector: 'iq-header',
   standalone: true,
-  imports: [SettingsModalComponent],
+  imports: [SettingsModalComponent, LogoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',

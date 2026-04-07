@@ -2,11 +2,12 @@ import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { LogoComponent } from '../../../shared/components/logo/logo.component';
 
 @Component({
   selector: 'iq-register',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, LogoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="auth-page">
@@ -20,8 +21,7 @@ import { AuthService } from '../../../core/services/auth.service';
       } @else {
         <div class="auth-card glass">
           <div class="auth-logo">
-            <div class="logo-box"><span class="mono logo-iq">IQ</span></div>
-            <span class="brand">INVESTIQ</span>
+            <iq-logo size="lg" />
           </div>
 
           <h2>Criar sua conta</h2>

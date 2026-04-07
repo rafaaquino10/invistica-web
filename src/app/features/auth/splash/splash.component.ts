@@ -1,13 +1,15 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { LogoComponent } from '../../../shared/components/logo/logo.component';
 
 @Component({
   selector: 'iq-splash',
   standalone: true,
+  imports: [LogoComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="splash">
-      <div class="splash-logo">
-        <span class="logo-text mono">IQ</span>
+      <div class="splash-inner">
+        <iq-logo size="xl" />
       </div>
     </div>
   `,
@@ -17,16 +19,12 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
       display: flex; align-items: center; justify-content: center;
       background: #050505;
     }
-    .splash-logo {
-      width: 80px; height: 80px; border-radius: 16px;
-      background: #12141C; display: flex; align-items: center; justify-content: center;
+    .splash-inner {
       animation: splashPulse 2s ease-in-out infinite;
-      box-shadow: 0 0 20px rgba(208,243,100,0.25);
     }
-    .logo-text { font-size: 28px; font-weight: 800; color: #d0f364; }
     @keyframes splashPulse {
-      0%,100% { transform: scale(1); box-shadow: 0 0 20px rgba(208,243,100,0.25); }
-      50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(208,243,100,0.4); }
+      0%,100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.9; }
     }
   `]
 })
