@@ -1,0 +1,67 @@
+<section class="hero">
+  <!-- Camada 1: Curva SVG -->
+  <svg class="hero-curve" viewBox="0 0 1440 600" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="curveGrad" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0%" stop-color="rgba(208,243,100,0)" />
+        <stop offset="100%" stop-color="rgba(208,243,100,0.05)" />
+      </linearGradient>
+    </defs>
+    <path class="curve-area" d="M0,580 Q360,400 720,320 T1440,80 L1440,600 L0,600 Z" fill="url(#curveGrad)" />
+    <path class="curve-line" d="M0,580 Q360,400 720,320 T1440,80"
+          fill="none" stroke="#d0f364" stroke-width="2" stroke-opacity="0.15"
+          filter="url(#glowFilter)" />
+    <filter id="glowFilter"><feGaussianBlur stdDeviation="4" result="blur" /><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </svg>
+
+  <!-- Camada 2: Tickers flutuando -->
+  <div class="floating-tickers">
+    @for (t of tickers; track t; let i = $index) {
+      <span class="floating-ticker mono" [style.animation-delay]="(i * 0.6) + 's'" [style.top.%]="20 + i * 15">
+        {{ t }}
+      </span>
+    }
+  </div>
+
+  <!-- Camada 3: Logo IQ Pulsante -->
+  <div class="iq-core">
+    <div class="iq-logo">
+      <span class="iq-text mono">IQ</span>
+    </div>
+    <span class="iq-label overline">IQ-COGNIT™</span>
+  </div>
+
+  <!-- Camada 4: Cards analisados -->
+  <div class="analyzed-cards">
+    @for (card of cards(); track card.ticker; let i = $index) {
+      <div class="acard glass" [style.animation-delay]="(1.0 + i * 0.4) + 's'">
+        <div class="acard-top">
+          <img class="acard-logo" [src]="'https://raw.githubusercontent.com/StatusInvest/Content/master/img/company/' + card.ticker + '.jpg'"
+               [alt]="card.ticker" loading="lazy" (error)="$any($event.target).style.display='none'" />
+          <span class="acard-ticker mono">{{ card.ticker }}</span>
+        </div>
+        <span class="acard-score mono" [style.color]="getBandColor(card.iq_score)">{{ card.iq_score }}</span>
+        <div class="acard-bar"><div class="acard-bar-fill" [style.width.%]="card.iq_score" [style.background]="getBandColor(card.iq_score)"></div></div>
+        <div class="acard-pillars">
+          <span class="pillar-mini mono">V{{ card.score_valuation ?? 0 }}</span>
+          <span class="pillar-mini mono">Q{{ card.score_quanti ?? 0 }}</span>
+          <span class="pillar-mini mono">L{{ card.score_quali ?? 0 }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Camada 5: Texto Hero -->
+  <div class="hero-text">
+    <h1>
+      <span class="word w1">Investir</span>
+      <span class="word w2">com</span>
+      <span class="word w3">inteligência.</span>
+    </h1>
+    <p class="subtitle">Análise quantamental proprietária para o mercado brasileiro.</p>
+    <div class="hero-ctas">
+      <a class="btn-volt cta" routerLink="/dashboard">Começar grátis</a>
+      <a class="btn-ghost cta" href="#resultados">Ver resultados ↓</a>
+    </div>
+  </div>
+</section>
