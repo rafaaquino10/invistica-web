@@ -1,18 +1,12 @@
 <section class="hero">
-  <!-- SVG Curve background -->
-  <svg class="hero-curve" viewBox="0 0 1440 700" preserveAspectRatio="none">
-    <defs>
-      <linearGradient id="areaGrad" x1="0" y1="1" x2="1" y2="0">
-        <stop offset="0%" stop-color="rgba(208,243,100,0)" />
-        <stop offset="100%" stop-color="rgba(208,243,100,0.04)" />
-      </linearGradient>
-    </defs>
-    <path d="M0,680 Q360,480 720,380 T1440,100 L1440,700 L0,700 Z" fill="url(#areaGrad)" />
-    <path class="curve-stroke" d="M0,680 Q360,480 720,380 T1440,100"
-          fill="none" stroke="#d0f364" stroke-width="1.5" stroke-opacity="0.1" />
-  </svg>
+  <!-- Atmosphere: ambient glow + grain -->
+  <div class="atmosphere">
+    <div class="glow glow-left"></div>
+    <div class="glow glow-right"></div>
+    <svg class="grain"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#grain)" opacity="0.06"/></svg>
+  </div>
 
-  <!-- Text area -->
+  <!-- Hero text -->
   <div class="hero-text">
     <h1 class="headline">
       <span class="word w1">Investir</span>
@@ -21,53 +15,58 @@
     </h1>
     <p class="subtitle">Análise quantamental proprietária para o mercado brasileiro de ações.</p>
     <div class="hero-ctas">
-      <a class="btn-volt" routerLink="/criar-conta">Começar grátis</a>
-      <a class="btn-ghost" href="#motor">Ver resultados ↓</a>
+      <a class="btn-primary" routerLink="/criar-conta">Começar grátis</a>
+      <a class="btn-secondary" href="#motor">Ver resultados ↓</a>
     </div>
   </div>
 
-  <!-- Motor animation — centered composition -->
-  <div class="motor-area">
-    <!-- LEFT: Ticker chips with logos flowing toward the core -->
-    <div class="input-col">
-      @for (card of cards(); track card.ticker; let i = $index) {
-        <div class="ticker-chip" [style.animation-delay]="(0.3 + i * 0.25) + 's'">
-          <img class="chip-logo"
-               [src]="'https://raw.githubusercontent.com/StatusInvest/Content/master/img/company/' + card.ticker + '.jpg'"
-               [alt]="card.ticker" loading="lazy"
-               (error)="$any($event.target).src = ''" />
-          <span class="chip-name mono">{{ card.ticker }}</span>
-          <i class="ph ph-arrow-right chip-arrow"></i>
+  <!-- Conveyor belt: tickers → IQ engine → processed cards -->
+  <div class="conveyor">
+    <!-- Dashed tracks -->
+    <div class="track track-top"></div>
+    <div class="track track-mid"></div>
+    <div class="track track-bot"></div>
+
+    <!-- Left zone: entering tickers -->
+    <div class="zone-left">
+      @for (item of enteringTickers(); track item.id) {
+        <div class="entering-ticker"
+             [class.processing]="item.phase === 'processing'"
+             [style.top.px]="'calc(50% + ' + item.lane + 'px)'">
+          <img class="etk-logo" [src]="logoUrl(item.asset.ticker)" [alt]="item.asset.ticker"
+               (error)="$any($event.target).style.visibility='hidden'" loading="lazy" />
+          <span class="etk-name mono">{{ item.asset.ticker }}</span>
         </div>
       }
     </div>
 
-    <!-- CENTER: IQ Core -->
-    <div class="iq-core">
-      <div class="iq-logo"><span class="iq-text mono">IQ</span></div>
-      <span class="iq-label">IQ-COGNIT™</span>
+    <!-- Center: IQ Engine -->
+    <div class="engine">
+      <div class="engine-glow"></div>
+      <div class="engine-box">
+        <span class="engine-text mono">IQ</span>
+      </div>
+      <span class="engine-label">IQ-COGNIT™</span>
     </div>
 
-    <!-- RIGHT: Output cards in 2x2 -->
-    <div class="output-col">
-      @for (card of cards(); track card.ticker; let i = $index) {
-        <div class="acard" [style.animation-delay]="(1.0 + i * 0.35) + 's'">
-          <div class="acard-top">
-            <img class="acard-logo"
-                 [src]="'https://raw.githubusercontent.com/StatusInvest/Content/master/img/company/' + card.ticker + '.jpg'"
-                 [alt]="card.ticker" loading="lazy"
-                 (error)="$any($event.target).style.display='none'" />
-            <span class="acard-ticker mono">{{ card.ticker }}</span>
+    <!-- Right zone: processed cards -->
+    <div class="zone-right">
+      @for (card of processedCards(); track card.ticker) {
+        <div class="pcard">
+          <div class="pcard-head">
+            <img class="pcard-logo" [src]="logoUrl(card.ticker)" [alt]="card.ticker"
+                 (error)="$any($event.target).style.visibility='hidden'" loading="lazy" />
+            <span class="pcard-ticker mono">{{ card.ticker }}</span>
           </div>
-          <div class="acard-score-row">
-            <span class="acard-score mono" [style.color]="bandColor(card.iq_score)">{{ card.iq_score }}</span>
-            <span class="acard-rating" [style.color]="bandColor(card.iq_score)">{{ card.rating_label }}</span>
+          <div class="pcard-score-row">
+            <span class="pcard-score mono" [style.color]="bandColor(card.iq_score)">{{ card.iq_score }}</span>
+            <span class="pcard-rating">{{ card.rating_label }}</span>
           </div>
-          <div class="acard-bar"><div class="acard-fill" [style.width.%]="card.iq_score" [style.background]="bandColor(card.iq_score)"></div></div>
-          <div class="acard-pillars">
-            <div class="pillar-item"><span class="pillar-label">Val</span><span class="pillar-val mono">{{ card.score_valuation ?? '–' }}</span></div>
-            <div class="pillar-item"><span class="pillar-label">Qnt</span><span class="pillar-val mono">{{ card.score_quanti ?? '–' }}</span></div>
-            <div class="pillar-item"><span class="pillar-label">Qli</span><span class="pillar-val mono">{{ card.score_quali ?? '–' }}</span></div>
+          <div class="pcard-bar"><div class="pcard-fill" [style.width.%]="card.iq_score" [style.background]="bandColor(card.iq_score)"></div></div>
+          <div class="pcard-pillars">
+            <div class="pp"><span class="pp-l">Val</span><span class="pp-v mono">{{ card.score_valuation ?? '–' }}</span></div>
+            <div class="pp"><span class="pp-l">Qnt</span><span class="pp-v mono">{{ card.score_quanti ?? '–' }}</span></div>
+            <div class="pp"><span class="pp-l">Qli</span><span class="pp-v mono">{{ card.score_quali ?? '–' }}</span></div>
           </div>
         </div>
       }
