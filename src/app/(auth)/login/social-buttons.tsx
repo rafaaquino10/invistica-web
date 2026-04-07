@@ -2,17 +2,26 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui'
+import { createClient } from '@/lib/supabase/client'
 
 export function SocialLoginButtons({ callbackUrl }: { callbackUrl: string }) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<string | null>(null)
 
-  const handleSocialLogin = (provider: 'google' | 'github') => {
+  const handleGoogleLogin = async () => {
     setError(null)
-    setLoading(provider)
-    // Redirect to our OAuth initiation route
-    const params = new URLSearchParams({ callbackUrl })
-    window.location.href = `/api/auth/${provider}?${params}`
+    setLoading('google')
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(callbackUrl || '/dashboard')}`,
+      },
+    })
+    if (error) {
+      setError(error.message)
+      setLoading(null)
+    }
   }
 
   return (
@@ -28,7 +37,7 @@ export function SocialLoginButtons({ callbackUrl }: { callbackUrl: string }) {
         className="w-full"
         type="button"
         disabled={loading === 'google'}
-        onClick={() => handleSocialLogin('google')}
+        onClick={handleGoogleLogin}
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
           <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -38,7 +47,6 @@ export function SocialLoginButtons({ callbackUrl }: { callbackUrl: string }) {
         </svg>
         {loading === 'google' ? 'Conectando...' : 'Continuar com Google'}
       </Button>
-
     </div>
   )
 }

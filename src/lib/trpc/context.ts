@@ -1,31 +1,39 @@
 import { prisma, isDemoMode } from '@/lib/prisma'
-import { getCurrentUser } from '@/lib/auth/session'
+import { createClient } from '@/lib/supabase/server'
 import { DEMO_USER } from '@/lib/auth/demo-user'
 import { createRepositories } from '@/lib/repositories'
 import type { FetchCreateContextFnOptions } from '@trpc/server/adapters/fetch'
 
 export async function createContext(opts?: FetchCreateContextFnOptions) {
-  const user = await getCurrentUser()
+  // Get user from Supabase Auth
+  let user: { id: string; email: string; name: string; image: string | null; plan: string; onboardingCompleted: boolean; themePreference?: string } | null = null
 
-  // Extrair IP para rate limiting
+  try {
+    const supabase = await createClient()
+    const { data: { user: sbUser } } = await supabase.auth.getUser()
+    if (sbUser) {
+      user = {
+        id: sbUser.id,
+        email: sbUser.email || '',
+        name: sbUser.user_metadata?.full_name || sbUser.user_metadata?.name || '',
+        image: sbUser.user_metadata?.avatar_url || null,
+        plan: 'free',
+        onboardingCompleted: true,
+      }
+    }
+  } catch {
+    // Supabase unavailable — continue without user
+  }
+
   const headers = opts?.req.headers
   const clientIp =
     headers?.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     headers?.get('x-real-ip') ??
     '127.0.0.1'
 
-  // Build session object compatible with existing tRPC routers
   const session = user
     ? {
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
-          plan: user.plan,
-          onboardingCompleted: user.onboardingCompleted,
-          themePreference: user.themePreference,
-        },
+        user: { ...user },
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       }
     : isDemoMode
@@ -43,7 +51,6 @@ export async function createContext(opts?: FetchCreateContextFnOptions) {
         }
       : null
 
-  // Repository pattern — demo or prisma based on mode
   const repos = createRepositories(isDemoMode, prisma)
 
   return {
