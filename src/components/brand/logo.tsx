@@ -10,18 +10,20 @@ interface LogoProps {
 }
 
 const sizes = {
-  xs: { text: 12, badge: 11, badgePad: '1px 3px', gap: 3, symbol: 24 },
-  sm: { text: 14, badge: 13, badgePad: '2px 4px', gap: 4, symbol: 32 },
-  md: { text: 16, badge: 15, badgePad: '2px 5px', gap: 5, symbol: 40 },
-  lg: { text: 22, badge: 20, badgePad: '3px 6px', gap: 6, symbol: 48 },
-  xl: { text: 28, badge: 26, badgePad: '3px 8px', gap: 6, symbol: 64 },
+  xs: { symbol: 24, fontSize: 18, gap: 'gap-1' },
+  sm: { symbol: 40, fontSize: 32, gap: 'gap-1.5' },
+  md: { symbol: 40, fontSize: 32, gap: 'gap-2' },
+  lg: { symbol: 48, fontSize: 48, gap: 'gap-2.5' },
+  xl: { symbol: 64, fontSize: 64, gap: 'gap-3' },
 }
 
-// Brand colors — Volt Carbon identity
-const VOLT = '#d0f364'
-const DARK = '#050505'
+// Brand colors — same as original
+const COLORS = {
+  electricBlue: '#1A73E8',
+  white: '#FFFFFF',
+}
 
-// The IQ Symbol — standalone badge (square with "IQ")
+// The IQ Symbol - official brand badge (same size/style as original, text changed to "IQ")
 export function IQSymbol({ size = 40, animated = false }: { size?: number; animated?: boolean }) {
   return (
     <svg
@@ -31,16 +33,16 @@ export function IQSymbol({ size = 40, animated = false }: { size?: number; anima
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       aria-label="InvestIQ symbol"
-      className={cn(animated && 'transition-transform duration-300 hover:scale-105')}
+      className={cn(animated && 'group transition-transform duration-300 hover:scale-105')}
     >
-      <rect x="4" y="4" width="48" height="48" rx="10" fill={VOLT} />
+      <rect x="4" y="4" width="48" height="48" rx="12" fill={COLORS.electricBlue} />
       <text
         x="28"
-        y="37"
+        y="38"
         fontFamily="var(--font-geist-sans), system-ui, sans-serif"
-        fontWeight="900"
-        fontSize="24"
-        fill={DARK}
+        fontWeight="700"
+        fontSize="26"
+        fill={COLORS.white}
         textAnchor="middle"
       >
         IQ
@@ -49,50 +51,30 @@ export function IQSymbol({ size = 40, animated = false }: { size?: number; anima
   )
 }
 
-// InvestIQ wordmark: "Invest" text + "IQ" badge inline
+// Wordmark component
+// When withSymbol=true, shows "Invest" (symbol already provides "IQ")
+// When withSymbol=false, shows full "InvestIQ" as text
 export function IQWordmark({
-  fontSize = 16,
+  fontSize = 32,
   className,
+  withSymbol = false,
 }: {
   fontSize?: number
   className?: string
+  withSymbol?: boolean
 }) {
-  const badgeSize = Math.round(fontSize * 0.9)
-  const gap = Math.round(fontSize * 0.25)
-
   return (
     <span
-      className={cn('inline-flex items-center', className)}
-      style={{ gap: `${gap}px` }}
+      className={cn('inline-flex items-baseline', className)}
+      style={{
+        fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
+        fontWeight: 700,
+        fontSize: `${fontSize}px`,
+        letterSpacing: '-0.04em',
+      }}
     >
-      <span
-        style={{
-          fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-          fontWeight: 700,
-          fontSize: `${fontSize}px`,
-          letterSpacing: '-0.02em',
-          color: 'var(--text-1, #F8FAFC)',
-          lineHeight: 1,
-        }}
-      >
-        Invest
-      </span>
-      <span
-        style={{
-          fontFamily: "var(--font-geist-sans), system-ui, sans-serif",
-          fontWeight: 900,
-          fontSize: `${badgeSize}px`,
-          color: DARK,
-          background: VOLT,
-          borderRadius: '4px',
-          padding: `${Math.max(1, Math.round(fontSize * 0.1))}px ${Math.round(fontSize * 0.3)}px`,
-          lineHeight: 1,
-          display: 'inline-flex',
-          alignItems: 'center',
-        }}
-      >
-        IQ
-      </span>
+      <span style={{ color: 'var(--logo-text-color, #0F2B46)' }}>Invest</span>
+      {!withSymbol && <span style={{ color: COLORS.electricBlue }}>IQ</span>}
     </span>
   )
 }
@@ -107,8 +89,8 @@ export function Tagline({ className }: { className?: string }) {
         fontSize: '13px',
         fontWeight: 400,
         letterSpacing: '0.02em',
-        opacity: 0.5,
-        color: 'var(--text-2, #A0A8B8)',
+        opacity: 0.6,
+        color: 'var(--logo-text-color, #0F2B46)',
       }}
     >
       Inteligência que valoriza.
@@ -120,37 +102,52 @@ export function Logo({
   variant = 'full',
   size = 'md',
   className,
-  animated = false,
+  animated = false
 }: LogoProps) {
-  const s = sizes[size]
+  const sizeConfig = sizes[size]
 
-  // Symbol only — the IQ badge standalone
+  // Symbol only
   if (variant === 'symbol') {
     return (
       <div className={className}>
-        <IQSymbol size={s.symbol} animated={animated} />
+        <IQSymbol size={sizeConfig.symbol} animated={animated} />
       </div>
     )
   }
 
-  // Wordmark only — "Invest" + IQ badge
+  // Wordmark only
   if (variant === 'wordmark') {
-    return <IQWordmark fontSize={s.text} className={className} />
+    return <IQWordmark fontSize={sizeConfig.fontSize} className={className} />
+  }
+
+  // Horizontal: "Invest" text + IQ badge
+  if (variant === 'horizontal') {
+    return (
+      <div className={cn('flex items-center', sizeConfig.gap, className)}>
+        <IQWordmark fontSize={sizeConfig.fontSize * 0.75} withSymbol />
+        <IQSymbol size={Math.round(sizeConfig.fontSize * 1.1)} animated={animated} />
+      </div>
+    )
   }
 
   // Stacked: Symbol + Wordmark + Tagline
   if (variant === 'stacked') {
     return (
       <div className={cn('flex flex-col items-center gap-3', className)}>
-        <IQSymbol size={Math.round(s.symbol * 1.2)} animated={animated} />
-        <IQWordmark fontSize={Math.round(s.text * 0.85)} />
+        <IQSymbol size={sizeConfig.symbol * 1.2} animated={animated} />
+        <IQWordmark fontSize={sizeConfig.fontSize * 0.7} withSymbol />
         <Tagline />
       </div>
     )
   }
 
-  // Full / Horizontal — the standard logo: "Invest" + IQ badge
-  return <IQWordmark fontSize={s.text} className={className} />
+  // Full logo (default) - "Invest" text + IQ badge
+  return (
+    <div className={cn('flex items-center', sizeConfig.gap, className)}>
+      <IQWordmark fontSize={sizeConfig.fontSize * 0.75} withSymbol />
+      <IQSymbol size={sizeConfig.symbol} animated={animated} />
+    </div>
+  )
 }
 
 export default Logo
