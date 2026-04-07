@@ -1,8 +1,12 @@
 {
-  "buildCommand": "ng build --configuration production",
-  "outputDirectory": "dist/investiq-web/browser",
-  "framework": null,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+  "crons": [
+    {
+      "path": "/api/jobs/score-snapshot",
+      "schedule": "0 18 * * 5"
+    },
+    {
+      "path": "/api/jobs/weekly-report",
+      "schedule": "0 19 * * 5"
+    }
   ]
 }
