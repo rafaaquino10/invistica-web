@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useCallback, useState } from 'react'
-import { createChart, type IChartApi, type ISeriesApi, type LineData, type UTCTimestamp, ColorType, CrosshairMode, LineStyle } from 'lightweight-charts'
+import { createChart, LineSeries, type IChartApi, type ISeriesApi, type LineData, type UTCTimestamp, ColorType, CrosshairMode, LineStyle } from 'lightweight-charts'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 
@@ -39,7 +39,7 @@ export function TVPerformanceChart({
 }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
-  const seriesRefs = useRef<ISeriesApi<'Line'>[]>([])
+  const seriesRefs = useRef<ISeriesApi<'Line', UTCTimestamp>[]>([])
   const { resolvedTheme } = useTheme()
   const [tooltipData, setTooltipData] = useState<{ x: number; y: number; values: { label: string; value: string; color: string }[] } | null>(null)
 
@@ -95,9 +95,9 @@ export function TVPerformanceChart({
     chartRef.current = chart
 
     // Add series
-    const lineRefs: ISeriesApi<'Line'>[] = []
+    const lineRefs: ISeriesApi<'Line', UTCTimestamp>[] = []
     for (const s of series) {
-      const lineSeries = chart.addLineSeries({
+      const lineSeries = chart.addSeries(LineSeries, {
         color: s.color,
         lineWidth: (s.lineWidth ?? 2) as 1 | 2 | 3 | 4,
         lineStyle: s.lineStyle === 'dashed' ? LineStyle.Dashed : LineStyle.Solid,

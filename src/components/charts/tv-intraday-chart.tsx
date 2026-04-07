@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { createChart, type IChartApi, type ISeriesApi, type LineData, type UTCTimestamp, ColorType, CrosshairMode, LineStyle } from 'lightweight-charts'
+import { createChart, LineSeries, type IChartApi, type ISeriesApi, type LineData, type UTCTimestamp, ColorType, CrosshairMode, LineStyle } from 'lightweight-charts'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 
@@ -54,9 +54,9 @@ export function TVIntradayChart({ series, height = 200, className }: Props) {
     })
     chartRef.current = chart
 
-    const lineRefs: ISeriesApi<'Line'>[] = []
+    const lineRefs: ISeriesApi<'Line', UTCTimestamp>[] = []
     for (const s of series) {
-      const line = chart.addLineSeries({
+      const line = chart.addSeries(LineSeries, {
         color: s.color,
         lineWidth: (s.lineWidth ?? 2) as 1 | 2 | 3 | 4,
         crosshairMarkerVisible: true,
