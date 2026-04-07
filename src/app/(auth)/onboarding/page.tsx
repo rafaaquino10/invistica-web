@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui'
-import { IQSymbol, Wordmark } from '@/components/ui/Logo'
+import { IQSymbol, IQWordmark as Wordmark } from '@/components/ui/Logo'
 import { cn } from '@/lib/utils'
 
 // ─── Types ───────────────────────────────────────────────────────────
