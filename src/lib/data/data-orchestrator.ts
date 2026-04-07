@@ -20,6 +20,8 @@ import type { GatewayFundamental } from '../gateway-client'
 import { fetchBenchmarks, fetchMacroIndicators, fetchHistory } from '../gateway-client'
 import { detectRegime, type RegimeConfig } from '../scoring/regime-detector'
 import { saveScoreSnapshot, detectScoreAlerts } from '@/lib/score-history'
+import { fetchAssetsFromInvestIQ } from './investiq-adapter'
+import { investiq } from '../investiq-client'
 
 // ─── Cached Regime ──────────────────────────────────────────
 let cachedRegime: RegimeConfig | null = null
@@ -34,34 +36,45 @@ async function refreshRegime(): Promise<RegimeConfig> {
   const now = Date.now()
   if (cachedRegime && now - regimeFetchedAt < REGIME_TTL) return cachedRegime
 
+  // Try InvestIQ backend first for regime
   try {
-    const [benchmarks, macro, ibovHistory] = await Promise.all([
-      fetchBenchmarks(),
-      fetchMacroIndicators().catch(() => null),
-      fetchHistory('^BVSP', '1mo', '1d').catch(() => []),
-    ])
-    const selic = benchmarks.selic.rate
-    // Usar IPCA 12 meses quando disponível para SELIC Real
-    const ipca12m = macro?.ipca12m?.valor ?? 0
-    // Calcular volatilidade realizada 30d do IBOV (desvio padrão anualizado dos retornos diários)
-    let vol30d = 0
-    if (ibovHistory.length >= 5) {
-      const returns = ibovHistory.slice(1).map((d, i) => {
-        const prev = ibovHistory[i]!.close
-        return prev > 0 ? Math.log(d.close / prev) : 0
-      })
-      const mean = returns.reduce((s, r) => s + r, 0) / returns.length
-      const variance = returns.reduce((s, r) => s + (r - mean) ** 2, 0) / (returns.length - 1)
-      vol30d = Math.sqrt(variance) * Math.sqrt(252) * 100 // anualizada em %
-    }
-    const regime = detectRegime(selic, ipca12m, vol30d)
+    const regimeData = await investiq.get<{
+      regime: string; macro: { selic: number; ipca: number }
+    }>('/analytics/regime')
+    const selic = regimeData.macro?.selic ?? 14
+    const ipca = regimeData.macro?.ipca ?? 4
+    const regime = detectRegime(selic, ipca)
     cachedRegime = regime
     regimeFetchedAt = now
     return regime
   } catch {
-    // Fallback to neutral if benchmarks unavailable
-    if (cachedRegime) return cachedRegime
-    return detectRegime(13) // default to current high-rate environment
+    // Fallback: try Gateway
+    try {
+      const [benchmarks, macro, ibovHistory] = await Promise.all([
+        fetchBenchmarks(),
+        fetchMacroIndicators().catch(() => null),
+        fetchHistory('^BVSP', '1mo', '1d').catch(() => []),
+      ])
+      const selic = benchmarks.selic.rate
+      const ipca12m = macro?.ipca12m?.valor ?? 0
+      let vol30d = 0
+      if (ibovHistory.length >= 5) {
+        const returns = ibovHistory.slice(1).map((d, i) => {
+          const prev = ibovHistory[i]!.close
+          return prev > 0 ? Math.log(d.close / prev) : 0
+        })
+        const mean = returns.reduce((s, r) => s + r, 0) / returns.length
+        const variance = returns.reduce((s, r) => s + (r - mean) ** 2, 0) / (returns.length - 1)
+        vol30d = Math.sqrt(variance) * Math.sqrt(252) * 100
+      }
+      const regime = detectRegime(selic, ipca12m, vol30d)
+      cachedRegime = regime
+      regimeFetchedAt = now
+      return regime
+    } catch {
+      if (cachedRegime) return cachedRegime
+      return detectRegime(14) // default: current high SELIC
+    }
   }
 }
 
@@ -93,9 +106,18 @@ export async function getAssets(): Promise<AssetData[]> {
         console.log(`[SWR] Background rebuild: ${data.length} stocks`)
         saveSnapshotQuietly(data)
       })
-      .catch(err => {
-        setLastBuildError(err as Error)
-        console.error('[SWR] Background rebuild failed:', (err as Error).message)
+      .catch(async (err) => {
+        // Gateway failed — try InvestIQ backend
+        try {
+          const iqData = await fetchAssetsFromInvestIQ()
+          if (iqData.length > 0) {
+            setCachedAssets(iqData)
+            console.log(`[SWR] Background rebuild via InvestIQ: ${iqData.length} stocks`)
+          }
+        } catch {
+          setLastBuildError(err as Error)
+          console.error('[SWR] Background rebuild failed:', (err as Error).message)
+        }
       })
       .finally(() => setIsRebuilding(false))
     return cached
@@ -110,13 +132,25 @@ export async function getAssets(): Promise<AssetData[]> {
     saveSnapshotQuietly(assets)
     return assets
   } catch (err) {
+    // Gateway failed — try InvestIQ backend as fallback
+    console.warn('[data-source] Gateway unavailable, trying InvestIQ backend...', (err as Error).message)
+    try {
+      const investiqAssets = await fetchAssetsFromInvestIQ()
+      if (investiqAssets.length > 0) {
+        setCachedAssets(investiqAssets)
+        console.log(`[data-source] Live dataset: ${investiqAssets.length} stocks from InvestIQ backend`)
+        return investiqAssets
+      }
+    } catch (iqErr) {
+      console.warn('[data-source] InvestIQ backend also unavailable:', (iqErr as Error).message)
+    }
+
     setLastBuildError(err as Error)
-    console.warn('[data-source] Gateway unavailable:', (err as Error).message)
     if (cached) {
       console.warn('[data-source] Serving expired cache as fallback')
       return cached
     }
-    throw new Error(`Gateway unavailable and no cached data: ${(err as Error).message}`)
+    throw new Error(`Both Gateway and InvestIQ backend unavailable, no cached data`)
   } finally {
     setIsRebuilding(false)
   }
