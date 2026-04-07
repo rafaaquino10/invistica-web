@@ -39,25 +39,44 @@
       }
     </button>
 
-    <!-- Avatar -->
-    <div class="avatar-wrapper">
-      <button class="avatar-btn" (click)="toggleUserMenu()" (blur)="closeUserMenu()">
-        <i class="ph ph-user"></i>
-      </button>
+    @if (auth.isAuthenticated()) {
+      <!-- Authenticated: Avatar + Menu -->
+      <div class="avatar-wrapper">
+        <button class="avatar-btn" (click)="toggleUserMenu()" (blur)="closeUserMenu()">
+          @if (auth.userProfile().avatarUrl) {
+            <img class="avatar-img" [src]="auth.userProfile().avatarUrl!" [alt]="auth.userProfile().name" />
+          } @else {
+            <span class="avatar-initials">{{ auth.userProfile().name.slice(0,2).toUpperCase() || 'U' }}</span>
+          }
+        </button>
 
-      @if (showUserMenu()) {
-        <div class="user-menu glass">
-          <button class="menu-item" (mousedown)="showUserMenu.set(false)">
-            <i class="ph ph-gear"></i>
-            <span>Configurações</span>
-          </button>
-          <div class="menu-divider"></div>
-          <button class="menu-item" (mousedown)="showUserMenu.set(false)">
-            <i class="ph ph-sign-out"></i>
-            <span>Sair</span>
-          </button>
-        </div>
-      }
-    </div>
+        @if (showUserMenu()) {
+          <div class="user-menu glass">
+            <div class="menu-user-info">
+              <span class="menu-user-name">{{ auth.userProfile().name }}</span>
+              <span class="menu-user-email label">{{ auth.userProfile().email }}</span>
+            </div>
+            <div class="menu-divider"></div>
+            <button class="menu-item" (mousedown)="showSettings.set(true); showUserMenu.set(false)">
+              <i class="ph ph-gear"></i>
+              <span>Configurações</span>
+            </button>
+            <div class="menu-divider"></div>
+            <button class="menu-item menu-danger" (mousedown)="auth.logout(); showUserMenu.set(false)">
+              <i class="ph ph-sign-out"></i>
+              <span>Sair</span>
+            </button>
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Not authenticated: Login/Register buttons -->
+      <a class="action-btn-text" routerLink="/entrar">Entrar</a>
+      <a class="btn-volt-sm" routerLink="/criar-conta">Criar conta</a>
+    }
   </div>
 </header>
+
+@if (showSettings()) {
+  <iq-settings-modal (closed)="showSettings.set(false)" />
+}

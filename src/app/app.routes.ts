@@ -1,8 +1,10 @@
 import { Routes } from '@angular/router';
 import { ShellComponent } from './layout/shell/shell.component';
+import { authGuard } from './core/guards/auth.guard';
+import { publicGuard } from './core/guards/public.guard';
 
 export const routes: Routes = [
-  // Landing — layout próprio, sem shell
+  // Landing — layout próprio, sem shell, público
   {
     path: '',
     loadComponent: () =>
@@ -10,10 +12,35 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
 
-  // App — dentro do shell (sidebar + header + ticker tape)
+  // Auth — layout próprio, sem shell
+  {
+    path: 'entrar',
+    canActivate: [publicGuard],
+    loadComponent: () =>
+      import('./features/auth/login/login.component').then(m => m.LoginComponent),
+  },
+  {
+    path: 'criar-conta',
+    canActivate: [publicGuard],
+    loadComponent: () =>
+      import('./features/auth/register/register.component').then(m => m.RegisterComponent),
+  },
+  {
+    path: 'auth/callback',
+    loadComponent: () =>
+      import('./features/auth/callback/callback.component').then(m => m.CallbackComponent),
+  },
+  {
+    path: 'auth/reset',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
+  },
+
+  // App — dentro do shell, protegido por AuthGuard
   {
     path: '',
     component: ShellComponent,
+    canActivate: [authGuard],
     children: [
       {
         path: 'dashboard',

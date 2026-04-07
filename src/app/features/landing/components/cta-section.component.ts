@@ -12,7 +12,7 @@ import { InViewDirective } from '../../../shared/directives/in-view.directive';
       <div class="cta-card glass">
         <h2>Comece a investir com inteligência</h2>
         <p>100% gratuito</p>
-        <a class="btn-volt cta" routerLink="/dashboard">Começar agora</a>
+        <a class="btn-volt cta" routerLink="/criar-conta">Começar agora</a>
       </div>
     </section>
   `,

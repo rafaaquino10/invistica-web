@@ -18,6 +18,7 @@
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
     "@phosphor-icons/web": "^2.1.2",
+    "@supabase/supabase-js": "^2.101.1",
     "echarts": "^6.0.0",
     "ngx-echarts": "^19.0.0",
     "pluggy-connect-sdk": "^2.13.0",

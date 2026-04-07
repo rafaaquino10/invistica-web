@@ -1,7 +1,9 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ThemeService } from '../../core/services/theme.service';
+import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
+import { SettingsModalComponent } from '../../features/auth/settings/settings-modal.component';
 
 interface SearchResult {
   ticker: string;
@@ -11,12 +13,14 @@ interface SearchResult {
 @Component({
   selector: 'iq-header',
   standalone: true,
+  imports: [SettingsModalComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   protected readonly theme = inject(ThemeService);
+  protected readonly auth = inject(AuthService);
   private readonly api = inject(ApiService);
   private readonly router = inject(Router);
 
@@ -24,6 +28,7 @@ export class HeaderComponent {
   readonly results = signal<SearchResult[]>([]);
   readonly showResults = signal(false);
   readonly showUserMenu = signal(false);
+  readonly showSettings = signal(false);
 
   private searchTimeout: ReturnType<typeof setTimeout> | null = null;
 

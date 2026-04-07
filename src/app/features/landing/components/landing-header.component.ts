@@ -19,8 +19,8 @@ import { RouterLink } from '@angular/router';
         <a href="#visao" class="nav-link">Visão</a>
       </nav>
       <div class="actions">
-        <a class="btn-ghost cta" routerLink="/dashboard">Entrar</a>
-        <a class="btn-volt cta" routerLink="/dashboard">Começar grátis</a>
+        <a class="btn-ghost cta" routerLink="/entrar">Entrar</a>
+        <a class="btn-volt cta" routerLink="/criar-conta">Começar grátis</a>
       </div>
     </header>
   `,
