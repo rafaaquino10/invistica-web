@@ -4,51 +4,36 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   overflow: hidden;
   background: #050505;
-  padding: 100px 48px 48px;
+  padding: 100px 32px 48px;
   gap: 48px;
 }
 
-// ── SVG Curve (absolute behind everything) ──
+// ── SVG Curve ──
 .hero-curve {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
 }
 .curve-stroke {
-  stroke-dasharray: 2400;
-  stroke-dashoffset: 2400;
+  stroke-dasharray: 2400; stroke-dashoffset: 2400;
   animation: drawLine 3s ease-in-out forwards;
 }
 @keyframes drawLine { to { stroke-dashoffset: 0; } }
 
 // ── TOP: Text ──
 .hero-text {
-  position: relative;
-  z-index: 3;
-  text-align: center;
-  max-width: 720px;
-  margin: 0 auto;
+  position: relative; z-index: 3;
+  text-align: center; max-width: 720px;
 }
-
 .headline {
-  font-family: var(--font-ui);
-  font-size: 48px;
-  font-weight: 700;
-  color: #F8FAFC;
-  line-height: 1.15;
-  margin-bottom: 16px;
+  font-family: var(--font-ui); font-size: 48px; font-weight: 700;
+  color: #F8FAFC; line-height: 1.15; margin-bottom: 16px;
 }
-
 .word {
-  display: inline-block;
-  margin-right: 0.3em;
-  opacity: 0;
-  transform: translateY(20px);
+  display: inline-block; margin-right: 0.3em;
+  opacity: 0; transform: translateY(20px);
   animation: fadeUp 500ms ease-out forwards;
 }
 .w1 { animation-delay: 0.3s; }
@@ -57,23 +42,14 @@
 @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
 .subtitle {
-  font-family: var(--font-ui);
-  font-size: 18px;
-  color: #A0A8B8;
-  line-height: 1.5;
-  margin-bottom: 28px;
-  opacity: 0;
-  animation: fadeUp 500ms ease-out 1s forwards;
+  font-family: var(--font-ui); font-size: 18px; color: #A0A8B8;
+  line-height: 1.5; margin-bottom: 28px;
+  opacity: 0; animation: fadeUp 500ms ease-out 1s forwards;
 }
-
 .hero-ctas {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  opacity: 0;
-  animation: fadeUp 500ms ease-out 1.3s forwards;
+  display: flex; gap: 12px; justify-content: center;
+  opacity: 0; animation: fadeUp 500ms ease-out 1.3s forwards;
 }
-
 .btn-volt {
   padding: 14px 32px; background: #d0f364; color: #050505;
   border-radius: 4px; font-family: var(--font-ui); font-weight: 700; font-size: 15px;
@@ -88,48 +64,54 @@
   &:hover { color: #F8FAFC; border-color: rgba(255,255,255,0.15); }
 }
 
-// ── BOTTOM: Motor animation area ──
+// ── BOTTOM: Motor — symmetrical 3 columns, centered ──
 .motor-area {
-  position: relative;
-  z-index: 1;
-  display: flex;
+  position: relative; z-index: 1;
+  display: grid;
+  grid-template-columns: 160px auto 1fr;
   align-items: center;
-  justify-content: center;
-  min-height: 280px;
-  gap: 0;
+  gap: 32px;
+  width: 100%;
+  max-width: 960px;
 }
 
-// Floating tickers (left zone)
+// LEFT: Floating tickers (compact vertical list, each animates once then stays)
 .floating-zone {
-  position: relative;
-  width: 20%;
-  height: 260px;
-  overflow: hidden;
-}
-.float-ticker {
-  position: absolute;
-  left: -60px;
-  font-size: 13px;
-  color: #606878;
-  opacity: 0;
-  animation: tickerFloat 5s ease-in-out infinite;
-}
-@keyframes tickerFloat {
-  0%   { transform: translateX(0); opacity: 0; }
-  15%  { opacity: 0.5; }
-  50%  { opacity: 0.5; }
-  70%  { transform: translateX(180px); opacity: 0; }
-  100% { transform: translateX(180px); opacity: 0; }
-}
-
-// IQ Core (center)
-.iq-core {
   display: flex;
   flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.float-row {
+  display: flex;
   align-items: center;
   gap: 8px;
-  z-index: 2;
-  flex-shrink: 0;
+  opacity: 0;
+  transform: translateX(-24px);
+  animation: tickerSlide 800ms ease-out forwards;
+}
+
+.float-ticker {
+  font-size: 14px;
+  font-weight: 700;
+  color: #A0A8B8;
+}
+
+.float-arrow {
+  font-size: 12px;
+  color: #d0f364;
+  opacity: 0.6;
+}
+
+@keyframes tickerSlide {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+// CENTER: IQ Core
+.iq-core {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; justify-self: center;
 }
 .iq-logo {
   width: 80px; height: 80px; border-radius: 16px;
@@ -148,21 +130,21 @@
   50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(208,243,100,0.4); }
 }
 
-// Analyzed cards (right zone)
+// RIGHT: Analyzed cards
 .cards-zone {
-  display: flex;
-  gap: 12px;
-  padding-left: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 .acard {
-  width: 168px;
+  width: 164px;
   padding: 14px;
   background: rgba(18,20,28,0.8);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
   border-radius: 4px;
   display: flex; flex-direction: column; gap: 8px;
-  opacity: 0; transform: translateX(-20px) scale(0.96);
+  opacity: 0; transform: translateX(-16px) scale(0.97);
   animation: cardSlide 600ms ease-out forwards;
 }
 @keyframes cardSlide { to { opacity: 1; transform: translateX(0) scale(1); } }
@@ -174,16 +156,19 @@
 .acard-bar { height: 4px; background: #242630; border-radius: 2px; overflow: hidden; }
 .acard-fill { height: 100%; border-radius: 2px; }
 .acard-pillars { display: flex; gap: 8px; }
-.p-mini { font-size: 10px; color: #606878; }
-.acard-rating { font-family: var(--font-ui); font-size: 9px; color: #A0A8B8; text-transform: uppercase; letter-spacing: 0.04em; }
+.p-mini { font-size: 10px; color: #A0A8B8; }
+.acard-rating {
+  font-family: var(--font-ui); font-size: 9px; color: #A0A8B8;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
 
 // ── Responsive ──
 @media (max-width: 900px) {
   .hero { padding: 100px 24px 32px; gap: 32px; }
   .headline { font-size: 32px; }
   .subtitle { font-size: 16px; }
-  .motor-area { flex-direction: column; gap: 24px; min-height: auto; }
-  .floating-zone { display: none; }
-  .cards-zone { padding-left: 0; flex-wrap: wrap; justify-content: center; }
+  .motor-area { grid-template-columns: 1fr; justify-items: center; gap: 24px; }
+  .floating-zone { flex-direction: row; gap: 16px; align-items: center; }
+  .cards-zone { grid-template-columns: 1fr 1fr; }
   .acard { width: 140px; }
 }

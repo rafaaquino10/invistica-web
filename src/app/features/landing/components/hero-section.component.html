@@ -26,22 +26,25 @@
     </div>
   </div>
 
-  <!-- BOTTOM: Motor animation area -->
+  <!-- BOTTOM: Motor animation — symmetrical 3-column grid -->
   <div class="motor-area">
-    <!-- Floating tickers (left) -->
+    <!-- LEFT: Floating tickers (the SAME tickers that appear in the cards) -->
     <div class="floating-zone">
-      @for (t of tickers; track t; let i = $index) {
-        <span class="float-ticker mono" [style.animation-delay]="(i * 0.7) + 's'" [style.top.%]="10 + i * 18">{{ t }}</span>
+      @for (t of floatingTickers(); track t; let i = $index) {
+        <div class="float-row" [style.animation-delay]="(i * 1.2) + 's'">
+          <span class="float-ticker mono">{{ t }}</span>
+          <span class="float-arrow">→</span>
+        </div>
       }
     </div>
 
-    <!-- IQ Core (center) -->
+    <!-- CENTER: IQ Core -->
     <div class="iq-core">
       <div class="iq-logo"><span class="iq-text mono">IQ</span></div>
       <span class="iq-label">IQ-COGNIT™</span>
     </div>
 
-    <!-- Analyzed cards (right) -->
+    <!-- RIGHT: Analyzed cards -->
     <div class="cards-zone">
       @for (card of cards(); track card.ticker; let i = $index) {
         <div class="acard" [style.animation-delay]="(1.0 + i * 0.4) + 's'">

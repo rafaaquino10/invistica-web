@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 
@@ -19,7 +19,9 @@ interface TopAsset {
 export class HeroSectionComponent implements OnInit {
   private readonly api = inject(ApiService);
   readonly cards = signal<TopAsset[]>([]);
-  readonly tickers = ['VALE3', 'BBAS3', 'VIVT3', 'PETR4', 'WEGE3'];
+
+  // Tickers shown floating LEFT = same tickers that appear in the cards
+  readonly floatingTickers = computed(() => this.cards().map(c => c.ticker));
 
   ngOnInit(): void {
     this.api.get<{ top: TopAsset[] }>('/scores/top', { limit: 4 }).subscribe({
