@@ -100,7 +100,7 @@ export const PLANS = {
       'Diagnósticos IA completos (Análise aQ)',
       'Score X-Ray (18 sub-indicadores)',
       'DCF + Valor Intrínseco',
-      'Alertas proativos + Radar aQ',
+      'Alertas proativos + Radar IQ',
       'Monte Carlo + Sensibilidade Macro',
       'Export CSV ilimitado',
       'Suporte VIP',

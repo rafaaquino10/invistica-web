@@ -107,7 +107,7 @@ const navigationSections: NavSection[] = [
         ),
       },
       {
-        label: 'Radar aQ',
+        label: 'Radar IQ',
         href: '/radar',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -120,10 +120,10 @@ const navigationSections: NavSection[] = [
     ],
   },
   {
-    label: 'aQ INTELLIGENCE',
+    label: 'IQ-Cognit',
     items: [
       {
-        label: 'Carteiras aQ',
+        label: 'Carteiras IQ',
         href: '/carteiras-inteligentes',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
