@@ -7,8 +7,8 @@
   align-items: center;
   overflow: hidden;
   background: #050505;
-  padding: 100px 32px 48px;
-  gap: 48px;
+  padding: 100px 24px 60px;
+  gap: 56px;
 }
 
 // ── SVG Curve ──
@@ -22,10 +22,10 @@
 }
 @keyframes drawLine { to { stroke-dashoffset: 0; } }
 
-// ── TOP: Text ──
+// ── Text ──
 .hero-text {
   position: relative; z-index: 3;
-  text-align: center; max-width: 720px;
+  text-align: center; max-width: 700px;
 }
 .headline {
   font-family: var(--font-ui); font-size: 48px; font-weight: 700;
@@ -64,111 +64,161 @@
   &:hover { color: #F8FAFC; border-color: rgba(255,255,255,0.15); }
 }
 
-// ── BOTTOM: Motor — symmetrical 3 columns, centered ──
+// ── Motor — 3 equal-weight columns, perfectly centered ──
 .motor-area {
   position: relative; z-index: 1;
-  display: grid;
-  grid-template-columns: 160px auto 1fr;
+  display: flex;
   align-items: center;
-  gap: 32px;
+  justify-content: center;
+  gap: 40px;
   width: 100%;
-  max-width: 960px;
+  max-width: 1040px;
 }
 
-// LEFT: Floating tickers (compact vertical list, each animates once then stays)
-.floating-zone {
+// LEFT: Ticker chips with logos
+.input-col {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   align-items: flex-end;
+  min-width: 160px;
 }
 
-.float-row {
+.ticker-chip {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 8px 14px;
+  background: rgba(18, 20, 28, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
   opacity: 0;
-  transform: translateX(-24px);
-  animation: tickerSlide 800ms ease-out forwards;
+  transform: translateX(-20px);
+  animation: chipIn 600ms ease-out forwards;
 }
 
-.float-ticker {
-  font-size: 14px;
+.chip-logo {
+  width: 22px; height: 22px;
+  border-radius: 3px;
+  object-fit: cover;
+  background: #242630;
+}
+
+.chip-name {
+  font-size: 13px;
   font-weight: 700;
-  color: #A0A8B8;
+  color: #F8FAFC;
 }
 
-.float-arrow {
+.chip-arrow {
   font-size: 12px;
   color: #d0f364;
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
-@keyframes tickerSlide {
+@keyframes chipIn {
   to { opacity: 1; transform: translateX(0); }
 }
 
 // CENTER: IQ Core
 .iq-core {
   display: flex; flex-direction: column; align-items: center;
-  gap: 8px; justify-self: center;
+  gap: 10px; flex-shrink: 0;
 }
 .iq-logo {
-  width: 80px; height: 80px; border-radius: 16px;
+  width: 88px; height: 88px; border-radius: 18px;
   background: #12141C;
   display: flex; align-items: center; justify-content: center;
   animation: pulse 2s ease-in-out infinite;
-  box-shadow: 0 0 20px rgba(208,243,100,0.25);
+  box-shadow: 0 0 24px rgba(208, 243, 100, 0.3);
+  border: 1px solid rgba(208, 243, 100, 0.08);
 }
-.iq-text { font-size: 28px; font-weight: 800; color: #d0f364; }
+.iq-text { font-size: 30px; font-weight: 800; color: #d0f364; }
 .iq-label {
   font-family: var(--font-ui); font-size: 9px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 0.2em; color: #606878;
 }
 @keyframes pulse {
-  0%,100% { transform: scale(1); box-shadow: 0 0 20px rgba(208,243,100,0.25); }
-  50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(208,243,100,0.4); }
+  0%, 100% { transform: scale(1); box-shadow: 0 0 24px rgba(208, 243, 100, 0.3); }
+  50% { transform: scale(1.06); box-shadow: 0 0 48px rgba(208, 243, 100, 0.45); }
 }
 
-// RIGHT: Analyzed cards
-.cards-zone {
+// RIGHT: Output cards 2x2
+.output-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
+  min-width: 0;
 }
-.acard {
-  width: 164px;
-  padding: 14px;
-  background: rgba(18,20,28,0.8);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 4px;
-  display: flex; flex-direction: column; gap: 8px;
-  opacity: 0; transform: translateX(-16px) scale(0.97);
-  animation: cardSlide 600ms ease-out forwards;
-}
-@keyframes cardSlide { to { opacity: 1; transform: translateX(0) scale(1); } }
 
-.acard-header { display: flex; align-items: center; gap: 6px; }
-.acard-logo { width: 20px; height: 20px; border-radius: 2px; object-fit: cover; }
-.acard-ticker { font-size: 12px; font-weight: 700; color: #F8FAFC; }
-.acard-score { font-size: 24px; font-weight: 700; line-height: 1; }
-.acard-bar { height: 4px; background: #242630; border-radius: 2px; overflow: hidden; }
-.acard-fill { height: 100%; border-radius: 2px; }
-.acard-pillars { display: flex; gap: 8px; }
-.p-mini { font-size: 10px; color: #A0A8B8; }
+.acard {
+  width: 176px;
+  padding: 16px;
+  background: rgba(18, 20, 28, 0.85);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  display: flex; flex-direction: column; gap: 10px;
+  opacity: 0; transform: scale(0.95);
+  animation: cardPop 500ms ease-out forwards;
+}
+@keyframes cardPop { to { opacity: 1; transform: scale(1); } }
+
+.acard-top {
+  display: flex; align-items: center; gap: 8px;
+}
+.acard-logo {
+  width: 24px; height: 24px; border-radius: 4px;
+  object-fit: cover; background: #242630;
+}
+.acard-ticker {
+  font-size: 13px; font-weight: 700; color: #F8FAFC;
+}
+
+.acard-score-row {
+  display: flex; align-items: baseline; gap: 8px;
+}
+.acard-score {
+  font-size: 28px; font-weight: 700; line-height: 1;
+}
 .acard-rating {
-  font-family: var(--font-ui); font-size: 9px; color: #A0A8B8;
-  text-transform: uppercase; letter-spacing: 0.04em;
+  font-family: var(--font-ui); font-size: 9px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.8;
+}
+
+.acard-bar {
+  height: 4px; background: #1a1c24; border-radius: 2px; overflow: hidden;
+}
+.acard-fill { height: 100%; border-radius: 2px; }
+
+.acard-pillars {
+  display: flex; gap: 10px;
+}
+.pillar-item {
+  display: flex; flex-direction: column; gap: 1px;
+}
+.pillar-label {
+  font-family: var(--font-ui); font-size: 8px; font-weight: 600;
+  text-transform: uppercase; color: #606878; letter-spacing: 0.04em;
+}
+.pillar-val {
+  font-size: 12px; font-weight: 600; color: #A0A8B8;
 }
 
 // ── Responsive ──
-@media (max-width: 900px) {
-  .hero { padding: 100px 24px 32px; gap: 32px; }
-  .headline { font-size: 32px; }
+@media (max-width: 960px) {
+  .hero { padding: 100px 20px 40px; gap: 40px; }
+  .headline { font-size: 34px; }
   .subtitle { font-size: 16px; }
-  .motor-area { grid-template-columns: 1fr; justify-items: center; gap: 24px; }
-  .floating-zone { flex-direction: row; gap: 16px; align-items: center; }
-  .cards-zone { grid-template-columns: 1fr 1fr; }
-  .acard { width: 140px; }
+  .motor-area { flex-direction: column; gap: 28px; }
+  .input-col { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; }
+  .output-col { justify-items: center; }
+  .acard { width: 156px; }
+}
+
+@media (max-width: 600px) {
+  .headline { font-size: 28px; }
+  .input-col { display: none; }
+  .output-col { grid-template-columns: 1fr; }
+  .acard { width: 100%; max-width: 200px; }
 }

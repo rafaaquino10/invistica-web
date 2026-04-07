@@ -12,7 +12,7 @@
           fill="none" stroke="#d0f364" stroke-width="1.5" stroke-opacity="0.1" />
   </svg>
 
-  <!-- TOP: Text area -->
+  <!-- Text area -->
   <div class="hero-text">
     <h1 class="headline">
       <span class="word w1">Investir</span>
@@ -26,14 +26,18 @@
     </div>
   </div>
 
-  <!-- BOTTOM: Motor animation — symmetrical 3-column grid -->
+  <!-- Motor animation — centered composition -->
   <div class="motor-area">
-    <!-- LEFT: Floating tickers (the SAME tickers that appear in the cards) -->
-    <div class="floating-zone">
-      @for (t of floatingTickers(); track t; let i = $index) {
-        <div class="float-row" [style.animation-delay]="(i * 1.2) + 's'">
-          <span class="float-ticker mono">{{ t }}</span>
-          <span class="float-arrow">→</span>
+    <!-- LEFT: Ticker chips with logos flowing toward the core -->
+    <div class="input-col">
+      @for (card of cards(); track card.ticker; let i = $index) {
+        <div class="ticker-chip" [style.animation-delay]="(0.3 + i * 0.25) + 's'">
+          <img class="chip-logo"
+               [src]="'https://raw.githubusercontent.com/StatusInvest/Content/master/img/company/' + card.ticker + '.jpg'"
+               [alt]="card.ticker" loading="lazy"
+               (error)="$any($event.target).src = ''" />
+          <span class="chip-name mono">{{ card.ticker }}</span>
+          <i class="ph ph-arrow-right chip-arrow"></i>
         </div>
       }
     </div>
@@ -44,24 +48,27 @@
       <span class="iq-label">IQ-COGNIT™</span>
     </div>
 
-    <!-- RIGHT: Analyzed cards -->
-    <div class="cards-zone">
+    <!-- RIGHT: Output cards in 2x2 -->
+    <div class="output-col">
       @for (card of cards(); track card.ticker; let i = $index) {
-        <div class="acard" [style.animation-delay]="(1.0 + i * 0.4) + 's'">
-          <div class="acard-header">
+        <div class="acard" [style.animation-delay]="(1.0 + i * 0.35) + 's'">
+          <div class="acard-top">
             <img class="acard-logo"
                  [src]="'https://raw.githubusercontent.com/StatusInvest/Content/master/img/company/' + card.ticker + '.jpg'"
-                 [alt]="card.ticker" loading="lazy" (error)="$any($event.target).style.display='none'" />
+                 [alt]="card.ticker" loading="lazy"
+                 (error)="$any($event.target).style.display='none'" />
             <span class="acard-ticker mono">{{ card.ticker }}</span>
           </div>
-          <span class="acard-score mono" [style.color]="bandColor(card.iq_score)">{{ card.iq_score }}</span>
+          <div class="acard-score-row">
+            <span class="acard-score mono" [style.color]="bandColor(card.iq_score)">{{ card.iq_score }}</span>
+            <span class="acard-rating" [style.color]="bandColor(card.iq_score)">{{ card.rating_label }}</span>
+          </div>
           <div class="acard-bar"><div class="acard-fill" [style.width.%]="card.iq_score" [style.background]="bandColor(card.iq_score)"></div></div>
           <div class="acard-pillars">
-            <span class="p-mini mono" title="Valuation">V{{ card.score_valuation ?? '–' }}</span>
-            <span class="p-mini mono" title="Quanti">Q{{ card.score_quanti ?? '–' }}</span>
-            <span class="p-mini mono" title="Quali">L{{ card.score_quali ?? '–' }}</span>
+            <div class="pillar-item"><span class="pillar-label">Val</span><span class="pillar-val mono">{{ card.score_valuation ?? '–' }}</span></div>
+            <div class="pillar-item"><span class="pillar-label">Qnt</span><span class="pillar-val mono">{{ card.score_quanti ?? '–' }}</span></div>
+            <div class="pillar-item"><span class="pillar-label">Qli</span><span class="pillar-val mono">{{ card.score_quali ?? '–' }}</span></div>
           </div>
-          <span class="acard-rating">{{ card.rating_label }}</span>
         </div>
       }
     </div>
