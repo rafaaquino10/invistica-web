@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  supabaseUrl: 'SUPABASE_URL_PLACEHOLDER',
-  supabaseAnonKey: 'SUPABASE_ANON_KEY_PLACEHOLDER',
+  supabaseUrl: 'https://oumqhzfffuqrusiununj.supabase.co',
+  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im91bXFoemZmZnVxcnVzaXVudW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODMzNTgsImV4cCI6MjA4OTI1OTM1OH0.bUzyfAs503qEv5rCSrQHDV4x_BeUAAwrrimCG1VW4Fs',
   apiBaseUrl: 'https://investiqbackend-production.up.railway.app',
 };
