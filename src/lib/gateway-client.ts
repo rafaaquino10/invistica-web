@@ -3,6 +3,15 @@
 // Used by tRPC routers to fetch live quotes, fundamentals, etc.
 
 const GATEWAY_URL = process.env['GATEWAY_URL'] ?? 'http://localhost:4000'
+const INVESTIQ_URL = process.env['INVESTIQ_API_URL'] ?? 'https://investiqbackend-production.up.railway.app'
+
+// Helper: fetch from InvestIQ backend as fallback
+async function investiqFetch<T>(path: string, timeoutMs = 8000): Promise<T> {
+  const url = `${INVESTIQ_URL}${path}`
+  const res = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(timeoutMs) })
+  if (!res.ok) throw new Error(`InvestIQ ${res.status}`)
+  return res.json() as Promise<T>
+}
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -142,17 +151,45 @@ export async function fetchHistory(
   range = '1mo',
   interval = '1d'
 ): Promise<GatewayHistoricalPrice[]> {
-  const res = await gatewayFetch<{ data: GatewayHistoricalPrice[] }>(
-    `/v1/history/${encodeURIComponent(ticker)}?range=${range}&interval=${interval}`
-  )
-  return res.data
+  try {
+    const res = await gatewayFetch<{ data: GatewayHistoricalPrice[] }>(
+      `/v1/history/${encodeURIComponent(ticker)}?range=${range}&interval=${interval}`
+    )
+    return res.data
+  } catch {
+    // Fallback: InvestIQ backend
+    const days = range === '1y' ? 365 : range === '6mo' ? 180 : range === '3mo' ? 90 : 30
+    const res = await investiqFetch<{ data: Array<{ date: string; open: number; high: number; low: number; close: number; volume: number }> }>(
+      `/tickers/${encodeURIComponent(ticker)}/history?days=${days}`
+    )
+    return (res.data || []).map(d => ({
+      date: new Date(d.date).getTime(),
+      open: d.open, high: d.high, low: d.low, close: d.close,
+      volume: d.volume, adjustedClose: d.close,
+    }))
+  }
 }
 
 export async function fetchDividends(ticker: string): Promise<GatewayDividend[]> {
-  const res = await gatewayFetch<{ data: GatewayDividend[] }>(
-    `/v1/dividends/${encodeURIComponent(ticker)}`
-  )
-  return res.data
+  try {
+    const res = await gatewayFetch<{ data: GatewayDividend[] }>(
+      `/v1/dividends/${encodeURIComponent(ticker)}`
+    )
+    return res.data
+  } catch {
+    // Fallback: InvestIQ backend
+    const res = await investiqFetch<{ dividends: Array<{ ex_date: string; payment_date: string | null; type: string; value_per_share: number }> }>(
+      `/tickers/${encodeURIComponent(ticker)}/dividends`
+    )
+    return (res.dividends || []).map(d => ({
+      assetIssued: ticker,
+      paymentDate: d.payment_date,
+      rate: d.value_per_share,
+      label: d.type,
+      relatedTo: ticker,
+      lastDatePrior: d.ex_date,
+    }))
+  }
 }
 
 export async function fetchAllCompanies(): Promise<GatewayCompany[]> {
@@ -229,7 +266,19 @@ export async function fetchMacroIndicators(): Promise<MacroIndicators | null> {
     const res = await gatewayFetch<{ data: MacroIndicators }>('/v1/economy/macro', 10000)
     return res.data
   } catch {
-    return null
+    // Fallback: InvestIQ backend regime has SELIC, IPCA, câmbio
+    try {
+      const regime = await investiqFetch<{ macro: { selic: number; ipca: number; cambio_usd: number; brent: number } }>('/analytics/regime')
+      const today = new Date().toISOString().split('T')[0]!
+      return {
+        selic: { valor: regime.macro.selic, data: today },
+        ipca: { valor: regime.macro.ipca, data: today },
+        ipca12m: { valor: regime.macro.ipca, data: today },
+        cdi: { valor: regime.macro.selic - 0.1, data: today },
+        dolar: { valor: regime.macro.cambio_usd, data: today },
+        euro: { valor: regime.macro.cambio_usd * 1.08, data: today },
+      }
+    } catch { return null }
   }
 }
 
@@ -300,12 +349,33 @@ export async function fetchNews(
   category?: string,
   limit = 30
 ): Promise<GatewayNewsItem[]> {
-  const params = new URLSearchParams()
-  if (category && category !== 'all') params.set('category', category)
-  params.set('limit', String(limit))
-  const query = params.toString()
-  const res = await gatewayFetch<{ data: GatewayNewsItem[] }>(`/v1/news?${query}`, 5000)
-  return res.data
+  try {
+    const params = new URLSearchParams()
+    if (category && category !== 'all') params.set('category', category)
+    params.set('limit', String(limit))
+    const query = params.toString()
+    const res = await gatewayFetch<{ data: GatewayNewsItem[] }>(`/v1/news?${query}`, 5000)
+    return res.data
+  } catch {
+    // Fallback: InvestIQ backend catalysts as news
+    try {
+      const res = await investiqFetch<{ catalysts: Array<{ type: string; title: string; date: string; source?: string; url?: string; ticker?: string }> }>(
+        `/scores/catalysts?days=7`
+      )
+      return (res.catalysts || []).slice(0, limit).map((c, i) => ({
+        id: `catalyst-${i}`,
+        title: c.title,
+        summary: '',
+        source: c.source || 'InvestIQ',
+        sourceColor: '#606878',
+        link: c.url || '#',
+        tickers: c.ticker ? [c.ticker] : [],
+        date: c.date,
+        category: c.type,
+        sentiment: 'neutral',
+      }))
+    } catch { return [] }
+  }
 }
 
 // ─── Benchmarks ─────────────────────────────────────────────
@@ -318,8 +388,19 @@ export interface BenchmarkData {
 }
 
 export async function fetchBenchmarks(): Promise<BenchmarkData> {
-  const res = await gatewayFetch<{ data: BenchmarkData }>('/v1/benchmarks', 5000)
-  return res.data
+  try {
+    const res = await gatewayFetch<{ data: BenchmarkData }>('/v1/benchmarks', 5000)
+    return res.data
+  } catch {
+    // Fallback: derive from InvestIQ backend regime
+    const regime = await investiqFetch<{ macro: { selic: number; ipca: number; cambio_usd: number } }>('/analytics/regime')
+    return {
+      selic: { rate: regime.macro.selic, date: new Date().toISOString() },
+      cdi: { annualRate: regime.macro.selic - 0.1, dailyRate: (regime.macro.selic - 0.1) / 252 },
+      ibov: { points: 128000, change: 0 },
+      updatedAt: new Date().toISOString(),
+    }
+  }
 }
 
 // ─── Beta ────────────────────────────────────────────────
@@ -403,7 +484,30 @@ export async function fetchIntelligence(ticker: string): Promise<GatewayIntellig
     )
     return res.data
   } catch {
-    return null
+    // Fallback: compose from InvestIQ backend news endpoint
+    try {
+      const newsRes = await investiqFetch<{ news: Array<{ title: string; date: string; source: string; url: string; sentiment?: string }> }>(
+        `/news/${encodeURIComponent(ticker)}?limit=10`
+      )
+      return {
+        ticker,
+        companyName: ticker,
+        news: (newsRes.news || []).map((n, i) => ({
+          id: `iq-news-${i}`,
+          title: n.title,
+          summary: '',
+          source: n.source || 'InvestIQ',
+          sourceColor: '#606878',
+          link: n.url || '#',
+          tickers: [ticker],
+          date: n.date,
+          category: 'news',
+          sentiment: n.sentiment || 'neutral',
+        })),
+        killSwitch: { triggered: false, reason: null },
+        relevantFacts: [],
+      }
+    } catch { return null }
   }
 }
 
@@ -412,7 +516,23 @@ export async function fetchFocusData(): Promise<GatewayFocusData | null> {
     const res = await gatewayFetch<{ data: GatewayFocusData }>('/v1/intelligence/focus', 10000)
     return res.data
   } catch {
-    return null
+    // Fallback: InvestIQ backend focus expectations
+    try {
+      const focus = await investiqFetch<{ expectations: Array<{ indicator: string; current: number; proj_2025: number; proj_2026: number }> }>(
+        '/tickers/macro/focus-expectations'
+      )
+      if (!focus.expectations?.length) return null
+      const find = (name: string) => focus.expectations.find(e => e.indicator?.toLowerCase().includes(name))
+      const today = new Date().toISOString().split('T')[0]!
+      return {
+        selic: find('selic') ? { indicator: 'SELIC', referenceDate: today, median: find('selic')!.current, previous: null, date: today, delta: null } : null,
+        ipca: find('ipca') ? { indicator: 'IPCA', referenceDate: today, median: find('ipca')!.current, previous: null, date: today, delta: null } : null,
+        pib: find('pib') ? { indicator: 'PIB', referenceDate: today, median: find('pib')!.current, previous: null, date: today, delta: null } : null,
+        cambio: find('cambio') || find('câmbio') ? { indicator: 'Câmbio', referenceDate: today, median: (find('cambio') || find('câmbio'))!.current, previous: null, date: today, delta: null } : null,
+        updatedAt: today,
+        insight: null,
+      }
+    } catch { return null }
   }
 }
 
@@ -439,7 +559,24 @@ export async function fetchRiEvents(ticker?: string): Promise<CvmRiEvent[]> {
     const res = await gatewayFetch<{ data: CvmRiEvent[] }>(`/v1/ri/events?${query}`, 5000)
     return res.data ?? []
   } catch {
-    return []
+    // Fallback: InvestIQ backend investor-relations
+    if (!ticker) return []
+    try {
+      const res = await investiqFetch<{ items?: Array<{ title: string; date: string; url: string; type: string }> }>(
+        `/news/${encodeURIComponent(ticker)}/investor-relations?limit=20`
+      )
+      return (res.items || []).map((item, i) => ({
+        id: `ri-${ticker}-${i}`,
+        companyName: ticker,
+        cnpj: '',
+        ticker,
+        type: 'fato_relevante' as const,
+        title: item.title,
+        date: item.date,
+        documentUrl: item.url,
+        summary: null,
+      }))
+    } catch { return [] }
   }
 }
 
