@@ -25,7 +25,7 @@ class InvestIQClient {
     const res = await fetch(url, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      next: { revalidate: 60 },
+      cache: 'no-store',
       signal: opts?.timeout ? AbortSignal.timeout(opts.timeout) : undefined,
     })
     if (!res.ok) throw new Error(`InvestIQ API error: ${res.status} ${res.statusText}`)
