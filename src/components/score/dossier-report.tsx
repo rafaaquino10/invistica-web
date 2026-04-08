@@ -44,7 +44,10 @@ export function DossierReport({ ticker }: DossierReportProps) {
     )
   }
 
-  if (!data?.dimensions?.length) return null
+  if (!data?.dimensions?.length) {
+    if (!isLoading) return null // Silently hide if no dossier data
+    return null
+  }
 
   const dims = data.dimensions
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
+import { DataUnavailable, DataSkeleton } from '@/components/ui/data-unavailable'
 
 interface RiskMetricsData {
   risk: {
@@ -162,7 +163,9 @@ export function RiskLab({ riskMetrics, ticker }: RiskLabProps) {
   // Filter out metrics with no data
   const activeMetrics = metrics.filter(m => m.value !== '—' && m.value !== '—x' && m.value !== '—pp')
 
-  if (activeMetrics.length === 0) return null
+  if (activeMetrics.length === 0) {
+    return <DataUnavailable title="Risk Lab" message="Metricas de risco indisponiveis para este ativo. O backend pode nao ter dados financeiros suficientes." compact />
+  }
 
   return (
     <div>

@@ -13,7 +13,7 @@ interface ThesisCardProps {
 }
 
 export function ThesisCard({ ticker, thesis, dividendData }: ThesisCardProps) {
-  if (!thesis) return null
+  if (!thesis) return null // Silently hide — thesis not generated for all assets
 
   return (
     <div>

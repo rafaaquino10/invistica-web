@@ -40,7 +40,10 @@ export function EvidenceExplorer({ ticker }: EvidenceExplorerProps) {
     )
   }
 
-  if (!data?.evidences?.length) return null
+  if (!data?.evidences?.length) {
+    if (!isLoading) return null // Silently hide if no evidence data
+    return null
+  }
 
   const evidences = data.evidences
 

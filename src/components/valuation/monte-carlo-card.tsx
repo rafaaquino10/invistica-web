@@ -24,7 +24,7 @@ export function MonteCarloCard({ ticker, currentPrice, valuation }: MonteCarloCa
   const v = valuation
   const hasRange = v.fairValueP25 != null && v.fairValueP75 != null && v.fairValueFinal != null
 
-  if (!hasRange || currentPrice <= 0) return null
+  if (!hasRange || currentPrice <= 0) return null // Silently hide — valuation data not always available for all assets
 
   const p25 = v.fairValueP25!
   const p75 = v.fairValueP75!

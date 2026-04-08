@@ -12,6 +12,7 @@ import { TVIntradayChart, type IntradaySeries } from '@/components/charts/tv-int
 import { StrategySignalsPanel } from '@/components/dashboard/strategy-signals-panel'
 import { SectorRotationMatrix } from '@/components/analytics/sector-rotation-matrix'
 import { StrategyHub } from '@/components/strategy/strategy-hub'
+import { DemoBanner } from '@/components/ui/data-unavailable'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -167,11 +168,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-3 pb-4">
-      {isDemo && (
-        <div className="text-[10px] text-[var(--text-3)] bg-[var(--surface-2)]/50 px-3 py-1.5 rounded-[var(--radius-sm)] text-center">
-          Dados demonstrativos · <span className="text-[var(--accent-1)] font-semibold cursor-pointer">Conecte sua corretora para dados reais</span>
-        </div>
-      )}
+      {isDemo && <DemoBanner />}
 
       <KpiStrip items={kpis} />
 
