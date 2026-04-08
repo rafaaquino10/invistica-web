@@ -3,7 +3,9 @@
  * Wraps the FastAPI backend at Railway
  */
 
-const BASE_URL = process.env.INVESTIQ_API_URL || 'https://investiqbackend-production.up.railway.app'
+import { BACKEND_URL } from './constants'
+
+const BASE_URL = BACKEND_URL
 
 interface RequestOptions {
   params?: Record<string, string | number | boolean>
