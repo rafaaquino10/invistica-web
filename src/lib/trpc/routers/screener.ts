@@ -4,6 +4,8 @@ import { getAssets, getPreviousAssets } from '@/lib/data-source'
 import { getScoreMovers as getHistoryMovers, getSnapshotCount } from '@/lib/score-history'
 import { fetchMarketPulse } from '@/lib/gateway-client'
 import { generateRecommendations, type RecommendationMode } from '@/lib/recommendations/engine'
+import { investiq } from '@/lib/investiq-client'
+import { safeFetch } from '@/lib/safe-fetch'
 
 const screenerFiltersSchema = z.object({
   // Asset type (100% ações — FIIs/ETFs/BDRs removidos)
@@ -187,22 +189,39 @@ export const screenerRouter = router({
       const total = filtered.length
       const paginated = filtered.slice((page - 1) * pageSize, page * pageSize)
 
+      // Enrich current page with live quotes from backend (parallel, max 50)
+      interface TickerQuote { quote?: { date: string; open: number; close: number; high: number; low: number; volume: number; market_cap: number | null } }
+      const quoteResults = await Promise.allSettled(
+        paginated.map(a =>
+          safeFetch(() => investiq.get<TickerQuote>(`/tickers/${a.ticker}`, { timeout: 5000 }), null, `quote:${a.ticker}`)
+        )
+      )
+
       return {
-        assets: paginated.map(asset => ({
-          id: asset.id,
-          ticker: asset.ticker,
-          name: asset.name,
-          type: asset.type,
-          sector: asset.sector,
-          logo: asset.logo,
-          volume: asset.volume,
-          marketCap: asset.marketCap,
-          hasFundamentals: asset.hasFundamentals,
-          aqScore: asset.aqScore,
-          lensScores: asset.lensScores,
-          fundamental: asset.fundamentals,
-          latestQuote: { close: asset.price, change: asset.change, changePercent: asset.changePercent },
-        })),
+        assets: paginated.map((asset, i) => {
+          const quoteData = quoteResults[i]?.status === 'fulfilled' ? quoteResults[i].value : null
+          const q = (quoteData as TickerQuote | null)?.quote
+          const price = q?.close ?? asset.price ?? 0
+          const open = q?.open ?? price
+          const change = price - open
+          const changePct = open > 0 ? (change / open) * 100 : 0
+
+          return {
+            id: asset.id,
+            ticker: asset.ticker,
+            name: asset.name,
+            type: asset.type,
+            sector: asset.sector,
+            logo: asset.logo,
+            volume: q?.volume ?? asset.volume,
+            marketCap: q?.market_cap ?? asset.marketCap,
+            hasFundamentals: asset.hasFundamentals,
+            aqScore: asset.aqScore,
+            lensScores: asset.lensScores,
+            fundamental: asset.fundamentals,
+            latestQuote: { close: price, change, changePercent: changePct },
+          }
+        }),
         pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
       }
     }),
