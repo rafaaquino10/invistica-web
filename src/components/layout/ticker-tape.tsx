@@ -110,6 +110,14 @@ export function TickerTape() {
                 className="group inline-flex items-center gap-1.5 flex-shrink-0 hover:opacity-80 transition-opacity relative"
                 title={`${a.ticker} — R$ ${Number(price).toFixed(2)} (${isUp ? '+' : ''}${Number(change).toFixed(2)}%)`}
               >
+                <img
+                  src={`https://icons.brapi.dev/icons/${a.ticker}.svg`}
+                  alt=""
+                  width={14}
+                  height={14}
+                  className="rounded-sm shrink-0"
+                  onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
+                />
                 <span className="text-[11px] font-semibold text-[var(--text-2)]">
                   {a.ticker}
                 </span>
