@@ -11,15 +11,7 @@ import { formatCurrency } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
 import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
 import { SmartContribution } from '@/components/portfolio/smart-contribution'
-
-// Carteira de exemplo — 5 ações PoC
-const SAMPLE_PORTFOLIO = [
-  { ticker: 'PRIO3', quantity: 50, price: 42.50 },
-  { ticker: 'WEGE3', quantity: 30, price: 35.80 },
-  { ticker: 'EQTL3', quantity: 40, price: 31.20 },
-  { ticker: 'ITSA4', quantity: 100, price: 10.50 },
-  { ticker: 'GMAT3', quantity: 80, price: 7.90 },
-]
+import { SAMPLE_PORTFOLIO_POSITIONS as SAMPLE_PORTFOLIO } from '@/lib/demo-data'
 
 export default function PortfolioPage() {
   const router = useRouter()

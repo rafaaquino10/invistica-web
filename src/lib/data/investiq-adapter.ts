@@ -8,10 +8,35 @@
 import type { AssetData } from './asset-cache'
 import { investiq } from '../investiq-client'
 
-const CLUSTER_NAMES: Record<number, string> = {
+// ─── Cluster Names (synced from backend /clusters) ──────────
+
+const CLUSTER_NAMES_FALLBACK: Record<number, string> = {
   1: 'Financeiro', 2: 'Recursos Naturais e Commodities', 3: 'Consumo e Varejo',
   4: 'Utilities e Concessões', 5: 'Saúde', 6: 'TMT',
   7: 'Bens de Capital', 8: 'Real Estate', 9: 'Educação',
+}
+
+let clusterNamesCache: Record<number, string> | null = null
+let clusterNamesFetchedAt = 0
+const CLUSTER_CACHE_TTL = 60 * 60 * 1000 // 1 hour
+
+async function getClusterNames(): Promise<Record<number, string>> {
+  if (clusterNamesCache && Date.now() < clusterNamesFetchedAt + CLUSTER_CACHE_TTL) {
+    return clusterNamesCache
+  }
+  try {
+    const res = await investiq.get<{ clusters: Array<{ id: number; name: string }> }>('/clusters')
+    if (res.clusters?.length > 0) {
+      clusterNamesCache = Object.fromEntries(res.clusters.map(c => [c.id, c.name]))
+      clusterNamesFetchedAt = Date.now()
+      return clusterNamesCache
+    }
+  } catch { /* fallback */ }
+  return CLUSTER_NAMES_FALLBACK
+}
+
+function getClusterName(id: number): string {
+  return clusterNamesCache?.[id] ?? CLUSTER_NAMES_FALLBACK[id] ?? `Cluster ${id}`
 }
 
 // ─── Backend Response Interfaces ───────────────────────────────
@@ -147,6 +172,9 @@ function deriveRiskScore(risk: BackendRiskMetrics['risk_metrics']): number {
  * This replaces the Gateway-based buildLiveDataset().
  */
 export async function fetchAssetsFromInvestIQ(): Promise<AssetData[]> {
+  // Sync cluster names from backend (background, non-blocking)
+  getClusterNames().catch(() => {})
+
   const { results: screener } = await investiq.get<{ results: ScreenerAsset[] }>('/scores/screener')
   if (!screener?.length) return []
 
@@ -176,7 +204,7 @@ export async function fetchAssetsFromInvestIQ(): Promise<AssetData[]> {
         ticker: s.ticker,
         name: s.company_name,
         type: 'stock',
-        sector: CLUSTER_NAMES[s.cluster_id] || `Cluster ${s.cluster_id}`,
+        sector: getClusterName(s.cluster_id),
         price,
         change,
         changePercent: changePct,
@@ -310,7 +338,7 @@ export async function fetchAssetDetailFromInvestIQ(ticker: string): Promise<Asse
       ticker: d.ticker,
       name: d.company_name,
       type: 'stock',
-      sector: CLUSTER_NAMES[d.cluster_id] || `Cluster ${d.cluster_id}`,
+      sector: getClusterName(d.cluster_id),
       price,
       change: price - open,
       changePercent: open > 0 ? ((price - open) / open) * 100 : 0,

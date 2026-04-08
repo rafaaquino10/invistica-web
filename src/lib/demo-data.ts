@@ -64,3 +64,54 @@ export const DEMO_GOALS = {
 }
 
 export const isDemoMode = () => !process.env['DATABASE_URL'] || process.env['ALLOW_DEMO'] === 'true'
+
+// ─── Demo Performance (dashboard chart fallback) ────────────
+
+export function generateDemoPerformance(): Array<{ date: string; portfolio: number; ibov: number; cdi: number }> {
+  const points: Array<{ date: string; portfolio: number; ibov: number; cdi: number }> = []
+  const now = new Date()
+  let portfolio = 100, ibov = 100, cdi = 100
+  for (let i = 365; i >= 0; i -= 3) {
+    const d = new Date(now)
+    d.setDate(d.getDate() - i)
+    portfolio += (Math.random() - 0.45) * 1.5
+    ibov += (Math.random() - 0.48) * 1.8
+    cdi += 0.04
+    points.push({
+      date: d.toISOString().split('T')[0]!,
+      portfolio: Math.max(80, portfolio),
+      ibov: Math.max(75, ibov),
+      cdi,
+    })
+  }
+  return points
+}
+
+export function generateDemoIntraday(): Array<{ time: string; portfolio: number; ibov: number }> {
+  const points: Array<{ time: string; portfolio: number; ibov: number }> = []
+  const today = new Date().toISOString().split('T')[0]
+  let port = 0, ibov = 0
+  for (let h = 10; h <= 17; h++) {
+    for (let m = 0; m < 60; m += 5) {
+      if (h === 17 && m > 0) break
+      port += (Math.random() - 0.48) * 0.15
+      ibov += (Math.random() - 0.5) * 0.18
+      points.push({
+        time: `${today}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`,
+        portfolio: Math.round(port * 100) / 100,
+        ibov: Math.round(ibov * 100) / 100,
+      })
+    }
+  }
+  return points
+}
+
+// ─── Sample portfolio for quick-start ───────────────────────
+
+export const SAMPLE_PORTFOLIO_POSITIONS = [
+  { ticker: 'PRIO3', quantity: 50, price: 42.50 },
+  { ticker: 'WEGE3', quantity: 30, price: 35.80 },
+  { ticker: 'EQTL3', quantity: 40, price: 31.20 },
+  { ticker: 'ITSA4', quantity: 100, price: 10.50 },
+  { ticker: 'GMAT3', quantity: 80, price: 7.90 },
+]

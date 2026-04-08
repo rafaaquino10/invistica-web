@@ -1,7 +1,7 @@
-// ─── InvestIQ Backend Client (replaces Gateway) ─────────────
-// All functions maintain their original signatures for backward
-// compatibility, but now call the InvestIQ FastAPI backend directly.
-// The Express Gateway has been eliminated from the architecture.
+// ─── InvestIQ Backend Client ─────────────────────────────────
+// Thin wrappers over the IQ-Cognit FastAPI backend.
+// Maps responses to legacy interface shapes used by tRPC routers.
+// For new code, prefer using `investiq` client from investiq-client.ts directly.
 
 const INVESTIQ_URL = process.env['INVESTIQ_API_URL'] ?? 'https://investiqbackend-production.up.railway.app'
 
@@ -126,10 +126,8 @@ export async function fetchAllQuotes(): Promise<GatewayQuote[]> {
   return quotes
 }
 
-/** @deprecated Bulk fundamentals não disponível — dados vêm via screener + risk-metrics por ativo */
-export async function fetchAllFundamentals(): Promise<GatewayFundamental[]> {
-  return []
-}
+/** @deprecated Pipeline legado — dados vêm via investiq-adapter.ts */
+export async function fetchAllFundamentals(): Promise<GatewayFundamental[]> { return [] }
 
 export async function fetchHistory(ticker: string, range = '1mo', _interval = '1d'): Promise<GatewayHistoricalPrice[]> {
   const days = range === '5y' ? 1825 : range === '1y' ? 365 : range === '6mo' ? 180 : range === '3mo' ? 90 : range === '1mo' ? 30 : 7
@@ -144,13 +142,13 @@ export async function fetchDividends(ticker: string): Promise<GatewayDividend[]>
   return (res.dividends || []).map(d => ({ assetIssued: ticker, paymentDate: d.payment_date, rate: d.value_per_share, label: d.type, relatedTo: ticker, lastDatePrior: d.ex_date }))
 }
 
-/** @deprecated Dados de empresas disponíveis via /scores/screener */
+/** @deprecated Pipeline legado */
 export async function fetchAllCompanies(): Promise<GatewayCompany[]> { return [] }
-/** @deprecated Sparklines devem ser construídos via /tickers/{ticker}/history em Onda 2 */
+/** @deprecated Use /tickers/{ticker}/history via investiq client */
 export async function fetchSparklines(): Promise<SparklineMap> { return {} }
-/** @deprecated Dados de inflação disponíveis via /analytics/regime → macro.ipca */
+/** @deprecated Use /analytics/regime → macro.ipca */
 export async function fetchInflation(): Promise<InflationEntry[]> { return [] }
-/** @deprecated Dados de câmbio disponíveis via /analytics/regime → macro.cambio_usd */
+/** @deprecated Use /analytics/regime → macro.cambio_usd */
 export async function fetchCurrency(): Promise<CurrencyEntry[]> { return [] }
 
 export async function fetchMacroIndicators(): Promise<MacroIndicators | null> {
@@ -165,7 +163,7 @@ export async function fetchMacroIndicators(): Promise<MacroIndicators | null> {
   } catch { return null }
 }
 
-/** @deprecated Momentum coberto por /scores/{ticker}/risk-metrics + regime. Removido do assets router. */
+/** @deprecated Use /scores/{ticker}/risk-metrics + regime */
 export async function fetchMomentum(_ticker: string): Promise<GatewayMomentumResult | null> { return null }
 
 export async function fetchMarketPulse(): Promise<GatewayMarketPulse | null> {
@@ -210,10 +208,9 @@ export async function fetchBenchmarks(): Promise<BenchmarkData> {
   }
 }
 
-/** @deprecated Betas individuais disponíveis via /scores/{ticker}/risk-metrics → profitability.wacc */
+/** @deprecated Use /scores/{ticker}/risk-metrics */
 export async function fetchBetas(): Promise<GatewayBeta[]> { return [] }
-
-/** @deprecated Profile substituído por /scores/{ticker} (thesis, valuation, dividends) */
+/** @deprecated Use /scores/{ticker} (thesis, valuation, dividends) */
 export async function fetchCompanyProfile(_ticker: string): Promise<GatewayCompanyProfile | null> { return null }
 
 export async function fetchIntelligence(ticker: string): Promise<GatewayIntelligence | null> {

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { investiq } from '@/lib/investiq-client'
-import { DEMO_PORTFOLIOS } from '@/lib/demo-data'
+import { DEMO_PORTFOLIOS, generateDemoPerformance, generateDemoIntraday } from '@/lib/demo-data'
 import { KpiStrip, type KpiItem } from '@/components/dashboard/kpi-strip'
 import { PositionsTable, type Position } from '@/components/dashboard/positions-table'
 import { OpportunitiesPanel, type Opportunity } from '@/components/dashboard/opportunities-panel'
@@ -24,42 +24,6 @@ interface RegimeData { regime: string; label: string; macro: { selic: number; ip
 interface TopAsset { ticker: string; company_name: string; iq_score: number; rating_label: string }
 interface Catalyst { title: string; date: string; ticker?: string; type: string }
 interface TickerDetail { company_name: string; cluster_id: number; quote?: { close: number; open: number; volume: number } }
-
-// ─── Demo performance data (12 months, base 100) ───────────
-
-function generateDemoPerformance(): PerfPoint[] {
-  const points: PerfPoint[] = []
-  const now = new Date()
-  let portfolio = 100, ibov = 100, cdi = 100
-  for (let i = 365; i >= 0; i -= 3) {
-    const d = new Date(now)
-    d.setDate(d.getDate() - i)
-    portfolio += (Math.random() - 0.45) * 1.5 // slight upward bias
-    ibov += (Math.random() - 0.48) * 1.8
-    cdi += 0.04 // ~14% annual
-    points.push({
-      date: d.toISOString().split('T')[0]!,
-      portfolio: Math.max(80, portfolio),
-      ibov: Math.max(75, ibov),
-      cdi,
-    })
-  }
-  return points
-}
-
-function generateDemoIntraday(): IntradayPoint[] {
-  const points: IntradayPoint[] = []
-  const today = new Date().toISOString().split('T')[0]
-  let portfolio = 100, ibov = 100
-  for (let h = 10; h <= 17; h++) {
-    for (let m = 0; m < 60; m += 15) {
-      portfolio += (Math.random() - 0.48) * 0.3
-      ibov += (Math.random() - 0.50) * 0.35
-      points.push({ time: `${today}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`, portfolio, ibov })
-    }
-  }
-  return points
-}
 
 // ─── Page ───────────────────────────────────────────────────
 
