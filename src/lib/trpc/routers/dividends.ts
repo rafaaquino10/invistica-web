@@ -112,24 +112,35 @@ export const dividendsRouter = router({
       try {
         const res = await investiq.get<{
           ticker: string
-          trap_risk_score: number
-          safety_score: number
-          factors: string[]
-          projected_yield: number | null
-          payout_ratio: number | null
-          dividend_cagr_5y: number | null
+          company_name: string | null
+          is_dividend_trap: boolean
+          risk_level: 'alto' | 'moderado' | 'baixo'
+          reasons: string[]
+          metrics: {
+            dividend_safety: number | null
+            dividend_yield: number | null
+            cash_payout_ratio: number | null
+            dividend_cagr_5y: number | null
+            total_dividends_12m: number | null
+          }
         }>(`/dividends/${encodeURIComponent(input.ticker)}/trap-risk`)
+
+        // Map risk_level to numeric score for the UI
+        const riskScore = res.risk_level === 'alto' ? 80 : res.risk_level === 'moderado' ? 50 : 15
+
         return {
           available: true as const,
-          riskScore: res.trap_risk_score ?? 0,
-          safetyScore: res.safety_score ?? 100,
-          factors: res.factors ?? [],
-          projectedYield: res.projected_yield,
-          payoutRatio: res.payout_ratio,
-          dividendCagr5y: res.dividend_cagr_5y,
+          riskScore,
+          safetyScore: res.metrics.dividend_safety ?? 0,
+          factors: res.reasons ?? [],
+          isTrap: res.is_dividend_trap,
+          riskLevel: res.risk_level,
+          projectedYield: res.metrics.dividend_yield,
+          payoutRatio: res.metrics.cash_payout_ratio,
+          dividendCagr5y: res.metrics.dividend_cagr_5y,
         }
       } catch {
-        return { available: false as const, riskScore: 0, safetyScore: 0, factors: [] as string[], projectedYield: null, payoutRatio: null, dividendCagr5y: null }
+        return { available: false as const, riskScore: 0, safetyScore: 0, factors: [] as string[], isTrap: false, riskLevel: 'baixo' as const, projectedYield: null, payoutRatio: null, dividendCagr5y: null }
       }
     }),
 })

@@ -13,6 +13,7 @@ import { PaywallGate } from '@/components/billing/paywall-gate'
 import { MonteCarloSection } from '@/components/simulation/monte-carlo-chart'
 import { IRPFCalculator } from '@/components/portfolio/irpf-calculator'
 import { PerformanceEvolutionChart } from '@/components/portfolio/performance-chart'
+import { PortfolioIntradayChart } from '@/components/portfolio/intraday-chart'
 import { trpc } from '@/lib/trpc/provider'
 import { formatCurrency, formatDate } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
@@ -306,10 +307,15 @@ export default function PortfolioDetailPage() {
       {/* ─── Tab: Overview (conteúdo original) ───────────────── */}
       {activeTab === 'overview' && <>
 
-      {/* Evolução Patrimonial */}
-      {performance && (
-        <PerformanceEvolutionChart performance={performance} />
-      )}
+      {/* Evolução Patrimonial + Intraday */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-2">
+          {performance && <PerformanceEvolutionChart performance={performance} />}
+        </div>
+        <div>
+          <PortfolioIntradayChart />
+        </div>
+      </div>
 
       {/* Diagnóstico da Carteira */}
       {portfolio.positions.length > 0 && (

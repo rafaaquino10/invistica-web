@@ -137,6 +137,12 @@ export default function AssetDetailPage() {
     { enabled: !!ticker }
   )
 
+  // Backend catalysts for enriched EventCalendar
+  const { data: catalystsData } = trpc.backtest.catalysts.useQuery(
+    { ticker, days: 30 },
+    { enabled: !!ticker, staleTime: 15 * 60 * 1000 }
+  )
+
   const rangeConfig = RANGE_MAP[chartRange]
   const { data: historyData, isFetching: isChartLoading } = trpc.assets.getHistory.useQuery(
     { ticker, range: rangeConfig.range as any, interval: rangeConfig.interval as any },
@@ -580,7 +586,12 @@ export default function AssetDetailPage() {
       <div className="space-y-5">
         <NewsSection ticker={ticker} companyName={asset.name} />
         <EventCalendar
-          riEvents={intelligence?.relevantFacts ?? intelligence?.news?.filter((n: any) => n.tickers?.includes(ticker)).slice(0, 10)}
+          riEvents={[
+            ...(intelligence?.relevantFacts ?? intelligence?.news?.filter((n: any) => n.tickers?.includes(ticker)).slice(0, 10) ?? []),
+            ...(catalystsData?.catalysts ?? []).map((c: any, i: number) => ({
+              id: `cat-${i}`, type: c.type, title: c.title, date: c.date, documentUrl: c.url ?? null,
+            })),
+          ]}
           dividends={asset.dividends}
           ticker={ticker}
         />

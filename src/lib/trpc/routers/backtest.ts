@@ -189,6 +189,61 @@ export const backtestRouter = router({
     } catch { return { available: false as const, candidates: [], count: 0 } }
   }),
 
+  // LLM Status dashboard
+  llmStatus: premiumProcedure.query(async () => {
+    try {
+      return await investiq.get<{
+        providers: Array<{
+          name: string
+          model: string
+          status: 'ok' | 'degraded' | 'down'
+          latency_ms: number | null
+          last_success: string | null
+          last_error: string | null
+          requests_24h: number
+          errors_24h: number
+        }>
+        pool_status: string
+        active_provider: string
+        updated_at: string
+      }>('/system/llm-status')
+    } catch { return null }
+  }),
+
+  // Catalysts (enriquecido — para asset detail EventCalendar)
+  catalysts: premiumProcedure
+    .input(z.object({ ticker: z.string().optional(), days: z.number().default(30) }))
+    .query(async ({ input }) => {
+      try {
+        const params: Record<string, string | number> = { days: input.days }
+        if (input.ticker) params['ticker'] = input.ticker
+        return await investiq.get<{
+          catalysts: Array<{
+            type: string; title: string; date: string;
+            source?: string; url?: string; ticker?: string;
+            impact?: 'positive' | 'negative' | 'neutral';
+          }>
+        }>('/scores/catalysts', { params })
+      } catch { return { catalysts: [] } }
+    }),
+
+  // Score Compare via backend dedicado
+  scoreCompare: premiumProcedure
+    .input(z.object({ tickers: z.array(z.string()).min(2).max(5) }))
+    .query(async ({ input }) => {
+      try {
+        return await investiq.get<{
+          comparison: Array<{
+            ticker: string; company_name: string; cluster_id: number;
+            iq_score: number; rating: string;
+            score_quanti: number; score_quali: number; score_valuation: number;
+            fair_value_final: number | null; safety_margin: number | null;
+            dividend_yield_proj: number | null;
+          }>
+        }>('/scores/compare', { params: { tickers: input.tickers.join(',') } })
+      } catch { return null }
+    }),
+
   // Sector rotation matrix
   sectorRotation: premiumProcedure.query(async () => {
     try {

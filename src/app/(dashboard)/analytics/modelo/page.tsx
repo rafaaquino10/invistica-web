@@ -8,6 +8,7 @@ export default function ModelTransparencyPage() {
   const { data: perf } = trpc.backtest.modelPerformance.useQuery(undefined, { staleTime: 30 * 60 * 1000 })
   const { data: ic } = trpc.backtest.icTimeline.useQuery(undefined, { staleTime: 30 * 60 * 1000 })
   const { data: decay } = trpc.backtest.signalDecay.useQuery(undefined, { staleTime: 30 * 60 * 1000 })
+  const { data: llm } = trpc.backtest.llmStatus.useQuery(undefined, { staleTime: 60 * 1000 })
 
   return (
     <PaywallGate requiredPlan="elite" feature="Model Transparency" showPreview>
@@ -165,8 +166,61 @@ export default function ModelTransparencyPage() {
           </div>
         )}
 
+        {/* LLM Status Dashboard */}
+        {llm?.providers && llm.providers.length > 0 && (
+          <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider">
+                LLM Pool — Agentes Qualitativos
+              </h2>
+              <span className={cn(
+                'text-[10px] font-bold px-2 py-0.5 rounded',
+                llm.pool_status === 'ok' ? 'bg-teal/10 text-teal' :
+                llm.pool_status === 'degraded' ? 'bg-amber/10 text-amber' : 'bg-red/10 text-red'
+              )}>
+                {llm.pool_status?.toUpperCase() ?? '—'}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {llm.providers.map(p => (
+                <div
+                  key={p.name}
+                  className={cn(
+                    'rounded-lg border p-3',
+                    p.status === 'ok' ? 'border-teal/20 bg-teal/5' :
+                    p.status === 'degraded' ? 'border-amber/20 bg-amber/5' : 'border-red/20 bg-red/5'
+                  )}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12px] font-semibold text-[var(--text-1)]">{p.name}</span>
+                    <span className={cn(
+                      'w-2 h-2 rounded-full',
+                      p.status === 'ok' ? 'bg-teal' : p.status === 'degraded' ? 'bg-amber' : 'bg-red'
+                    )} />
+                  </div>
+                  <p className="text-[10px] text-[var(--text-3)] mb-2">{p.model}</p>
+                  <div className="flex items-center gap-4 text-[11px]">
+                    {p.latency_ms != null && (
+                      <span className="text-[var(--text-2)]">Latencia <span className="font-mono font-bold">{p.latency_ms}ms</span></span>
+                    )}
+                    <span className="text-[var(--text-2)]">24h <span className="font-mono font-bold">{p.requests_24h}</span> req</span>
+                    {p.errors_24h > 0 && (
+                      <span className="text-red">Erros <span className="font-mono font-bold">{p.errors_24h}</span></span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {llm.active_provider && (
+              <p className="mt-3 text-[10px] text-[var(--text-3)]">
+                Provider ativo: <span className="font-mono font-bold text-[var(--accent-1)]">{llm.active_provider}</span>
+              </p>
+            )}
+          </div>
+        )}
+
         {/* Empty state */}
-        {!perf && !ic && !decay && (
+        {!perf && !ic && !decay && !llm && (
           <div className="text-center py-16">
             <p className="text-[var(--text-2)]">Dados de transparencia do modelo indisponiveis.</p>
             <p className="text-[var(--text-caption)] text-[var(--text-3)] mt-1">O backend precisa ter historico de scores para gerar estas metricas.</p>

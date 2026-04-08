@@ -33,6 +33,12 @@ export default function ComparisonPage() {
     { enabled: selectedTickers.length > 0 }
   )
 
+  // Backend score compare for deeper comparison data
+  const { data: backendCompare } = trpc.backtest.scoreCompare.useQuery(
+    { tickers: selectedTickers },
+    { enabled: selectedTickers.length >= 2, staleTime: 10 * 60 * 1000 }
+  )
+
   const addAsset = useCallback((ticker: string) => {
     if (selectedTickers.length < MAX_ASSETS && !selectedTickers.includes(ticker)) {
       setSelectedTickers([...selectedTickers, ticker])
