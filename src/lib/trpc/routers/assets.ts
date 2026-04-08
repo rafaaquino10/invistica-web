@@ -231,7 +231,7 @@ export const assetsRouter = router({
       let aiDiagnosis: { text: string; source: 'ai' | 'template' } | null = null
       try {
         // Buscar contexto expandido em paralelo (não bloqueia se falhar)
-        const GATEWAY_URL = process.env['GATEWAY_URL'] ?? 'http://localhost:4000'
+        const GATEWAY_URL = process.env['INVESTIQ_API_URL'] ?? 'https://investiqbackend-production.up.railway.app'
         const newsParams = new URLSearchParams({ ticker: asset.ticker, limit: '10' })
         if (asset.name) newsParams.set('companyName', asset.name)
 

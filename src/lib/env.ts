@@ -23,7 +23,7 @@ const serverEnvSchema = z.object({
   APP_URL: z.string().optional(),
 
   // Gateway
-  GATEWAY_URL: z.string().url({ message: 'GATEWAY_URL é obrigatória' }).default('http://localhost:4000'),
+  GATEWAY_URL: z.string().url({ message: 'GATEWAY_URL é obrigatória' }).default('https://investiqbackend-production.up.railway.app'),
 
   // OAuth Providers (opcionais em dev)
   GOOGLE_CLIENT_ID: z.string().optional(),
@@ -32,7 +32,7 @@ const serverEnvSchema = z.object({
   GITHUB_CLIENT_SECRET: z.string().optional(),
 
   // Public
-  NEXT_PUBLIC_API_BASE_URL: z.string().url().default('http://localhost:4000'),
+  NEXT_PUBLIC_API_BASE_URL: z.string().url().default('https://investiqbackend-production.up.railway.app'),
   NEXT_PUBLIC_APP_URL: z.string().optional(),
   NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
 
@@ -55,7 +55,7 @@ const serverEnvSchema = z.object({
 
 // Para client-side (apenas NEXT_PUBLIC_ vars)
 const clientEnvSchema = z.object({
-  NEXT_PUBLIC_API_BASE_URL: z.string().url().default('http://localhost:4000'),
+  NEXT_PUBLIC_API_BASE_URL: z.string().url().default('https://investiqbackend-production.up.railway.app'),
   NEXT_PUBLIC_APP_URL: z.string().optional(),
   NEXT_PUBLIC_SENTRY_DSN: z.string().optional(),
 })
@@ -105,4 +105,4 @@ export const env = {
 }
 
 // Acesso direto para vars comuns
-export const API_BASE_URL = process.env['NEXT_PUBLIC_API_BASE_URL'] ?? 'http://localhost:4000'
+export const API_BASE_URL = process.env['NEXT_PUBLIC_API_BASE_URL'] ?? 'https://investiqbackend-production.up.railway.app'

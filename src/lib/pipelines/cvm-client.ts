@@ -5,7 +5,7 @@
  * In development, connects to the mock server on port 4000.
  */
 
-const CVM_BASE_URL = process.env['CVM_URL'] || 'http://localhost:4000/api/cvm'
+const CVM_BASE_URL = process.env['CVM_URL'] || 'https://investiqbackend-production.up.railway.app/api/cvm'
 
 interface CVMCompanyInfo {
   cnpj: string

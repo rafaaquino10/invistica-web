@@ -23,7 +23,7 @@ export function DataStatusBanner() {
     async function checkHealth() {
       try {
         const res = await fetch(
-          `${process.env['NEXT_PUBLIC_API_BASE_URL'] ?? 'http://localhost:4000'}/health`,
+          `${process.env['NEXT_PUBLIC_API_BASE_URL'] ?? 'https://investiqbackend-production.up.railway.app'}/health`,
           { cache: 'no-store', signal: AbortSignal.timeout(3000) }
         )
         if (!res.ok) return

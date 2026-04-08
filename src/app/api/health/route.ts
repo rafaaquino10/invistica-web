@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import { isDemoMode } from '@/lib/prisma'
+import { BACKEND_URL } from '@/lib/constants'
 
-async function checkGateway(): Promise<boolean> {
+async function checkBackend(): Promise<boolean> {
   try {
-    const gatewayUrl = process.env['GATEWAY_URL'] || 'http://localhost:4000'
-    const res = await fetch(`${gatewayUrl}/health`, {
-      signal: AbortSignal.timeout(3000),
+    const res = await fetch(`${BACKEND_URL}/health`, {
+      signal: AbortSignal.timeout(5000),
     })
     return res.ok
   } catch {
@@ -14,7 +14,7 @@ async function checkGateway(): Promise<boolean> {
 }
 
 async function checkDatabase(): Promise<boolean> {
-  if (isDemoMode) return true // demo mode — no DB needed
+  if (isDemoMode) return true
   try {
     const { prisma } = await import('@/lib/prisma')
     await prisma.$queryRaw`SELECT 1`
@@ -25,21 +25,19 @@ async function checkDatabase(): Promise<boolean> {
 }
 
 export async function GET() {
-  const [gatewayHealthy, dbHealthy] = await Promise.all([
-    checkGateway(),
+  const [backendHealthy, dbHealthy] = await Promise.all([
+    checkBackend(),
     checkDatabase(),
   ])
 
-  const status = gatewayHealthy && dbHealthy ? 'ok' : 'degraded'
+  const status = backendHealthy && dbHealthy ? 'ok' : 'degraded'
 
   return NextResponse.json({
     status,
     service: 'investiq-web',
-    gateway: gatewayHealthy ? 'ok' : 'down',
+    backend: backendHealthy ? 'ok' : 'down',
     database: dbHealthy ? 'ok' : (isDemoMode ? 'demo' : 'down'),
     demoMode: isDemoMode,
     timestamp: new Date().toISOString(),
-  }, {
-    status: status === 'ok' ? 200 : 200, // Still return 200 for degraded (uptime monitors can check JSON)
   })
 }

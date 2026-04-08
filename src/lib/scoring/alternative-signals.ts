@@ -46,7 +46,7 @@ export function cagedAdjustment(
  */
 export async function fetchCAGEDData(): Promise<CAGEDSectorData[]> {
   try {
-    const gatewayUrl = process.env['GATEWAY_URL'] || 'http://localhost:4000'
+    const gatewayUrl = process.env['INVESTIQ_API_URL'] || 'https://investiqbackend-production.up.railway.app'
     const res = await fetch(`${gatewayUrl}/v1/alternative/caged`, {
       signal: AbortSignal.timeout(5000),
     })

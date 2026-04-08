@@ -5,7 +5,7 @@
  * In development, connects to the mock server on port 4000.
  */
 
-const BRAPI_BASE_URL = process.env['BRAPI_URL'] || 'http://localhost:4000/api/brapi'
+const BRAPI_BASE_URL = process.env['BRAPI_URL'] || 'https://investiqbackend-production.up.railway.app/api/brapi'
 
 interface BRAPIQuote {
   symbol: string
