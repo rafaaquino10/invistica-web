@@ -175,10 +175,21 @@ export async function fetchAssetsFromInvestIQ(): Promise<AssetData[]> {
   // Sync cluster names from backend (background, non-blocking)
   getClusterNames().catch(() => {})
 
-  const { results: screener } = await investiq.get<{ results: ScreenerAsset[] }>('/scores/screener', {
-    params: { limit: 1000 },
-    timeout: 30000,
-  })
+  // Backend limit max=200. Fetch all pages.
+  const allResults: ScreenerAsset[] = []
+  let offset = 0
+  const pageSize = 200
+  while (true) {
+    const page = await investiq.get<{ results: ScreenerAsset[]; count: number }>('/scores/screener', {
+      params: { limit: pageSize, offset },
+      timeout: 30000,
+    })
+    const results = page.results ?? []
+    allResults.push(...results)
+    if (results.length < pageSize) break // last page
+    offset += pageSize
+  }
+  const screener = allResults
   if (!screener?.length) return []
 
   // Map screener data directly — NO N+1 ticker detail queries.
