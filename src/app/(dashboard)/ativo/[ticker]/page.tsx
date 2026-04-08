@@ -27,6 +27,8 @@ import { QualitativeCards } from '@/components/score/qualitative-cards'
 import { IndicatorGrid } from '@/components/score/indicator-grid'
 import { RiskLab } from '@/components/score/risk-lab'
 import { ThesisCard } from '@/components/score/thesis-card'
+import { EvidenceExplorer } from '@/components/score/evidence-explorer'
+import { DossierReport } from '@/components/score/dossier-report'
 
 const RANGE_MAP: Record<TimeRange, { range: string; interval: string }> = {
   '1D': { range: '1d', interval: '1d' },
@@ -435,7 +437,12 @@ export default function AssetDetailPage() {
         </PaywallGate>
       )}
 
-      {/* ─── 6c2. Risk Lab — Métricas de Risco (Elite) ────────── */}
+      {/* ─── 6c2. Evidence Explorer — Mapa de Conviccao (Elite) ── */}
+      <PaywallGate requiredPlan="elite" feature="Evidence Explorer" showPreview>
+        <EvidenceExplorer ticker={ticker} />
+      </PaywallGate>
+
+      {/* ─── 6c3. Risk Lab — Métricas de Risco (Elite) ────────── */}
       {riskMetrics && (
         <PaywallGate requiredPlan="elite" feature="Risk Lab" showPreview>
           <RiskLab riskMetrics={riskMetrics} ticker={ticker} />
@@ -492,6 +499,11 @@ export default function AssetDetailPage() {
           </div>
         </PaywallGate>
       )}
+
+      {/* ─── 6f. Dossier Qualitativo — Research Report (Elite) ── */}
+      <PaywallGate requiredPlan="elite" feature="Dossier Qualitativo" showPreview>
+        <DossierReport ticker={ticker} />
+      </PaywallGate>
 
       {/* ─── 7. Dividendos ───────────────────────────────────── */}
       <div>

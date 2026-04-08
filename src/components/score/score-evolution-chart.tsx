@@ -56,12 +56,31 @@ export function ScoreEvolutionChart({ ticker, className }: ScoreEvolutionChartPr
   const [period, setPeriod] = useState<Period>('3M')
   const [showPillars, setShowPillars] = useState(false)
 
+  // Try backend score history first, fallback to local snapshots
+  const { data: backendHistory } = trpc.assets.scoreHistory.useQuery(
+    { ticker },
+    { enabled: !!ticker, staleTime: 15 * 60 * 1000 }
+  )
   const { data, isLoading } = trpc.scoreHistory.history.useQuery(
     { ticker, days: PERIOD_DAYS[period] },
     { enabled: !!ticker }
   )
 
   const chartData = useMemo(() => {
+    // Prefer backend history (12 real periods from IQ-Cognit)
+    if (backendHistory?.history?.length) {
+      return backendHistory.history.map(h => ({
+        date: h.date,
+        label: formatDateLabel(h.date),
+        score: h.iq_score,
+        valuation: h.score_valuation ?? h.iq_score,
+        quality: h.score_quali ?? h.iq_score,
+        risk: h.score_quanti ?? h.iq_score,
+        dividends: h.score_valuation ?? h.iq_score,
+        growth: h.score_quanti ?? h.iq_score,
+      }))
+    }
+    // Fallback to local snapshots
     if (!data?.history) return []
     return data.history.map(h => ({
       date: h.date,
@@ -73,7 +92,7 @@ export function ScoreEvolutionChart({ ticker, className }: ScoreEvolutionChartPr
       dividends: Math.round(h.dividends * 10) / 10,
       growth: Math.round(h.growth * 10) / 10,
     }))
-  }, [data])
+  }, [data, backendHistory])
 
   // Calculate delta between first and last
   const delta = useMemo(() => {

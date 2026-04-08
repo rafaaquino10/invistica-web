@@ -110,6 +110,58 @@ export const backtestRouter = router({
     }
   }),
 
+  // Model performance (IC, hit rate, alpha, Sharpe)
+  modelPerformance: premiumProcedure.query(async () => {
+    try {
+      return await investiq.get<{
+        ic_spearman: number
+        ic_6m_avg: number
+        hit_rate: number
+        alpha_annualized: number
+        sharpe_ratio: number
+        max_drawdown: number
+        avg_turnover: number
+        backtest_period: string
+        updated_at: string
+      }>('/scores/performance')
+    } catch { return null }
+  }),
+
+  // IC Timeline (Information Coefficient evolution)
+  icTimeline: premiumProcedure.query(async () => {
+    try {
+      return await investiq.get<{
+        timeline: Array<{
+          date: string
+          ic_overall: number
+          ic_valuation: number | null
+          ic_quality: number | null
+          ic_risk: number | null
+          ic_dividends: number | null
+          ic_growth: number | null
+        }>
+      }>('/analytics/ic-timeline')
+    } catch { return null }
+  }),
+
+  // Signal Decay (quintile predictiveness)
+  signalDecay: premiumProcedure.query(async () => {
+    try {
+      return await investiq.get<{
+        quintiles: Array<{
+          quintile: number
+          label: string
+          avg_return_1m: number
+          avg_return_3m: number
+          avg_return_6m: number
+          avg_score: number
+          count: number
+        }>
+        spread_q1_q5: { return_1m: number; return_3m: number; return_6m: number }
+      }>('/analytics/signal-decay')
+    } catch { return null }
+  }),
+
   // Sector rotation matrix
   sectorRotation: premiumProcedure.query(async () => {
     try {

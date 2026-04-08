@@ -485,6 +485,69 @@ export const assetsRouter = router({
       return calculateSensitivity(asset, macro)
     }),
 
+  // ─── Evidence Explorer (Backend IQ-Cognit) ─────────────────
+  evidence: premiumProcedure
+    .input(z.object({ ticker: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        return await investiq.get<{
+          ticker: string
+          evidences: Array<{
+            criterion_id: number
+            criterion_name: string
+            pillar: string
+            score: number
+            weight: number
+            evidence_text: string
+            source_type: string
+            source_url: string | null
+            bull_points: string[] | null
+            bear_points: string[] | null
+          }>
+        }>(`/scores/${input.ticker.toUpperCase()}/evidence`)
+      } catch { return null }
+    }),
+
+  // ─── Dossier Qualitativo (Backend LLM) ────────────────────
+  dossier: premiumProcedure
+    .input(z.object({ ticker: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        return await investiq.get<{
+          ticker: string
+          company_name: string
+          dimensions: Array<{
+            name: string
+            verdict: string
+            score: number
+            narrative: string
+            evidence: string[]
+          }>
+          overall_verdict: string
+          generated_at: string
+        }>(`/scores/${input.ticker.toUpperCase()}/dossier`)
+      } catch { return null }
+    }),
+
+  // ─── Score History (Backend 12 períodos) ──────────────────
+  scoreHistory: premiumProcedure
+    .input(z.object({ ticker: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        return await investiq.get<{
+          ticker: string
+          history: Array<{
+            date: string
+            iq_score: number
+            score_quanti: number | null
+            score_quali: number | null
+            score_valuation: number | null
+            rating: string
+          }>
+        }>(`/scores/${input.ticker.toUpperCase()}/history`)
+      } catch { return null }
+    }),
+
   // ─── Research Note Elite (Claude API) ──────────────────────
   researchNote: premiumProcedure
     .input(z.object({ ticker: z.string() }))
