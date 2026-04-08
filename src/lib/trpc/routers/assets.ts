@@ -359,9 +359,22 @@ export const assetsRouter = router({
     .query(async ({ input }) => {
       const ALL_ASSETS = await getAssets()
       const tickersUpper = input.tickers.map(t => t.toUpperCase())
-      return ALL_ASSETS
-        .filter(a => tickersUpper.includes(a.ticker.toUpperCase()))
-        .map(asset => ({
+      const filtered = ALL_ASSETS.filter(a => tickersUpper.includes(a.ticker.toUpperCase()))
+
+      // Enrich each asset with backend valuation + risk in parallel
+      const enriched = await Promise.all(filtered.map(async (asset) => {
+        let backendVal = null
+        let backendRisk = null
+        try {
+          const [valRes, riskRes] = await Promise.allSettled([
+            investiq.get(`/valuation/${asset.ticker}`),
+            investiq.get(`/scores/${asset.ticker}/risk-metrics`),
+          ])
+          backendVal = valRes.status === 'fulfilled' ? valRes.value : null
+          backendRisk = riskRes.status === 'fulfilled' ? riskRes.value : null
+        } catch { /* enrichment is optional */ }
+
+        return {
           id: asset.id,
           ticker: asset.ticker,
           name: asset.name,
@@ -372,6 +385,7 @@ export const assetsRouter = router({
           marketCap: asset.marketCap,
           hasFundamentals: asset.hasFundamentals,
           aqScore: asset.aqScore,
+          valuation: asset.valuation ?? null,
           latestFundamental: {
             ...asset.fundamentals,
             netMargin: asset.fundamentals.margemLiquida,
@@ -382,7 +396,13 @@ export const assetsRouter = router({
             change: asset.change,
             changePercent: asset.changePercent,
           },
-        }))
+          // Backend enrichment for comparison
+          backendValuation: backendVal as any ?? null,
+          riskMetrics: backendRisk as any ?? null,
+        }
+      }))
+
+      return enriched
     }),
 
   // Get available sectors — always uses live data
@@ -482,7 +502,36 @@ export const assetsRouter = router({
         selicReal: regime?.selicReal ?? 9.25,
       }
 
-      return calculateSensitivity(asset, macro)
+      const localResult = calculateSensitivity(asset, macro)
+
+      // Enrich with backend sensitivity if available
+      try {
+        const backendSens = await investiq.get<{
+          scenarios: Array<{
+            name: string; description: string;
+            impact_score: number; impact_price: number;
+            affected_pillars: string[];
+            regime_change: string | null;
+          }>
+        }>(`/analytics/sensitivity?ticker=${input.ticker.toUpperCase()}`)
+
+        if (backendSens?.scenarios?.length) {
+          return [
+            ...localResult,
+            ...backendSens.scenarios.map(s => ({
+              label: s.name,
+              description: s.description,
+              scoreImpact: s.impact_score,
+              priceImpact: s.impact_price,
+              affectedPillars: s.affected_pillars,
+              regimeChange: s.regime_change,
+              source: 'backend' as const,
+            })),
+          ]
+        }
+      } catch { /* fallback to local only */ }
+
+      return localResult
     }),
 
   // ─── Evidence Explorer (Backend IQ-Cognit) ─────────────────

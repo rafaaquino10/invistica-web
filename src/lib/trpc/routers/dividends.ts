@@ -41,7 +41,45 @@ export const dividendsRouter = router({
       if (input.tickers.length !== input.amounts.length) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'Tickers and amounts must have same length' })
       }
-      return ctx.repos.dividends.simulate(input.tickers, input.amounts)
+
+      // Try backend simulation first (richer projections), fallback to local
+      try {
+        const backendSim = await investiq.post<{
+          results: Array<{
+            ticker: string; name: string; found: boolean;
+            shares: number; current_price: number; dividend_yield: number;
+            annual_dividend: number; monthly_dividend: number;
+            safety_score: number | null; projected_yield_12m: number | null;
+          }>
+          totals: { annual_dividend: number; monthly_dividend: number; avg_yield: number; total_invested: number }
+        }>('/dividends/simulate', {
+          body: {
+            positions: input.tickers.map((t, i) => ({ ticker: t, amount: input.amounts[i] })),
+          },
+        })
+
+        if (backendSim?.results?.length) {
+          return {
+            results: backendSim.results.map(r => ({
+              ticker: r.ticker, name: r.name, found: r.found,
+              shares: r.shares, currentPrice: r.current_price,
+              dividendYield: r.dividend_yield,
+              annualDividend: r.annual_dividend, monthlyDividend: r.monthly_dividend,
+              safetyScore: r.safety_score, projectedYield12m: r.projected_yield_12m,
+            })),
+            totals: {
+              annualDividend: backendSim.totals.annual_dividend,
+              monthlyDividend: backendSim.totals.monthly_dividend,
+              avgYield: backendSim.totals.avg_yield,
+              totalInvested: backendSim.totals.total_invested,
+            },
+            source: 'backend' as const,
+          }
+        }
+      } catch { /* fallback to local */ }
+
+      const localResult = await ctx.repos.dividends.simulate(input.tickers, input.amounts)
+      return { ...localResult, source: 'local' as const }
     }),
 
   history: publicProcedure
