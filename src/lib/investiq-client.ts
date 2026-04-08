@@ -76,51 +76,7 @@ class InvestIQClient {
 // Singleton
 export const investiq = new InvestIQClient(BASE_URL)
 
-// Convenience re-exports for common patterns
-export async function fetchScores(ticker: string) {
-  return investiq.get(`/scores/${ticker}`)
-}
-
-export async function fetchScoreBreakdown(ticker: string) {
-  return investiq.get(`/scores/${ticker}/breakdown`)
-}
-
-export async function fetchScreener(params?: Record<string, string | number | boolean>) {
-  return investiq.get('/scores/screener', { params })
-}
-
-export async function fetchTopScores(limit = 20) {
-  return investiq.get('/scores/top', { params: { limit } })
-}
-
-export async function fetchTicker(ticker: string) {
-  return investiq.get(`/tickers/${ticker}`)
-}
-
-export async function fetchQuote(ticker: string) {
-  return investiq.get(`/tickers/${ticker}/quote`)
-}
-
-export async function fetchRegime() {
-  return investiq.get('/analytics/regime')
-}
-
-export async function fetchPortfolio() {
-  return investiq.get('/portfolio')
-}
-
-export async function fetchRadarFeed(limit = 30) {
-  return investiq.get('/radar/feed', { params: { limit } })
-}
-
-export async function fetchDividendCalendar(days = 60) {
-  return investiq.get('/dividends/calendar', { params: { days } })
-}
-
-export async function fetchValuation(ticker: string) {
-  return investiq.get(`/valuation/${ticker}`)
-}
-
-export async function fetchTickerSearch(q: string) {
-  return investiq.get('/tickers/search', { params: { q } })
-}
+// ─── Convenience helpers ──────────────────────────────────────
+// Use investiq.get() directly for most cases.
+// These are kept for backward compatibility but all callers
+// should prefer the singleton client directly.

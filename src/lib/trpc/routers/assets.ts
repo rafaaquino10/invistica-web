@@ -5,13 +5,12 @@ import { getAssets, getCurrentRegime } from '@/lib/data-source'
 import {
   fetchHistory,
   fetchDividends,
-  fetchMomentum,
   fetchIntelligence,
-  fetchCompanyProfile,
   fetchRiEvents,
   fetchBenchmarks,
   fetchSparklines,
 } from '@/lib/gateway-client'
+import { investiq } from '@/lib/investiq-client'
 import {
   mapearSetor,
   PESOS_POR_SETOR,
@@ -114,16 +113,6 @@ export const assetsRouter = router({
         })
       }
 
-      // Map fundamentals to match expected shape
-      const f = asset.fundamentals
-      const mappedFundamental = {
-        ...f,
-        periodType: 'annual' as const,
-        referenceDate: new Date(),
-        netMargin: f.margemLiquida,
-        ebitdaMargin: f.margemEbit,
-      }
-
       // Use the cached full score breakdown (same calculation as hero score)
       // This ensures X-Ray and hero badge always show the same score
       const setorCanon = mapearSetor(asset.sector)
@@ -156,16 +145,27 @@ export const assetsRouter = router({
         },
       } : null
 
-      // Fetch real data from gateway in parallel
+      // Fetch real data from backend + gateway in parallel
       let quotes: Array<{ date: Date; close: number; open: number; high: number; low: number; volume: number }> = []
       let dividends: Array<{ type: string; value: number; paymentDate: Date | null }> = []
 
-      const [historyResult, dividendResult, momentumData, intelligenceData, companyProfile] = await Promise.all([
+      // Backend enrichment: score detail (valuation + thesis + dividends) + risk metrics
+      interface BackendScoreEnrich {
+        valuation?: { fair_value_final: number | null; fair_value_dcf: number | null; fair_value_gordon: number | null; fair_value_mult: number | null; fair_value_p25: number | null; fair_value_p75: number | null; safety_margin: number | null; upside_prob: number | null; loss_prob: number | null } | null
+        dividends?: { dividend_safety: number | null; projected_yield: number | null; dividend_cagr_5y: number | null } | null
+        thesis_summary?: string | null
+      }
+      interface BackendRiskEnrich {
+        risk_metrics: { altman_z: number | null; altman_z_label: string | null; merton_pd: number | null; dl_ebitda: number | null; icj: number | null; piotroski_score: number | null; beneish_score: number | null; liquidity_ratio: number | null }
+        profitability: { roe: number | null; roic: number | null; wacc: number | null; spread_roic_wacc: number | null; net_margin: number | null; gross_margin: number | null; fcf_yield: number | null }
+      }
+
+      const [historyResult, dividendResult, backendScore, backendRisk, intelligenceData] = await Promise.all([
         fetchHistory(asset.ticker, '3mo').catch(() => [] as Awaited<ReturnType<typeof fetchHistory>>),
         fetchDividends(asset.ticker).catch(() => [] as Awaited<ReturnType<typeof fetchDividends>>),
-        fetchMomentum(asset.ticker),
+        investiq.get<BackendScoreEnrich>(`/scores/${asset.ticker}`).catch(() => null),
+        investiq.get<BackendRiskEnrich>(`/scores/${asset.ticker}/risk-metrics`).catch(() => null),
         fetchIntelligence(asset.ticker),
-        fetchCompanyProfile(asset.ticker),
       ])
 
       quotes = historyResult.map(h => ({
@@ -182,6 +182,33 @@ export const assetsRouter = router({
         value: d.rate,
         paymentDate: d.paymentDate ? new Date(d.paymentDate) : null,
       }))
+
+      // Map fundamentals enriched with backend risk/profitability data
+      const f = asset.fundamentals
+      const prof = backendRisk?.profitability
+      const riskM = backendRisk?.risk_metrics
+      const mappedFundamental = {
+        ...f,
+        roe: prof?.roe ?? f.roe,
+        roic: prof?.roic ?? f.roic,
+        margemLiquida: prof?.net_margin ?? f.margemLiquida,
+        margemEbit: prof?.gross_margin ?? f.margemEbit,
+        liquidezCorrente: riskM?.liquidity_ratio ?? f.liquidezCorrente,
+        netDebtEbitda: riskM?.dl_ebitda ?? f.netDebtEbitda,
+        periodType: 'annual' as const,
+        referenceDate: new Date(),
+        netMargin: prof?.net_margin ?? f.margemLiquida,
+        ebitdaMargin: prof?.gross_margin ?? f.margemEbit,
+        wacc: prof?.wacc ?? null,
+        spreadRoicWacc: prof?.spread_roic_wacc ?? null,
+        fcfYield: prof?.fcf_yield ?? null,
+        altmanZ: riskM?.altman_z ?? null,
+        altmanZLabel: riskM?.altman_z_label ?? null,
+        mertonPd: riskM?.merton_pd ?? null,
+        piotroskiScore: riskM?.piotroski_score ?? null,
+        beneishScore: riskM?.beneish_score ?? null,
+        interestCoverage: riskM?.icj ?? null,
+      }
 
       // Sector peers: top 5 same-sector stocks by score (excluding current)
       const sectorPeers = ALL_ASSETS
@@ -310,11 +337,19 @@ export const assetsRouter = router({
         fundamentals: [mappedFundamental],
         quotes,
         dividends,
-        momentum: momentumData,
+        momentum: null, // Backend não expõe momentum direto; dados de risco cobrem isso
         intelligence: intelligenceData,
-        companyProfile,
+        companyProfile: null, // Substituído por backendValuation + riskMetrics
         sectorPeers,
         killSwitch: asset.killSwitch ?? null,
+        // ─── Onda 1: Dados ricos do backend ────────────────────
+        backendValuation: backendScore?.valuation ?? asset.valuation ?? null,
+        thesis: backendScore?.thesis_summary ?? null,
+        dividendData: backendScore?.dividends ?? null,
+        riskMetrics: backendRisk ? {
+          risk: backendRisk.risk_metrics,
+          profitability: backendRisk.profitability,
+        } : null,
       }
     }),
 

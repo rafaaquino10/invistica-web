@@ -36,6 +36,18 @@ export interface AssetData {
   lensScores: MultiLensScores | null
   scoreBreakdown: AqScoreResult | null
   killSwitch?: { triggered: boolean; reason: string | null }
+  valuation?: {
+    fairValueFinal: number | null
+    fairValueDcf: number | null
+    fairValueGordon: number | null
+    fairValueMult: number | null
+    fairValueP25: number | null
+    fairValueP75: number | null
+    safetyMargin: number | null
+    upsideProb: number | null
+    lossProb: number | null
+    impliedGrowth: number | null
+  } | null
   fundamentals: {
     peRatio: number | null
     pbRatio: number | null

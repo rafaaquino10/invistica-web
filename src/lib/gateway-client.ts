@@ -126,8 +126,9 @@ export async function fetchAllQuotes(): Promise<GatewayQuote[]> {
   return quotes
 }
 
+/** @deprecated Bulk fundamentals não disponível — dados vêm via screener + risk-metrics por ativo */
 export async function fetchAllFundamentals(): Promise<GatewayFundamental[]> {
-  return [] // Backend doesn't have a bulk fundamentals endpoint; scores/screener covers scoring
+  return []
 }
 
 export async function fetchHistory(ticker: string, range = '1mo', _interval = '1d'): Promise<GatewayHistoricalPrice[]> {
@@ -143,9 +144,13 @@ export async function fetchDividends(ticker: string): Promise<GatewayDividend[]>
   return (res.dividends || []).map(d => ({ assetIssued: ticker, paymentDate: d.payment_date, rate: d.value_per_share, label: d.type, relatedTo: ticker, lastDatePrior: d.ex_date }))
 }
 
+/** @deprecated Dados de empresas disponíveis via /scores/screener */
 export async function fetchAllCompanies(): Promise<GatewayCompany[]> { return [] }
+/** @deprecated Sparklines devem ser construídos via /tickers/{ticker}/history em Onda 2 */
 export async function fetchSparklines(): Promise<SparklineMap> { return {} }
+/** @deprecated Dados de inflação disponíveis via /analytics/regime → macro.ipca */
 export async function fetchInflation(): Promise<InflationEntry[]> { return [] }
+/** @deprecated Dados de câmbio disponíveis via /analytics/regime → macro.cambio_usd */
 export async function fetchCurrency(): Promise<CurrencyEntry[]> { return [] }
 
 export async function fetchMacroIndicators(): Promise<MacroIndicators | null> {
@@ -160,6 +165,7 @@ export async function fetchMacroIndicators(): Promise<MacroIndicators | null> {
   } catch { return null }
 }
 
+/** @deprecated Momentum coberto por /scores/{ticker}/risk-metrics + regime. Removido do assets router. */
 export async function fetchMomentum(_ticker: string): Promise<GatewayMomentumResult | null> { return null }
 
 export async function fetchMarketPulse(): Promise<GatewayMarketPulse | null> {
@@ -204,8 +210,10 @@ export async function fetchBenchmarks(): Promise<BenchmarkData> {
   }
 }
 
+/** @deprecated Betas individuais disponíveis via /scores/{ticker}/risk-metrics → profitability.wacc */
 export async function fetchBetas(): Promise<GatewayBeta[]> { return [] }
 
+/** @deprecated Profile substituído por /scores/{ticker} (thesis, valuation, dividends) */
 export async function fetchCompanyProfile(_ticker: string): Promise<GatewayCompanyProfile | null> { return null }
 
 export async function fetchIntelligence(ticker: string): Promise<GatewayIntelligence | null> {
