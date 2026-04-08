@@ -8,6 +8,7 @@ import {
   analyzeFxChange,
   calculateQuintile,
 } from '@/lib/analytics'
+import { investiq } from '@/lib/investiq-client'
 
 export const analyticsRouter = router({
   // Performance Attribution — Brinson-Fachler (Premium)
@@ -24,7 +25,15 @@ export const analyticsRouter = router({
         gainLossPercent: p.gainLossPercent,
       }))
 
-      return calculateAttribution(positions)
+      const localResult = calculateAttribution(positions)
+
+      // Enrich with backend attribution if available
+      let backendAttribution = null
+      try {
+        backendAttribution = await investiq.get(`/analytics/portfolio/${input.portfolioId}/attribution`)
+      } catch { /* fallback to local */ }
+
+      return { ...localResult, backend: backendAttribution }
     }),
 
   // Risk Analytics — VaR, Beta, HHI, Factor Exposure (Premium)
@@ -43,7 +52,15 @@ export const analyticsRouter = router({
         gainLossPercent: p.gainLossPercent,
       }))
 
-      return calculateRisk(positions)
+      const localResult = calculateRisk(positions)
+
+      // Enrich with backend risk analytics if available
+      let backendRisk = null
+      try {
+        backendRisk = await investiq.get(`/analytics/portfolio/${input.portfolioId}/risk`)
+      } catch { /* fallback to local */ }
+
+      return { ...localResult, backend: backendRisk }
     }),
 
   // Scenario Analysis — SELIC e FX (Premium)

@@ -9,6 +9,8 @@ import { OpportunitiesPanel, type Opportunity } from '@/components/dashboard/opp
 import { RegimePanel } from '@/components/dashboard/regime-panel'
 import { TVPerformanceChart, type PerformanceSeries } from '@/components/charts/tv-performance-chart'
 import { TVIntradayChart, type IntradaySeries } from '@/components/charts/tv-intraday-chart'
+import { StrategySignalsPanel } from '@/components/dashboard/strategy-signals-panel'
+import { SectorRotationMatrix } from '@/components/analytics/sector-rotation-matrix'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -248,6 +250,17 @@ export default function DashboardPage() {
         <div className="lg:col-span-4 rounded-[var(--radius)] border border-[var(--border-1)]/30 bg-[var(--surface-1)] p-3">
           <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-3)] block mb-2">Regime Macro</span>
           <RegimePanel data={regime} />
+        </div>
+      </div>
+
+      {/* Row 3: Strategy Signals + Sector Rotation */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+        <div className="lg:col-span-4 rounded-[var(--radius)] border border-[var(--border-1)]/30 bg-[var(--surface-1)] p-3">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-3)] block mb-2">Sinais Strategy</span>
+          <StrategySignalsPanel />
+        </div>
+        <div className="lg:col-span-8">
+          <SectorRotationMatrix />
         </div>
       </div>
     </div>
