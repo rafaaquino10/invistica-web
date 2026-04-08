@@ -177,101 +177,65 @@ export async function fetchAssetsFromInvestIQ(): Promise<AssetData[]> {
 
   const { results: screener } = await investiq.get<{ results: ScreenerAsset[] }>('/scores/screener', {
     params: { limit: 1000 },
+    timeout: 30000,
   })
   if (!screener?.length) return []
 
-  // Fetch quotes in parallel (batches of 10 to avoid overwhelming)
-  const assets: AssetData[] = []
-  const batchSize = 10
-
-  for (let i = 0; i < screener.length; i += batchSize) {
-    const batch = screener.slice(i, i + batchSize)
-    const details = await Promise.allSettled(
-      batch.map(a => investiq.get<TickerDetail>(`/tickers/${a.ticker}`).catch(() => null))
-    )
-
-    for (let j = 0; j < batch.length; j++) {
-      const s = batch[j]!
-      const detailResult = details[j]
-      const detail: TickerDetail | null = detailResult?.status === 'fulfilled' ? detailResult.value : null
-      const quote = detail?.quote
-
-      const price = quote?.close ?? 0
-      const open = quote?.open ?? price
-      const change = price - open
-      const changePct = open > 0 ? (change / open) * 100 : 0
-
-      assets.push({
-        id: s.ticker_id || s.ticker,
-        ticker: s.ticker,
-        name: s.company_name,
-        type: 'stock',
-        sector: getClusterName(s.cluster_id),
-        price,
-        change,
-        changePercent: changePct,
-        logo: `https://raw.githubusercontent.com/StatusInvest/Content/master/img/company/${s.ticker}.jpg`,
-        volume: quote?.volume ?? null,
-        marketCap: quote?.market_cap ?? null,
-        fiftyTwoWeekHigh: null,
-        fiftyTwoWeekLow: null,
-        hasFundamentals: true,
-        aqScore: {
-          scoreTotal: s.iq_score,
-          scoreBruto: s.iq_score,
-          scoreValuation: s.score_valuation ?? 0,
-          scoreQuality: s.score_quali ?? 0,
-          scoreGrowth: s.score_quanti ?? 0,
-          scoreDividends: s.dividend_safety ?? 0,
-          scoreRisk: s.score_quanti ?? s.iq_score, // Risco ponderado via quanti (25% do pilar)
-          scoreQualitativo: s.score_quali ?? 0,
-          confidence: computeConfidence(s),
-        },
-        lensScores: null,
-        scoreBreakdown: null,
-        valuation: {
-          fairValueFinal: s.fair_value_final,
-          fairValueDcf: null,
-          fairValueGordon: null,
-          fairValueMult: null,
-          fairValueP25: null,
-          fairValueP75: null,
-          safetyMargin: s.safety_margin,
-          upsideProb: null,
-          lossProb: null,
-          impliedGrowth: null,
-        },
-        fundamentals: {
-          peRatio: null,
-          pbRatio: null,
-          psr: null,
-          pEbit: null,
-          evEbit: null,
-          evEbitda: null,
-          roe: null,
-          roic: null,
-          margemEbit: null,
-          margemLiquida: null,
-          liquidezCorrente: null,
-          divBrutPatrim: null,
-          pCapGiro: null,
-          pAtivCircLiq: null,
-          pAtivo: null,
-          patrimLiquido: null,
-          dividendYield: s.dividend_yield_proj,
-          netDebtEbitda: null,
-          crescimentoReceita5a: null,
-          liq2meses: null,
-          freeCashflow: null,
-          netDebt: null,
-          ebitda: null,
-          fcfGrowthRate: null,
-          debtCostEstimate: null,
-          totalDebt: null,
-        },
-      })
-    }
-  }
+  // Map screener data directly — NO N+1 ticker detail queries.
+  // Screener already provides all data needed for the list view.
+  // Individual ticker details are fetched on-demand in getByTicker.
+  const assets: AssetData[] = screener.map(s => ({
+    id: s.ticker_id || s.ticker,
+    ticker: s.ticker,
+    name: s.company_name,
+    type: 'stock' as const,
+    sector: getClusterName(s.cluster_id),
+    price: 0, // Price fetched on-demand per ticker, not in bulk
+    change: 0,
+    changePercent: 0,
+    logo: `https://raw.githubusercontent.com/StatusInvest/Content/master/img/company/${s.ticker}.jpg`,
+    volume: null,
+    marketCap: null,
+    fiftyTwoWeekHigh: null,
+    fiftyTwoWeekLow: null,
+    hasFundamentals: true,
+    aqScore: {
+      scoreTotal: s.iq_score,
+      scoreBruto: s.iq_score,
+      scoreValuation: s.score_valuation ?? 0,
+      scoreQuality: s.score_quali ?? 0,
+      scoreGrowth: s.score_quanti ?? 0,
+      scoreDividends: s.dividend_safety ?? 0,
+      scoreRisk: s.score_quanti ?? s.iq_score,
+      scoreQualitativo: s.score_quali ?? 0,
+      confidence: computeConfidence(s),
+    },
+    lensScores: null,
+    scoreBreakdown: null,
+    valuation: {
+      fairValueFinal: s.fair_value_final,
+      fairValueDcf: null,
+      fairValueGordon: null,
+      fairValueMult: null,
+      fairValueP25: null,
+      fairValueP75: null,
+      safetyMargin: s.safety_margin,
+      upsideProb: null,
+      lossProb: null,
+      impliedGrowth: null,
+    },
+    fundamentals: {
+      peRatio: null, pbRatio: null, psr: null, pEbit: null,
+      evEbit: null, evEbitda: null, roe: null, roic: null,
+      margemEbit: null, margemLiquida: null, liquidezCorrente: null,
+      divBrutPatrim: null, pCapGiro: null, pAtivCircLiq: null,
+      pAtivo: null, patrimLiquido: null,
+      dividendYield: s.dividend_yield_proj,
+      netDebtEbitda: null, crescimentoReceita5a: null, liq2meses: null,
+      freeCashflow: null, netDebt: null, ebitda: null,
+      fcfGrowthRate: null, debtCostEstimate: null, totalDebt: null,
+    },
+  }))
 
   return assets
 }
