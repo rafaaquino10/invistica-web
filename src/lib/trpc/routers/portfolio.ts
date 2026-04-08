@@ -3,6 +3,7 @@ import { router, protectedProcedure, publicProcedure, premiumProcedure } from '.
 import { fetchBenchmarks } from '@/lib/gateway-client'
 import { getAssets } from '@/lib/data-source'
 import { runMonteCarlo, estimateAssetParams, type MonteCarloPosition } from '@/lib/simulation/monte-carlo'
+import { investiq } from '@/lib/investiq-client'
 
 // Benchmark rates — fallback values when gateway unavailable
 const FALLBACK_CDI_RATE = 0.1315
@@ -153,5 +154,49 @@ export const portfolioRouter = router({
         years: input.years,
         simulations: input.simulations,
       })
+    }),
+
+  // ─── Smart Contribution (Backend IQ-Cognit) ───────────────
+  smartContribution: premiumProcedure
+    .input(z.object({
+      portfolioId: z.string().optional(),
+      amount: z.number().positive().optional(),
+    }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const params: Record<string, string> = {}
+        if (input.portfolioId) params['portfolio_id'] = input.portfolioId
+        if (input.amount) params['amount'] = String(input.amount)
+
+        const res = await investiq.get<{
+          suggestions: Array<{
+            ticker: string
+            weight: number
+            reason: string
+            iq_score: number
+            current_price: number
+          }>
+          rationale: string
+          total_amount: number
+        }>('/portfolio/smart-contribution', {
+          params,
+          timeout: 15000,
+        })
+
+        return {
+          available: true as const,
+          suggestions: (res.suggestions ?? []).map(s => ({
+            ticker: s.ticker,
+            weight: s.weight,
+            reason: s.reason,
+            iqScore: s.iq_score,
+            logo: `https://raw.githubusercontent.com/StatusInvest/Content/master/img/company/${s.ticker}.jpg`,
+          })),
+          rationale: res.rationale,
+          amount: res.total_amount,
+        }
+      } catch {
+        return { available: false as const, suggestions: [], rationale: null, amount: null }
+      }
     }),
 })

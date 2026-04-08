@@ -10,6 +10,7 @@ import { trpc } from '@/lib/trpc/provider'
 import { formatCurrency } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
 import { staggerContainer, fadeInUp } from '@/lib/utils/motion'
+import { SmartContribution } from '@/components/portfolio/smart-contribution'
 
 // Carteira de exemplo — 5 ações PoC
 const SAMPLE_PORTFOLIO = [
@@ -147,6 +148,11 @@ export default function PortfolioPage() {
           </div>
         </div>
       </ScrollableStrip>
+
+      {/* ─── Smart Contribution (Elite) ──────────────────────── */}
+      {portfolios && portfolios.length > 0 && (
+        <SmartContribution />
+      )}
 
       {/* Empty State */}
       {(!portfolios || portfolios.length === 0) && (

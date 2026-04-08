@@ -17,12 +17,16 @@ import { DriversList, type Driver } from '@/components/ui/drivers-list'
 import { ResearchNote } from '@/components/score/score-semaphore'
 import { CommentSection } from '@/components/community/comment-section'
 import { DCFCard } from '@/components/valuation/dcf-card'
+import { MonteCarloCard } from '@/components/valuation/monte-carlo-card'
 import { SensitivityCard } from '@/components/analytics/sensitivity-card'
 import { DividendSummary } from '@/components/asset/dividend-summary'
+import { DividendTrapCard } from '@/components/asset/dividend-trap-card'
 import { EventCalendar } from '@/components/asset/event-calendar'
 import { NewsSection } from '@/components/asset/news-section'
 import { QualitativeCards } from '@/components/score/qualitative-cards'
 import { IndicatorGrid } from '@/components/score/indicator-grid'
+import { RiskLab } from '@/components/score/risk-lab'
+import { ThesisCard } from '@/components/score/thesis-card'
 
 const RANGE_MAP: Record<TimeRange, { range: string; interval: string }> = {
   '1D': { range: '1d', interval: '1d' },
@@ -187,6 +191,10 @@ export default function AssetDetailPage() {
   const companyProfile = (asset as any).companyProfile
   const sectorPeers = (asset as any).sectorPeers ?? []
   const scoreBreakdownData = (asset as any).scoreBreakdown
+  const backendValuation = (asset as any).backendValuation ?? null
+  const thesis = (asset as any).thesis ?? null
+  const dividendData = (asset as any).dividendData ?? null
+  const riskMetrics = (asset as any).riskMetrics ?? null
   const narrative = (asset as any).narrative as { badge: { label: string; color: string; emoji: string }; oneLiner: string; researchNote: string; highlights: { strengths: string[]; weaknesses: string[]; context: string } } | null
   const drivers = scoreBreakdownData ? extractDrivers(scoreBreakdownData) : null
   const classif = score != null ? classifLabel(score) : null
@@ -402,10 +410,35 @@ export default function AssetDetailPage() {
         </PaywallGate>
       </div>
 
+      {/* ─── 6b2. Monte Carlo — Distribuição P25/P50/P75 (Elite) ─ */}
+      {backendValuation && currentPrice && (
+        <PaywallGate requiredPlan="elite" feature="Monte Carlo Valuation" showPreview>
+          <MonteCarloCard
+            ticker={ticker}
+            currentPrice={currentPrice}
+            valuation={backendValuation}
+          />
+        </PaywallGate>
+      )}
+
+      {/* ─── 6b3. Tese de Investimento (Pro) ─────────────────── */}
+      {thesis && (
+        <PaywallGate requiredPlan="pro" feature="Tese de Investimento" showPreview>
+          <ThesisCard ticker={ticker} thesis={thesis} dividendData={dividendData} />
+        </PaywallGate>
+      )}
+
       {/* ─── 6c. Score X-Ray (Elite) ─────────────────────────── */}
       {scoreBreakdownData && (
         <PaywallGate requiredPlan="elite" feature="Detalhamento do Score" showPreview>
           <ScoreXRay breakdown={scoreBreakdownData} ticker={ticker} />
+        </PaywallGate>
+      )}
+
+      {/* ─── 6c2. Risk Lab — Métricas de Risco (Elite) ────────── */}
+      {riskMetrics && (
+        <PaywallGate requiredPlan="elite" feature="Risk Lab" showPreview>
+          <RiskLab riskMetrics={riskMetrics} ticker={ticker} />
         </PaywallGate>
       )}
 
@@ -478,6 +511,11 @@ export default function AssetDetailPage() {
           </div>
         )}
       </div>
+
+      {/* ─── 7b. Risco de Armadilha de Dividendos (Pro) ─────── */}
+      <PaywallGate requiredPlan="pro" feature="Dividend Trap Risk" showPreview>
+        <DividendTrapCard ticker={ticker} />
+      </PaywallGate>
 
       {/* ─── 8. Pares do Setor ───────────────────────────────── */}
       {sectorPeers.length > 0 && (
