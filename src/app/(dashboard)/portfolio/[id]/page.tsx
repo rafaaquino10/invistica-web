@@ -12,6 +12,7 @@ import { PortfolioDiagnostics } from '@/components/portfolio/portfolio-diagnosti
 import { PaywallGate } from '@/components/billing/paywall-gate'
 import { MonteCarloSection } from '@/components/simulation/monte-carlo-chart'
 import { IRPFCalculator } from '@/components/portfolio/irpf-calculator'
+import { PerformanceEvolutionChart } from '@/components/portfolio/performance-chart'
 import { trpc } from '@/lib/trpc/provider'
 import { formatCurrency, formatDate } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
@@ -304,6 +305,11 @@ export default function PortfolioDetailPage() {
 
       {/* ─── Tab: Overview (conteúdo original) ───────────────── */}
       {activeTab === 'overview' && <>
+
+      {/* Evolução Patrimonial */}
+      {performance && (
+        <PerformanceEvolutionChart performance={performance} />
+      )}
 
       {/* Diagnóstico da Carteira */}
       {portfolio.positions.length > 0 && (

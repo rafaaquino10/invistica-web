@@ -120,7 +120,7 @@ const navigationSections: NavSection[] = [
     ],
   },
   {
-    label: 'IQ-Cognit',
+    label: 'IQ-COGNIT',
     items: [
       {
         label: 'Carteiras IQ',
@@ -130,6 +130,26 @@ const navigationSections: NavSection[] = [
             <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
             <path d="M9 21h6" />
             <path d="M10 19h4" />
+          </svg>
+        ),
+      },
+      {
+        label: 'Backtest',
+        href: '/backtest',
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+        ),
+      },
+      {
+        label: 'Modelo',
+        href: '/analytics/modelo',
+        icon: (
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 20V10" />
+            <path d="M18 20V4" />
+            <path d="M6 20v-4" />
           </svg>
         ),
       },
