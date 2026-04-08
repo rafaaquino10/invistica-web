@@ -11,6 +11,7 @@ import { TVPerformanceChart, type PerformanceSeries } from '@/components/charts/
 import { TVIntradayChart, type IntradaySeries } from '@/components/charts/tv-intraday-chart'
 import { StrategySignalsPanel } from '@/components/dashboard/strategy-signals-panel'
 import { SectorRotationMatrix } from '@/components/analytics/sector-rotation-matrix'
+import { StrategyHub } from '@/components/strategy/strategy-hub'
 
 // ─── Types ──────────────────────────────────────────────────
 
@@ -227,6 +228,8 @@ export default function DashboardPage() {
           <SectorRotationMatrix />
         </div>
       </div>
+      {/* Row 4: Strategy Hub */}
+      <StrategyHub />
     </div>
   )
 }

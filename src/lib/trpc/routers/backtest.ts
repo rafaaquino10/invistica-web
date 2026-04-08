@@ -162,6 +162,33 @@ export const backtestRouter = router({
     } catch { return null }
   }),
 
+  // Portfolio recommendation (optimal allocation)
+  portfolioRecommendation: premiumProcedure.query(async () => {
+    try {
+      const res = await investiq.get<{
+        positions: Array<{ ticker: string; weight: number; iq_score: number; rationale: string }>
+        rationale: string
+        regime: string
+        updated_at: string
+      }>('/strategy/portfolio-recommendation')
+      return { available: true as const, ...res }
+    } catch { return { available: false as const, positions: [], rationale: null } }
+  }),
+
+  // Short candidates
+  shortCandidates: premiumProcedure.query(async () => {
+    try {
+      const res = await investiq.get<{
+        candidates: Array<{
+          ticker: string; iq_score: number; merton_pd: number | null;
+          momentum_6m: number | null; reason: string
+        }>
+        count: number
+      }>('/strategy/short-candidates')
+      return { available: true as const, ...res }
+    } catch { return { available: false as const, candidates: [], count: 0 } }
+  }),
+
   // Sector rotation matrix
   sectorRotation: premiumProcedure.query(async () => {
     try {

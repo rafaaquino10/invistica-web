@@ -53,6 +53,20 @@ export const dividendsRouter = router({
       return ctx.repos.dividends.getHistory(input.ticker, input.years)
     }),
 
+  // ─── Backend Dividend Projections (IQ-Cognit) ─────────────
+  backendProjections: publicProcedure.query(async () => {
+    try {
+      const res = await investiq.get<{
+        projections: Array<{ month: string; projected_value: number; tickers: string[] }>
+        top_payers: Array<{ ticker: string; yield: number; amount: number }>
+      }>('/dividends/projections')
+      return {
+        projections: res.projections ?? [],
+        topPayers: res.top_payers ?? [],
+      }
+    } catch { return { projections: [], topPayers: [] } }
+  }),
+
   // ─── Dividend Trap Risk (Backend IQ-Cognit) ───────────────
   trapRisk: publicProcedure
     .input(z.object({ ticker: z.string() }))

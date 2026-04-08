@@ -9,6 +9,7 @@ import { formatCurrency } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { tabTransition } from '@/lib/utils/motion'
+import { DividendProjectionsPanel } from '@/components/dividends/projections-panel'
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
@@ -160,6 +161,9 @@ export default function DividendsPage() {
           )}
         </div>
       </ScrollableStrip>
+
+      {/* Backend Dividend Projections */}
+      <DividendProjectionsPanel />
 
       {/* Monthly Evolution + Heatmap Calendar — side by side */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
