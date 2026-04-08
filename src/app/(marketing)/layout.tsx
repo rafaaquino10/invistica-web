@@ -181,7 +181,7 @@ export default function MarketingLayout({
             <div className="lg:ml-auto text-[var(--text-caption)] text-[var(--text-3)] flex flex-col sm:flex-row gap-1 sm:gap-3">
               <span>© 2026 InvestIQ</span>
               <span className="hidden sm:inline">·</span>
-              <Disclaimer variant="inline" />
+              <span className="text-[10px] text-[var(--text-3)]">Informações para fins educacionais. Não constitui recomendação de investimento.</span>
             </div>
           </div>
         </div>

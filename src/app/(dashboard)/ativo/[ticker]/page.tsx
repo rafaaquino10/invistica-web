@@ -603,7 +603,6 @@ export default function AssetDetailPage() {
         <CommentSection ticker={ticker} />
       </div>
 
-      <Disclaimer variant="inline" className="block mt-1" />
     </div>
   )
 }

@@ -95,10 +95,7 @@ export default function CarteirasInteligentesPage() {
 
         {/* CVM Disclaimer */}
         <div className="mt-6 p-4 rounded-lg bg-[var(--surface-2)]/50 border border-[var(--border-1)]">
-          <p className="text-[var(--text-caption)] text-[var(--text-3)] leading-relaxed">
-            {CVM_DISCLAIMER}
-          </p>
-          <Disclaimer variant="inline" className="block mt-1" />
+          <Disclaimer variant="footer" />
         </div>
       </PaywallGate>
     </div>

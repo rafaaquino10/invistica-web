@@ -904,11 +904,6 @@ export default function ExplorerPage() {
         )}
       </div>
 
-      {/* Rodapé metodológico */}
-      <p className="text-[var(--text-caption)] text-[var(--text-3)] px-1">
-        IQ-Cognit™ — Score = Valuation 25% + Qualidade 25% + Risco 20% + Dividendos 15% + Crescimento 15% · Fonte: CVM + brapi · 100% ações brasileiras
-      </p>
-      <Disclaimer variant="inline" className="px-1 mt-1 block" />
     </div>
   )
 }

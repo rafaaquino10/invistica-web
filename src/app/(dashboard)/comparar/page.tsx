@@ -556,7 +556,6 @@ export default function ComparisonPage() {
           })}
         </>
       )}
-      <Disclaimer variant="inline" className="block mt-4" />
     </div>
   )
 }
