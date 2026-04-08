@@ -175,7 +175,9 @@ export async function fetchAssetsFromInvestIQ(): Promise<AssetData[]> {
   // Sync cluster names from backend (background, non-blocking)
   getClusterNames().catch(() => {})
 
-  const { results: screener } = await investiq.get<{ results: ScreenerAsset[] }>('/scores/screener')
+  const { results: screener } = await investiq.get<{ results: ScreenerAsset[] }>('/scores/screener', {
+    params: { limit: 1000 },
+  })
   if (!screener?.length) return []
 
   // Fetch quotes in parallel (batches of 10 to avoid overwhelming)

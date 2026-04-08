@@ -24,9 +24,9 @@ export function TickerTape() {
     pageSize: 50,
     sortBy: 'scoreTotal',
     sortOrder: 'desc',
-  })
+  }, { staleTime: 5 * 60 * 1000 })
 
-  const { data: economy } = trpc.economy.indicators.useQuery()
+  const { data: economy } = trpc.economy.indicators.useQuery(undefined, { staleTime: 5 * 60 * 1000 })
 
   const macroItems = useMemo<MacroItem[]>(() => {
     if (!economy) return []

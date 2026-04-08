@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
-import { prisma, isDemoMode } from '@/lib/prisma'
+import { prisma } from '@/lib/prisma'
+import { DEMO_USER } from '@/lib/auth/demo-user'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,8 +24,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // In demo mode, skip DB update
-    if (isDemoMode) {
+    // Skip DB update for demo user only
+    if (user.email === DEMO_USER.email) {
       return NextResponse.json({ ok: true })
     }
 

@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { investiq } from '@/lib/investiq-client'
 import { DEMO_PORTFOLIOS, generateDemoPerformance, generateDemoIntraday } from '@/lib/demo-data'
+import { DEMO_USER } from '@/lib/auth/demo-user'
+import { useAuth } from '@/hooks/use-auth'
 import { KpiStrip, type KpiItem } from '@/components/dashboard/kpi-strip'
 import { PositionsTable, type Position } from '@/components/dashboard/positions-table'
 import { OpportunitiesPanel, type Opportunity } from '@/components/dashboard/opportunities-panel'
@@ -30,6 +32,8 @@ interface TickerDetail { company_name: string; cluster_id: number; quote?: { clo
 // ─── Page ───────────────────────────────────────────────────
 
 export default function DashboardPage() {
+  const { user } = useAuth()
+  const isDemoUser = user?.email === DEMO_USER.email
   const [portfolio, setPortfolio] = useState<PortfolioData | null>(null)
   const [perfData, setPerfData] = useState<PerfPoint[]>([])
   const [intradayData, setIntradayData] = useState<IntradayPoint[]>([])
@@ -56,8 +60,8 @@ export default function DashboardPage() {
       setTopScores(top.status === 'fulfilled' ? (top.value.top || []) : [])
       setCatalysts(cats.status === 'fulfilled' ? (cats.value.catalysts || []) : [])
 
-      // If no real portfolio, use demo data
-      if (!pfData?.positions?.length) {
+      // Demo data ONLY for demo user — registered users see empty state
+      if (!pfData?.positions?.length && isDemoUser) {
         setIsDemo(true)
         const demo = DEMO_PORTFOLIOS[0]!
         const totalValue = demo.positions.reduce((s, p) => s + p.currentPrice * p.quantity, 0)
@@ -84,6 +88,11 @@ export default function DashboardPage() {
           result_pct: ((p.currentPrice - p.avgCost) / p.avgCost) * 100,
         }))
         setPositions(enriched)
+      } else if (!pfData?.positions?.length) {
+        // Registered user without portfolio — empty state, no demo
+        setPortfolio({ positions: [], total_value: 0, total_cost: 0 })
+        setLoading(false)
+        return
       } else {
         // Real portfolio — enrich with quotes
         const [perf, intra] = await Promise.allSettled([
