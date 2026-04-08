@@ -73,18 +73,16 @@ export default function DashboardPage() {
         setPerfData(generateDemoPerformance())
         setIntradayData(generateDemoIntraday())
 
-        // Build positions from demo
-        const enriched: Position[] = demo.positions.map(p => {
-          const changePct = (Math.random() - 0.4) * 4 // random daily change
-          return {
-            ticker: p.ticker, company_name: p.ticker,
-            iq_score: Math.floor(50 + Math.random() * 40),
-            current_price: p.currentPrice,
-            change_pct: changePct,
-            weight: (p.currentPrice * p.quantity) / totalValue,
-            result_pct: ((p.currentPrice - p.avgCost) / p.avgCost) * 100,
-          }
-        })
+        // Build positions from demo (fixed values, no randomness)
+        const DEMO_SCORES: Record<string, number> = { PETR4: 72, VALE3: 68, ITUB4: 75, WEGE3: 88, BBAS3: 70, ABEV3: 62, SUZB3: 65, RENT3: 55, BBSE3: 71, EQTL3: 78 }
+        const enriched: Position[] = demo.positions.map(p => ({
+          ticker: p.ticker, company_name: p.ticker,
+          iq_score: DEMO_SCORES[p.ticker] ?? 60,
+          current_price: p.currentPrice,
+          change_pct: ((p.currentPrice - p.avgCost) / p.avgCost) * 0.3, // deterministic small change
+          weight: (p.currentPrice * p.quantity) / totalValue,
+          result_pct: ((p.currentPrice - p.avgCost) / p.avgCost) * 100,
+        }))
         setPositions(enriched)
       } else {
         // Real portfolio — enrich with quotes

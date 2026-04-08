@@ -56,12 +56,13 @@ const primaryNav = [
 const moreMenuItems = [
   { label: 'Comparar', href: '/comparar', icon: '⬡' },
   { label: 'Dividendos', href: '/dividends', icon: '＄' },
-  { label: 'Metas', href: '/goals', icon: '✓' },
-  { label: 'Mapa de Mercado', href: '/mercado/mapa', icon: '▦' },
+  { label: 'Backtest', href: '/backtest-lab', icon: '⚡' },
+  { label: 'Modelo', href: '/analytics/modelo', icon: '📊' },
+  { label: 'Mapa', href: '/mercado/mapa', icon: '▦' },
   { label: 'Carteiras IQ', href: '/carteiras-inteligentes', icon: '💡' },
-  { label: 'Feedback Loop', href: '/analytics/feedback', icon: '📊' },
-  { label: 'Glossário', href: '/glossario', icon: '📖' },
-  { label: 'Configurações', href: '/settings', icon: '⚙' },
+  { label: 'Metas', href: '/goals', icon: '✓' },
+  { label: 'Glossario', href: '/glossario', icon: '📖' },
+  { label: 'Ajustes', href: '/settings', icon: '⚙' },
 ]
 
 export function BottomNav() {
