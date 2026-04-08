@@ -33,22 +33,15 @@ const LENS_TABS = [
 // ─── Sort Options ───────────────────────────────────────────
 
 const sortOptions = [
-  { value: 'scoreTotal', label: 'IQ Score' },
+  { value: 'scoreTotal', label: 'IQ-Score' },
   { value: 'ticker', label: 'Ticker' },
   { value: 'changePercent', label: 'Variação' },
   { value: 'marketCap', label: 'Mkt Cap' },
-  { value: 'dividendYield', label: 'DY' },
-  { value: 'peRatio', label: 'P/L' },
-  { value: 'roe', label: 'ROE' },
-  { value: 'roic', label: 'ROIC' },
   { value: 'scoreValuation', label: 'Valuation' },
   { value: 'scoreQuality', label: 'Qualidade' },
-  { value: 'scoreGrowth', label: 'Crescimento' },
-  { value: 'lensValue', label: 'Lente: Valor' },
-  { value: 'lensDividends', label: 'Lente: Dividendos' },
-  { value: 'lensGrowth', label: 'Lente: Crescimento' },
-  { value: 'lensDefensive', label: 'Lente: Defensiva' },
-  { value: 'lensMomentum', label: 'Lente: Momento' },
+  { value: 'scoreGrowth', label: 'Quanti' },
+  { value: 'scoreDividends', label: 'Dividendos' },
+  { value: 'dividendYield', label: 'DY Proj' },
 ]
 
 // ─── Colunas da tabela (dinâmicas) ──────────────────────────
@@ -58,21 +51,20 @@ const COLUMN_CONFIG: Record<ColumnKey, {
   label: string
   align: 'left' | 'right' | 'center'
   hide?: 'lg' | 'xl'
-  noSort?: boolean
-  glossaryKey?: string
 }> = {
-  close:                  { label: 'Preço',        align: 'right' },
-  changePercent:          { label: 'Dia',           align: 'center' },
-  marketCap:              { label: 'Mkt Cap',       align: 'right',   hide: 'xl', glossaryKey: 'Mkt Cap' },
-  sector:                 { label: 'Setor',         align: 'left',    hide: 'lg' },
-  scoreTotal:             { label: 'IQ Score',      align: 'center',  glossaryKey: 'IQ Score' },
-  peRatio:                { label: 'P/L',           align: 'right',   glossaryKey: 'P/L' },
-  pbRatio:                { label: 'P/VP',          align: 'right',   hide: 'xl', glossaryKey: 'P/VP' },
-  roe:                    { label: 'ROE',           align: 'right',   glossaryKey: 'ROE' },
-  dividendYield:          { label: 'DY',            align: 'right',   glossaryKey: 'DY' },
-  liq2meses:              { label: 'Liquidez',      align: 'right',   hide: 'xl', glossaryKey: 'Liquidez' },
-  lensMomentum:           { label: 'Momento',       align: 'center',  hide: 'lg', glossaryKey: 'Momento' },
-  crescimentoReceita5a:   { label: 'Cresc. 5a',     align: 'right',   hide: 'xl', glossaryKey: 'Cresc. Receita 5a' },
+  sector:           { label: 'Setor',       align: 'left',   hide: 'lg' },
+  close:            { label: 'Preço',       align: 'right' },
+  changePercent:    { label: 'Dia',          align: 'center' },
+  marketCap:        { label: 'Mkt Cap',      align: 'right',  hide: 'xl' },
+  scoreTotal:       { label: 'IQ-Score',     align: 'center' },
+  rating:           { label: 'Rating',       align: 'center' },
+  scoreQuali:       { label: 'Quali',        align: 'center', hide: 'xl' },
+  scoreQuanti:      { label: 'Quanti',       align: 'center', hide: 'xl' },
+  scoreValuation:   { label: 'Valuation',    align: 'center', hide: 'xl' },
+  fairValue:        { label: 'Fair Value',   align: 'right',  hide: 'lg' },
+  safetyMargin:     { label: 'Margem',       align: 'right',  hide: 'lg' },
+  dyProj:           { label: 'DY Proj',      align: 'right' },
+  dividendSafety:   { label: 'Safety',       align: 'center', hide: 'lg' },
 }
 
 // ─── Page ───────────────────────────────────────────────────
@@ -673,12 +665,7 @@ export default function ExplorerPage() {
                   )
                 })}
 
-                {/* Coluna Diagnóstico sempre visível quando scoreTotal está ativo */}
-                {visibleColumns.includes('scoreTotal') && (
-                  <th className="px-3 py-2.5 text-[var(--text-caption)] font-semibold uppercase tracking-wider text-[var(--text-3)] text-left whitespace-nowrap hidden lg:table-cell select-none">
-                    Diagnóstico
-                  </th>
-                )}
+                {/* Rating badge já é coluna própria */}
               </tr>
             </thead>
             <tbody>
@@ -691,20 +678,14 @@ export default function ExplorerPage() {
                   </tr>
                 ))
               ) : data?.assets.map((asset, rowIndex) => {
-                const lensKey = selectedLens as keyof NonNullable<typeof asset.lensScores>
-                const score = selectedLens === 'general'
-                  ? (asset.aqScore ? Number(asset.aqScore.scoreTotal) : null)
-                  : (asset.lensScores?.[lensKey] != null ? Number(asset.lensScores[lensKey]) : null)
+                const score = asset.aqScore ? Number(asset.aqScore.scoreTotal) : null
                 const q = asset.latestQuote
                 const closePrice = q?.close ? Number(q.close) : null
                 const changePct = q?.changePercent != null ? Number(q.changePercent) : null
-                const f = asset.fundamental
-                const dy = f?.dividendYield ? Number(f.dividendYield) : null
-                const pe = f?.peRatio ? Number(f.peRatio) : null
-                const pb = f?.pbRatio ? Number(f.pbRatio) : null
-                const roe = f?.roe ? Number(f.roe) : null
-                const liq = f?.liq2meses ? Number(f.liq2meses) : null
-                const crescimento = f?.crescimentoReceita5a ? Number(f.crescimentoReceita5a) : null
+                const aq = asset.aqScore
+                const val = (asset as any).valuation
+                const ratingLabel = (asset as any).ratingLabel ?? (asset as any).rating ?? null
+                const dy = asset.fundamental?.dividendYield ? Number(asset.fundamental.dividendYield) : null
 
                 return (
                   <tr
@@ -732,11 +713,17 @@ export default function ExplorerPage() {
                     {/* Colunas dinâmicas */}
                     {visibleColumns.map((colKey) => {
                       switch (colKey) {
+                        case 'sector':
+                          return (
+                            <td key={colKey} className="px-3 py-3 hidden lg:table-cell">
+                              <span className="text-[var(--text-small)] text-[var(--text-2)]">{asset.sector}</span>
+                            </td>
+                          )
                         case 'close':
                           return (
                             <td key={colKey} className="px-3 py-3 text-right">
                               <span className="font-mono text-[var(--text-small)] text-[var(--text-1)]">
-                                {closePrice != null ? `R$ ${closePrice.toFixed(2)}` : '—'}
+                                {closePrice != null && closePrice > 0 ? `R$ ${closePrice.toFixed(2)}` : '—'}
                               </span>
                             </td>
                           )
@@ -793,96 +780,108 @@ export default function ExplorerPage() {
                             </td>
                           )
 
-                        case 'peRatio':
+                        case 'rating': {
+                          const RATING_COLORS: Record<string, string> = {
+                            'STRONG_BUY': 'text-teal bg-teal/10 border-teal/20',
+                            'BUY': 'text-teal bg-teal/10 border-teal/20',
+                            'HOLD': 'text-amber bg-amber/10 border-amber/20',
+                            'REDUCE': 'text-red bg-red/10 border-red/20',
+                            'AVOID': 'text-red bg-red/10 border-red/20',
+                          }
+                          const rKey = (asset as any).rating ?? ''
+                          const rColor = RATING_COLORS[rKey] ?? 'text-[var(--text-3)] bg-[var(--surface-2)]'
                           return (
-                            <td key={colKey} className={cn('px-3 py-3 text-right font-mono text-[var(--text-small)]',
-                              pe !== null && pe > 0 && pe < 10 ? 'text-teal' : pe !== null && pe > 25 ? 'text-amber' : 'text-[var(--text-2)]'
-                            )}>
-                              {pe !== null && pe > 0 && pe < 500 ? pe.toFixed(1) : '—'}
-                            </td>
-                          )
-
-                        case 'pbRatio':
-                          return (
-                            <td key={colKey} className={cn('px-3 py-3 text-right font-mono text-[var(--text-small)] hidden xl:table-cell',
-                              pb !== null && pb > 0 && pb < 1.5 ? 'text-teal' : pb !== null && pb > 4 ? 'text-amber' : 'text-[var(--text-2)]'
-                            )}>
-                              {pb !== null && pb > 0 ? pb.toFixed(2) : '—'}
-                            </td>
-                          )
-
-                        case 'roe':
-                          return (
-                            <td key={colKey} className={cn('px-3 py-3 text-right font-mono text-[var(--text-small)]',
-                              roe !== null && roe >= 20 ? 'text-teal' : roe !== null && roe > 0 && roe < 8 ? 'text-amber' : 'text-[var(--text-2)]'
-                            )}>
-                              {roe !== null && roe > 0 ? `${roe.toFixed(1)}%` : '—'}
-                            </td>
-                          )
-
-                        case 'dividendYield':
-                          return (
-                            <td key={colKey} className={cn('px-3 py-3 text-right font-mono text-[var(--text-small)]',
-                              dy !== null && dy >= 6 ? 'text-teal font-semibold' : dy !== null && dy > 0 && dy < 2 ? 'text-amber' : 'text-[var(--text-2)]'
-                            )}>
-                              {dy !== null && dy > 0 ? `${dy.toFixed(1)}%` : '—'}
-                            </td>
-                          )
-
-                        case 'liq2meses':
-                          return (
-                            <td key={colKey} className="px-3 py-3 text-right font-mono text-[var(--text-small)] text-[var(--text-2)] hidden xl:table-cell">
-                              {liq !== null && liq > 0 ? formatMarketCap(liq) : '—'}
-                            </td>
-                          )
-
-                        case 'lensMomentum': {
-                          const mom = asset.lensScores?.momentum != null ? Number(asset.lensScores.momentum) : null
-                          const label = mom != null && mom >= 65 ? 'BULL' : mom != null && mom < 35 ? 'BEAR' : 'NEUTRO'
-                          const color = mom != null && mom >= 65
-                            ? 'text-[var(--pos)] bg-[var(--pos)]/10'
-                            : mom != null && mom < 35
-                              ? 'text-[var(--neg)] bg-[var(--neg)]/10'
-                              : 'text-amber bg-amber/10'
-                          return (
-                            <td key={colKey} className="px-3 py-3 hidden lg:table-cell">
-                              {mom == null || mom === 0
-                                ? <span className="text-[var(--text-small)] text-[var(--text-3)] text-center block">—</span>
-                                : (
-                                  <div className="flex justify-center">
-                                    <span className={cn('text-[var(--text-caption)] font-mono font-bold px-1.5 py-0.5 rounded', color)}>{label}</span>
-                                  </div>
-                                )
-                              }
+                            <td key={colKey} className="px-3 py-3">
+                              {ratingLabel ? (
+                                <div className="flex justify-center">
+                                  <span className={cn('text-[10px] font-bold px-2 py-0.5 rounded border', rColor)}>
+                                    {ratingLabel}
+                                  </span>
+                                </div>
+                              ) : <span className="text-[var(--text-small)] text-[var(--text-3)] text-center block">—</span>}
                             </td>
                           )
                         }
 
-                        case 'crescimentoReceita5a':
+                        case 'scoreQuali': {
+                          const v = aq?.scoreQuality != null ? Number(aq.scoreQuality) : null
                           return (
-                            <td key={colKey} className={cn('px-3 py-3 text-right font-mono text-[var(--text-small)] hidden xl:table-cell',
-                              crescimento !== null && crescimento >= 10 ? 'text-teal' : crescimento !== null && crescimento < 0 ? 'text-[var(--neg)]' : 'text-[var(--text-2)]'
+                            <td key={colKey} className={cn('px-3 py-3 text-center font-mono text-[var(--text-small)] hidden xl:table-cell',
+                              v != null && v >= 70 ? 'text-teal' : v != null && v >= 40 ? 'text-amber' : v != null ? 'text-red' : 'text-[var(--text-3)]'
                             )}>
-                              {crescimento !== null ? `${crescimento.toFixed(1)}%` : '—'}
+                              {v != null ? v.toFixed(0) : '—'}
                             </td>
                           )
+                        }
+
+                        case 'scoreQuanti': {
+                          const v = aq?.scoreGrowth != null ? Number(aq.scoreGrowth) : null
+                          return (
+                            <td key={colKey} className={cn('px-3 py-3 text-center font-mono text-[var(--text-small)] hidden xl:table-cell',
+                              v != null && v >= 70 ? 'text-teal' : v != null && v >= 40 ? 'text-amber' : v != null ? 'text-red' : 'text-[var(--text-3)]'
+                            )}>
+                              {v != null ? v.toFixed(0) : '—'}
+                            </td>
+                          )
+                        }
+
+                        case 'scoreValuation': {
+                          const v = aq?.scoreValuation != null ? Number(aq.scoreValuation) : null
+                          return (
+                            <td key={colKey} className={cn('px-3 py-3 text-center font-mono text-[var(--text-small)] hidden xl:table-cell',
+                              v != null && v >= 70 ? 'text-teal' : v != null && v >= 40 ? 'text-amber' : v != null ? 'text-red' : 'text-[var(--text-3)]'
+                            )}>
+                              {v != null ? v.toFixed(0) : '—'}
+                            </td>
+                          )
+                        }
+
+                        case 'fairValue': {
+                          const fv = val?.fairValueFinal != null ? Number(val.fairValueFinal) : null
+                          return (
+                            <td key={colKey} className="px-3 py-3 text-right font-mono text-[var(--text-small)] text-[var(--text-2)] hidden lg:table-cell">
+                              {fv != null && fv > 0 ? `R$ ${fv.toFixed(2)}` : '—'}
+                            </td>
+                          )
+                        }
+
+                        case 'safetyMargin': {
+                          const sm = val?.safetyMargin != null ? Number(val.safetyMargin) * 100 : null
+                          return (
+                            <td key={colKey} className={cn('px-3 py-3 text-right font-mono text-[var(--text-small)] hidden lg:table-cell',
+                              sm != null && sm > 20 ? 'text-teal' : sm != null && sm > 0 ? 'text-amber' : sm != null ? 'text-red' : 'text-[var(--text-3)]'
+                            )}>
+                              {sm != null ? `${sm.toFixed(1)}%` : '—'}
+                            </td>
+                          )
+                        }
+
+                        case 'dyProj':
+                          return (
+                            <td key={colKey} className={cn('px-3 py-3 text-right font-mono text-[var(--text-small)]',
+                              dy != null && dy >= 6 ? 'text-teal font-semibold' : dy != null && dy > 0 ? 'text-[var(--text-2)]' : 'text-[var(--text-3)]'
+                            )}>
+                              {dy != null && dy > 0 ? `${dy.toFixed(1)}%` : '—'}
+                            </td>
+                          )
+
+                        case 'dividendSafety': {
+                          const ds = aq?.scoreDividends != null ? Number(aq.scoreDividends) : null
+                          return (
+                            <td key={colKey} className={cn('px-3 py-3 text-center font-mono text-[var(--text-small)] hidden lg:table-cell',
+                              ds != null && ds >= 70 ? 'text-teal' : ds != null && ds >= 40 ? 'text-amber' : ds != null ? 'text-red' : 'text-[var(--text-3)]'
+                            )}>
+                              {ds != null && ds > 0 ? ds.toFixed(0) : '—'}
+                            </td>
+                          )
+                        }
 
                         default:
                           return null
                       }
                     })}
 
-                    {/* Diagnóstico — exibido quando scoreTotal está visível */}
-                    {visibleColumns.includes('scoreTotal') && (
-                      <td className="px-3 py-3 hidden lg:table-cell">
-                        {score && score > 0 ? (() => {
-                          const badge = getScoreBadge(score)
-                          return (
-                            <SemaphoreBadge label={badge.label} color={badge.color} size="sm" />
-                          )
-                        })() : <span className="text-[var(--text-small)] text-[var(--text-3)]">—</span>}
-                      </td>
-                    )}
+                    {/* Rating já é coluna própria — diagnóstico removido */}
                   </tr>
                 )
               })}

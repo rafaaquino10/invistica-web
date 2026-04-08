@@ -2,31 +2,33 @@
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
-// Colunas disponíveis no Explorer
+// Colunas IQ-Cognit — alinhadas com o propósito da plataforma
 export const ALL_COLUMNS = [
-  { key: 'close', label: 'Preço' },
-  { key: 'changePercent', label: 'Variação (Dia)' },
-  { key: 'marketCap', label: 'Mkt Cap' },
   { key: 'sector', label: 'Setor' },
-  { key: 'scoreTotal', label: 'IQ Score' },
-  { key: 'peRatio', label: 'P/L' },
-  { key: 'pbRatio', label: 'P/VP' },
-  { key: 'roe', label: 'ROE' },
-  { key: 'dividendYield', label: 'Div. Yield' },
-  { key: 'liq2meses', label: 'Liquidez' },
-  { key: 'lensMomentum', label: 'Momento' },
-  { key: 'crescimentoReceita5a', label: 'Cresc. 5a' },
+  { key: 'close', label: 'Preço' },
+  { key: 'changePercent', label: 'Dia' },
+  { key: 'marketCap', label: 'Mkt Cap' },
+  { key: 'scoreTotal', label: 'IQ-Score' },
+  { key: 'rating', label: 'Rating' },
+  { key: 'scoreQuali', label: 'Quali' },
+  { key: 'scoreQuanti', label: 'Quanti' },
+  { key: 'scoreValuation', label: 'Valuation' },
+  { key: 'fairValue', label: 'Fair Value' },
+  { key: 'safetyMargin', label: 'Margem' },
+  { key: 'dyProj', label: 'DY Proj' },
+  { key: 'dividendSafety', label: 'Safety' },
 ] as const
 
 export type ColumnKey = (typeof ALL_COLUMNS)[number]['key']
 
-// Colunas padrão (8 principais)
+// Colunas padrão — as mais relevantes para o investidor
 export const DEFAULT_COLUMNS: ColumnKey[] = [
-  'close', 'changePercent', 'marketCap', 'scoreTotal',
-  'peRatio', 'roe', 'dividendYield', 'lensMomentum',
+  'sector', 'close', 'changePercent', 'scoreTotal', 'rating',
+  'scoreQuali', 'scoreQuanti', 'scoreValuation',
+  'fairValue', 'safetyMargin', 'dyProj', 'dividendSafety',
 ]
 
-const STORAGE_KEY = 'aq-explorer-columns'
+const STORAGE_KEY = 'aq-explorer-columns-v2'
 
 export function useColumnSelector() {
   const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>(() => {
@@ -35,7 +37,6 @@ export function useColumnSelector() {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
         const parsed = JSON.parse(saved) as ColumnKey[]
-        // Validar colunas salvas
         const valid = parsed.filter(k => ALL_COLUMNS.some(c => c.key === k))
         if (valid.length > 0) return valid
       }
@@ -79,13 +80,8 @@ export function ColumnSelector({ visibleColumns, onChange }: ColumnSelectorProps
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
           <div className="absolute right-0 top-full mt-2 z-50 w-52 bg-[var(--surface-1)] border border-[var(--border-1)]/30 rounded-[var(--radius)] shadow-[var(--shadow-overlay)] p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-semibold text-[var(--text-2)] uppercase tracking-wider">Colunas visíveis</span>
-              <button
-                onClick={() => onChange(DEFAULT_COLUMNS)}
-                className="text-xs text-[var(--accent-1)] hover:underline"
-              >
-                Padrão
-              </button>
+              <span className="text-xs font-semibold text-[var(--text-2)] uppercase tracking-wider">Colunas</span>
+              <button onClick={() => onChange(DEFAULT_COLUMNS)} className="text-xs text-[var(--accent-1)] hover:underline">Padrão</button>
             </div>
             <div className="space-y-1">
               {ALL_COLUMNS.map(col => (
@@ -94,11 +90,8 @@ export function ColumnSelector({ visibleColumns, onChange }: ColumnSelectorProps
                     type="checkbox"
                     checked={visibleColumns.includes(col.key)}
                     onChange={(e) => {
-                      if (e.target.checked) {
-                        onChange([...visibleColumns, col.key])
-                      } else {
-                        onChange(visibleColumns.filter(k => k !== col.key))
-                      }
+                      if (e.target.checked) onChange([...visibleColumns, col.key])
+                      else onChange(visibleColumns.filter(k => k !== col.key))
                     }}
                     className="rounded"
                   />
