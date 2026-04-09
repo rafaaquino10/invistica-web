@@ -28,6 +28,16 @@ export const DEFAULT_COLUMNS: ColumnKey[] = [
   'fairValue', 'safetyMargin', 'dyProj', 'dividendSafety',
 ]
 
+// Colunas recomendadas por lens — ativadas automaticamente ao trocar lens
+export const LENS_COLUMNS: Record<string, ColumnKey[]> = {
+  general: ['sector', 'close', 'changePercent', 'scoreTotal', 'rating', 'scoreQuali', 'scoreQuanti', 'scoreValuation', 'fairValue', 'safetyMargin', 'dyProj', 'dividendSafety'],
+  value: ['sector', 'close', 'scoreTotal', 'scoreValuation', 'fairValue', 'safetyMargin', 'dyProj'],
+  dividends: ['sector', 'close', 'scoreTotal', 'dyProj', 'dividendSafety', 'safetyMargin'],
+  growth: ['sector', 'close', 'scoreTotal', 'scoreQuanti', 'scoreQuali', 'scoreValuation'],
+  defensive: ['sector', 'close', 'scoreTotal', 'dividendSafety', 'safetyMargin', 'dyProj'],
+  momentum: ['sector', 'close', 'changePercent', 'scoreTotal', 'scoreQuanti', 'marketCap'],
+}
+
 const STORAGE_KEY = 'aq-explorer-columns-v2'
 
 export function useColumnSelector() {

@@ -211,35 +211,45 @@ export default function AssetDetailPage() {
   // Qualitativo subNotas from scoreBreakdown
   const qualitativoSubNotas = scoreBreakdownData?.pilares?.qualitativo?.subNotas ?? []
 
+  const [activeTab, setActiveTab] = useState<'visao' | 'valuation' | 'dividendos' | 'score' | 'noticias'>('visao')
+
+  const assetTabs = [
+    { id: 'visao' as const, label: 'Visao Geral' },
+    { id: 'valuation' as const, label: 'Valuation' },
+    { id: 'dividendos' as const, label: 'Dividendos' },
+    { id: 'score' as const, label: 'Score' },
+    { id: 'noticias' as const, label: 'Noticias' },
+  ]
+
   return (
-    <div className="space-y-6">
-      {/* ─── 1. Breadcrumb ──────────────────────────────────── */}
+    <div className="space-y-4">
+      {/* ─── Breadcrumb ──────────────────────────────────── */}
       <div className="flex items-center gap-2 text-[var(--text-small)] text-[var(--text-2)]">
         <Link href="/explorer" className="hover:text-[var(--accent-1)] transition-colors">Explorer</Link>
         <span>/</span>
         <span className="font-medium text-[var(--text-1)]">{ticker}</span>
       </div>
 
-      {/* ─── 1. Hero: Identidade + Preço + Score + Diagnóstico ──────── */}
+      {/* ─── Hero: Identidade + Preco + Score ──────────────── */}
       <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-0 md:justify-between">
         <div className="flex items-center gap-4">
           <AssetLogo ticker={ticker} logo={asset.logo} size={48} />
           <div>
             <div className="flex items-center gap-2.5 flex-wrap">
               <h1 className="font-mono font-bold text-[var(--text-heading)]">{ticker}</h1>
-              <Badge variant="primary" size="sm">{asset.sector ?? 'Ação'}</Badge>
+              <Badge variant="primary" size="sm">{asset.sector ?? 'Acao'}</Badge>
               {classif && (
-                <span className={cn('text-[12px] font-semibold px-2 py-0.5 rounded-full border', {
+                <span className={cn('text-[var(--text-caption)] font-semibold px-2 py-0.5 rounded-full border', {
                   'bg-[var(--accent-1)]/10 border-[var(--accent-1)]/20 text-[var(--accent-1)]': classif.label === 'Excepcional',
-                  'bg-teal/10 border-teal/20 text-teal': classif.label === 'Saudável',
-                  'bg-amber/10 border-amber/20 text-amber': classif.label === 'Atenção',
-                  'bg-red/10 border-red/20 text-red': classif.label === 'Crítico',
+                  'bg-teal/10 border-teal/20 text-teal': classif.label === 'Saudavel',
+                  'bg-amber/10 border-amber/20 text-amber': classif.label === 'Atencao',
+                  'bg-red/10 border-red/20 text-red': classif.label === 'Critico',
                 })}>
                   {classif.label}
                 </span>
               )}
             </div>
-            <p className="text-[13px] font-sans text-[var(--text-2)] mt-0.5">{asset.name}</p>
+            <p className="text-[var(--text-small)] font-sans text-[var(--text-2)] mt-0.5">{asset.name}</p>
           </div>
         </div>
         <div className="flex items-start gap-4 sm:gap-6 flex-wrap">
@@ -253,11 +263,7 @@ export default function AssetDetailPage() {
           </div>
           {score !== null && (
             <div className="pl-0 sm:pl-6 border-l-0 sm:border-l border-[var(--border-1)] flex items-center gap-3 mt-2 sm:mt-0">
-              <ScoreGauge
-                score={score}
-                classification={scoreBreakdownData?.classificacao}
-                size={64}
-              />
+              <ScoreGauge score={score} classification={scoreBreakdownData?.classificacao} size={64} />
               {scoreBreakdownData?.metadata?.confiabilidade != null && (
                 <div className="text-[var(--text-caption)] text-[var(--text-3)]">
                   <span className="block font-mono text-[10px]">Conf. {scoreBreakdownData.metadata.confiabilidade}%</span>
@@ -268,343 +274,293 @@ export default function AssetDetailPage() {
         </div>
       </div>
 
-      {/* ─── 2. Sobre a Empresa ──────────────────────────────── */}
-      <CompanySection
-        companyProfile={companyProfile}
-        sector={asset.sector}
-        name={asset.name}
-        marketCap={asset.marketCap}
-      />
-
-      {/* ─── 3. Cotação ──────────────────────────────────────── */}
-      <div>
-        <h2 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Cotação</h2>
-        <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm overflow-hidden bg-[var(--surface-1)]">
-          <div className="p-3 relative">
-            {isChartLoading && priceData.length === 0 && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--surface-1)]/80 rounded-lg">
-                <div className="w-5 h-5 border-2 border-[var(--accent-1)] border-t-transparent rounded-full animate-spin" />
-              </div>
-            )}
-            {priceData.length > 1 ? (
-              <TVChart
-                data={priceData}
-                height={typeof window !== 'undefined' && window.innerWidth < 640 ? 280 : 360}
-                range={chartRange}
-                onRangeChange={setChartRange}
-                showVolume
-              />
-            ) : !isChartLoading ? (
-              <div className="h-[300px] flex flex-col items-center justify-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-3)]">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-                </svg>
-                <p className="text-[var(--text-small)] font-medium text-[var(--text-2)]">Cotação temporariamente indisponível</p>
-                <p className="text-[var(--text-caption)] text-[var(--text-3)]">Dados de {ticker} ainda não disponíveis. Tente outro período.</p>
-                {currentPrice != null && (
-                  <p className="text-[var(--text-small)] font-mono text-[var(--text-1)]">
-                    Último preço: {formatCurrency(currentPrice)}
-                    {currentChange != null && (
-                      <span className={cn('ml-2', currentChange >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
-                        {currentChange >= 0 ? '+' : ''}{currentChange.toFixed(2)}%
-                      </span>
-                    )}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div className="h-[300px] flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-[var(--accent-1)] border-t-transparent rounded-full animate-spin" />
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ─── 4. Visão Geral — Pilares + Forças/Riscos ────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Coluna esquerda: Pilares IQ Score */}
-        <div>
-          <h2 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Pilares IQ-Cognit</h2>
-          <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
-            <div className="space-y-4">
-              {([
-                { label: 'Valuation', value: pillars?.valuation ?? 0 },
-                { label: 'Qualidade', value: pillars?.quality ?? 0 },
-                { label: 'Risco', value: pillars?.risk ?? 0 },
-                { label: 'Dividendos', value: pillars?.dividends ?? 0 },
-                { label: 'Crescimento', value: pillars?.growth ?? 0 },
-                { label: 'Qualitativo', value: pillars?.qualitativo ?? 0 },
-              ] as const).map(p => (
-                <div key={p.label} className="flex items-center gap-2.5">
-                  <MetricTooltip term={p.label} position="right">
-                    <span className="w-[82px] text-[var(--text-small)] text-[var(--text-2)] flex-shrink-0 cursor-help border-b border-dotted border-[var(--border-2)]">{p.label}</span>
-                  </MetricTooltip>
-                  <div className="flex-1 h-[7px] bg-[var(--surface-2)] rounded-full overflow-hidden">
-                    <div
-                      className={cn('h-full rounded-full transition-all', pillarBarColor(p.value))}
-                      style={{ width: `${p.value}%` }}
-                    />
-                  </div>
-                  <span className={cn('w-8 text-[14px] font-mono font-bold text-right', pillarTextColor(p.value))}>
-                    {p.value.toFixed(0)}
-                  </span>
-                </div>
-              ))}
+      {/* ─── Cotacao ──────────────────────────────────────── */}
+      <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm overflow-hidden bg-[var(--surface-1)]">
+        <div className="p-3 relative">
+          {isChartLoading && priceData.length === 0 && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--surface-1)]/80 rounded-lg">
+              <div className="w-5 h-5 border-2 border-[var(--accent-1)] border-t-transparent rounded-full animate-spin" />
             </div>
-            {/* Mini diagnóstico (one-liner do narrative) */}
-            {narrative?.oneLiner && (
-              <p className="mt-3 pt-3 border-t border-[var(--border-1)] text-[12px] text-[var(--text-2)] leading-relaxed">
-                {narrative.oneLiner}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Coluna direita: Forças & Riscos */}
-        <div>
-          <h2 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Forças & Riscos</h2>
-          {drivers && (drivers.positive.length > 0 || drivers.negative.length > 0) ? (
-            <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
-              <DriversList positive={drivers.positive} negative={drivers.negative} />
+          )}
+          {priceData.length > 1 ? (
+            <TVChart
+              data={priceData}
+              height={typeof window !== 'undefined' && window.innerWidth < 640 ? 260 : 320}
+              range={chartRange}
+              onRangeChange={setChartRange}
+              showVolume
+            />
+          ) : !isChartLoading ? (
+            <div className="h-[260px] flex flex-col items-center justify-center gap-2">
+              <p className="text-[var(--text-small)] text-[var(--text-3)]">Cotacao indisponivel</p>
+              {currentPrice != null && (
+                <p className="text-[var(--text-small)] font-mono text-[var(--text-1)]">
+                  Ultimo: {formatCurrency(currentPrice)}
+                  {currentChange != null && (
+                    <span className={cn('ml-2', currentChange >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
+                      {currentChange >= 0 ? '+' : ''}{currentChange.toFixed(2)}%
+                    </span>
+                  )}
+                </p>
+              )}
             </div>
           ) : (
-            <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4 flex items-center justify-center h-full min-h-[200px]">
-              <p className="text-[var(--text-small)] text-[var(--text-3)]">Dados insuficientes para análise de drivers</p>
+            <div className="h-[260px] flex items-center justify-center">
+              <div className="w-5 h-5 border-2 border-[var(--accent-1)] border-t-transparent rounded-full animate-spin" />
             </div>
           )}
         </div>
       </div>
 
-      {/* ─── 5. Análise Qualitativa — 5 cards ────────────────── */}
-      {qualitativoSubNotas.length > 0 && (
-        <QualitativeCards subNotas={qualitativoSubNotas} />
-      )}
-
-      {/* ─── 6. Indicadores Fundamentais — Grid organizado ───── */}
-      {f && (
-        <IndicatorGrid
-          fundamentals={{
-            peRatio: f.peRatio,
-            pbRatio: f.pbRatio,
-            psr: f.psr,
-            pEbit: f.pEbit,
-            evEbit: f.evEbit,
-            evEbitda: f.evEbitda,
-            roe: f.roe,
-            roic: f.roic,
-            margemEbit: f.margemEbit ?? f.ebitdaMargin,
-            margemLiquida: f.margemLiquida ?? f.netMargin,
-            liquidezCorrente: f.liquidezCorrente,
-            divBrutPatrim: f.divBrutPatrim,
-            pCapGiro: f.pCapGiro,
-            pAtivCircLiq: f.pAtivCircLiq,
-            pAtivo: f.pAtivo,
-            patrimLiquido: f.patrimLiquido,
-            dividendYield: f.dividendYield,
-            netDebtEbitda: f.netDebtEbitda,
-            crescimentoReceita5a: f.crescimentoReceita5a,
-            liq2meses: f.liq2meses,
-          }}
-          payout={f.payout}
-          crescimentoLucro5a={f.crescimentoLucro5a}
-        />
-      )}
-
-      {/* ─── 6b. DCF & Sensibilidade (Elite) ────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <PaywallGate requiredPlan="elite" feature="Valuation DCF" showPreview>
-          <DCFCard ticker={ticker} />
-        </PaywallGate>
-        <PaywallGate requiredPlan="elite" feature="Sensibilidade Macro" showPreview>
-          <SensitivityCard ticker={ticker} />
-        </PaywallGate>
-      </div>
-
-      {/* ─── 6b2. Monte Carlo — Distribuição P25/P50/P75 (Elite) ─ */}
-      {backendValuation && currentPrice && (
-        <PaywallGate requiredPlan="elite" feature="Monte Carlo Valuation" showPreview>
-          <MonteCarloCard
-            ticker={ticker}
-            currentPrice={currentPrice}
-            valuation={backendValuation}
-          />
-        </PaywallGate>
-      )}
-
-      {/* ─── 6b3. Tese de Investimento (Pro) ─────────────────── */}
-      {thesis && (
-        <PaywallGate requiredPlan="pro" feature="Tese de Investimento" showPreview>
-          <ThesisCard ticker={ticker} thesis={thesis} dividendData={dividendData} />
-        </PaywallGate>
-      )}
-
-      {/* ─── 6c. Score X-Ray (Elite) ─────────────────────────── */}
-      {scoreBreakdownData && (
-        <PaywallGate requiredPlan="elite" feature="Detalhamento do Score" showPreview>
-          <ScoreXRay breakdown={scoreBreakdownData} ticker={ticker} />
-        </PaywallGate>
-      )}
-
-      {/* ─── 6c2. Evidence Explorer — Mapa de Conviccao (Elite) ── */}
-      <PaywallGate requiredPlan="elite" feature="Evidence Explorer" showPreview>
-        <EvidenceExplorer ticker={ticker} />
-      </PaywallGate>
-
-      {/* ─── 6c3. Risk Lab — Métricas de Risco (Elite) ────────── */}
-      {riskMetrics && (
-        <PaywallGate requiredPlan="elite" feature="Risk Lab" showPreview>
-          <RiskLab riskMetrics={riskMetrics} ticker={ticker} />
-        </PaywallGate>
-      )}
-
-      {/* ─── 6d. Histórico IQ Score ──────────────────────────── */}
-      {score !== null && (
-        <div>
-          <h2 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Histórico IQ-Cognit</h2>
-          <ScoreEvolutionChart ticker={ticker} />
-        </div>
-      )}
-
-      {/* ─── 6e. Research Note / Diagnóstico (Pro) ───────────── */}
-      {narrative && (
-        <PaywallGate requiredPlan="pro" feature="Diagnóstico aQ" showPreview>
-          <div>
-            <h2 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Diagnóstico aQ</h2>
-            <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4 space-y-4">
-              {narrative.highlights.strengths.length > 0 && (
-                <div>
-                  <h3 className="text-[11px] font-semibold text-teal uppercase tracking-wider mb-2">Forças</h3>
-                  <ul className="space-y-1.5">
-                    {narrative.highlights.strengths.map((s, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[13px] text-[var(--text-1)] leading-relaxed">
-                        <span className="mt-1.5 w-1 h-1 rounded-full bg-teal flex-shrink-0" />
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+      {/* ─── Tab Bar (sticky) ──────────────────────────────── */}
+      <div className="sticky top-14 z-20 bg-[var(--bg)] border-b border-[var(--border-1)] -mx-3 px-3 md:-mx-5 md:px-5 lg:-mx-6 lg:px-6">
+        <div className="flex gap-0 overflow-x-auto">
+          {assetTabs.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                'px-4 py-2.5 text-[var(--text-small)] font-medium whitespace-nowrap border-b-2 transition-colors',
+                activeTab === tab.id
+                  ? 'border-[var(--accent-1)] text-[var(--accent-1)]'
+                  : 'border-transparent text-[var(--text-3)] hover:text-[var(--text-1)]'
               )}
-              {narrative.highlights.weaknesses.length > 0 && (
-                <div>
-                  <h3 className="text-[11px] font-semibold text-red uppercase tracking-wider mb-2">Fraquezas</h3>
-                  <ul className="space-y-1.5">
-                    {narrative.highlights.weaknesses.map((s, i) => (
-                      <li key={i} className="flex items-start gap-2 text-[13px] text-[var(--text-1)] leading-relaxed">
-                        <span className="mt-1.5 w-1 h-1 rounded-full bg-red flex-shrink-0" />
-                        {s}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {narrative.researchNote && (
-                <ResearchNote
-                  researchNote={narrative.researchNote}
-                  highlights={narrative.highlights}
-                />
-              )}
-            </div>
-          </div>
-        </PaywallGate>
-      )}
-
-      {/* ─── 6f. Dossier Qualitativo — Research Report (Elite) ── */}
-      <PaywallGate requiredPlan="elite" feature="Dossier Qualitativo" showPreview>
-        <DossierReport ticker={ticker} />
-      </PaywallGate>
-
-      {/* ─── 7. Dividendos ───────────────────────────────────── */}
-      <div>
-        <h2 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Dividendos</h2>
-        <DividendSummary
-          dividends={asset.dividends}
-          dividendYield={f?.dividendYield}
-        />
-        {f && (
-          <div className="mt-3 border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
-            <h3 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Métricas de Rendimento</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-3">
-              <KV label="Dividend Yield" value={fmtP(f.dividendYield)} highlight />
-              <KV label="Dív.Líq/EBITDA" value={fmtR(f.netDebtEbitda, 2)} />
-              <KV label="Liq. 2 meses" value={fmtBig(f.liq2meses)} />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* ─── 7b. Risco de Armadilha de Dividendos (Pro) ─────── */}
-      <PaywallGate requiredPlan="pro" feature="Dividend Trap Risk" showPreview>
-        <DividendTrapCard ticker={ticker} />
-      </PaywallGate>
-
-      {/* ─── 8. Pares do Setor ───────────────────────────────── */}
-      {sectorPeers.length > 0 && (
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider">
-              Pares do Setor — {asset.sector ?? 'Outros'}
-            </h2>
-            <Link
-              href={`/comparar?tickers=${[ticker, ...sectorPeers.slice(0, 3).map((p: any) => p.ticker)].join(',')}`}
-              className="text-[11px] text-[var(--accent-1)] hover:underline"
             >
-              Comparar →
-            </Link>
-          </div>
-          <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] divide-y divide-[var(--border-1)]/10">
-            {sectorPeers.map((peer: any) => (
-              <div key={peer.ticker} className="flex items-center justify-between p-3 hover:bg-[var(--surface-2)] transition-colors">
-                <div className="flex items-center gap-3">
-                  <Link
-                    href={`/ativo/${peer.ticker}`}
-                    className="font-mono text-[var(--text-small)] font-bold text-[var(--accent-1)] hover:underline"
-                  >
-                    {peer.ticker}
-                  </Link>
-                  {peer.name && (
-                    <span className="text-[13px] text-[var(--text-2)] truncate max-w-[200px]">{peer.name}</span>
-                  )}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* ─── TAB: Visao Geral ──────────────────────────────── */}
+      {activeTab === 'visao' && (
+        <div className="space-y-5">
+          {/* Pilares + Forcas/Riscos */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div>
+              <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Pilares IQ-Cognit</h2>
+              <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
+                <div className="space-y-4">
+                  {([
+                    { label: 'Valuation', value: pillars?.valuation ?? 0 },
+                    { label: 'Qualidade', value: pillars?.quality ?? 0 },
+                    { label: 'Risco', value: pillars?.risk ?? 0 },
+                    { label: 'Dividendos', value: pillars?.dividends ?? 0 },
+                    { label: 'Crescimento', value: pillars?.growth ?? 0 },
+                    { label: 'Qualitativo', value: pillars?.qualitativo ?? 0 },
+                  ] as const).map(p => (
+                    <div key={p.label} className="flex items-center gap-2.5">
+                      <MetricTooltip term={p.label} position="right">
+                        <span className="w-[82px] text-[var(--text-small)] text-[var(--text-2)] flex-shrink-0 cursor-help border-b border-dotted border-[var(--border-2)]">{p.label}</span>
+                      </MetricTooltip>
+                      <div className="flex-1 h-[7px] bg-[var(--surface-2)] rounded-full overflow-hidden">
+                        <div className={cn('h-full rounded-full transition-all', pillarBarColor(p.value))} style={{ width: `${p.value}%` }} />
+                      </div>
+                      <span className={cn('w-8 text-[var(--text-base)] font-mono font-bold text-right', pillarTextColor(p.value))}>
+                        {p.value.toFixed(0)}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex items-center gap-4">
-                  {peer.aqScore != null && (
-                    <ScoreBadge score={Number(peer.aqScore)} size="sm" />
-                  )}
-                  {peer.price != null && (
-                    <span className="font-mono text-[13px] text-[var(--text-1)]">
-                      {formatCurrency(Number(peer.price))}
-                    </span>
-                  )}
-                  {peer.changePercent != null && (
-                    <ChangeIndicator value={Number(peer.changePercent)} size="sm" />
-                  )}
-                </div>
+                {narrative?.oneLiner && (
+                  <p className="mt-3 pt-3 border-t border-[var(--border-1)] text-[var(--text-small)] text-[var(--text-2)] leading-relaxed">
+                    {narrative.oneLiner}
+                  </p>
+                )}
               </div>
-            ))}
+            </div>
+
+            <div>
+              <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Forcas & Riscos</h2>
+              {drivers && (drivers.positive.length > 0 || drivers.negative.length > 0) ? (
+                <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
+                  <DriversList positive={drivers.positive} negative={drivers.negative} />
+                </div>
+              ) : (
+                <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4 flex items-center justify-center h-full min-h-[200px]">
+                  <p className="text-[var(--text-small)] text-[var(--text-3)]">Dados insuficientes para analise de drivers</p>
+                </div>
+              )}
+            </div>
           </div>
+
+          {/* Sobre a Empresa */}
+          <CompanySection companyProfile={companyProfile} sector={asset.sector} name={asset.name} marketCap={asset.marketCap} />
+
+          {/* Pares do Setor */}
+          {sectorPeers.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider">
+                  Pares do Setor — {asset.sector ?? 'Outros'}
+                </h2>
+                <Link href={`/comparar?tickers=${[ticker, ...sectorPeers.slice(0, 3).map((p: any) => p.ticker)].join(',')}`} className="text-[var(--text-caption)] text-[var(--accent-1)] hover:underline">
+                  Comparar
+                </Link>
+              </div>
+              <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] divide-y divide-[var(--border-1)]/10">
+                {sectorPeers.map((peer: any) => (
+                  <div key={peer.ticker} className="flex items-center justify-between p-3 hover:bg-[var(--surface-2)] transition-colors">
+                    <div className="flex items-center gap-3">
+                      <Link href={`/ativo/${peer.ticker}`} className="font-mono text-[var(--text-small)] font-bold text-[var(--accent-1)] hover:underline">{peer.ticker}</Link>
+                      {peer.name && <span className="text-[var(--text-small)] text-[var(--text-2)] truncate max-w-[200px]">{peer.name}</span>}
+                    </div>
+                    <div className="flex items-center gap-4">
+                      {peer.aqScore != null && <ScoreBadge score={Number(peer.aqScore)} size="sm" />}
+                      {peer.price != null && <span className="font-mono text-[var(--text-small)] text-[var(--text-1)]">{formatCurrency(Number(peer.price))}</span>}
+                      {peer.changePercent != null && <ChangeIndicator value={Number(peer.changePercent)} size="sm" />}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
-      {/* ─── 9. Notícias & RI ────────────────────────────────── */}
-      <div className="space-y-5">
-        <NewsSection ticker={ticker} companyName={asset.name} />
-        <EventCalendar
-          riEvents={[
-            ...(intelligence?.relevantFacts ?? intelligence?.news?.filter((n: any) => n.tickers?.includes(ticker)).slice(0, 10) ?? []),
-            ...(catalystsData?.catalysts ?? []).map((c: any, i: number) => ({
-              id: `cat-${i}`, type: c.type, title: c.title, date: c.date, documentUrl: c.url ?? null,
-            })),
-          ]}
-          dividends={asset.dividends}
-          ticker={ticker}
-        />
-      </div>
+      {/* ─── TAB: Valuation ────────────────────────────────── */}
+      {activeTab === 'valuation' && (
+        <div className="space-y-5">
+          {f && (
+            <IndicatorGrid
+              fundamentals={{
+                peRatio: f.peRatio, pbRatio: f.pbRatio, psr: f.psr, pEbit: f.pEbit,
+                evEbit: f.evEbit, evEbitda: f.evEbitda, roe: f.roe, roic: f.roic,
+                margemEbit: f.margemEbit ?? f.ebitdaMargin, margemLiquida: f.margemLiquida ?? f.netMargin,
+                liquidezCorrente: f.liquidezCorrente, divBrutPatrim: f.divBrutPatrim,
+                pCapGiro: f.pCapGiro, pAtivCircLiq: f.pAtivCircLiq, pAtivo: f.pAtivo,
+                patrimLiquido: f.patrimLiquido, dividendYield: f.dividendYield,
+                netDebtEbitda: f.netDebtEbitda, crescimentoReceita5a: f.crescimentoReceita5a, liq2meses: f.liq2meses,
+              }}
+              payout={f.payout}
+              crescimentoLucro5a={f.crescimentoLucro5a}
+            />
+          )}
 
-      {/* ─── 10. Comunidade ──────────────────────────────────── */}
-      <div>
-        <h2 className="text-[11px] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Comunidade</h2>
-        <CommentSection ticker={ticker} />
-      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <PaywallGate requiredPlan="elite" feature="Valuation DCF" showPreview>
+              <DCFCard ticker={ticker} />
+            </PaywallGate>
+            <PaywallGate requiredPlan="elite" feature="Sensibilidade Macro" showPreview>
+              <SensitivityCard ticker={ticker} />
+            </PaywallGate>
+          </div>
+
+          {backendValuation && currentPrice && (
+            <PaywallGate requiredPlan="elite" feature="Monte Carlo Valuation" showPreview>
+              <MonteCarloCard ticker={ticker} currentPrice={currentPrice} valuation={backendValuation} />
+            </PaywallGate>
+          )}
+        </div>
+      )}
+
+      {/* ─── TAB: Dividendos ───────────────────────────────── */}
+      {activeTab === 'dividendos' && (
+        <div className="space-y-5">
+          <DividendSummary dividends={asset.dividends} dividendYield={f?.dividendYield} />
+          {f && (
+            <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
+              <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Metricas de Rendimento</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-3">
+                <KV label="Dividend Yield" value={fmtP(f.dividendYield)} highlight />
+                <KV label="Div.Liq/EBITDA" value={fmtR(f.netDebtEbitda, 2)} />
+                <KV label="Liq. 2 meses" value={fmtBig(f.liq2meses)} />
+              </div>
+            </div>
+          )}
+          <PaywallGate requiredPlan="pro" feature="Dividend Trap Risk" showPreview>
+            <DividendTrapCard ticker={ticker} />
+          </PaywallGate>
+        </div>
+      )}
+
+      {/* ─── TAB: Score ────────────────────────────────────── */}
+      {activeTab === 'score' && (
+        <div className="space-y-5">
+          {qualitativoSubNotas.length > 0 && <QualitativeCards subNotas={qualitativoSubNotas} />}
+
+          {scoreBreakdownData && (
+            <PaywallGate requiredPlan="elite" feature="Detalhamento do Score" showPreview>
+              <ScoreXRay breakdown={scoreBreakdownData} ticker={ticker} />
+            </PaywallGate>
+          )}
+
+          <PaywallGate requiredPlan="elite" feature="Evidence Explorer" showPreview>
+            <EvidenceExplorer ticker={ticker} />
+          </PaywallGate>
+
+          {riskMetrics && (
+            <PaywallGate requiredPlan="elite" feature="Risk Lab" showPreview>
+              <RiskLab riskMetrics={riskMetrics} ticker={ticker} />
+            </PaywallGate>
+          )}
+
+          {score !== null && <ScoreEvolutionChart ticker={ticker} />}
+
+          {thesis && (
+            <PaywallGate requiredPlan="pro" feature="Tese de Investimento" showPreview>
+              <ThesisCard ticker={ticker} thesis={thesis} dividendData={dividendData} />
+            </PaywallGate>
+          )}
+
+          {narrative && (
+            <PaywallGate requiredPlan="pro" feature="Diagnostico aQ" showPreview>
+              <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4 space-y-4">
+                {narrative.highlights.strengths.length > 0 && (
+                  <div>
+                    <h3 className="text-[var(--text-caption)] font-semibold text-teal uppercase tracking-wider mb-2">Forcas</h3>
+                    <ul className="space-y-1.5">
+                      {narrative.highlights.strengths.map((s, i) => (
+                        <li key={i} className="flex items-start gap-2 text-[var(--text-body)] text-[var(--text-1)] leading-relaxed">
+                          <span className="mt-1.5 w-1 h-1 rounded-full bg-teal flex-shrink-0" />{s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {narrative.highlights.weaknesses.length > 0 && (
+                  <div>
+                    <h3 className="text-[var(--text-caption)] font-semibold text-red uppercase tracking-wider mb-2">Fraquezas</h3>
+                    <ul className="space-y-1.5">
+                      {narrative.highlights.weaknesses.map((s, i) => (
+                        <li key={i} className="flex items-start gap-2 text-[var(--text-body)] text-[var(--text-1)] leading-relaxed">
+                          <span className="mt-1.5 w-1 h-1 rounded-full bg-red flex-shrink-0" />{s}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {narrative.researchNote && <ResearchNote researchNote={narrative.researchNote} highlights={narrative.highlights} />}
+              </div>
+            </PaywallGate>
+          )}
+
+          <PaywallGate requiredPlan="elite" feature="Dossier Qualitativo" showPreview>
+            <DossierReport ticker={ticker} />
+          </PaywallGate>
+        </div>
+      )}
+
+      {/* ─── TAB: Noticias ─────────────────────────────────── */}
+      {activeTab === 'noticias' && (
+        <div className="space-y-5">
+          <NewsSection ticker={ticker} companyName={asset.name} />
+          <EventCalendar
+            riEvents={[
+              ...(intelligence?.relevantFacts ?? intelligence?.news?.filter((n: any) => n.tickers?.includes(ticker)).slice(0, 10) ?? []),
+              ...(catalystsData?.catalysts ?? []).map((c: any, i: number) => ({
+                id: `cat-${i}`, type: c.type, title: c.title, date: c.date, documentUrl: c.url ?? null,
+              })),
+            ]}
+            dividends={asset.dividends}
+            ticker={ticker}
+          />
+          <div>
+            <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Comunidade</h2>
+            <CommentSection ticker={ticker} />
+          </div>
+        </div>
+      )}
 
     </div>
   )

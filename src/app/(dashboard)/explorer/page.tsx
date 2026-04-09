@@ -7,6 +7,7 @@ import {
   type ScreenerFiltersState,
   ColumnSelector,
   useColumnSelector,
+  LENS_COLUMNS,
   type ColumnKey,
 } from '@/components/screener'
 import { trpc } from '@/lib/trpc/provider'
@@ -51,20 +52,22 @@ const COLUMN_CONFIG: Record<ColumnKey, {
   label: string
   align: 'left' | 'right' | 'center'
   hide?: 'lg' | 'xl'
+  glossaryKey?: string
+  noSort?: boolean
 }> = {
-  sector:           { label: 'Setor',       align: 'left',   hide: 'lg' },
-  close:            { label: 'Preço',       align: 'right' },
+  sector:           { label: 'Setor',       align: 'left',   hide: 'lg', noSort: true },
+  close:            { label: 'Preco',       align: 'right' },
   changePercent:    { label: 'Dia',          align: 'center' },
-  marketCap:        { label: 'Mkt Cap',      align: 'right',  hide: 'xl' },
-  scoreTotal:       { label: 'IQ-Score',     align: 'center' },
-  rating:           { label: 'Rating',       align: 'center' },
-  scoreQuali:       { label: 'Quali',        align: 'center', hide: 'xl' },
-  scoreQuanti:      { label: 'Quanti',       align: 'center', hide: 'xl' },
-  scoreValuation:   { label: 'Valuation',    align: 'center', hide: 'xl' },
-  fairValue:        { label: 'Fair Value',   align: 'right',  hide: 'lg' },
-  safetyMargin:     { label: 'Margem',       align: 'right',  hide: 'lg' },
-  dyProj:           { label: 'DY Proj',      align: 'right' },
-  dividendSafety:   { label: 'Safety',       align: 'center', hide: 'lg' },
+  marketCap:        { label: 'Mkt Cap',      align: 'right',  hide: 'xl', glossaryKey: 'Mkt Cap' },
+  scoreTotal:       { label: 'IQ-Score',     align: 'center', glossaryKey: 'IQ Score' },
+  rating:           { label: 'Rating',       align: 'center', noSort: true },
+  scoreQuali:       { label: 'Quali',        align: 'center', hide: 'xl', glossaryKey: 'Qualitativo' },
+  scoreQuanti:      { label: 'Quanti',       align: 'center', hide: 'xl', glossaryKey: 'Qualidade' },
+  scoreValuation:   { label: 'Valuation',    align: 'center', hide: 'xl', glossaryKey: 'Valuation' },
+  fairValue:        { label: 'Fair Value',   align: 'right',  hide: 'lg', glossaryKey: 'Fair Value' },
+  safetyMargin:     { label: 'Margem',       align: 'right',  hide: 'lg', glossaryKey: 'Margem de Seguranca' },
+  dyProj:           { label: 'DY Proj',      align: 'right',  glossaryKey: 'DY' },
+  dividendSafety:   { label: 'Safety',       align: 'center', hide: 'lg', glossaryKey: 'Dividend Safety' },
 }
 
 // ─── Page ───────────────────────────────────────────────────
@@ -89,6 +92,14 @@ export default function ExplorerPage() {
 
   // Seletor de colunas visíveis (com persistência em localStorage)
   const { visibleColumns, setVisibleColumns } = useColumnSelector()
+
+  // Colunas dinamicas por lens — ao trocar lens, colunas ajustam automaticamente
+  useEffect(() => {
+    const lensCols = LENS_COLUMNS[selectedLens]
+    if (lensCols) {
+      setVisibleColumns(lensCols)
+    }
+  }, [selectedLens])
 
   useEffect(() => {
     if (sectorParam && !filters.sectors.includes(sectorParam)) {
