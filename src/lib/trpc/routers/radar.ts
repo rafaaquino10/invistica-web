@@ -14,7 +14,10 @@ import { generateExitAlerts } from '@/lib/smart-portfolios/exit-alerts'
 import type { UserPosition } from '@/lib/smart-portfolios/types'
 import { isDemoMode, DEMO_PORTFOLIOS } from '@/lib/demo-data'
 
-const alertTypeSchema = z.enum(['price_above', 'price_below', 'score_change', 'dividend'])
+const alertTypeSchema = z.enum([
+  'price_above', 'price_below', 'score_change', 'dividend',
+  'fair_value_reached', 'anti_panic', 'anti_fomo', 'smart_contribution',
+])
 
 // ─── Tipos do feed unificado ────────────────────────────────
 

@@ -673,4 +673,37 @@ export const assetsRouter = router({
       const note = await generateResearchNote(researchAsset, researchPeers, macro)
       return { note, generated: !!note }
     }),
+
+  // Institutional holders — top fundos que detêm o ativo (CVM)
+  getInstitutionalHolders: premiumProcedure
+    .input(z.object({ ticker: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        const data = await investiq.get<Array<{
+          fund_name: string
+          shares_held: number
+          market_value: number
+          reference_date: string
+        }>>(`/tickers/${input.ticker}/institutional`)
+        return { holders: data ?? [], available: true }
+      } catch {
+        return { holders: [], available: false }
+      }
+    }),
+
+  // Short interest — histórico de aluguel de ações
+  getShortInterest: premiumProcedure
+    .input(z.object({ ticker: z.string() }))
+    .query(async ({ input }) => {
+      try {
+        const data = await investiq.get<Array<{
+          reference_date: string
+          shares_lent: number
+          lending_rate: number
+        }>>(`/tickers/${input.ticker}/short-interest`)
+        return { history: data ?? [], available: true }
+      } catch {
+        return { history: [], available: false }
+      }
+    }),
 })

@@ -484,10 +484,14 @@ function AlertsTab({ onCreateClick }: { onCreateClick: () => void }) {
 
 function AlertRow({ alert, onToggle, onDelete }: { alert: any; onToggle: () => void; onDelete: () => void }) {
   const typeConfig: Record<string, { label: string }> = {
-    price_above: { label: 'Preço acima de' },
-    price_below: { label: 'Preço abaixo de' },
-    score_change: { label: 'Mudança no Score' },
+    price_above: { label: 'Preco acima de' },
+    price_below: { label: 'Preco abaixo de' },
+    score_change: { label: 'Mudanca no Score' },
     dividend: { label: 'Novo dividendo' },
+    fair_value_reached: { label: 'Fair Value atingido' },
+    anti_panic: { label: 'Anti-Panico' },
+    anti_fomo: { label: 'Anti-FOMO' },
+    smart_contribution: { label: 'Aporte Inteligente' },
   }
 
   const config = typeConfig[alert.type] ?? typeConfig['dividend']!
@@ -607,7 +611,7 @@ function HealthTab() {
 // ===========================================
 
 function CreateAlertModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [formData, setFormData] = useState({ ticker: '', type: 'price_below' as 'price_above' | 'price_below' | 'score_change' | 'dividend', threshold: '' })
+  const [formData, setFormData] = useState({ ticker: '', type: 'price_below' as 'price_above' | 'price_below' | 'score_change' | 'dividend' | 'fair_value_reached' | 'anti_panic' | 'anti_fomo' | 'smart_contribution', threshold: '' })
   const [selectedAsset, setSelectedAsset] = useState<any>(null)
 
   const utils = trpc.useUtils()
@@ -622,10 +626,14 @@ function CreateAlertModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
   }
 
   const alertTypes = [
-    { value: 'price_below', label: 'Preço abaixo de' },
-    { value: 'price_above', label: 'Preço acima de' },
-    { value: 'score_change', label: 'Mudança no Score' },
-    { value: 'dividend', label: 'Novo dividendo' },
+    { value: 'price_below', label: 'Preco abaixo de', desc: 'Avisa quando o preco cair abaixo do valor definido' },
+    { value: 'price_above', label: 'Preco acima de', desc: 'Avisa quando o preco subir acima do valor definido' },
+    { value: 'score_change', label: 'Mudanca no Score', desc: 'Avisa quando o IQ Score mudar significativamente' },
+    { value: 'dividend', label: 'Novo dividendo', desc: 'Avisa sobre ex-dates proximos' },
+    { value: 'fair_value_reached', label: 'Fair Value atingido', desc: 'Avisa quando o preco cruzar o valor justo estimado' },
+    { value: 'anti_panic', label: 'Anti-Panico', desc: 'Avisa quando o ativo cair mas os fundamentos estiverem intactos — oportunidade de compra' },
+    { value: 'anti_fomo', label: 'Anti-FOMO', desc: 'Avisa quando o ativo subir mas o score estiver deteriorando — sinal de cautela' },
+    { value: 'smart_contribution', label: 'Aporte Inteligente', desc: 'Sugestao mensal de rebalanceamento baseada no motor IQ-Cognit' },
   ]
 
   const needsThreshold = formData.type === 'price_above' || formData.type === 'price_below'
@@ -667,10 +675,11 @@ function CreateAlertModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
 
         <div>
           <label className="block text-[var(--text-small)] font-medium mb-2">Tipo de Alerta</label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2 max-h-[280px] overflow-y-auto">
             {alertTypes.map((type) => (
-              <button key={type.value} onClick={() => setFormData({ ...formData, type: type.value as any })} className={cn('p-3 rounded-[var(--radius)] border text-left text-[var(--text-small)] transition-all', formData.type === type.value ? 'border-[var(--accent-1)] bg-[var(--accent-1)]/5 font-medium' : 'border-[var(--border-1)] hover:border-[var(--text-2)]')}>
-                {type.label}
+              <button key={type.value} onClick={() => setFormData({ ...formData, type: type.value as any })} className={cn('p-3 rounded-[var(--radius)] border text-left transition-all', formData.type === type.value ? 'border-[var(--accent-1)] bg-[var(--accent-1)]/5' : 'border-[var(--border-1)] hover:border-[var(--text-2)]')}>
+                <span className={cn('text-[var(--text-small)] block', formData.type === type.value ? 'font-semibold text-[var(--accent-1)]' : 'text-[var(--text-1)]')}>{type.label}</span>
+                {type.desc && <span className="text-[var(--text-caption)] text-[var(--text-3)] block mt-0.5 leading-tight">{type.desc}</span>}
               </button>
             ))}
           </div>

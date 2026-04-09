@@ -6,8 +6,6 @@ import { Card, CardContent, Skeleton, Disclaimer } from '@/components/ui'
 import { trpc } from '@/lib/trpc/client'
 import { PaywallGate } from '@/components/billing'
 import { cn } from '@/lib/utils'
-import { StrategyHub } from '@/components/strategy/strategy-hub'
-
 type Tab = 'carteiras' | 'alocacao' | 'shorts'
 
 export default function EstrategiasPage() {

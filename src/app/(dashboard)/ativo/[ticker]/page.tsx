@@ -421,6 +421,52 @@ export default function AssetDetailPage() {
       {/* ─── TAB: Valuation ────────────────────────────────── */}
       {activeTab === 'valuation' && (
         <div className="space-y-5">
+          {/* Fair Value Strip */}
+          {backendValuation && currentPrice && (
+            <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
+              <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Fair Value vs Preco Atual</h3>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {[
+                  { label: 'DCF', value: backendValuation.fair_value_dcf },
+                  { label: 'Gordon', value: backendValuation.fair_value_gordon },
+                  { label: 'Multiplos', value: backendValuation.fair_value_mult },
+                  { label: 'MC P50', value: backendValuation.fair_value_final },
+                  { label: 'Preco Atual', value: currentPrice, isCurrent: true },
+                ].map(item => (
+                  <div key={item.label} className="text-center">
+                    <p className="text-[var(--text-caption)] text-[var(--text-3)] mb-0.5">{item.label}</p>
+                    <p className={cn(
+                      'text-[var(--text-base)] font-mono font-bold',
+                      (item as any).isCurrent ? 'text-[var(--text-1)]' :
+                      item.value && item.value > currentPrice ? 'text-teal' : 'text-red'
+                    )}>
+                      {item.value ? `R$${Number(item.value).toFixed(2)}` : '—'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {backendValuation.safety_margin != null && (
+                <div className="mt-3 pt-3 border-t border-[var(--border-1)] flex items-center gap-4">
+                  <span className="text-[var(--text-caption)] text-[var(--text-3)]">Margem de Seguranca</span>
+                  <span className={cn(
+                    'text-[var(--text-base)] font-mono font-bold',
+                    Number(backendValuation.safety_margin) > 0 ? 'text-teal' : 'text-red'
+                  )}>
+                    {Number(backendValuation.safety_margin) > 0 ? '+' : ''}{Number(backendValuation.safety_margin).toFixed(1)}%
+                  </span>
+                  {backendValuation.upside_prob != null && (
+                    <>
+                      <span className="text-[var(--text-caption)] text-[var(--text-3)]">Prob. Upside</span>
+                      <span className="text-[var(--text-base)] font-mono font-bold text-[var(--accent-1)]">
+                        {(Number(backendValuation.upside_prob) * 100).toFixed(0)}%
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           {f && (
             <IndicatorGrid
               fundamentals={{
@@ -451,6 +497,16 @@ export default function AssetDetailPage() {
               <MonteCarloCard ticker={ticker} currentPrice={currentPrice} valuation={backendValuation} />
             </PaywallGate>
           )}
+
+          {/* Institutional Holders & Short Interest */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <PaywallGate requiredPlan="pro" feature="Holders Institucionais" showPreview>
+              <InstitutionalHoldersCard ticker={ticker} />
+            </PaywallGate>
+            <PaywallGate requiredPlan="pro" feature="Short Interest" showPreview>
+              <ShortInterestCard ticker={ticker} />
+            </PaywallGate>
+          </div>
         </div>
       )}
 
@@ -644,6 +700,90 @@ function KV({ label, value, highlight }: { label: string; value: string; highlig
       <div className={cn('text-[15px] font-bold font-mono leading-tight', highlight && value !== '—' && 'text-[var(--pos)]')}>
         {value}
       </div>
+    </div>
+  )
+}
+
+// ─── Institutional Holders Card ───────────────────────────────
+function InstitutionalHoldersCard({ ticker }: { ticker: string }) {
+  const { data, isLoading } = trpc.assets.getInstitutionalHolders.useQuery(
+    { ticker },
+    { staleTime: 30 * 60 * 1000 }
+  )
+
+  if (isLoading) return <Skeleton className="h-[200px] rounded-[var(--radius)]" />
+  if (!data?.available || data.holders.length === 0) {
+    return (
+      <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
+        <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Holders Institucionais</h3>
+        <p className="text-[var(--text-small)] text-[var(--text-3)] text-center py-4">Dados indisponiveis</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
+      <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Top Holders Institucionais</h3>
+      <div className="space-y-2">
+        {data.holders.slice(0, 8).map((h, i) => (
+          <div key={i} className="flex items-center justify-between text-[var(--text-small)]">
+            <span className="text-[var(--text-2)] truncate max-w-[60%]">{h.fund_name}</span>
+            <span className="font-mono text-[var(--text-1)]">
+              {h.market_value >= 1e6 ? `R$${(h.market_value / 1e6).toFixed(1)}M` : `R$${h.market_value.toLocaleString('pt-BR')}`}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ─── Short Interest Card ──────────────────────────────────────
+function ShortInterestCard({ ticker }: { ticker: string }) {
+  const { data, isLoading } = trpc.assets.getShortInterest.useQuery(
+    { ticker },
+    { staleTime: 30 * 60 * 1000 }
+  )
+
+  if (isLoading) return <Skeleton className="h-[200px] rounded-[var(--radius)]" />
+  if (!data?.available || data.history.length === 0) {
+    return (
+      <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
+        <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Short Interest</h3>
+        <p className="text-[var(--text-small)] text-[var(--text-3)] text-center py-4">Dados indisponiveis</p>
+      </div>
+    )
+  }
+
+  const latest = data.history[0]
+  return (
+    <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
+      <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Short Interest</h3>
+      <div className="grid grid-cols-2 gap-4 mb-3">
+        <div>
+          <p className="text-[var(--text-caption)] text-[var(--text-3)]">Acoes Alugadas</p>
+          <p className="text-[var(--text-base)] font-mono font-bold text-[var(--text-1)]">
+            {latest.shares_lent >= 1e6 ? `${(latest.shares_lent / 1e6).toFixed(1)}M` : latest.shares_lent.toLocaleString('pt-BR')}
+          </p>
+        </div>
+        <div>
+          <p className="text-[var(--text-caption)] text-[var(--text-3)]">Taxa de Aluguel</p>
+          <p className={cn('text-[var(--text-base)] font-mono font-bold', latest.lending_rate > 5 ? 'text-red' : 'text-[var(--text-1)]')}>
+            {latest.lending_rate.toFixed(2)}% a.a.
+          </p>
+        </div>
+      </div>
+      {data.history.length > 1 && (
+        <div className="space-y-1 pt-2 border-t border-[var(--border-1)]">
+          <p className="text-[var(--text-caption)] text-[var(--text-3)] mb-1">Historico</p>
+          {data.history.slice(0, 5).map((h, i) => (
+            <div key={i} className="flex items-center justify-between text-[var(--text-caption)]">
+              <span className="text-[var(--text-3)] font-mono">{h.reference_date}</span>
+              <span className="font-mono text-[var(--text-2)]">{h.lending_rate.toFixed(2)}%</span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
