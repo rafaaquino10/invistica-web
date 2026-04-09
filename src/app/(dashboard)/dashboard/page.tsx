@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/use-auth'
 import { KpiStrip, type KpiItem } from '@/components/dashboard/kpi-strip'
 import { PositionsTable, type Position } from '@/components/dashboard/positions-table'
 import { OpportunitiesPanel, type Opportunity } from '@/components/dashboard/opportunities-panel'
-import { TVPerformanceChart, type PerformanceSeries } from '@/components/charts/tv-performance-chart'
+import { PerformanceChart, type PerformanceSeries } from '@/components/charts/performance-chart'
 import { StrategySignalsPanel } from '@/components/dashboard/strategy-signals-panel'
 import { SectorRotationMatrix } from '@/components/analytics/sector-rotation-matrix'
 import { DemoBanner } from '@/components/ui/data-unavailable'
@@ -324,7 +324,7 @@ export default function DashboardPage() {
             </span>
           </div>
           {perfSeries.length > 0 ? (
-            <TVPerformanceChart series={perfSeries} height={300} activePeriod={perfMonths} onPeriodChange={setPerfMonths} />
+            <PerformanceChart series={perfSeries} height={300} activePeriod={perfMonths} onPeriodChange={setPerfMonths} />
           ) : (
             <div className="flex items-center justify-center h-[300px] text-[var(--text-3)] text-[var(--text-caption)]">Dados indisponíveis</div>
           )}

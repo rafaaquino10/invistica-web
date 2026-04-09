@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { Badge, Button, Skeleton, ScoreBadge, ChangeIndicator, Disclaimer } from '@/components/ui'
-import { TVChart, type TimeRange } from '@/components/charts'
+import { PriceChart, type TimeRange } from '@/components/charts/price-chart'
 import { trpc } from '@/lib/trpc/provider'
 import { formatCurrency } from '@/lib/utils/formatters'
 import { cn } from '@/lib/utils'
@@ -282,7 +282,7 @@ export default function AssetDetailPage() {
             </div>
           )}
           {priceData.length > 1 ? (
-            <TVChart
+            <PriceChart
               data={priceData}
               height={typeof window !== 'undefined' && window.innerWidth < 640 ? 260 : 320}
               range={chartRange}

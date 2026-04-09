@@ -1,236 +1,87 @@
 'use client'
 
-import { useState } from 'react'
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-} from 'recharts'
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar } from 'recharts'
 import { cn } from '@/lib/utils'
-import { formatCurrency } from '@/lib/utils/formatters'
 
-interface PriceDataPoint {
+export type TimeRange = '1D' | '5D' | '1M' | '3M'
+
+interface ChartDataPoint {
   date: string | Date
   close: number
-  open?: number
-  high?: number
-  low?: number
   volume?: number
 }
 
-export type TimeRange = '1D' | '1S' | '1M' | '3M' | '6M' | '1A' | '5A'
-
 interface PriceChartProps {
-  data: PriceDataPoint[]
-  showVolume?: boolean
-  showGrid?: boolean
+  data: ChartDataPoint[]
   height?: number
-  className?: string
   range?: TimeRange
   onRangeChange?: (range: TimeRange) => void
+  showVolume?: boolean
+  className?: string
 }
 
-function formatTimeLabel(date: Date): string {
-  return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-}
+const RANGES: TimeRange[] = ['1D', '5D', '1M', '3M']
 
-function formatTooltipLabel(date: Date, range: TimeRange): string {
-  if (range === '1D') {
-    return formatTimeLabel(date)
-  }
-  if (range === '1S') {
-    return `${date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short' })} ${formatTimeLabel(date)}`
-  }
-  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
-}
+export function PriceChart({ data, height = 320, range = '1M', onRangeChange, showVolume = false, className }: PriceChartProps) {
+  if (!data.length) return null
 
-const CustomTooltip = ({ active, payload, range }: any) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload
-    if (!data.close || data.close <= 0) return null
+  const chartData = data.map(d => ({
+    date: d.date instanceof Date ? d.date.toISOString().split('T')[0] : String(d.date).split('T')[0],
+    close: Number(d.close),
+    volume: d.volume ? Number(d.volume) : 0,
+  }))
 
-    const isPositive = data.close >= (data.open ?? data.close)
-    const date = new Date(data.date)
+  const prices = chartData.map(d => d.close).filter(v => v > 0)
+  if (!prices.length) return null
+  const minPrice = Math.min(...prices) * 0.995
+  const maxPrice = Math.max(...prices) * 1.005
+  const isPositive = chartData.length >= 2 && chartData[chartData.length - 1]!.close >= chartData[0]!.close
+  const lineColor = isPositive ? 'var(--pos)' : 'var(--neg)'
 
-    return (
-      <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg px-4 py-3 shadow-[var(--shadow-overlay)]">
-        <p className="text-xs text-[var(--text-2)] mb-1">
-          {formatTooltipLabel(date, range)}
-        </p>
-        <p className={cn('text-lg font-bold font-mono', isPositive ? 'text-teal' : 'text-red')}>
-          {formatCurrency(data.close)}
-        </p>
-        {data.high && data.low && data.high > 0 && data.low > 0 && (
-          <div className="mt-2 text-xs text-[var(--text-2)] space-y-0.5">
-            <p>Máx: {formatCurrency(data.high)}</p>
-            <p>Mín: {formatCurrency(data.low)}</p>
-          </div>
-        )}
-        {data.volume != null && data.volume > 0 && (
-          <p className="mt-1 text-xs text-[var(--text-2)]">
-            Vol: {(data.volume / 1000000).toFixed(1)}M
-          </p>
-        )}
-      </div>
-    )
-  }
-  return null
-}
-
-export function PriceChart({
-  data,
-  showVolume = false,
-  showGrid = true,
-  height = 300,
-  className,
-  range: controlledRange,
-  onRangeChange,
-}: PriceChartProps) {
-  const [internalRange, setInternalRange] = useState<TimeRange>('1M')
-  const range = controlledRange ?? internalRange
-
-  const handleRangeChange = (r: TimeRange) => {
-    if (onRangeChange) {
-      onRangeChange(r)
-    } else {
-      setInternalRange(r)
-    }
+  const formatDate = (d: string) => {
+    const parts = d?.split('-')
+    if (parts?.length >= 3) return `${parts[2]}/${parts[1]}`
+    return d ?? ''
   }
 
-  // When externally controlled, use all data as-is (already fetched for the range)
-  // When uncontrolled, filter client-side
-  const rawData = onRangeChange ? data : (() => {
-    const now = new Date()
-    let daysBack = 30
-    switch (range) {
-      case '1D': daysBack = 1; break
-      case '1S': daysBack = 7; break
-      case '1M': daysBack = 30; break
-      case '3M': daysBack = 90; break
-      case '6M': daysBack = 180; break
-      case '1A': daysBack = 365; break
-      case '5A': daysBack = 365 * 5; break
-    }
-    const cutoff = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000)
-    return data.filter((d) => new Date(d.date) >= cutoff)
-  })()
-
-  // Filter out data points with 0 or missing close prices (intraday gaps)
-  const filteredData = rawData.filter((d) => d.close > 0)
-
-  // Calculate if trend is positive
-  const firstPrice = filteredData[0]?.close ?? 0
-  const lastPrice = filteredData[filteredData.length - 1]?.close ?? 0
-  const isPositive = lastPrice >= firstPrice
-
-  const chartColor = isPositive ? '#0D9488' : '#EF4444'
-  const gradientId = isPositive ? 'positiveGradient' : 'negativeGradient'
-
-  // Compute Y domain with small padding to avoid flat lines at extremes
-  const closes = filteredData.map(d => d.close)
-  const minPrice = closes.length ? Math.min(...closes) : 0
-  const maxPrice = closes.length ? Math.max(...closes) : 0
-  const pricePadding = (maxPrice - minPrice) * 0.05 || maxPrice * 0.02
-  const yDomain = [
-    Math.max(0, minPrice - pricePadding),
-    maxPrice + pricePadding,
-  ]
-
-  const ranges: TimeRange[] = ['1D', '1S', '1M', '3M', '6M', '1A', '5A']
+  const volumeHeight = showVolume ? 60 : 0
+  const priceHeight = height - volumeHeight - 40
 
   return (
-    <div className={cn('w-full', className)}>
-      {/* Range selector */}
-      <div className="flex gap-1 mb-4">
-        {ranges.map((r) => (
-          <button
-            key={r}
-            onClick={() => handleRangeChange(r)}
-            className={cn(
-              'px-3 py-1 text-xs font-medium rounded-lg transition-colors',
-              range === r
-                ? 'bg-[var(--accent-1)] text-white'
-                : 'bg-[var(--surface-2)] text-[var(--text-2)] hover:text-[var(--text-1)]'
-            )}
-          >
-            {r}
-          </button>
-        ))}
-      </div>
+    <div className={className}>
+      {onRangeChange && (
+        <div className="flex items-center gap-1 mb-2">
+          {RANGES.map(r => (
+            <button key={r} onClick={() => onRangeChange(r)} className={cn('px-2.5 py-1 text-[var(--text-caption)] font-semibold rounded-md transition-colors', range === r ? 'bg-[var(--accent-1)] text-white' : 'text-[var(--text-3)] hover:text-[var(--text-1)] hover:bg-[var(--surface-2)]')}>
+              {r}
+            </button>
+          ))}
+        </div>
+      )}
 
-      <div style={{ height }}>
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={filteredData}
-            margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
-          >
-            <defs>
-              <linearGradient id="positiveGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#0D9488" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#0D9488" stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="negativeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#EF4444" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
-              </linearGradient>
-            </defs>
+      <ResponsiveContainer width="100%" height={priceHeight}>
+        <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+          <defs>
+            <linearGradient id="priceGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={isPositive ? 'var(--pos)' : 'var(--neg)'} stopOpacity={0.12} />
+              <stop offset="100%" stopColor={isPositive ? 'var(--pos)' : 'var(--neg)'} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid stroke="var(--border-1)" strokeOpacity={0.2} strokeDasharray="3 3" vertical={false} />
+          <XAxis dataKey="date" tick={{ fontSize: 10, fill: 'var(--text-3)' }} axisLine={false} tickLine={false} tickFormatter={formatDate} interval="preserveStartEnd" />
+          <YAxis domain={[minPrice, maxPrice]} tick={{ fontSize: 10, fill: 'var(--text-3)' }} axisLine={false} tickLine={false} width={55} tickFormatter={(v: number) => `R$${Number(v).toFixed(2)}`} />
+          <Tooltip contentStyle={{ background: 'var(--surface-1)', border: '1px solid var(--border-1)', borderRadius: 'var(--radius-sm)', fontSize: '11px' }} labelFormatter={formatDate} formatter={(value: number) => [`R$ ${Number(value).toFixed(2)}`, 'Preço']} />
+          <Area type="monotone" dataKey="close" stroke={lineColor} strokeWidth={2} fill="url(#priceGrad)" dot={false} activeDot={{ r: 3, strokeWidth: 0 }} />
+        </AreaChart>
+      </ResponsiveContainer>
 
-            {showGrid && (
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="var(--border-1)"
-                vertical={false}
-              />
-            )}
-
-            <XAxis
-              dataKey="date"
-              tickFormatter={(value) => {
-                const date = new Date(value)
-                const MONTHS = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez']
-                if (range === '1D') return formatTimeLabel(date)
-                if (range === '1S' || range === '1M') return `${date.getDate()}/${MONTHS[date.getMonth()]}`
-                return `${MONTHS[date.getMonth()]}/${String(date.getFullYear()).slice(2)}`
-              }}
-              tick={{ fill: 'var(--text-2)', fontSize: 11 }}
-              tickLine={false}
-              axisLine={{ stroke: 'var(--border-1)' }}
-            />
-
-            <YAxis
-              domain={yDomain}
-              tickFormatter={(value) => `R$${value.toFixed(0)}`}
-              tick={{ fill: 'var(--text-2)', fontSize: 11 }}
-              tickLine={false}
-              axisLine={false}
-              width={60}
-            />
-
-            <Tooltip content={<CustomTooltip range={range} />} />
-
-            <ReferenceLine
-              y={firstPrice}
-              stroke="var(--text-2)"
-              strokeDasharray="3 3"
-              strokeOpacity={0.5}
-            />
-
-            <Area
-              type="monotone"
-              dataKey="close"
-              stroke={chartColor}
-              strokeWidth={2}
-              fill={`url(#${gradientId})`}
-              connectNulls
-            />
-          </AreaChart>
+      {showVolume && chartData.some(d => d.volume > 0) && (
+        <ResponsiveContainer width="100%" height={volumeHeight}>
+          <BarChart data={chartData} margin={{ top: 0, right: 10, left: 0, bottom: 0 }}>
+            <Bar dataKey="volume" fill="var(--accent-1)" fillOpacity={0.15} radius={[1, 1, 0, 0]} />
+          </BarChart>
         </ResponsiveContainer>
-      </div>
+      )}
     </div>
   )
 }
