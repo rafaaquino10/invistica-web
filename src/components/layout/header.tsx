@@ -139,7 +139,6 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
     { label: 'Radar de alertas', href: '/radar' },
     { label: 'Carteiras inteligentes', href: '/estrategias' },
     { label: 'Dividendos', href: '/dividends' },
-    { label: 'Lab IQ', href: '/lab' },
     { label: 'Configurações', href: '/settings' },
   ]
 

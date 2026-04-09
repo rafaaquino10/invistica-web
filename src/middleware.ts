@@ -5,7 +5,7 @@ import { updateSession } from '@/lib/supabase/middleware'
 const protectedRoutes = [
   '/dashboard', '/explorer', '/portfolio', '/dividends', '/radar',
   '/settings', '/onboarding', '/comparar', '/ativo',
-  '/mapa', '/estrategias', '/analytics', '/lab', '/backtest-lab',
+  '/mapa', '/estrategias',
 ]
 
 const authRoutes = ['/login', '/register']
