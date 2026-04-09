@@ -128,42 +128,17 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   })
 })
 
-// Middleware for premium users — verifies plan in database (source of truth)
-// This prevents stale JWTs from granting access after plan cancellation.
+// Middleware for premium users — acesso completo para todos os usuários autenticados
+// Planos pagos não estão implementados, todos têm acesso total.
 const enforceUserIsPremium = t.middleware(async ({ ctx, next }) => {
   if (!ctx.session?.user) {
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
 
-  // In demo mode, grant full elite access
-  if (ctx.isDemoMode) {
-    return next({
-      ctx: {
-        session: { ...ctx.session, user: ctx.session.user },
-        userPlan: 'elite' as const,
-      },
-    })
-  }
-
-  // Verify plan in database (not just JWT) to handle post-cancellation access
-  const dbUser = await ctx.prisma.user.findUnique({
-    where: { id: ctx.session.user.id },
-    select: { plan: true },
-  })
-
-  const dbPlan = (dbUser?.plan as 'free' | 'pro' | 'elite') ?? 'free'
-
-  if (dbPlan === 'free') {
-    throw new TRPCError({
-      code: 'FORBIDDEN',
-      message: 'Este recurso requer um plano Pro ou Elite. Faça upgrade em Configurações.',
-    })
-  }
-
   return next({
     ctx: {
-      session: { ...ctx.session, user: { ...ctx.session.user, plan: dbPlan } },
-      userPlan: dbPlan,
+      session: { ...ctx.session, user: ctx.session.user },
+      userPlan: 'elite' as const,
     },
   })
 })
