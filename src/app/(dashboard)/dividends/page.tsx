@@ -15,7 +15,7 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
 } from 'recharts'
 
-type TabType = 'calendar' | 'summary' | 'projections' | 'simulator'
+type TabType = 'calendar' | 'summary' | 'projections' | 'simulator' | 'radar'
 type PeriodType = '1M' | '3M' | '6M' | '1Y' | 'YTD' | 'ALL'
 
 const MONTHS_PT = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
@@ -114,10 +114,11 @@ export default function DividendsPage() {
   }, [calendar])
 
   const tabs: { key: TabType; label: string }[] = [
-    { key: 'calendar', label: 'Calendário' },
+    { key: 'calendar', label: 'Calendario' },
     { key: 'summary', label: 'Resumo' },
-    { key: 'projections', label: 'Projeções' },
+    { key: 'projections', label: 'Projecoes' },
     { key: 'simulator', label: 'Simulador' },
+    { key: 'radar', label: 'Radar DY' },
   ]
 
   return (
@@ -856,6 +857,114 @@ function PassiveIncomeSection({ monthlyAverage, totalProjected }: { monthlyAvera
             <div className="text-[var(--text-caption)] text-[var(--text-2)]">com DY de {dy}%</div>
           </div>
         </div>
+      </div>
+
+      {/* ─── Tab: Radar DY ───────────────────────────────────── */}
+      {activeTab === 'radar' && (
+        <DividendRadarTab />
+      )}
+    </div>
+  )
+}
+
+// ─── Dividend Radar Tab ─────────────────────────────────────
+function DividendRadarTab() {
+  const { data: screenerData, isLoading } = trpc.screener.query.useQuery({
+    sortBy: 'scoreDividends',
+    sortOrder: 'desc',
+    page: 1,
+    pageSize: 15,
+    minDividendYield: 4,
+  })
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3 animate-pulse">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="h-14 bg-[var(--surface-2)] rounded-[var(--radius)]" />
+        ))}
+      </div>
+    )
+  }
+
+  const assets = screenerData?.assets ?? []
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] p-4">
+        <h3 className="text-[var(--text-small)] font-semibold mb-1">Radar de Dividendos</h3>
+        <p className="text-[var(--text-caption)] text-[var(--text-2)] mb-4">
+          Top acoes por score de dividendos com DY projetado acima de 4%. Ordenado por qualidade do dividendo.
+        </p>
+
+        {assets.length === 0 ? (
+          <p className="text-[var(--text-small)] text-[var(--text-3)] text-center py-8">Nenhum ativo qualificado no momento</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-[var(--text-small)]">
+              <thead>
+                <tr className="border-b border-[var(--border-1)] text-[var(--text-caption)] text-[var(--text-3)]">
+                  <th className="text-left py-2.5 px-3 font-medium">Ativo</th>
+                  <th className="text-left py-2.5 px-2 font-medium">Setor</th>
+                  <th className="text-right py-2.5 px-2 font-medium">Preco</th>
+                  <th className="text-right py-2.5 px-2 font-medium">IQ Score</th>
+                  <th className="text-right py-2.5 px-2 font-medium">DY Proj</th>
+                  <th className="text-right py-2.5 px-2 font-medium">Safety</th>
+                  <th className="text-right py-2.5 px-3 font-medium">Margem</th>
+                </tr>
+              </thead>
+              <tbody>
+                {assets.map((asset: any) => {
+                  const score = asset.aqScore ? Number(asset.aqScore.scoreTotal) : null
+                  const dy = asset.aqScore?.dividendYieldProj ?? asset.fundamental?.dividendYield
+                  const safety = asset.aqScore?.dividendSafety
+                  const margin = asset.aqScore?.safetyMargin
+                  const price = asset.latestQuote?.close
+
+                  return (
+                    <tr key={asset.ticker} className="border-b border-[var(--border-1)] last:border-0 hover:bg-[var(--surface-2)]/30">
+                      <td className="py-2.5 px-3">
+                        <Link href={`/ativo/${asset.ticker}`} className="flex items-center gap-2 hover:text-[var(--accent-1)]">
+                          <AssetLogo ticker={asset.ticker} size={24} />
+                          <div>
+                            <span className="font-mono font-medium">{asset.ticker}</span>
+                            <span className="block text-[10px] text-[var(--text-3)] truncate max-w-[100px]">{asset.name}</span>
+                          </div>
+                        </Link>
+                      </td>
+                      <td className="py-2.5 px-2 text-[var(--text-caption)] text-[var(--text-2)]">{asset.sector ?? '—'}</td>
+                      <td className="py-2.5 px-2 text-right font-mono">{price ? `R$${Number(price).toFixed(2)}` : '—'}</td>
+                      <td className="py-2.5 px-2 text-right">
+                        {score != null && (
+                          <span className={cn('font-mono font-bold', score >= 70 ? 'text-teal' : score >= 40 ? 'text-amber' : 'text-red')}>
+                            {score.toFixed(0)}
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-2 text-right font-mono text-teal font-bold">
+                        {dy != null ? `${Number(dy).toFixed(1)}%` : '—'}
+                      </td>
+                      <td className="py-2.5 px-2 text-right">
+                        {safety != null && (
+                          <span className={cn('font-mono font-bold', Number(safety) >= 70 ? 'text-teal' : Number(safety) >= 40 ? 'text-amber' : 'text-red')}>
+                            {Number(safety).toFixed(0)}
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-2.5 px-3 text-right">
+                        {margin != null && (
+                          <span className={cn('font-mono', Number(margin) > 0 ? 'text-teal' : 'text-red')}>
+                            {Number(margin) > 0 ? '+' : ''}{Number(margin).toFixed(1)}%
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   )

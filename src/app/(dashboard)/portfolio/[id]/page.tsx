@@ -26,7 +26,7 @@ export default function PortfolioDetailPage() {
 
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false)
   const [isCSVImportOpen, setIsCSVImportOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'analytics' | 'dividendos'>('overview')
   const [transactionForm, setTransactionForm] = useState({
     ticker: '',
     type: 'BUY' as 'BUY' | 'SELL',
@@ -276,7 +276,8 @@ export default function PortfolioDetailPage() {
       {/* Tabs */}
       <div className="flex items-center gap-1 border-b border-[var(--border-1)]">
         {[
-          { id: 'overview' as const, label: 'Visão Geral' },
+          { id: 'overview' as const, label: 'Visao Geral' },
+          { id: 'dividendos' as const, label: 'Dividendos' },
           { id: 'analytics' as const, label: 'Analytics' },
         ].map(tab => (
           <button
@@ -296,6 +297,11 @@ export default function PortfolioDetailPage() {
           </button>
         ))}
       </div>
+
+      {/* ─── Tab: Dividendos ────────────────────────────────── */}
+      {activeTab === 'dividendos' && (
+        <PortfolioDividendsTab positions={portfolio.positions} totalValue={portfolio.summary.totalValue} />
+      )}
 
       {/* ─── Tab: Analytics ──────────────────────────────────── */}
       {activeTab === 'analytics' && (
@@ -647,6 +653,127 @@ export default function PortfolioDetailPage() {
         onImport={handleCSVImport}
         portfolioId={portfolioId}
       />
+    </div>
+  )
+}
+
+// ─── Portfolio Dividendos Tab ─────────────────────────────────
+function PortfolioDividendsTab({ positions, totalValue }: {
+  positions: Array<{ ticker: string; name: string; quantity: number; avgCost: number; currentPrice: number; currentValue: number; aqScore: number; gainLossPercent: number }>
+  totalValue: number
+}) {
+  const { data: calendarData } = trpc.dividends.calendar.useQuery(
+    { days: 60 },
+    { staleTime: 15 * 60 * 1000 }
+  )
+
+  const portfolioTickers = new Set(positions.map(p => p.ticker))
+  const relevantDividends = (calendarData ?? []).filter((d: any) => portfolioTickers.has(d.ticker))
+
+  // Calculate YoC (Yield on Cost) for each position
+  const positionsWithYoC = positions.map(pos => {
+    const annualDY = 0.06 // fallback 6% avg
+    const yoc = pos.avgCost > 0 ? (pos.currentPrice * annualDY / pos.avgCost) * 100 : 0
+    return { ...pos, yoc }
+  })
+
+  const totalDividendEstimate = positions.reduce((sum, pos) => {
+    return sum + pos.currentValue * 0.06 // rough 6% estimate
+  }, 0)
+
+  return (
+    <div className="space-y-5">
+      {/* KPIs */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
+          <p className="text-[var(--text-caption)] text-[var(--text-3)]">Renda Anual Est.</p>
+          <p className="text-[var(--text-subheading)] font-mono font-bold text-teal">{formatCurrency(totalDividendEstimate)}</p>
+        </div>
+        <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
+          <p className="text-[var(--text-caption)] text-[var(--text-3)]">Renda Mensal Est.</p>
+          <p className="text-[var(--text-subheading)] font-mono font-bold text-teal">{formatCurrency(totalDividendEstimate / 12)}</p>
+        </div>
+        <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
+          <p className="text-[var(--text-caption)] text-[var(--text-3)]">Proximos Ex-dates</p>
+          <p className="text-[var(--text-subheading)] font-mono font-bold">{relevantDividends.length}</p>
+        </div>
+        <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
+          <p className="text-[var(--text-caption)] text-[var(--text-3)]">Posicoes</p>
+          <p className="text-[var(--text-subheading)] font-mono font-bold">{positions.length}</p>
+        </div>
+      </div>
+
+      {/* YoC Table */}
+      <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)]">
+        <div className="px-4 py-3 border-b border-[var(--border-1)]">
+          <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider">Yield on Cost por Posicao</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[var(--text-small)]">
+            <thead>
+              <tr className="border-b border-[var(--border-1)] text-[var(--text-caption)] text-[var(--text-3)]">
+                <th className="text-left py-2.5 px-4 font-medium">Ativo</th>
+                <th className="text-right py-2.5 px-3 font-medium">PM</th>
+                <th className="text-right py-2.5 px-3 font-medium">Preco</th>
+                <th className="text-right py-2.5 px-3 font-medium">Valor</th>
+                <th className="text-right py-2.5 px-3 font-medium">Peso</th>
+                <th className="text-right py-2.5 px-4 font-medium">YoC Est.</th>
+              </tr>
+            </thead>
+            <tbody>
+              {positionsWithYoC.sort((a, b) => b.yoc - a.yoc).map(pos => (
+                <tr key={pos.ticker} className="border-b border-[var(--border-1)] last:border-0 hover:bg-[var(--surface-2)]/30">
+                  <td className="py-2.5 px-4">
+                    <Link href={`/ativo/${pos.ticker}`} className="flex items-center gap-2 hover:text-[var(--accent-1)]">
+                      <AssetLogo ticker={pos.ticker} size={24} />
+                      <div>
+                        <span className="font-mono font-medium">{pos.ticker}</span>
+                        <span className="block text-[10px] text-[var(--text-3)] truncate max-w-[100px]">{pos.name}</span>
+                      </div>
+                    </Link>
+                  </td>
+                  <td className="py-2.5 px-3 text-right font-mono text-[var(--text-2)]">{formatCurrency(pos.avgCost)}</td>
+                  <td className="py-2.5 px-3 text-right font-mono">{formatCurrency(pos.currentPrice)}</td>
+                  <td className="py-2.5 px-3 text-right font-mono">{formatCurrency(pos.currentValue)}</td>
+                  <td className="py-2.5 px-3 text-right font-mono text-[var(--text-2)]">
+                    {totalValue > 0 ? `${((pos.currentValue / totalValue) * 100).toFixed(1)}%` : '—'}
+                  </td>
+                  <td className="py-2.5 px-4 text-right">
+                    <span className={cn('font-mono font-bold', pos.yoc >= 8 ? 'text-teal' : pos.yoc >= 4 ? 'text-[var(--text-1)]' : 'text-[var(--text-3)]')}>
+                      {pos.yoc.toFixed(1)}%
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Upcoming dividends calendar */}
+      {relevantDividends.length > 0 && (
+        <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)]">
+          <div className="px-4 py-3 border-b border-[var(--border-1)]">
+            <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider">Proximos Dividendos (60 dias)</h3>
+          </div>
+          <div className="divide-y divide-[var(--border-1)]">
+            {relevantDividends.slice(0, 10).map((div: any, i: number) => (
+              <div key={i} className="flex items-center justify-between px-4 py-3">
+                <div className="flex items-center gap-3">
+                  <span className="font-mono font-bold text-[var(--text-small)]">{div.ticker}</span>
+                  <span className="text-[var(--text-caption)] text-[var(--text-3)]">{div.type ?? 'Dividendo'}</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="font-mono text-[var(--text-small)] text-teal font-bold">
+                    R${Number(div.value ?? 0).toFixed(2)}/acao
+                  </span>
+                  <span className="text-[var(--text-caption)] text-[var(--text-3)] font-mono">{div.ex_date}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

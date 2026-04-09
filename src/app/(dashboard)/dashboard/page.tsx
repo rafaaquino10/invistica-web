@@ -78,7 +78,7 @@ function SignalCard() {
     : null
 
   const volStress = riskData?.available
-    ? riskData.vol_stress_multiplier ?? 1
+    ? riskData.vol_stress ?? 1
     : null
 
   return (

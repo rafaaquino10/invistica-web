@@ -756,6 +756,7 @@ function ShortInterestCard({ ticker }: { ticker: string }) {
   }
 
   const latest = data.history[0]
+  if (!latest) return null
   return (
     <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
       <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Short Interest</h3>
