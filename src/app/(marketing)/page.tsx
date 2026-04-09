@@ -665,8 +665,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── Score Showcase — 3 Feature Cards ─────── */}
-      <section id="aq-score" className="relative py-20 md:py-28">
+      {/* ─── Motor IQ-Cognit — 3 Pilares ──────────── */}
+      <section id="motor" className="relative py-20 md:py-28 border-t border-[var(--border-1)]/20">
         <DiagonalLines />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -676,52 +676,40 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <p className="text-sm font-medium tracking-widest uppercase text-[var(--accent-1)] mb-4">IQ-Cognit™</p>
+            <p className="text-sm font-medium tracking-widest uppercase text-[var(--accent-1)] mb-4">IQ-Cognit v11 Adaptive Apex</p>
             <h2 className="text-3xl md:text-4xl font-bold leading-tight">
-              Motor proprietário com calibração setorial.
+              3 pilares. 9 setores. Regime-aware.
             </h2>
-            <p className="mt-3 text-[var(--text-2)] max-w-xl mx-auto">
-              20 indicadores, calibração por setor, detecção de regime, diagnóstico IA e monitoramento em tempo real.
+            <p className="mt-3 text-[var(--text-2)] max-w-2xl mx-auto">
+              Motor quantamental que combina scoring quantitativo, analise qualitativa por IA e valuation multi-modelo. Calibrado por setor, ajustado pelo regime macro, com gatekeeper de 3 camadas.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Card 1 — Score X-Ray */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Pilar 1 — Quantitativo */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-6"
             >
-              <div className="flex items-center gap-3 mb-5">
-                <Image
-                  src="https://icons.brapi.dev/icons/ITUB4.svg"
-                  alt="ITUB4" width={28} height={28}
-                  className="rounded-lg" unoptimized
-                />
-                <div>
-                  <h3 className="text-sm font-bold">ITUB4</h3>
-                  <p className="text-[10px] text-[var(--text-3)]">Itaú Unibanco</p>
-                </div>
-                <div className="ml-auto">
-                  <span className="text-xl font-bold font-mono text-[#00D4AA]">86</span>
-                </div>
+              <div className="w-10 h-10 rounded-lg bg-[var(--accent-1)]/10 flex items-center justify-center mb-4">
+                <span className="text-[var(--accent-1)] font-bold text-lg font-mono">Q</span>
               </div>
-
-              <div className="space-y-3">
-                <PillarBar name="Valuation" value={81} delay={0} />
-                <PillarBar name="Qualidade" value={100} delay={0.06} />
-                <PillarBar name="Risco" value={100} delay={0.12} />
-                <PillarBar name="Dividendos" value={84} delay={0.18} />
-                <PillarBar name="Crescimento" value={97} delay={0.24} />
-              </div>
-
-              <p className="mt-5 text-xs text-[var(--text-3)] leading-relaxed">
-                18 indicadores avaliados. Pesos calibrados por setor.
+              <h3 className="text-sm font-bold mb-2">Pilar Quantitativo</h3>
+              <p className="text-xs text-[var(--text-2)] leading-relaxed mb-4">
+                5 sub-scores: Qualidade (ROE, ROIC, Piotroski), Risco (Altman, Merton PD), Valuation (multiplos vs setor), Crescimento (CAGR 5a), Momento (RSI, MA).
               </p>
+              <div className="space-y-2">
+                <PillarBar name="Qualidade" value={88} delay={0} />
+                <PillarBar name="Risco" value={92} delay={0.06} />
+                <PillarBar name="Valuation" value={72} delay={0.12} />
+                <PillarBar name="Crescimento" value={65} delay={0.18} />
+                <PillarBar name="Momento" value={78} delay={0.24} />
+              </div>
             </motion.div>
 
-            {/* Card 2 — 6 Perspectivas */}
+            {/* Pilar 2 — Qualitativo */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -729,506 +717,217 @@ export default function HomePage() {
               transition={{ delay: 0.08 }}
               className="border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-6"
             >
-              <h3 className="text-sm font-bold mb-2">Lentes de investimento</h3>
-              <p className="text-xs text-[var(--text-3)] mb-5">Mesmo ativo, perspectivas diferentes.</p>
-
-              <div className="flex flex-wrap gap-2 mb-6">
-                {['Geral', 'Valor', 'Dividendos', 'Crescimento', 'Defensiva', 'Momento'].map((lens, i) => (
-                  <span
-                    key={lens}
-                    className={`text-xs px-3 py-1.5 rounded-full font-medium ${
-                      i === 0
-                        ? 'bg-[var(--accent-1)] text-white'
-                        : 'border border-[var(--border-1)]/50 text-[var(--text-2)]'
-                    }`}
-                  >
-                    {lens}
-                  </span>
-                ))}
+              <div className="w-10 h-10 rounded-lg bg-teal/10 flex items-center justify-center mb-4">
+                <span className="text-teal font-bold text-lg font-mono">AI</span>
               </div>
-
+              <h3 className="text-sm font-bold mb-2">Pilar Qualitativo (IA)</h3>
+              <p className="text-xs text-[var(--text-2)] leading-relaxed mb-4">
+                6 dimensoes avaliadas por IA: pricing power, alocacao de capital, credibilidade da gestao, resiliencia, posicionamento competitivo e governanca.
+              </p>
               <div className="space-y-2.5">
-                {[
-                  { lens: 'Geral', score: 86 },
-                  { lens: 'Valor', score: 91 },
-                  { lens: 'Dividendos', score: 78 },
-                  { lens: 'Crescimento', score: 82 },
-                  { lens: 'Defensiva', score: 88 },
-                  { lens: 'Momento', score: 74 },
-                ].map((item) => (
-                  <div key={item.lens} className="flex items-center justify-between text-xs">
-                    <span className="text-[var(--text-2)]">{item.lens}</span>
-                    <span className={`font-mono font-semibold ${getScoreTextClass(item.score)}`}>{item.score}</span>
+                {['Pricing Power', 'Alocacao Capital', 'Gestao', 'Resiliencia', 'Competitividade', 'Governanca'].map((dim, i) => (
+                  <div key={dim} className="flex items-center justify-between text-xs">
+                    <span className="text-[var(--text-2)]">{dim}</span>
+                    <span className="font-mono font-bold text-teal">FORTE</span>
                   </div>
                 ))}
               </div>
-
-              <p className="mt-5 text-xs text-[var(--text-3)] leading-relaxed">
-                Avalie cada ativo pela perspectiva que importa para sua estratégia.
-              </p>
             </motion.div>
 
-            {/* Card 3 — Drivers */}
+            {/* Pilar 3 — Valuation */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.16 }}
-              className="border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-6 md:col-span-2 lg:col-span-1"
+              className="border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-6"
             >
-              <h3 className="text-sm font-bold mb-2">Diagnóstico automático</h3>
-              <p className="text-xs text-[var(--text-3)] mb-5">O que está impulsionando o score.</p>
-
+              <div className="w-10 h-10 rounded-lg bg-amber/10 flex items-center justify-center mb-4">
+                <span className="text-amber font-bold text-lg font-mono">$</span>
+              </div>
+              <h3 className="text-sm font-bold mb-2">Pilar Valuation</h3>
+              <p className="text-xs text-[var(--text-2)] leading-relaxed mb-4">
+                4 modelos combinados: DCF (5 anos), Gordon DDM, Multiplos relativos ao setor, Monte Carlo (10.000 simulacoes). Fair value com bandas P25/P75.
+              </p>
               <div className="space-y-3">
                 {[
-                  { positive: true, text: 'ROE excepcional (21.3%)' },
-                  { positive: true, text: 'Valuation atrativo (P/L 11)' },
-                  { positive: true, text: 'Risco mínimo de endividamento' },
-                  { positive: false, text: 'Dividendo abaixo da mediana' },
-                  { positive: false, text: 'Crescimento de receita moderado' },
-                ].map((driver, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -8 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.2 + i * 0.06 }}
-                    className="flex items-start gap-2.5"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-                      className={`mt-0.5 flex-shrink-0 ${driver.positive ? 'stroke-emerald-500' : 'stroke-red-400'}`}
-                    >
-                      {driver.positive
-                        ? <polyline points="20 6 9 17 4 12" />
-                        : <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
-                      }
-                    </svg>
-                    <span className={`text-sm ${driver.positive ? 'text-[var(--text-1)]' : 'text-[var(--text-2)]'}`}>
-                      {driver.text}
-                    </span>
-                  </motion.div>
+                  { label: 'DCF', value: 'R$ 42,80' },
+                  { label: 'Gordon', value: 'R$ 39,50' },
+                  { label: 'Multiplos', value: 'R$ 44,20' },
+                  { label: 'Fair Value Final', value: 'R$ 42,10', highlight: true },
+                  { label: 'Preco Atual', value: 'R$ 33,12', current: true },
+                ].map((m) => (
+                  <div key={m.label} className="flex items-center justify-between text-xs">
+                    <span className="text-[var(--text-2)]">{m.label}</span>
+                    <span className={`font-mono font-bold ${(m as any).highlight ? 'text-[var(--accent-1)]' : (m as any).current ? 'text-[var(--text-1)]' : 'text-[var(--text-2)]'}`}>{m.value}</span>
+                  </div>
                 ))}
+                <div className="pt-2 border-t border-[var(--border-1)]/30 flex items-center justify-between text-xs">
+                  <span className="text-[var(--text-3)]">Margem de Seguranca</span>
+                  <span className="font-mono font-bold text-teal">+27,1%</span>
+                </div>
               </div>
-
-              <p className="mt-5 text-xs text-[var(--text-3)] leading-relaxed">
-                Entenda os motivos por trás de cada score.
-              </p>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ─── Explorer Preview ────────────────────────── */}
-      <section className="relative py-20 md:py-28">
-        <HorizontalGrid />
-
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <p className="text-sm font-medium tracking-widest uppercase text-[var(--accent-1)] mb-4">Explorer</p>
-            <h2 className="text-3xl md:text-4xl font-bold">
-              Ranking ao vivo. Filtragem inteligente.
-            </h2>
-            <p className="mt-3 text-[var(--text-2)] max-w-xl mx-auto">
-              Ordene por score, filtre por setor, compare métricas. Dados 100% reais da CVM e B3.
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="border border-[var(--border-1)]/30 rounded-[var(--radius)] overflow-hidden bg-[var(--surface-1)]/50 backdrop-blur-sm"
-          >
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[var(--border-1)]/30 text-[var(--text-3)] text-[11px] uppercase tracking-wider">
-                    <th className="text-left py-3 px-4 font-medium">Ativo</th>
-                    <th className="text-right py-3 px-3 font-medium">Preço</th>
-                    <th className="text-right py-3 px-3 font-medium">Dia</th>
-                    <th className="text-center py-3 px-3 font-medium">IQ Score</th>
-                    <th className="text-center py-3 px-3 font-medium hidden sm:table-cell">Momento</th>
-                    <th className="text-right py-3 px-3 font-medium hidden md:table-cell">P/L</th>
-                    <th className="text-right py-3 px-3 font-medium hidden md:table-cell">ROE</th>
-                    <th className="text-right py-3 px-3 font-medium hidden lg:table-cell">DY</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { tk: 'ITUB4', name: 'Itaú Unibanco', price: '34,50', ch: '+0.8%', up: true, sc: 86, mom: 'BULL' as const, pl: '11.0', roe: '21.3%', dy: '10.7%' },
-                    { tk: 'PSSA3', name: 'Porto Seguro', price: '38,20', ch: '+1.2%', up: true, sc: 81, mom: 'BULL' as const, pl: '9.8', roe: '42.1%', dy: '5.4%' },
-                    { tk: 'PRIO3', name: 'PetroRio', price: '44,15', ch: '+0.4%', up: true, sc: 79, mom: 'BULL' as const, pl: '5.2', roe: '32.5%', dy: '3.8%' },
-                    { tk: 'CMIG4', name: 'Cemig', price: '11,80', ch: '-0.3%', up: false, sc: 78, mom: 'NEUTRO' as const, pl: '10.5', roe: '18.4%', dy: '8.2%' },
-                    { tk: 'ITSA4', name: 'Itaúsa', price: '10,25', ch: '+0.5%', up: true, sc: 74, mom: 'NEUTRO' as const, pl: '8.9', roe: '15.2%', dy: '7.1%' },
-                    { tk: 'VIVA3', name: 'Vivara', price: '23,40', ch: '+1.8%', up: true, sc: 73, mom: 'BULL' as const, pl: '10.8', roe: '26.2%', dy: '2.2%' },
-                    { tk: 'BBDC4', name: 'Bradesco', price: '14,60', ch: '-0.5%', up: false, sc: 66, mom: 'NEUTRO' as const, pl: '8.6', roe: '13.4%', dy: '4.9%' },
-                    { tk: 'VALE3', name: 'Vale', price: '56,30', ch: '-1.1%', up: false, sc: 65, mom: 'BEAR' as const, pl: '6.2', roe: '18.7%', dy: '8.5%' },
-                  ].map((row, i) => (
-                    <motion.tr
-                      key={row.tk}
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.04 }}
-                      className="border-b border-[var(--border-1)]/20 last:border-0 hover:bg-[var(--surface-2)]/30"
-                    >
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2.5">
-                          <Image
-                            src={`https://icons.brapi.dev/icons/${row.tk}.svg`}
-                            alt={row.tk} width={24} height={24}
-                            className="rounded" unoptimized
-                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                          />
-                          <div>
-                            <span className="font-semibold text-[var(--text-1)]">{row.tk}</span>
-                            <span className="text-[var(--text-3)] text-xs block">{row.name}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="text-right py-3 px-3 font-mono text-[var(--text-1)]">R$ {row.price}</td>
-                      <td className={`text-right py-3 px-3 font-mono ${row.up ? 'text-teal' : 'text-red'}`}>{row.ch}</td>
-                      <td className="text-center py-3 px-3">
-                        <span className={`text-xs font-bold font-mono px-2 py-0.5 rounded-full ${getScoreBgClass(row.sc)} ${getScoreTextClass(row.sc)}`}>{row.sc}</span>
-                      </td>
-                      <td className="text-center py-3 px-3 hidden sm:table-cell">
-                        <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                          row.mom === 'BULL' ? 'text-emerald-600 bg-emerald-500/10' :
-                          row.mom === 'BEAR' ? 'text-red-500 bg-red-500/10' :
-                          'text-[var(--text-3)] bg-[var(--surface-2)]'
-                        }`}>{row.mom}</span>
-                      </td>
-                      <td className="text-right py-3 px-3 font-mono text-[var(--text-2)] hidden md:table-cell">{row.pl}</td>
-                      <td className="text-right py-3 px-3 font-mono text-[var(--text-2)] hidden md:table-cell">{row.roe}</td>
-                      <td className="text-right py-3 px-3 font-mono text-[var(--text-2)] hidden lg:table-cell">{row.dy}</td>
-                    </motion.tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="px-4 py-3 border-t border-[var(--border-1)]/20 text-center">
-              <Link href="/explorer" className="text-sm text-[var(--accent-1)] hover:text-[var(--accent-1)]/80 transition-colors">
-                Explorar todos os ativos →
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ─── Platform Features — Seções alternadas com previews ─ */}
-      <section id="features" className="py-20 md:py-28 space-y-24 md:space-y-32">
+      {/* ─── Plataforma Completa — 4 Features ─────── */}
+      <section id="features" className="py-20 md:py-28 space-y-20 md:space-y-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-20"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold">Plataforma completa.</h2>
-            <p className="mt-3 text-[var(--text-2)] max-w-xl mx-auto">
-              Tudo que um investidor quantitativo precisa, em um só lugar.
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold">Plataforma completa. Zero gordura.</h2>
+            <p className="mt-3 text-[var(--text-2)] max-w-2xl mx-auto">
+              Dashboard com sinais do motor, explorer com 6 lentes, analise profunda por ativo com 5 tabs, estrategias autonomas e backtest validado.
             </p>
           </motion.div>
 
-          {/* ── A: Gestão de Carteira ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-          >
+          {/* Feature A: Dashboard + Signal Card */}
+          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Portfólio</p>
-              <h3 className="text-2xl font-bold mb-3">Gestão de Carteira Inteligente</h3>
+              <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Dashboard</p>
+              <h3 className="text-2xl font-bold mb-3">Centro de Comando</h3>
               <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                Acompanhe sua carteira com precisão. Cálculo FIFO automático, benchmarks contra CDI e IBOV, e visualização de alocação por setor.
+                KPIs da carteira, performance vs benchmarks, sinais de compra/venda do motor estrategico e regime macro em uma unica tela.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                {['Cálculo FIFO para custo médio', 'Benchmarks CDI e IBOV em tempo real', 'Alocação treemap por ativo e setor', 'Exportar dados em CSV'].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />
-                    {item}
-                  </li>
+                {['Signal Card com confianca % e vol stress', 'Regime Strip: SELIC, IPCA, USD, Brent ao vivo', 'Performance vs CDI e IBOV com periodo configuravel', 'Oportunidades rankeadas pelo motor IQ-Cognit'].map((item) => (
+                  <li key={item} className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />{item}</li>
                 ))}
               </ul>
             </div>
             <div className="border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-5">
-              <div className="flex items-baseline justify-between mb-4">
+              <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-xs text-[var(--text-3)] mb-0.5">Patrimônio</p>
-                  <p className="text-xl font-bold font-mono">R$ 48.250,00</p>
+                  <p className="text-[10px] text-[var(--text-3)]">Patrimonio</p>
+                  <p className="text-xl font-bold font-mono">R$ 127.450</p>
                 </div>
-                <span className="text-sm font-mono text-emerald-500">+12,4%</span>
+                <span className="text-sm font-mono text-emerald-500">+18,7%</span>
               </div>
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                {[
-                  { label: 'vs CDI', value: '+4,2 pp', color: 'text-emerald-500' },
-                  { label: 'vs IBOV', value: '+6,8 pp', color: 'text-emerald-500' },
-                  { label: 'Score Médio', value: '76', color: 'text-[var(--accent-1)]' },
-                ].map((kpi) => (
-                  <div key={kpi.label} className="text-center">
-                    <p className="text-[10px] text-[var(--text-3)]">{kpi.label}</p>
-                    <p className={`text-sm font-bold font-mono ${kpi.color}`}>{kpi.value}</p>
-                  </div>
-                ))}
+              <div className="flex items-center gap-3 mb-4 p-2 rounded-lg bg-teal/5 border border-teal/20">
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-teal/10 text-teal">5 COMPRA</span>
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-red/10 text-red">1 VENDA</span>
+                <span className="text-xs text-[var(--text-3)] ml-auto">Conf. 78%</span>
               </div>
-              <div className="flex gap-1.5">
-                {[
-                  { name: 'WEGE3', pct: 28, color: 'bg-[var(--accent-1)]' },
-                  { name: 'ITSA4', pct: 22, color: 'bg-emerald-500' },
-                  { name: 'PRIO3', pct: 20, color: 'bg-teal-500' },
-                  { name: 'EQTL3', pct: 18, color: 'bg-blue-500' },
-                  { name: 'GMAT3', pct: 12, color: 'bg-purple-500' },
-                ].map((a) => (
-                  <div key={a.name} className={`${a.color} rounded h-2`} style={{ width: `${a.pct}%` }} title={`${a.name}: ${a.pct}%`} />
-                ))}
+              <div className="flex items-center gap-3 text-[10px] text-[var(--text-3)]">
+                <span>RISK_ON</span><span>SELIC 14.25%</span><span>IPCA 4.2%</span><span>USD 5.68</span>
               </div>
             </div>
           </motion.div>
 
-          {/* ── B: Carteiras Inteligentes ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-          >
+          {/* Feature B: Explorer */}
+          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1 border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-5">
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="flex flex-wrap gap-2 mb-4">
+                {['Geral', 'Valor', 'Dividendos', 'Crescimento', 'Defensiva', 'Momento'].map((lens, i) => (
+                  <span key={lens} className={`text-xs px-3 py-1.5 rounded-full font-medium ${i === 0 ? 'bg-[var(--accent-1)] text-white' : 'border border-[var(--border-1)]/50 text-[var(--text-2)]'}`}>{lens}</span>
+                ))}
+              </div>
+              <div className="space-y-2">
                 {[
-                  { mode: 'Valor', score: 82, color: 'border-emerald-500/40' },
-                  { mode: 'Dividendos', score: 78, color: 'border-teal-500/40' },
-                  { mode: 'Crescimento', score: 75, color: 'border-blue-500/40' },
-                  { mode: 'Fortaleza', score: 80, color: 'border-purple-500/40' },
-                  { mode: 'Momento', score: 71, color: 'border-amber-500/40' },
-                ].map((m) => (
-                  <div key={m.mode} className={`border ${m.color} rounded-lg p-3 text-center`}>
-                    <p className="text-xs font-semibold mt-1">{m.mode}</p>
-                    <p className={`text-sm font-bold font-mono mt-0.5 ${getScoreTextClass(m.score)}`}>{m.score}</p>
+                  { tk: 'ITUB4', sc: 86, rating: 'STRONG_BUY', margin: '+27%' },
+                  { tk: 'WEGE3', sc: 85, rating: 'STRONG_BUY', margin: '+12%' },
+                  { tk: 'TAEE11', sc: 82, rating: 'STRONG_BUY', margin: '+31%' },
+                  { tk: 'BBSE3', sc: 80, rating: 'BUY', margin: '+18%' },
+                ].map(row => (
+                  <div key={row.tk} className="flex items-center justify-between text-xs py-1.5 border-b border-[var(--border-1)]/10">
+                    <span className="font-mono font-bold w-16">{row.tk}</span>
+                    <span className={`font-mono font-bold ${getScoreTextClass(row.sc)}`}>{row.sc}</span>
+                    <span className="text-[var(--text-3)] w-24 text-center">{row.rating}</span>
+                    <span className="font-mono text-teal">{row.margin}</span>
                   </div>
                 ))}
               </div>
-              <p className="text-[10px] text-[var(--text-3)] text-center mt-3">
-                Motor seleciona automaticamente baseado em critérios quantitativos
-              </p>
             </div>
             <div className="order-1 lg:order-2">
-              <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Smart Portfolios</p>
-              <h3 className="text-2xl font-bold mb-3">Carteiras Inteligentes</h3>
+              <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Explorer</p>
+              <h3 className="text-2xl font-bold mb-3">6 Lentes. Colunas Dinamicas.</h3>
               <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                5 modos de investimento com seleção automática. O motor aplica critérios quantitativos para montar a carteira ideal para cada estratégia.
+                Screener com colunas que mudam automaticamente conforme a lente selecionada. IQ Score, Rating, Fair Value, Margem de Seguranca, DY Projetado e Safety Score.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                {['Valor: P/L baixo + ROE alto', 'Dividendos: DY consistente + payout saudável', 'Crescimento: CAGR receita + expansão margem', 'Fortaleza: baixo endividamento + liquidez'].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />
-                    {item}
-                  </li>
+                {['Colunas dinamicas por lens (valor, dividendos, growth...)', 'Tooltips educativos em cada metrica', 'Filtros por setor, score minimo, DY', 'Export CSV e atalhos de teclado (j/k/Enter)'].map((item) => (
+                  <li key={item} className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />{item}</li>
                 ))}
               </ul>
             </div>
           </motion.div>
 
-          {/* ── C: Contexto Macro ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-          >
+          {/* Feature C: Asset Detail Tabs */}
+          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Macro</p>
-              <h3 className="text-2xl font-bold mb-3">Contexto Macro + Previsões</h3>
+              <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Analise do Ativo</p>
+              <h3 className="text-2xl font-bold mb-3">5 Tabs. Tudo Sobre o Ativo.</h3>
               <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                Mercados de previsão (Kalshi) alimentam o sentimento macro. Scores ajustados automaticamente pelo contexto econômico.
+                Hero com preco + IQ Score + cotacao ao vivo. 5 tabs organizadas: Visao Geral, Valuation (Fair Value Strip + DCF + Monte Carlo + Institutional Holders), Dividendos, Score (X-Ray + Thesis + Dossier IA), Noticias.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                {['SELIC, IPCA, USD em tempo real via BCB', 'Sentimento macro: otimista/neutro/pessimista', 'Scores ajustados pelo contexto', 'Previsões de mercado com probabilidades'].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />
-                    {item}
-                  </li>
+                {['Fair Value: DCF + Gordon + Multiplos + Monte Carlo P25/P75', 'Institutional Holders (CVM) + Short Interest (B3)', 'Dividend Safety Score + Trap Detection', '6 dimensoes qualitativas avaliadas por IA'].map((item) => (
+                  <li key={item} className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />{item}</li>
                 ))}
               </ul>
             </div>
             <div className="border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-5">
-              <p className="text-xs font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Sentimento Macro</p>
-              <div className="h-3 rounded-full overflow-hidden flex mb-3">
-                <div className="bg-emerald-500/80 h-full" style={{ width: '55%' }} />
-                <div className="bg-amber-400/80 h-full" style={{ width: '30%' }} />
-                <div className="bg-red-400/80 h-full" style={{ width: '15%' }} />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-[var(--accent-1)]/10 flex items-center justify-center">
+                  <span className="text-[var(--accent-1)] font-bold text-sm font-mono">IQ</span>
+                </div>
+                <div>
+                  <span className="font-mono font-bold">ITUB4</span>
+                  <span className="block text-[10px] text-[var(--text-3)]">Itau Unibanco</span>
+                </div>
+                <span className="ml-auto text-xl font-bold font-mono text-[#00D4AA]">86</span>
               </div>
-              <div className="flex justify-between text-[10px] text-[var(--text-3)] mb-5">
-                <span>Otimista 55%</span>
-                <span>Neutro 30%</span>
-                <span>Pessimista 15%</span>
+              <div className="flex gap-1 mb-4">
+                {['Visao Geral', 'Valuation', 'Dividendos', 'Score', 'Noticias'].map((tab, i) => (
+                  <span key={tab} className={`text-[9px] px-2 py-1 rounded ${i === 1 ? 'bg-[var(--accent-1)] text-white' : 'text-[var(--text-3)]'}`}>{tab}</span>
+                ))}
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
                 {[
-                  { label: 'SELIC', value: '13,25%', sub: 'Meta Copom' },
-                  { label: 'IPCA', value: '4,56%', sub: '12 meses' },
-                  { label: 'USD/BRL', value: 'R$ 5,72', sub: 'Câmbio' },
-                  { label: 'IBOV', value: '128.450', sub: '+0,8% dia' },
-                ].map((ind) => (
-                  <div key={ind.label} className="bg-[var(--bg)]/50 rounded-lg p-2.5">
-                    <p className="text-[10px] text-[var(--text-3)]">{ind.label}</p>
-                    <p className="text-sm font-bold font-mono">{ind.value}</p>
-                    <p className="text-[9px] text-[var(--text-3)]">{ind.sub}</p>
+                  { label: 'Fair Value DCF', value: 'R$ 42,80', color: 'text-teal' },
+                  { label: 'Fair Value Gordon', value: 'R$ 39,50', color: 'text-teal' },
+                  { label: 'Preco Atual', value: 'R$ 33,12', color: 'text-[var(--text-1)]' },
+                  { label: 'Margem Seguranca', value: '+27,1%', color: 'text-teal font-bold' },
+                  { label: 'Prob. Upside', value: '74%', color: 'text-[var(--accent-1)]' },
+                ].map(m => (
+                  <div key={m.label} className="flex items-center justify-between text-xs">
+                    <span className="text-[var(--text-3)]">{m.label}</span>
+                    <span className={`font-mono ${m.color}`}>{m.value}</span>
                   </div>
                 ))}
               </div>
             </div>
           </motion.div>
 
-          {/* ── D: Dividendos e FIRE ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-          >
+          {/* Feature D: Estrategias + Backtest */}
+          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="order-2 lg:order-1 border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-5">
-              <div className="flex items-baseline justify-between mb-4">
-                <p className="text-xs font-semibold text-[var(--text-3)] uppercase tracking-wider">Projeção FIRE</p>
-                <span className="text-xs text-emerald-500 font-mono">15 anos</span>
-              </div>
-              <div className="h-24 flex items-end gap-1 mb-3">
-                {[12, 18, 26, 35, 48, 62, 80, 100].map((h, i) => (
-                  <div key={i} className="flex-1 rounded-t bg-[var(--accent-1)]/20 relative" style={{ height: `${h}%` }}>
-                    <div className="absolute bottom-0 inset-x-0 rounded-t bg-emerald-500/40" style={{ height: `${h * 0.6}%` }} />
+              <p className="text-[10px] font-bold text-[var(--accent-1)] uppercase tracking-wider mb-3">Motor Autonomo — Backtest v11</p>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {[
+                  { label: 'CAGR', value: '21,2%', color: 'text-teal' },
+                  { label: 'Alpha vs IBOV', value: '+15,4% a.a.', color: 'text-teal' },
+                  { label: 'Sharpe', value: '0,67', color: 'text-[var(--text-1)]' },
+                  { label: 'Max DD', value: '-37,2%', color: 'text-red' },
+                ].map(m => (
+                  <div key={m.label} className="text-center">
+                    <p className="text-[10px] text-[var(--text-3)]">{m.label}</p>
+                    <p className={`text-sm font-bold font-mono ${m.color}`}>{m.value}</p>
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-3 gap-3 text-center">
-                <div>
-                  <p className="text-[10px] text-[var(--text-3)]">Renda/mês</p>
-                  <p className="text-sm font-bold font-mono text-emerald-500">R$ 3.200</p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-[var(--text-3)]">DY médio</p>
-                  <p className="text-sm font-bold font-mono">7,2%</p>
-                </div>
-                <div>
-                  <p className="text-[10px] text-[var(--text-3)]">Meta FIRE</p>
-                  <p className="text-sm font-bold font-mono text-[var(--accent-1)]">42%</p>
-                </div>
-              </div>
+              <p className="text-[10px] text-[var(--text-3)] text-center">2012-2025 | R$1M → R$12,79M | Walk-forward validado</p>
             </div>
             <div className="order-1 lg:order-2">
-              <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Renda Passiva</p>
-              <h3 className="text-2xl font-bold mb-3">Dividendos e Metas FIRE</h3>
+              <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Estrategias IQ + Lab</p>
+              <h3 className="text-2xl font-bold mb-3">Motor Autonomo. Backtest Validado.</h3>
               <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                Calendário de proventos, projeção de renda passiva com reinvestimento, e calculadora FIRE para planejar sua independência financeira.
+                Motor estrategico com alocacao otima, short candidates e carteiras inteligentes. Backtest walk-forward de 13 anos com custos reais, impostos e survivorship bias.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                {['Calendário forward de dividendos', 'Simulação com reinvestimento composto', 'Yield on cost da carteira', 'Calculadora FIRE personalizada'].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </motion.div>
-
-          {/* ── E: Radar ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-          >
-            <div>
-              <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Radar</p>
-              <h3 className="text-2xl font-bold mb-3">Radar de Oportunidades</h3>
-              <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                Alertas inteligentes quando scores mudam, ativos entram em nova classificação, ou o mercado apresenta oportunidades.
-              </p>
-              <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                {['Alertas de mudança de score', 'Oportunidades detectadas pelo motor', 'Saúde geral da carteira', 'Notícias filtradas por relevância'].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-5 space-y-3">
-              {[
-                { type: 'upgrade', text: 'WEGE3 subiu para Excepcional (85)', time: '2h', color: 'text-emerald-500 bg-emerald-500/10' },
-                { type: 'alert', text: 'VALE3 caiu 3.2% — Score estável em 65', time: '4h', color: 'text-amber-500 bg-amber-500/10' },
-                { type: 'opp', text: 'PSSA3 com score 81 e P/L abaixo da mediana', time: '6h', color: 'text-[var(--accent-1)] bg-[var(--accent-1)]/10' },
-                { type: 'risk', text: 'MGLU3 rebaixado para Crítico (42)', time: '1d', color: 'text-red-400 bg-red-400/10' },
-              ].map((event) => (
-                <div key={event.text} className="flex items-start gap-3 py-2">
-                  <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${event.color}`}>
-                    {event.type === 'upgrade' ? 'UPGRADE' : event.type === 'alert' ? 'ALERTA' : event.type === 'opp' ? 'OPORTUNIDADE' : 'RISCO'}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-[var(--text-1)] truncate">{event.text}</p>
-                  </div>
-                  <span className="text-[10px] text-[var(--text-3)] whitespace-nowrap">{event.time}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* ── F: Análise Profunda ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
-          >
-            <div className="order-2 lg:order-1 border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-5">
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { ticker: 'WEGE3', score: 85 },
-                  { ticker: 'TOTS3', score: 81 },
-                ].map((a) => (
-                  <div key={a.ticker}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Image src={`https://icons.brapi.dev/icons/${a.ticker}.svg`} alt={a.ticker} width={20} height={20} className="rounded" unoptimized onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
-                      <span className="text-sm font-bold">{a.ticker}</span>
-                      <span className={`text-xs font-bold font-mono ml-auto ${getScoreTextClass(a.score)}`}>{a.score}</span>
-                    </div>
-                    <div className="space-y-1.5">
-                      {[
-                        { name: 'Val', v: a.ticker === 'WEGE3' ? 35 : 42 },
-                        { name: 'Qual', v: a.ticker === 'WEGE3' ? 95 : 90 },
-                        { name: 'Risco', v: a.ticker === 'WEGE3' ? 92 : 88 },
-                        { name: 'Div', v: a.ticker === 'WEGE3' ? 45 : 38 },
-                        { name: 'Cresc', v: a.ticker === 'WEGE3' ? 92 : 95 },
-                      ].map((p) => (
-                        <div key={p.name} className="flex items-center gap-2">
-                          <span className="text-[9px] text-[var(--text-3)] w-8">{p.name}</span>
-                          <div className="flex-1 h-1 rounded-full bg-[var(--surface-2)] overflow-hidden">
-                            <div className={`h-full rounded-full ${getScoreBgClass(p.v)}`} style={{ width: `${p.v}%` }} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="order-1 lg:order-2">
-              <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Deep Analysis</p>
-              <h3 className="text-2xl font-bold mb-3">Análise Profunda</h3>
-              <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                Compare até 4 ativos pilar por pilar. X-Ray do score mostra cada indicador e sua contribuição. Entenda exatamente por que o motor recomenda.
-              </p>
-              <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                {['Comparação lado a lado (até 4 ativos)', 'X-Ray: 18 indicadores detalhados (Elite)', 'Diagnóstico IA com drivers positivos/negativos', 'Research Notes geradas pelo motor'].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />
-                    {item}
-                  </li>
+                {['Alocacao otima com sinais BUY/SELL/HOLD/ROTATE', 'Short candidates quando regime permite', 'Backtest configuravel: monthly/quarterly, leverage, benchmarks', 'Transparencia total: IC Spearman, hit rate, signal decay'].map((item) => (
+                  <li key={item} className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />{item}</li>
                 ))}
               </ul>
             </div>
@@ -1236,26 +935,25 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── Social Proof ──────────────────────────────── */}
+      {/* ─── Numeros do Motor ──────────────────────────── */}
       <section className="py-16 border-t border-b border-[var(--border-1)]/20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center"
-          >
+          <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
             <div>
-              <p className="text-3xl font-bold font-mono text-[var(--accent-1)]">384+</p>
-              <p className="text-sm text-[var(--text-2)] mt-1">Ações da B3 analisadas em tempo real</p>
+              <p className="text-3xl font-bold font-mono text-[var(--accent-1)]">947</p>
+              <p className="text-sm text-[var(--text-2)] mt-1">Acoes analisadas diariamente</p>
             </div>
             <div>
-              <p className="text-3xl font-bold font-mono text-emerald-500">+10,5%</p>
-              <p className="text-sm text-[var(--text-2)] mt-1">Alpha sobre o IBOV no backtest</p>
+              <p className="text-3xl font-bold font-mono text-teal">+15,4%</p>
+              <p className="text-sm text-[var(--text-2)] mt-1">Alpha a.a. vs IBOV (2012-2025)</p>
             </div>
             <div>
-              <p className="text-3xl font-bold font-mono text-[var(--text-1)]">100%</p>
-              <p className="text-sm text-[var(--text-2)] mt-1">Dados reais — CVM, BCB, brapi, Kalshi</p>
+              <p className="text-3xl font-bold font-mono text-[var(--text-1)]">40+</p>
+              <p className="text-sm text-[var(--text-2)] mt-1">Endpoints do motor IQ-Cognit</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold font-mono text-amber">4</p>
+              <p className="text-sm text-[var(--text-2)] mt-1">Modelos de valuation combinados</p>
             </div>
           </motion.div>
         </div>
@@ -1274,25 +972,19 @@ export default function HomePage() {
             <p className="mt-3 text-[var(--text-2)]">Comece grátis. Evolua quando precisar.</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {[
               {
                 name: 'Free',
                 price: 'R$ 0',
-                features: ['Explorer + IQ Score', 'Até 5 ativos em detalhe', 'Dados em tempo real', 'Comparação básica'],
+                features: ['Explorer com ranking ao vivo', 'Cotacoes e historico', 'Financials (CVM)', 'Peers e comparacao basica', 'Dividendos historico'],
                 highlight: false,
               },
               {
                 name: 'Pro',
-                price: 'R$ 39/mês',
-                features: ['Tudo do Free +', 'Carteiras ilimitadas', 'Metas e FIRE', 'Dividendos completos', 'Radar de oportunidades'],
+                price: 'R$ 59,90/mes',
+                features: ['Tudo do Free +', 'IQ Score + Rating + 3 pilares', 'Fair Value (DCF, Gordon, Multiplos, Monte Carlo)', 'Dividend Safety + Trap Detection', 'Estrategias IQ + Alocacao Otima', 'Backtest Lab completo', 'Radar com 8 tipos de alerta', 'Institutional Holders + Short Interest', 'X-Ray, Dossier IA, Thesis, Evidence Explorer'],
                 highlight: true,
-              },
-              {
-                name: 'Elite',
-                price: 'R$ 79/mês',
-                features: ['Tudo do Pro +', 'X-Ray do Score', 'Diagnóstico IA', 'Monte Carlo', 'Research Notes', 'Comunidade'],
-                highlight: false,
               },
             ].map((plan) => (
               <motion.div
@@ -1344,10 +1036,10 @@ export default function HomePage() {
           className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
         >
           <h2 className="text-3xl md:text-4xl font-bold">
-            Conheça a plataforma.
+            Comece a investir com inteligencia.
           </h2>
           <p className="mt-4 text-[var(--text-2)] max-w-lg mx-auto">
-            Acesse a demonstração e explore todas as funcionalidades.
+            947 acoes analisadas diariamente. 3 pilares. 4 modelos de valuation. Motor autonomo com 21,2% CAGR validado. Acesse agora.
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
