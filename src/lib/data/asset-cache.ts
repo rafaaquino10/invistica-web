@@ -80,8 +80,8 @@ export interface AssetData {
 
 // ─── Cache Config ───────────────────────────────────────────
 
-export const CACHE_TTL = 5 * 60 * 1000       // 5 min fresh window
-export const STALE_MAX = 30 * 60 * 1000      // 30 min max stale before forced sync
+export const CACHE_TTL = 2 * 60 * 1000       // 2 min fresh window
+export const STALE_MAX = 60 * 60 * 1000      // 60 min max stale — melhor dados antigos que nada
 
 // ─── Cache State ────────────────────────────────────────────
 

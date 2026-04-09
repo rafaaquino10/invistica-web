@@ -24,11 +24,12 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 5 * 60 * 1000, // 5 min — data is refreshed server-side
-            gcTime: 10 * 60 * 1000,   // 10 min — keep unused data in cache
-            refetchOnWindowFocus: false,
-            refetchOnReconnect: false,
-            retry: 1,
+            staleTime: 2 * 60 * 1000, // 2 min — dados financeiros precisam de frescor
+            gcTime: 10 * 60 * 1000,   // 10 min — manter cache de dados não usados
+            refetchOnWindowFocus: true, // re-buscar ao voltar para a aba
+            refetchOnReconnect: true,   // re-buscar ao reconectar
+            retry: 2,                   // tentar 2x em caso de falha
+            retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 5000),
           },
         },
       })

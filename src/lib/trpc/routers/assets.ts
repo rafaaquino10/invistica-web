@@ -105,7 +105,46 @@ export const assetsRouter = router({
     .input(z.object({ ticker: z.string() }))
     .query(async ({ input }) => {
       const ALL_ASSETS = await getAssets()
-      const asset = ALL_ASSETS.find(a => a.ticker.toUpperCase() === input.ticker.toUpperCase())
+      let asset = ALL_ASSETS.find(a => a.ticker.toUpperCase() === input.ticker.toUpperCase())
+
+      // Fallback: se o cache estiver vazio ou o ativo não foi encontrado,
+      // buscar direto do backend via /tickers/{ticker} + /scores/{ticker}
+      if (!asset) {
+        try {
+          const [tickerData, scoreData] = await Promise.allSettled([
+            investiq.get<{ ticker: string; company_name: string; cluster_id: number; quote?: { close: number; open: number; volume: number; market_cap: number } }>(`/tickers/${input.ticker}`),
+            investiq.get<{ iq_score: number; rating: string; score_quanti: number; score_quali: number; score_valuation: number; fair_value_final: number; safety_margin: number; dividend_yield_proj: number; dividend_safety: number }>(`/scores/${input.ticker}`),
+          ])
+
+          if (tickerData.status === 'fulfilled' && tickerData.value) {
+            const t = tickerData.value
+            const s = scoreData.status === 'fulfilled' ? scoreData.value : null
+            const q = t.quote
+            const price = q?.close ?? 0
+            const CLUSTER_NAMES: Record<number, string> = { 1: 'Financeiro', 2: 'Recursos Naturais e Commodities', 3: 'Consumo e Varejo', 4: 'Utilities e Concessões', 5: 'Saúde', 6: 'TMT', 7: 'Bens de Capital', 8: 'Real Estate', 9: 'Educação' }
+
+            asset = {
+              id: t.ticker, ticker: t.ticker, name: t.company_name, type: 'stock',
+              sector: CLUSTER_NAMES[t.cluster_id] ?? `Cluster ${t.cluster_id}`,
+              price, change: 0, changePercent: q ? ((q.close - q.open) / q.open) * 100 : 0,
+              logo: null, volume: q?.volume ?? null, marketCap: q?.market_cap ?? null,
+              fiftyTwoWeekHigh: null, fiftyTwoWeekLow: null, hasFundamentals: !!s,
+              aqScore: s ? {
+                scoreTotal: s.iq_score, scoreBruto: s.iq_score,
+                scoreValuation: s.score_valuation ?? 0, scoreQuality: s.score_quali ?? 0,
+                scoreGrowth: s.score_quanti ?? 0, scoreDividends: s.dividend_safety ?? 0,
+                scoreRisk: s.score_quanti ?? 0, scoreQualitativo: s.score_quali ?? 0, confidence: 0.85,
+              } : null,
+              lensScores: null, scoreBreakdown: null,
+              valuation: s ? { fairValueFinal: s.fair_value_final, fairValueDcf: null, fairValueGordon: null, fairValueMult: null, fairValueP25: null, fairValueP75: null, safetyMargin: s.safety_margin, upsideProb: null, lossProb: null, impliedGrowth: null } : null,
+              fundamentals: { peRatio: null, pbRatio: null, psr: null, pEbit: null, evEbit: null, evEbitda: null, roe: null, roic: null, margemEbit: null, margemLiquida: null, liquidezCorrente: null, divBrutPatrim: null, pCapGiro: null, pAtivCircLiq: null, pAtivo: null, patrimLiquido: null, dividendYield: s?.dividend_yield_proj ?? null, netDebtEbitda: null, crescimentoReceita5a: null, liq2meses: null, freeCashflow: null, netDebt: null, ebitda: null, fcfGrowthRate: null, debtCostEstimate: null, totalDebt: null },
+            } as any
+          }
+        } catch {
+          // Backend direto também falhou
+        }
+      }
+
       if (!asset) {
         throw new TRPCError({
           code: 'NOT_FOUND',
