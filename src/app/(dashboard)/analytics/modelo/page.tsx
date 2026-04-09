@@ -2,7 +2,7 @@
 
 import { cn } from '@/lib/utils'
 import { trpc } from '@/lib/trpc/provider'
-import { PaywallGate } from '@/components/billing/paywall-gate'
+
 
 export default function ModelTransparencyPage() {
   const { data: perf } = trpc.backtest.modelPerformance.useQuery(undefined, { staleTime: 30 * 60 * 1000 })
@@ -11,7 +11,7 @@ export default function ModelTransparencyPage() {
   const { data: llm } = trpc.backtest.llmStatus.useQuery(undefined, { staleTime: 60 * 1000 })
 
   return (
-    <PaywallGate requiredPlan="elite" feature="Model Transparency" showPreview>
+    <>
       <div className="space-y-6">
         {/* Header */}
         <div className="border-b-2 border-[var(--accent-1)] pb-4">
@@ -227,7 +227,7 @@ export default function ModelTransparencyPage() {
           </div>
         )}
       </div>
-    </PaywallGate>
+    </>
   )
 }
 

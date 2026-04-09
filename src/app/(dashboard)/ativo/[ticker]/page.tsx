@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils'
 import { ScoreXRay } from '@/components/score/score-xray'
 import { ScoreGauge } from '@/components/score/score-gauge'
 import { ScoreEvolutionChart } from '@/components/score/score-evolution-chart'
-import { PaywallGate } from '@/components/billing/paywall-gate'
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { DriversList, type Driver } from '@/components/ui/drivers-list'
 import { ResearchNote } from '@/components/score/score-semaphore'
@@ -214,11 +213,11 @@ export default function AssetDetailPage() {
   const [activeTab, setActiveTab] = useState<'visao' | 'valuation' | 'dividendos' | 'score' | 'noticias'>('visao')
 
   const assetTabs = [
-    { id: 'visao' as const, label: 'Visao Geral' },
+    { id: 'visao' as const, label: 'Visão Geral' },
     { id: 'valuation' as const, label: 'Valuation' },
     { id: 'dividendos' as const, label: 'Dividendos' },
     { id: 'score' as const, label: 'Score' },
-    { id: 'noticias' as const, label: 'Noticias' },
+    { id: 'noticias' as const, label: 'Notícias' },
   ]
 
   return (
@@ -292,10 +291,10 @@ export default function AssetDetailPage() {
             />
           ) : !isChartLoading ? (
             <div className="h-[260px] flex flex-col items-center justify-center gap-2">
-              <p className="text-[var(--text-small)] text-[var(--text-3)]">Cotacao indisponivel</p>
+              <p className="text-[var(--text-small)] text-[var(--text-3)]">Cotação indisponível</p>
               {currentPrice != null && (
                 <p className="text-[var(--text-small)] font-mono text-[var(--text-1)]">
-                  Ultimo: {formatCurrency(currentPrice)}
+                  Último: {formatCurrency(currentPrice)}
                   {currentChange != null && (
                     <span className={cn('ml-2', currentChange >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
                       {currentChange >= 0 ? '+' : ''}{currentChange.toFixed(2)}%
@@ -371,14 +370,14 @@ export default function AssetDetailPage() {
             </div>
 
             <div>
-              <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Forcas & Riscos</h2>
+              <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Forças & Riscos</h2>
               {drivers && (drivers.positive.length > 0 || drivers.negative.length > 0) ? (
                 <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
                   <DriversList positive={drivers.positive} negative={drivers.negative} />
                 </div>
               ) : (
                 <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4 flex items-center justify-center h-full min-h-[200px]">
-                  <p className="text-[var(--text-small)] text-[var(--text-3)]">Dados insuficientes para analise de drivers</p>
+                  <p className="text-[var(--text-small)] text-[var(--text-3)]">Dados insuficientes para análise de drivers</p>
                 </div>
               )}
             </div>
@@ -424,14 +423,14 @@ export default function AssetDetailPage() {
           {/* Fair Value Strip */}
           {backendValuation && currentPrice && (
             <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
-              <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Fair Value vs Preco Atual</h3>
+              <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Fair Value vs Preço Atual</h3>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {[
                   { label: 'DCF', value: backendValuation.fair_value_dcf },
                   { label: 'Gordon', value: backendValuation.fair_value_gordon },
                   { label: 'Multiplos', value: backendValuation.fair_value_mult },
                   { label: 'MC P50', value: backendValuation.fair_value_final },
-                  { label: 'Preco Atual', value: currentPrice, isCurrent: true },
+                  { label: 'Preço Atual', value: currentPrice, isCurrent: true },
                 ].map(item => (
                   <div key={item.label} className="text-center">
                     <p className="text-[var(--text-caption)] text-[var(--text-3)] mb-0.5">{item.label}</p>
@@ -484,28 +483,18 @@ export default function AssetDetailPage() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <PaywallGate requiredPlan="elite" feature="Valuation DCF" showPreview>
-              <DCFCard ticker={ticker} />
-            </PaywallGate>
-            <PaywallGate requiredPlan="elite" feature="Sensibilidade Macro" showPreview>
-              <SensitivityCard ticker={ticker} />
-            </PaywallGate>
+            <DCFCard ticker={ticker} />
+            <SensitivityCard ticker={ticker} />
           </div>
 
           {backendValuation && currentPrice && (
-            <PaywallGate requiredPlan="elite" feature="Monte Carlo Valuation" showPreview>
-              <MonteCarloCard ticker={ticker} currentPrice={currentPrice} valuation={backendValuation} />
-            </PaywallGate>
+            <MonteCarloCard ticker={ticker} currentPrice={currentPrice} valuation={backendValuation} />
           )}
 
           {/* Institutional Holders & Short Interest */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <PaywallGate requiredPlan="pro" feature="Holders Institucionais" showPreview>
-              <InstitutionalHoldersCard ticker={ticker} />
-            </PaywallGate>
-            <PaywallGate requiredPlan="pro" feature="Short Interest" showPreview>
-              <ShortInterestCard ticker={ticker} />
-            </PaywallGate>
+            <InstitutionalHoldersCard ticker={ticker} />
+            <ShortInterestCard ticker={ticker} />
           </div>
         </div>
       )}
@@ -516,7 +505,7 @@ export default function AssetDetailPage() {
           <DividendSummary dividends={asset.dividends} dividendYield={f?.dividendYield} />
           {f && (
             <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
-              <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Metricas de Rendimento</h3>
+              <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Métricas de Rendimento</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-x-5 gap-y-3">
                 <KV label="Dividend Yield" value={fmtP(f.dividendYield)} highlight />
                 <KV label="Div.Liq/EBITDA" value={fmtR(f.netDebtEbitda, 2)} />
@@ -524,9 +513,7 @@ export default function AssetDetailPage() {
               </div>
             </div>
           )}
-          <PaywallGate requiredPlan="pro" feature="Dividend Trap Risk" showPreview>
-            <DividendTrapCard ticker={ticker} />
-          </PaywallGate>
+          <DividendTrapCard ticker={ticker} />
         </div>
       )}
 
@@ -536,35 +523,26 @@ export default function AssetDetailPage() {
           {qualitativoSubNotas.length > 0 && <QualitativeCards subNotas={qualitativoSubNotas} />}
 
           {scoreBreakdownData && (
-            <PaywallGate requiredPlan="elite" feature="Detalhamento do Score" showPreview>
-              <ScoreXRay breakdown={scoreBreakdownData} ticker={ticker} />
-            </PaywallGate>
+            <ScoreXRay breakdown={scoreBreakdownData} ticker={ticker} />
           )}
 
-          <PaywallGate requiredPlan="elite" feature="Evidence Explorer" showPreview>
-            <EvidenceExplorer ticker={ticker} />
-          </PaywallGate>
+          <EvidenceExplorer ticker={ticker} />
 
           {riskMetrics && (
-            <PaywallGate requiredPlan="elite" feature="Risk Lab" showPreview>
-              <RiskLab riskMetrics={riskMetrics} ticker={ticker} />
-            </PaywallGate>
+            <RiskLab riskMetrics={riskMetrics} ticker={ticker} />
           )}
 
           {score !== null && <ScoreEvolutionChart ticker={ticker} />}
 
           {thesis && (
-            <PaywallGate requiredPlan="pro" feature="Tese de Investimento" showPreview>
-              <ThesisCard ticker={ticker} thesis={thesis} dividendData={dividendData} />
-            </PaywallGate>
+            <ThesisCard ticker={ticker} thesis={thesis} dividendData={dividendData} />
           )}
 
           {narrative && (
-            <PaywallGate requiredPlan="pro" feature="Diagnostico aQ" showPreview>
-              <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4 space-y-4">
+            <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4 space-y-4">
                 {narrative.highlights.strengths.length > 0 && (
                   <div>
-                    <h3 className="text-[var(--text-caption)] font-semibold text-teal uppercase tracking-wider mb-2">Forcas</h3>
+                    <h3 className="text-[var(--text-caption)] font-semibold text-teal uppercase tracking-wider mb-2">Forças</h3>
                     <ul className="space-y-1.5">
                       {narrative.highlights.strengths.map((s, i) => (
                         <li key={i} className="flex items-start gap-2 text-[var(--text-body)] text-[var(--text-1)] leading-relaxed">
@@ -588,12 +566,9 @@ export default function AssetDetailPage() {
                 )}
                 {narrative.researchNote && <ResearchNote researchNote={narrative.researchNote} highlights={narrative.highlights} />}
               </div>
-            </PaywallGate>
           )}
 
-          <PaywallGate requiredPlan="elite" feature="Dossier Qualitativo" showPreview>
-            <DossierReport ticker={ticker} />
-          </PaywallGate>
+          <DossierReport ticker={ticker} />
         </div>
       )}
 
@@ -716,7 +691,7 @@ function InstitutionalHoldersCard({ ticker }: { ticker: string }) {
     return (
       <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
         <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Holders Institucionais</h3>
-        <p className="text-[var(--text-small)] text-[var(--text-3)] text-center py-4">Dados indisponiveis</p>
+        <p className="text-[var(--text-small)] text-[var(--text-3)] text-center py-4">Dados indisponíveis</p>
       </div>
     )
   }
@@ -750,7 +725,7 @@ function ShortInterestCard({ ticker }: { ticker: string }) {
     return (
       <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
         <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Short Interest</h3>
-        <p className="text-[var(--text-small)] text-[var(--text-3)] text-center py-4">Dados indisponiveis</p>
+        <p className="text-[var(--text-small)] text-[var(--text-3)] text-center py-4">Dados indisponíveis</p>
       </div>
     )
   }
@@ -762,7 +737,7 @@ function ShortInterestCard({ ticker }: { ticker: string }) {
       <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-3">Short Interest</h3>
       <div className="grid grid-cols-2 gap-4 mb-3">
         <div>
-          <p className="text-[var(--text-caption)] text-[var(--text-3)]">Acoes Alugadas</p>
+          <p className="text-[var(--text-caption)] text-[var(--text-3)]">Ações Alugadas</p>
           <p className="text-[var(--text-base)] font-mono font-bold text-[var(--text-1)]">
             {latest.shares_lent >= 1e6 ? `${(latest.shares_lent / 1e6).toFixed(1)}M` : latest.shares_lent.toLocaleString('pt-BR')}
           </p>
@@ -776,7 +751,7 @@ function ShortInterestCard({ ticker }: { ticker: string }) {
       </div>
       {data.history.length > 1 && (
         <div className="space-y-1 pt-2 border-t border-[var(--border-1)]">
-          <p className="text-[var(--text-caption)] text-[var(--text-3)] mb-1">Historico</p>
+          <p className="text-[var(--text-caption)] text-[var(--text-3)] mb-1">Histórico</p>
           {data.history.slice(0, 5).map((h, i) => (
             <div key={i} className="flex items-center justify-between text-[var(--text-caption)]">
               <span className="text-[var(--text-3)] font-mono">{h.reference_date}</span>

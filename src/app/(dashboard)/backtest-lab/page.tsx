@@ -5,7 +5,7 @@ import { trpc } from '@/lib/trpc/provider'
 import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/utils/formatters'
 import { Button } from '@/components/ui'
-import { PaywallGate } from '@/components/billing/paywall-gate'
+
 
 export default function BacktestPage() {
   const [config, setConfig] = useState({
@@ -34,7 +34,7 @@ export default function BacktestPage() {
   const loading = isFetching || isRunning
 
   return (
-    <PaywallGate requiredPlan="elite" feature="Backtest Nuclear v8" showPreview>
+    <>
       <div className="space-y-6">
         <div>
           <h1 className="text-[var(--text-title)] font-bold">Backtest Nuclear v8</h1>
@@ -282,7 +282,7 @@ export default function BacktestPage() {
           </div>
         )}
       </div>
-    </PaywallGate>
+    </>
   )
 }
 

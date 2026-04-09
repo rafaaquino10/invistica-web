@@ -2,7 +2,7 @@
 
 import { trpc } from '@/lib/trpc/client'
 import { Card, CardContent, Skeleton } from '@/components/ui'
-import { PaywallGate } from '@/components/billing/paywall-gate'
+
 import { cn } from '@/lib/utils'
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -40,8 +40,7 @@ export default function SignalDecayPage() {
         </p>
       </div>
 
-      <PaywallGate requiredPlan="elite" feature="Signal Decay Monitor" showPreview>
-        {isLoading && (
+      {isLoading && (
           <div className="space-y-4">
             <Skeleton className="h-64 w-full" />
             <Skeleton className="h-48 w-full" />
@@ -189,7 +188,6 @@ export default function SignalDecayPage() {
             </div>
           </>
         )}
-      </PaywallGate>
     </div>
   )
 }

@@ -3,7 +3,7 @@
 import { useState, lazy, Suspense } from 'react'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '@/components/ui'
-import { PaywallGate } from '@/components/billing/paywall-gate'
+
 
 // Lazy load tab contents from existing pages
 const BacktestTab = lazy(() => import('@/app/(dashboard)/backtest-lab/page'))
@@ -47,7 +47,7 @@ export default function LabPage() {
           Lab
         </h1>
         <p className="text-[var(--text-small)] text-[var(--text-2)] mt-0.5">
-          Backtest, transparencia do modelo, feedback loop e monitoramento de sinais
+          Backtest, transparência do modelo, feedback loop e monitoramento de sinais
         </p>
       </div>
 
@@ -70,14 +70,12 @@ export default function LabPage() {
       </div>
 
       {/* Tab Content */}
-      <PaywallGate requiredPlan="pro" feature="Lab IQ-Cognit" showPreview>
-        <Suspense fallback={<TabSkeleton />}>
+      <Suspense fallback={<TabSkeleton />}>
           {activeTab === 'backtest' && <BacktestTab />}
           {activeTab === 'modelo' && <ModeloTab />}
           {activeTab === 'feedback' && <FeedbackTab />}
           {activeTab === 'signal-decay' && <SignalDecayTab />}
         </Suspense>
-      </PaywallGate>
     </div>
   )
 }

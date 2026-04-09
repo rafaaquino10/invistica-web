@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Button, Modal, Input, Skeleton, Tabs, TabPanel, ScrollableStrip } from '@/components/ui'
 import { trpc } from '@/lib/trpc/client'
-import { PaywallGate } from '@/components/billing'
+
 import { cn } from '@/lib/utils'
 import { AssetLogo } from '@/components/ui/asset-logo'
 
@@ -484,12 +484,12 @@ function AlertsTab({ onCreateClick }: { onCreateClick: () => void }) {
 
 function AlertRow({ alert, onToggle, onDelete }: { alert: any; onToggle: () => void; onDelete: () => void }) {
   const typeConfig: Record<string, { label: string }> = {
-    price_above: { label: 'Preco acima de' },
-    price_below: { label: 'Preco abaixo de' },
-    score_change: { label: 'Mudanca no Score' },
+    price_above: { label: 'Preço acima de' },
+    price_below: { label: 'Preço abaixo de' },
+    score_change: { label: 'Mudança no Score' },
     dividend: { label: 'Novo dividendo' },
     fair_value_reached: { label: 'Fair Value atingido' },
-    anti_panic: { label: 'Anti-Panico' },
+    anti_panic: { label: 'Anti-Pânico' },
     anti_fomo: { label: 'Anti-FOMO' },
     smart_contribution: { label: 'Aporte Inteligente' },
   }
@@ -543,7 +543,7 @@ function HealthTab() {
   const barGradient = health.overallScore >= 75 ? 'from-teal to-teal/50' : health.overallScore >= 50 ? 'from-amber to-amber/50' : 'from-red to-red/50'
 
   return (
-    <PaywallGate requiredPlan="pro" feature="Análise de Saúde da Carteira" showPreview>
+    <>
       <div className="space-y-4">
         {/* Pontuação geral */}
         <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm p-6">
@@ -602,7 +602,7 @@ function HealthTab() {
           </div>
         )}
       </div>
-    </PaywallGate>
+    </>
   )
 }
 
@@ -626,12 +626,12 @@ function CreateAlertModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
   }
 
   const alertTypes = [
-    { value: 'price_below', label: 'Preco abaixo de', desc: 'Avisa quando o preco cair abaixo do valor definido' },
-    { value: 'price_above', label: 'Preco acima de', desc: 'Avisa quando o preco subir acima do valor definido' },
-    { value: 'score_change', label: 'Mudanca no Score', desc: 'Avisa quando o IQ Score mudar significativamente' },
+    { value: 'price_below', label: 'Preço abaixo de', desc: 'Avisa quando o preço cair abaixo do valor definido' },
+    { value: 'price_above', label: 'Preço acima de', desc: 'Avisa quando o preço subir acima do valor definido' },
+    { value: 'score_change', label: 'Mudança no Score', desc: 'Avisa quando o IQ Score mudar significativamente' },
     { value: 'dividend', label: 'Novo dividendo', desc: 'Avisa sobre ex-dates proximos' },
-    { value: 'fair_value_reached', label: 'Fair Value atingido', desc: 'Avisa quando o preco cruzar o valor justo estimado' },
-    { value: 'anti_panic', label: 'Anti-Panico', desc: 'Avisa quando o ativo cair mas os fundamentos estiverem intactos — oportunidade de compra' },
+    { value: 'fair_value_reached', label: 'Fair Value atingido', desc: 'Avisa quando o preço cruzar o valor justo estimado' },
+    { value: 'anti_panic', label: 'Anti-Pânico', desc: 'Avisa quando o ativo cair mas os fundamentos estiverem intactos — oportunidade de compra' },
     { value: 'anti_fomo', label: 'Anti-FOMO', desc: 'Avisa quando o ativo subir mas o score estiver deteriorando — sinal de cautela' },
     { value: 'smart_contribution', label: 'Aporte Inteligente', desc: 'Sugestao mensal de rebalanceamento baseada no motor IQ-Cognit' },
   ]

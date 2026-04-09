@@ -114,9 +114,9 @@ export default function DividendsPage() {
   }, [calendar])
 
   const tabs: { key: TabType; label: string }[] = [
-    { key: 'calendar', label: 'Calendario' },
+    { key: 'calendar', label: 'Calendário' },
     { key: 'summary', label: 'Resumo' },
-    { key: 'projections', label: 'Projecoes' },
+    { key: 'projections', label: 'Projeções' },
     { key: 'simulator', label: 'Simulador' },
     { key: 'radar', label: 'Radar DY' },
   ]
@@ -906,7 +906,7 @@ function DividendRadarTab() {
                 <tr className="border-b border-[var(--border-1)] text-[var(--text-caption)] text-[var(--text-3)]">
                   <th className="text-left py-2.5 px-3 font-medium">Ativo</th>
                   <th className="text-left py-2.5 px-2 font-medium">Setor</th>
-                  <th className="text-right py-2.5 px-2 font-medium">Preco</th>
+                  <th className="text-right py-2.5 px-2 font-medium">Preço</th>
                   <th className="text-right py-2.5 px-2 font-medium">IQ Score</th>
                   <th className="text-right py-2.5 px-2 font-medium">DY Proj</th>
                   <th className="text-right py-2.5 px-2 font-medium">Safety</th>

@@ -33,7 +33,7 @@ export interface MultiLensScores {
 export const LENSES: LensConfig[] = [
   {
     id: 'general',
-    name: 'aQ Geral',
+    name: 'IQ Geral',
     nameShort: 'Geral',
     description: 'Visão equilibrada de todos os fundamentos',
     icon: 'G',

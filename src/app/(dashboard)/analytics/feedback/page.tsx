@@ -7,7 +7,7 @@
 
 import { useState } from 'react'
 import { trpc } from '@/lib/trpc/client'
-import { PaywallGate } from '@/components/billing'
+
 import { HitRateCards } from '@/components/analytics/hit-rate-cards'
 import { ICTimeline } from '@/components/analytics/ic-timeline'
 import { ReturnByClassification } from '@/components/analytics/return-by-classification'
@@ -159,11 +159,9 @@ export default function FeedbackPage() {
   const [forwardDays, setForwardDays] = useState(90)
 
   return (
-    <PaywallGate requiredPlan="elite">
-      <div className="space-y-6">
+    <div className="space-y-6">
         <FeedbackHeader forwardDays={forwardDays} onChangeForwardDays={setForwardDays} />
         <FeedbackContent forwardDays={forwardDays} />
       </div>
-    </PaywallGate>
   )
 }

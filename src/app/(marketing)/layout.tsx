@@ -10,8 +10,7 @@ import { Disclaimer } from '@/components/ui'
 
 const navLinks = [
   { label: 'Recursos', href: '#features' },
-  { label: 'IQ-Cognit™', href: '#aq-score' },
-  { label: 'Planos', href: '/pricing' },
+  { label: 'IQ-Cognit™', href: '#motor' },
 ]
 
 export default function MarketingLayout({

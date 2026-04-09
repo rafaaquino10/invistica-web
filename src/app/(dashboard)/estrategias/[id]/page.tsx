@@ -4,7 +4,7 @@ import { use } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, Skeleton, Badge } from '@/components/ui'
 import { trpc } from '@/lib/trpc/client'
-import { PaywallGate } from '@/components/billing'
+
 import { AssetLogo } from '@/components/ui/asset-logo'
 import { cn } from '@/lib/utils'
 import { IncomeSimulatorCard } from '@/components/smart-portfolios/income-simulator'
@@ -108,7 +108,7 @@ export default function EstrategiaDetailPage({
   if (!portfolio) {
     return (
       <div className="space-y-6">
-        <h1 className="font-display text-[var(--text-title)] font-bold tracking-tight">Carteira nao encontrada</h1>
+        <h1 className="font-display text-[var(--text-title)] font-bold tracking-tight">Carteira não encontrada</h1>
         <Link href="/estrategias" className="text-[var(--text-small)] text-[var(--accent-1)] hover:underline">
           Voltar para Estrategias
         </Link>
@@ -156,7 +156,7 @@ export default function EstrategiaDetailPage({
                     Regime Atual: {regime.label}
                   </p>
                   <p className="text-[var(--text-caption)] text-[var(--text-3)] mt-0.5">
-                    {regime.rationale ?? 'Criterios padrao ativos para este regime.'}
+                    {regime.rationale ?? 'Critérios padrão ativos para este regime.'}
                   </p>
                 </div>
               </div>
@@ -165,8 +165,7 @@ export default function EstrategiaDetailPage({
         </div>
       </div>
 
-      <PaywallGate requiredPlan="pro" feature="Estrategias IQ" showPreview>
-        {portfolio.id === 'passive-income' && <IncomeSimulatorCard />}
+      {portfolio.id === 'passive-income' && <IncomeSimulatorCard />}
 
         {/* Tabela de ativos qualificados */}
         <Card>
@@ -264,7 +263,6 @@ export default function EstrategiaDetailPage({
         <div className="p-4 rounded-lg bg-[var(--surface-2)]/50 border border-[var(--border-1)]">
           <p className="text-[var(--text-caption)] text-[var(--text-3)] leading-relaxed">{CVM_DISCLAIMER}</p>
         </div>
-      </PaywallGate>
     </div>
   )
 }

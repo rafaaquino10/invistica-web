@@ -722,10 +722,10 @@ export default function HomePage() {
               </div>
               <h3 className="text-sm font-bold mb-2">Pilar Qualitativo (IA)</h3>
               <p className="text-xs text-[var(--text-2)] leading-relaxed mb-4">
-                6 dimensoes avaliadas por IA: pricing power, alocacao de capital, credibilidade da gestao, resiliencia, posicionamento competitivo e governanca.
+                6 dimensões avaliadas por IA: pricing power, alocação de capital, credibilidade da gestão, resiliência, posicionamento competitivo e governança.
               </p>
               <div className="space-y-2.5">
-                {['Pricing Power', 'Alocacao Capital', 'Gestao', 'Resiliencia', 'Competitividade', 'Governanca'].map((dim, i) => (
+                {['Pricing Power', 'Alocação de Capital', 'Gestão', 'Resiliência', 'Competitividade', 'Governança'].map((dim, i) => (
                   <div key={dim} className="flex items-center justify-between text-xs">
                     <span className="text-[var(--text-2)]">{dim}</span>
                     <span className="font-mono font-bold text-teal">FORTE</span>
@@ -747,7 +747,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-sm font-bold mb-2">Pilar Valuation</h3>
               <p className="text-xs text-[var(--text-2)] leading-relaxed mb-4">
-                4 modelos combinados: DCF (5 anos), Gordon DDM, Multiplos relativos ao setor, Monte Carlo (10.000 simulacoes). Fair value com bandas P25/P75.
+                4 modelos combinados: DCF (5 anos), Gordon DDM, Múltiplos relativos ao setor, Monte Carlo (10.000 simulações). Fair value com bandas P25/P75.
               </p>
               <div className="space-y-3">
                 {[
@@ -755,7 +755,7 @@ export default function HomePage() {
                   { label: 'Gordon', value: 'R$ 39,50' },
                   { label: 'Multiplos', value: 'R$ 44,20' },
                   { label: 'Fair Value Final', value: 'R$ 42,10', highlight: true },
-                  { label: 'Preco Atual', value: 'R$ 33,12', current: true },
+                  { label: 'Preço Atual', value: 'R$ 33,12', current: true },
                 ].map((m) => (
                   <div key={m.label} className="flex items-center justify-between text-xs">
                     <span className="text-[var(--text-2)]">{m.label}</span>
@@ -763,7 +763,7 @@ export default function HomePage() {
                   </div>
                 ))}
                 <div className="pt-2 border-t border-[var(--border-1)]/30 flex items-center justify-between text-xs">
-                  <span className="text-[var(--text-3)]">Margem de Seguranca</span>
+                  <span className="text-[var(--text-3)]">Margem de Segurança</span>
                   <span className="font-mono font-bold text-teal">+27,1%</span>
                 </div>
               </div>
@@ -778,7 +778,7 @@ export default function HomePage() {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold">Plataforma completa. Zero gordura.</h2>
             <p className="mt-3 text-[var(--text-2)] max-w-2xl mx-auto">
-              Dashboard com sinais do motor, explorer com 6 lentes, analise profunda por ativo com 5 tabs, estrategias autonomas e backtest validado.
+              Dashboard com sinais do motor, explorer com 6 lentes, análise profunda por ativo com 5 tabs, estratégias autônomas e backtest validado.
             </p>
           </motion.div>
 
@@ -788,10 +788,10 @@ export default function HomePage() {
               <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Dashboard</p>
               <h3 className="text-2xl font-bold mb-3">Centro de Comando</h3>
               <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                KPIs da carteira, performance vs benchmarks, sinais de compra/venda do motor estrategico e regime macro em uma unica tela.
+                KPIs da carteira, performance vs benchmarks, sinais de compra/venda do motor estratégico e regime macro em uma única tela.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                {['Signal Card com confianca % e vol stress', 'Regime Strip: SELIC, IPCA, USD, Brent ao vivo', 'Performance vs CDI e IBOV com periodo configuravel', 'Oportunidades rankeadas pelo motor IQ-Cognit'].map((item) => (
+                {['Signal Card com confiança % e vol stress', 'Regime Strip: SELIC, IPCA, USD, Brent ao vivo', 'Performance vs CDI e IBOV com período configurável', 'Oportunidades rankeadas pelo motor IQ-Cognit'].map((item) => (
                   <li key={item} className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />{item}</li>
                 ))}
               </ul>
@@ -799,7 +799,7 @@ export default function HomePage() {
             <div className="border border-[var(--border-1)]/30 rounded-[var(--radius)] bg-[var(--surface-1)]/50 p-5">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-[10px] text-[var(--text-3)]">Patrimonio</p>
+                  <p className="text-[10px] text-[var(--text-3)]">Patrimônio</p>
                   <p className="text-xl font-bold font-mono">R$ 127.450</p>
                 </div>
                 <span className="text-sm font-mono text-emerald-500">+18,7%</span>
@@ -841,12 +841,12 @@ export default function HomePage() {
             </div>
             <div className="order-1 lg:order-2">
               <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Explorer</p>
-              <h3 className="text-2xl font-bold mb-3">6 Lentes. Colunas Dinamicas.</h3>
+              <h3 className="text-2xl font-bold mb-3">6 Lentes. Colunas Dinâmicas.</h3>
               <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                Screener com colunas que mudam automaticamente conforme a lente selecionada. IQ Score, Rating, Fair Value, Margem de Seguranca, DY Projetado e Safety Score.
+                Screener com colunas que mudam automaticamente conforme a lente selecionada. IQ Score, Rating, Fair Value, Margem de Segurança, DY Projetado e Safety Score.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                {['Colunas dinamicas por lens (valor, dividendos, growth...)', 'Tooltips educativos em cada metrica', 'Filtros por setor, score minimo, DY', 'Export CSV e atalhos de teclado (j/k/Enter)'].map((item) => (
+                {['Colunas dinâmicas por lens (valor, dividendos, growth...)', 'Tooltips educativos em cada métrica', 'Filtros por setor, score mínimo, DY', 'Export CSV e atalhos de teclado (j/k/Enter)'].map((item) => (
                   <li key={item} className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />{item}</li>
                 ))}
               </ul>
@@ -859,7 +859,7 @@ export default function HomePage() {
               <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Analise do Ativo</p>
               <h3 className="text-2xl font-bold mb-3">5 Tabs. Tudo Sobre o Ativo.</h3>
               <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                Hero com preco + IQ Score + cotacao ao vivo. 5 tabs organizadas: Visao Geral, Valuation (Fair Value Strip + DCF + Monte Carlo + Institutional Holders), Dividendos, Score (X-Ray + Thesis + Dossier IA), Noticias.
+                Hero com preço + IQ Score + cotação ao vivo. 5 tabs organizadas: Visão Geral, Valuation (Fair Value Strip + DCF + Monte Carlo + Institutional Holders), Dividendos, Score (X-Ray + Thesis + Dossier IA), Notícias.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
                 {['Fair Value: DCF + Gordon + Multiplos + Monte Carlo P25/P75', 'Institutional Holders (CVM) + Short Interest (B3)', 'Dividend Safety Score + Trap Detection', '6 dimensoes qualitativas avaliadas por IA'].map((item) => (
@@ -879,7 +879,7 @@ export default function HomePage() {
                 <span className="ml-auto text-xl font-bold font-mono text-[#00D4AA]">86</span>
               </div>
               <div className="flex gap-1 mb-4">
-                {['Visao Geral', 'Valuation', 'Dividendos', 'Score', 'Noticias'].map((tab, i) => (
+                {['Visão Geral', 'Valuation', 'Dividendos', 'Score', 'Notícias'].map((tab, i) => (
                   <span key={tab} className={`text-[9px] px-2 py-1 rounded ${i === 1 ? 'bg-[var(--accent-1)] text-white' : 'text-[var(--text-3)]'}`}>{tab}</span>
                 ))}
               </div>
@@ -887,7 +887,7 @@ export default function HomePage() {
                 {[
                   { label: 'Fair Value DCF', value: 'R$ 42,80', color: 'text-teal' },
                   { label: 'Fair Value Gordon', value: 'R$ 39,50', color: 'text-teal' },
-                  { label: 'Preco Atual', value: 'R$ 33,12', color: 'text-[var(--text-1)]' },
+                  { label: 'Preço Atual', value: 'R$ 33,12', color: 'text-[var(--text-1)]' },
                   { label: 'Margem Seguranca', value: '+27,1%', color: 'text-teal font-bold' },
                   { label: 'Prob. Upside', value: '74%', color: 'text-[var(--accent-1)]' },
                 ].map(m => (
@@ -923,10 +923,10 @@ export default function HomePage() {
               <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Estrategias IQ + Lab</p>
               <h3 className="text-2xl font-bold mb-3">Motor Autonomo. Backtest Validado.</h3>
               <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                Motor estrategico com alocacao otima, short candidates e carteiras inteligentes. Backtest walk-forward de 13 anos com custos reais, impostos e survivorship bias.
+                Motor estratégico com alocação ótima, short candidates e carteiras inteligentes. Backtest walk-forward de 13 anos com custos reais, impostos e survivorship bias.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                {['Alocacao otima com sinais BUY/SELL/HOLD/ROTATE', 'Short candidates quando regime permite', 'Backtest configuravel: monthly/quarterly, leverage, benchmarks', 'Transparencia total: IC Spearman, hit rate, signal decay'].map((item) => (
+                {['Alocação ótima com sinais BUY/SELL/HOLD/ROTATE', 'Short candidates quando regime permite', 'Backtest configurável: monthly/quarterly, leverage, benchmarks', 'Transparência total: IC Spearman, hit rate, signal decay'].map((item) => (
                   <li key={item} className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />{item}</li>
                 ))}
               </ul>
@@ -941,7 +941,7 @@ export default function HomePage() {
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
             <div>
               <p className="text-3xl font-bold font-mono text-[var(--accent-1)]">947</p>
-              <p className="text-sm text-[var(--text-2)] mt-1">Acoes analisadas diariamente</p>
+              <p className="text-sm text-[var(--text-2)] mt-1">Ações analisadas diariamente</p>
             </div>
             <div>
               <p className="text-3xl font-bold font-mono text-teal">+15,4%</p>
@@ -956,69 +956,6 @@ export default function HomePage() {
               <p className="text-sm text-[var(--text-2)] mt-1">Modelos de valuation combinados</p>
             </div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* ─── Planos ────────────────────────────────────── */}
-      <section className="py-20 md:py-28">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-14"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold">Planos</h2>
-            <p className="mt-3 text-[var(--text-2)]">Comece grátis. Evolua quando precisar.</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            {[
-              {
-                name: 'Free',
-                price: 'R$ 0',
-                features: ['Explorer com ranking ao vivo', 'Cotacoes e historico', 'Financials (CVM)', 'Peers e comparacao basica', 'Dividendos historico'],
-                highlight: false,
-              },
-              {
-                name: 'Pro',
-                price: 'R$ 59,90/mes',
-                features: ['Tudo do Free +', 'IQ Score + Rating + 3 pilares', 'Fair Value (DCF, Gordon, Multiplos, Monte Carlo)', 'Dividend Safety + Trap Detection', 'Estrategias IQ + Alocacao Otima', 'Backtest Lab completo', 'Radar com 8 tipos de alerta', 'Institutional Holders + Short Interest', 'X-Ray, Dossier IA, Thesis, Evidence Explorer'],
-                highlight: true,
-              },
-            ].map((plan) => (
-              <motion.div
-                key={plan.name}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className={`rounded-[var(--radius)] p-6 border ${
-                  plan.highlight
-                    ? 'border-[var(--accent-1)]/50 bg-[var(--accent-1)]/5 ring-1 ring-[var(--accent-1)]/20'
-                    : 'border-[var(--border-1)]/30 bg-[var(--surface-1)]/50'
-                }`}
-              >
-                <h3 className="text-lg font-bold mb-1">{plan.name}</h3>
-                <p className="text-2xl font-bold font-mono mb-4">{plan.price}</p>
-                <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500 flex-shrink-0">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="text-center mt-6">
-            <Link href="/pricing" className="text-sm text-[var(--accent-1)] hover:text-[var(--accent-1)]/80 transition-colors">
-              Ver detalhes dos planos →
-            </Link>
-          </div>
         </div>
       </section>
 

@@ -375,8 +375,7 @@ function BillingTab() {
     }
   }
 
-  const isPaid = userPlan === 'pro' || userPlan === 'elite'
-  const planLabel = userPlan === 'elite' ? 'Premium' : userPlan === 'pro' ? 'Pro' : 'Gratuito'
+  const _isPaid = userPlan === 'pro' || userPlan === 'elite'
 
   if (loading) {
     return (
@@ -400,36 +399,15 @@ function BillingTab() {
         </div>
       )}
 
-      {/* Current Plan */}
-      <DataCard
-        title="Plano Atual"
-        action={
-          !isPaid ? (
-            <Link href="/pricing">
-              <Button variant="primary" size="sm" className="text-[var(--text-caption)]">Fazer Upgrade</Button>
-            </Link>
-          ) : (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleCancel}
-              disabled={cancelling}
-              className="text-[var(--text-caption)]"
-            >
-              {cancelling ? 'Cancelando...' : 'Cancelar'}
-            </Button>
-          )
-        }
-      >
+      {/* Account Status */}
+      <DataCard title="Conta">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <span className="text-[var(--text-body)] font-sans font-semibold">Plano {planLabel}</span>
-            <Badge variant={isPaid ? 'primary' : 'outline'} size="sm">
-              {userPlan === 'free' ? 'Free' : userPlan.charAt(0).toUpperCase() + userPlan.slice(1)}
-            </Badge>
+            <span className="text-[var(--text-body)] font-sans font-semibold">InvestIQ</span>
+            <Badge variant="primary" size="sm">Ativo</Badge>
           </div>
           <p className="text-[var(--text-caption)] text-[var(--text-2)]">
-            {isPaid ? 'Assinatura ativa' : 'Acesso limitado aos recursos básicos'}
+            Acesso completo a todos os recursos da plataforma
           </p>
           <div className="px-3 py-2 rounded-lg bg-[var(--surface-2)]">
             <p className="text-[var(--text-caption)] font-medium text-[var(--text-2)] mb-1.5">Recursos incluídos:</p>

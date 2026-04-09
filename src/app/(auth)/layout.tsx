@@ -105,11 +105,11 @@ export default function AuthLayout({
         <div className="relative z-20 flex flex-col justify-between p-12 text-white">
           <Link href="/" className="flex items-center gap-3 hover:opacity-90 transition-opacity">
             <div className="w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <span className="font-display font-bold text-lg">aQ</span>
+              <span className="font-display font-bold text-lg">IQ</span>
             </div>
             <span className="font-display text-xl font-bold tracking-tight" style={{ letterSpacing: '-0.04em' }}>
-              <span className="text-white">aQ</span>
-              <span className="text-white">-Invest</span>
+              <span className="text-white">Invest</span>
+              <span className="text-white">IQ</span>
             </span>
           </Link>
 
@@ -130,7 +130,7 @@ export default function AuthLayout({
             </div>
             <div className="w-px h-12 bg-white/20" />
             <div className="group">
-              <p className="text-4xl font-bold tracking-tight group-hover:scale-105 transition-transform">400+</p>
+              <p className="text-4xl font-bold tracking-tight group-hover:scale-105 transition-transform">947</p>
               <p className="text-sm text-white/60">Ativos analisados</p>
             </div>
           </div>
@@ -145,11 +145,11 @@ export default function AuthLayout({
         <div className="relative z-10 flex items-center justify-between p-4">
           <Link href="/" className="flex items-center gap-2 lg:hidden hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent-1)] to-teal flex items-center justify-center">
-              <span className="text-white font-display font-bold text-sm">aQ</span>
+              <span className="text-white font-display font-bold text-sm">IQ</span>
             </div>
             <span className="font-display text-lg font-bold tracking-tight" style={{ letterSpacing: '-0.04em' }}>
-              <span className="text-[var(--accent-1)]">aQ</span>
-              <span className="text-[var(--logo-text-color)]">-Invest</span>
+              <span className="text-[var(--accent-1)]">Invest</span>
+              <span className="text-[var(--logo-text-color)]">IQ</span>
             </span>
           </Link>
           <div className="lg:ml-auto">

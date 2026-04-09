@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent, Skeleton, Disclaimer } from '@/components/ui'
 import { trpc } from '@/lib/trpc/client'
-import { PaywallGate } from '@/components/billing'
+
 import { cn } from '@/lib/utils'
 type Tab = 'carteiras' | 'alocacao' | 'shorts'
 
@@ -31,15 +31,13 @@ export default function EstrategiasPage() {
         <TabButton active={tab === 'shorts'} onClick={() => setTab('shorts')}>Short Candidates</TabButton>
       </div>
 
-      <PaywallGate requiredPlan="pro" feature="Estratégias IQ" showPreview>
-        {tab === 'carteiras' && <CarteirasTab />}
+      {tab === 'carteiras' && <CarteirasTab />}
         {tab === 'alocacao' && <AlocacaoTab />}
         {tab === 'shorts' && <ShortsTab />}
 
         <div className="mt-6 p-4 rounded-lg bg-[var(--surface-2)]/50 border border-[var(--border-1)]">
           <Disclaimer variant="footer" />
         </div>
-      </PaywallGate>
     </div>
   )
 }

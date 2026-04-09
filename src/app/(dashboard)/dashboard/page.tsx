@@ -84,7 +84,7 @@ function SignalCard() {
   return (
     <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--surface-1)] p-4 h-full flex flex-col">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-[var(--text-caption)] font-semibold uppercase tracking-wider text-[var(--text-3)]">Motor Estrategico</span>
+        <span className="text-[var(--text-caption)] font-semibold uppercase tracking-wider text-[var(--text-3)]">Motor Estratégico</span>
         <Link href="/estrategias" className="text-[var(--text-caption)] text-[var(--accent-1)] hover:underline font-medium">
           Ver tudo
         </Link>
@@ -113,7 +113,7 @@ function SignalCard() {
       <div className="flex items-center gap-4 mb-3 pb-3 border-b border-[var(--border-1)]">
         {confidencePct !== null && (
           <div>
-            <span className="text-[var(--text-caption)] text-[var(--text-3)] block">Confianca</span>
+            <span className="text-[var(--text-caption)] text-[var(--text-3)] block">Confiança</span>
             <span className={cn(
               'text-[var(--text-subheading)] font-mono font-bold',
               confidencePct >= 70 ? 'text-teal' : confidencePct >= 50 ? 'text-amber' : 'text-red'
@@ -150,7 +150,7 @@ function SignalCard() {
               s.action === 'rotate' ? 'text-amber bg-amber/10' :
               'text-[var(--text-2)] bg-[var(--surface-2)]'
             )}>
-              {s.action === 'buy' ? 'COMPRA' : s.action === 'sell' ? 'VENDA' : s.action === 'rotate' ? 'ROTACAO' : 'HOLD'}
+              {s.action === 'buy' ? 'COMPRA' : s.action === 'sell' ? 'VENDA' : s.action === 'rotate' ? 'ROTAÇÃO' : 'HOLD'}
             </span>
             <span className="font-mono text-[var(--text-small)] font-bold text-[var(--text-1)]">{s.ticker}</span>
             <span className="text-[var(--text-caption)] text-[var(--text-3)] truncate flex-1">{s.reason}</span>
@@ -289,9 +289,9 @@ export default function DashboardPage() {
   const gainLossPct = portfolio && portfolio.total_cost > 0 ? (gainLoss / portfolio.total_cost) * 100 : 0
 
   const kpis: KpiItem[] = useMemo(() => [
-    { label: 'Patrimonio', value: portfolio ? `R$ ${portfolio.total_value.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}` : '--' },
+    { label: 'Patrimônio', value: portfolio ? `R$ ${portfolio.total_value.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}` : '--' },
     { label: 'Resultado', value: portfolio ? `R$ ${gainLoss.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}` : '--', change: gainLossPct || undefined },
-    { label: 'Posicoes', value: String(positions.length) },
+    { label: 'Posições', value: String(positions.length) },
     { label: 'Regime', value: regime?.label || '--' },
   ], [portfolio, regime, positions, gainLoss, gainLossPct])
 
@@ -326,7 +326,7 @@ export default function DashboardPage() {
           {perfSeries.length > 0 ? (
             <TVPerformanceChart series={perfSeries} height={300} activePeriod={perfMonths} onPeriodChange={setPerfMonths} />
           ) : (
-            <div className="flex items-center justify-center h-[300px] text-[var(--text-3)] text-[var(--text-caption)]">Dados indisponiveis</div>
+            <div className="flex items-center justify-center h-[300px] text-[var(--text-3)] text-[var(--text-caption)]">Dados indisponíveis</div>
           )}
         </div>
 
@@ -340,7 +340,7 @@ export default function DashboardPage() {
       <RegimeStrip data={regime} />
 
       <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--surface-1)] p-3">
-        <span className="text-[var(--text-caption)] font-semibold uppercase tracking-wider text-[var(--text-3)] block mb-2">Posicoes</span>
+        <span className="text-[var(--text-caption)] font-semibold uppercase tracking-wider text-[var(--text-3)] block mb-2">Posições</span>
         <PositionsTable positions={positions} />
       </div>
 

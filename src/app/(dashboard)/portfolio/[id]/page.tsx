@@ -9,7 +9,7 @@ import { AllocationDonut, AllocationTreemap } from '@/components/charts'
 import { CSVImport } from '@/components/portfolio/csv-import'
 import { AnalyticsTab } from '@/components/portfolio/analytics-tab'
 import { PortfolioDiagnostics } from '@/components/portfolio/portfolio-diagnostics'
-import { PaywallGate } from '@/components/billing/paywall-gate'
+
 import { MonteCarloSection } from '@/components/simulation/monte-carlo-chart'
 import { IRPFCalculator } from '@/components/portfolio/irpf-calculator'
 import { PerformanceEvolutionChart } from '@/components/portfolio/performance-chart'
@@ -276,7 +276,7 @@ export default function PortfolioDetailPage() {
       {/* Tabs */}
       <div className="flex items-center gap-1 border-b border-[var(--border-1)]">
         {[
-          { id: 'overview' as const, label: 'Visao Geral' },
+          { id: 'overview' as const, label: 'Visão Geral' },
           { id: 'dividendos' as const, label: 'Dividendos' },
           { id: 'analytics' as const, label: 'Analytics' },
         ].map(tab => (
@@ -305,9 +305,7 @@ export default function PortfolioDetailPage() {
 
       {/* ─── Tab: Analytics ──────────────────────────────────── */}
       {activeTab === 'analytics' && (
-        <PaywallGate requiredPlan="pro" feature="Analytics de Portfólio" showPreview>
-          <AnalyticsTab portfolioId={portfolioId} />
-        </PaywallGate>
+        <AnalyticsTab portfolioId={portfolioId} />
       )}
 
       {/* ─── Tab: Overview (conteúdo original) ───────────────── */}
@@ -355,9 +353,7 @@ export default function PortfolioDetailPage() {
 
       {/* Monte Carlo (Elite) */}
       {portfolio.positions.length > 0 && (
-        <PaywallGate requiredPlan="elite" feature="Simulação Monte Carlo" showPreview>
-          <MonteCarloSection portfolioId={portfolioId} />
-        </PaywallGate>
+        <MonteCarloSection portfolioId={portfolioId} />
       )}
 
       {/* Calculadora IRPF */}
@@ -698,7 +694,7 @@ function PortfolioDividendsTab({ positions, totalValue }: {
           <p className="text-[var(--text-subheading)] font-mono font-bold">{relevantDividends.length}</p>
         </div>
         <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)] p-4">
-          <p className="text-[var(--text-caption)] text-[var(--text-3)]">Posicoes</p>
+          <p className="text-[var(--text-caption)] text-[var(--text-3)]">Posições</p>
           <p className="text-[var(--text-subheading)] font-mono font-bold">{positions.length}</p>
         </div>
       </div>
@@ -706,7 +702,7 @@ function PortfolioDividendsTab({ positions, totalValue }: {
       {/* YoC Table */}
       <div className="border border-[var(--border-1)] rounded-[var(--radius)] bg-[var(--surface-1)]">
         <div className="px-4 py-3 border-b border-[var(--border-1)]">
-          <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider">Yield on Cost por Posicao</h3>
+          <h3 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider">Yield on Cost por Posição</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-[var(--text-small)]">
@@ -714,7 +710,7 @@ function PortfolioDividendsTab({ positions, totalValue }: {
               <tr className="border-b border-[var(--border-1)] text-[var(--text-caption)] text-[var(--text-3)]">
                 <th className="text-left py-2.5 px-4 font-medium">Ativo</th>
                 <th className="text-right py-2.5 px-3 font-medium">PM</th>
-                <th className="text-right py-2.5 px-3 font-medium">Preco</th>
+                <th className="text-right py-2.5 px-3 font-medium">Preço</th>
                 <th className="text-right py-2.5 px-3 font-medium">Valor</th>
                 <th className="text-right py-2.5 px-3 font-medium">Peso</th>
                 <th className="text-right py-2.5 px-4 font-medium">YoC Est.</th>

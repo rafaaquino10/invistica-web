@@ -56,7 +56,7 @@ const COLUMN_CONFIG: Record<ColumnKey, {
   noSort?: boolean
 }> = {
   sector:           { label: 'Setor',       align: 'left',   hide: 'lg', noSort: true },
-  close:            { label: 'Preco',       align: 'right' },
+  close:            { label: 'Preço',       align: 'right' },
   changePercent:    { label: 'Dia',          align: 'center' },
   marketCap:        { label: 'Mkt Cap',      align: 'right',  hide: 'xl', glossaryKey: 'Mkt Cap' },
   scoreTotal:       { label: 'IQ-Score',     align: 'center', glossaryKey: 'IQ Score' },
@@ -250,7 +250,7 @@ export default function ExplorerPage() {
   const activeLens = LENS_TABS.find(l => l.id === selectedLens) ?? LENS_TABS[0]!
   const scoreLensLabel = selectedLens === 'general'
     ? 'IQ Score'
-    : `aQ ${activeLens.label}`
+    : `IQ ${activeLens.label}`
 
   return (
     <div className="space-y-6">
@@ -265,7 +265,7 @@ export default function ExplorerPage() {
 
         {/* ─── Lens Tabs ───────────────────────────────── */}
         <Tabs
-          tabs={LENS_TABS.map(l => ({ id: l.id, label: l.id === 'general' ? 'aQ Geral' : l.label }))}
+          tabs={LENS_TABS.map(l => ({ id: l.id, label: l.id === 'general' ? 'IQ Geral' : l.label }))}
           defaultTab="general"
           variant="pills"
           size="sm"
