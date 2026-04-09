@@ -1,86 +1,74 @@
 import { z } from 'zod'
 import { router, premiumProcedure } from '../trpc'
 import { getAssets } from '@/lib/data-source'
-import {
-  calculateAttribution,
-  calculateRisk,
-  analyzeSelicChange,
-  analyzeFxChange,
-  calculateQuintile,
-} from '@/lib/analytics'
+import { calculateQuintile } from '@/lib/analytics'
 import { investiq } from '@/lib/investiq-client'
 
 export const analyticsRouter = router({
-  // Performance Attribution — Brinson-Fachler (Premium)
+  // Performance Attribution — Brinson-Fachler (Premium, backend-only)
   attribution: premiumProcedure
     .input(z.object({ portfolioId: z.string() }))
     .query(async ({ ctx, input }) => {
       const portfolio = await ctx.repos.portfolio.get(ctx.session.user.id, input.portfolioId)
       if (!portfolio) return null
 
-      const positions = portfolio.positions.map((p: any) => ({
-        ticker: p.ticker,
-        sector: p.sector,
-        currentValue: p.currentValue,
-        gainLossPercent: p.gainLossPercent,
-      }))
-
-      const localResult = calculateAttribution(positions)
-
-      // Enrich with backend attribution if available
-      let backendAttribution = null
       try {
-        backendAttribution = await investiq.get(`/analytics/portfolio/${input.portfolioId}/attribution`)
-      } catch { /* fallback to local */ }
-
-      return { ...localResult, backend: backendAttribution }
+        return await investiq.get(`/analytics/portfolio/${input.portfolioId}/attribution`)
+      } catch {
+        // Backend unavailable — return empty defaults
+        return {
+          totalReturn: 0,
+          benchmarkReturn: 0,
+          activeReturn: 0,
+          sectorAttribution: [],
+          selectionEffect: 0,
+          allocationEffect: 0,
+          interactionEffect: 0,
+        }
+      }
     }),
 
-  // Risk Analytics — VaR, Beta, HHI, Factor Exposure (Premium)
+  // Risk Analytics — VaR, Beta, HHI, Factor Exposure (Premium, backend-only)
   risk: premiumProcedure
     .input(z.object({ portfolioId: z.string() }))
     .query(async ({ ctx, input }) => {
       const portfolio = await ctx.repos.portfolio.get(ctx.session.user.id, input.portfolioId)
       if (!portfolio) return null
 
-      const positions = portfolio.positions.map((p: any) => ({
-        ticker: p.ticker,
-        sector: p.sector,
-        currentValue: p.currentValue,
-        aqScore: p.aqScore,
-        dividendYield: p.dividendYield,
-        gainLossPercent: p.gainLossPercent,
-      }))
-
-      const localResult = calculateRisk(positions)
-
-      // Enrich with backend risk analytics if available
-      let backendRisk = null
       try {
-        backendRisk = await investiq.get(`/analytics/portfolio/${input.portfolioId}/risk`)
-      } catch { /* fallback to local */ }
-
-      return { ...localResult, backend: backendRisk }
+        return await investiq.get(`/analytics/portfolio/${input.portfolioId}/risk`)
+      } catch {
+        // Backend unavailable — return empty defaults
+        return {
+          var95: 0,
+          var99: 0,
+          cvar95: 0,
+          betaPortfolio: 1,
+          hhi: 0,
+          factorExposure: [],
+          sharpeRatio: 0,
+          maxDrawdown: 0,
+        }
+      }
     }),
 
-  // Scenario Analysis — SELIC e FX (Premium)
+  // Scenario Analysis — SELIC e FX (Premium, backend-only)
   scenario: premiumProcedure
     .input(z.object({ portfolioId: z.string() }))
     .query(async ({ ctx, input }) => {
       const portfolio = await ctx.repos.portfolio.get(ctx.session.user.id, input.portfolioId)
       if (!portfolio) return null
 
-      const positions = portfolio.positions.map((p: any) => ({
-        ticker: p.ticker,
-        sector: p.sector,
-        currentValue: p.currentValue,
-      }))
-
-      return {
-        selicDown: analyzeSelicChange(positions, -100),
-        selicUp: analyzeSelicChange(positions, 100),
-        fxUp: analyzeFxChange(positions, 10),
-        fxDown: analyzeFxChange(positions, -10),
+      try {
+        return await investiq.get(`/analytics/portfolio/${input.portfolioId}/scenario`)
+      } catch {
+        // Backend unavailable — return empty defaults
+        return {
+          selicDown: { impact: 0, sectors: [] },
+          selicUp: { impact: 0, sectors: [] },
+          fxUp: { impact: 0, sectors: [] },
+          fxDown: { impact: 0, sectors: [] },
+        }
       }
     }),
 

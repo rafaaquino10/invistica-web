@@ -6,22 +6,10 @@ import {
   fetchHistory,
   fetchDividends,
   fetchIntelligence,
-  fetchRiEvents,
-  fetchBenchmarks,
   fetchSparklines,
 } from '@/lib/gateway-client'
 import { investiq } from '@/lib/investiq-client'
-import {
-  mapearSetor,
-  PESOS_POR_SETOR,
-  AJUSTES_SETORIAIS,
-} from '@/lib/scoring/iq-score'
-import { generateNarrative } from '@/lib/scoring/score-narrator'
 import { generateResearchNote } from '@/lib/ai/research-note'
-import { calculateSensitivity } from '@/lib/analytics/sensitivity'
-import { generateAIDiagnosis, assetToDiagnosisInput } from '@/lib/ai/synthesis-pipeline'
-import { getAllSmartPortfolios } from '@/lib/smart-portfolios/engine'
-import { estimateFCF, calculateDCF } from '@/lib/valuation/dcf'
 
 export const assetsRouter = router({
   // Get all assets with optional filters — always uses live gateway data
@@ -152,37 +140,8 @@ export const assetsRouter = router({
         })
       }
 
-      // Use the cached full score breakdown (same calculation as hero score)
-      // This ensures X-Ray and hero badge always show the same score
-      const setorCanon = mapearSetor(asset.sector)
-      const pesosSetor = PESOS_POR_SETOR[setorCanon]
-      const ajusteSetor = AJUSTES_SETORIAIS[setorCanon] ?? null
-      const fullScore = asset.scoreBreakdown
-      const scoreBreakdown = fullScore ? {
-        score: fullScore.score,
-        classificacao: fullScore.classificacao,
-        pilares: {
-          valuation: { nota: fullScore.pilares.valuation.nota, pesoEfetivo: fullScore.pilares.valuation.pesoEfetivo, subNotas: fullScore.pilares.valuation.subNotas, destaque: fullScore.pilares.valuation.destaque },
-          qualidade: { nota: fullScore.pilares.qualidade.nota, pesoEfetivo: fullScore.pilares.qualidade.pesoEfetivo, subNotas: fullScore.pilares.qualidade.subNotas, destaque: fullScore.pilares.qualidade.destaque },
-          risco: { nota: fullScore.pilares.risco.nota, pesoEfetivo: fullScore.pilares.risco.pesoEfetivo, subNotas: fullScore.pilares.risco.subNotas, destaque: fullScore.pilares.risco.destaque },
-          dividendos: { nota: fullScore.pilares.dividendos.nota, pesoEfetivo: fullScore.pilares.dividendos.pesoEfetivo, subNotas: fullScore.pilares.dividendos.subNotas, destaque: fullScore.pilares.dividendos.destaque },
-          crescimento: { nota: fullScore.pilares.crescimento.nota, pesoEfetivo: fullScore.pilares.crescimento.pesoEfetivo, subNotas: fullScore.pilares.crescimento.subNotas, destaque: fullScore.pilares.crescimento.destaque },
-          qualitativo: fullScore.pilares.qualitativo ? { nota: fullScore.pilares.qualitativo.nota, pesoEfetivo: fullScore.pilares.qualitativo.pesoEfetivo, subNotas: fullScore.pilares.qualitativo.subNotas, destaque: fullScore.pilares.qualitativo.destaque } : undefined,
-        },
-        sectorBenchmarks: fullScore.sectorBenchmarks,
-        ajustes: fullScore.ajustes,
-        metadata: {
-          dataCalculo: fullScore.metadata.dataCalculo,
-          indicadoresDisponiveis: fullScore.metadata.indicadoresDisponiveis,
-          indicadoresTotais: fullScore.metadata.indicadoresTotais,
-          confiabilidade: fullScore.metadata.confiabilidade,
-        },
-        setorCalibrado: {
-          setor: setorCanon,
-          pesos: pesosSetor,
-          ajuste: ajusteSetor,
-        },
-      } : null
+      // Backend already provides the correct scoreBreakdown structure — pass through directly
+      const scoreBreakdown = asset.scoreBreakdown ?? null
 
       // Fetch real data from backend + gateway in parallel
       let quotes: Array<{ date: Date; close: number; open: number; high: number; low: number; volume: number }> = []
@@ -266,94 +225,8 @@ export const assetsRouter = router({
           changePercent: a.changePercent,
         }))
 
-      // INT-10: Diagnóstico IA com inteligência cruzada
-      let aiDiagnosis: { text: string; source: 'ai' | 'template' } | null = null
-      try {
-        // Buscar contexto expandido em paralelo (não bloqueia se falhar)
-        const GATEWAY_URL = process.env['INVESTIQ_API_URL'] ?? 'https://investiqbackend-production.up.railway.app'
-        const newsParams = new URLSearchParams({ ticker: asset.ticker, limit: '10' })
-        if (asset.name) newsParams.set('companyName', asset.name)
-
-        const [tickerNews, tickerRi] = await Promise.all([
-          fetch(`${GATEWAY_URL}/v1/news?${newsParams.toString()}`, {
-            cache: 'no-store',
-            signal: AbortSignal.timeout(3000),
-          }).then(r => r.ok ? r.json() as Promise<{ data: Array<{ title: string; sentimentScore?: number }> }> : { data: [] }).catch(() => ({ data: [] as Array<{ title: string; sentimentScore?: number }> })),
-          fetchRiEvents(asset.ticker).catch(() => []),
-        ])
-
-        // DCF upside (cálculo leve server-side)
-        let dcfUpside: number | null = null
-        try {
-          const { fcf, source: fcfSource } = estimateFCF(asset)
-          if (fcf > 0 && asset.price > 0) {
-            let selicRate = 13
-            try {
-              const benchmarks = await fetchBenchmarks()
-              selicRate = (benchmarks as any).selic?.rate ?? 13
-            } catch { /* fallback */ }
-            const beta = (asset as any).scoreBreakdown?.metadata?.beta ?? 1.0
-            // Prioridade crescimento: FCF real (CVM) > receita 5a > fallback 5%
-            // FCF growth para DCF: floor em 0% (negativo destrói o modelo)
-            const rawGrowth = asset.fundamentals.fcfGrowthRate ?? asset.fundamentals.crescimentoReceita5a ?? 3
-            const growthRate = Math.max(0, rawGrowth)
-            const dcfResult = calculateDCF({
-              ticker: asset.ticker,
-              sector: asset.sector,
-              freeCashFlow: fcf,
-              fcfGrowthRate: Math.min(growthRate, 20),
-              selicRate,
-              riskPremium: 5.5,
-              beta,
-              sharesOutstanding: asset.marketCap && asset.price > 0 ? asset.marketCap / asset.price : undefined,
-              netDebt: asset.fundamentals.netDebt ?? undefined,
-              totalDebt: asset.fundamentals.totalDebt ?? undefined,
-              marketCap: asset.marketCap ?? undefined,
-              debtCost: asset.fundamentals.debtCostEstimate ?? undefined,
-              fcfSource,
-            })
-            dcfUpside = ((dcfResult.intrinsicValue - asset.price) / asset.price) * 100
-          }
-        } catch { /* DCF opcional */ }
-
-        // Carteiras inteligentes — verificar se o ativo está em alguma
-        let portfolioCtx: { inPortfolios: string[]; exitAlerts: string[] } | undefined
-        try {
-          const smartResults = getAllSmartPortfolios(ALL_ASSETS, getCurrentRegime()?.regime)
-          const inPortfolios = smartResults
-            .filter(sp => sp.stocks.some(s => s.ticker === asset.ticker))
-            .map(sp => sp.portfolio.name)
-          if (inPortfolios.length > 0) {
-            portfolioCtx = { inPortfolios, exitAlerts: [] }
-          }
-        } catch { /* opcional */ }
-
-        // Montar input e gerar diagnóstico
-        const newsItems = (tickerNews.data ?? []).map(n => ({
-          title: n.title,
-          sentiment: n.sentimentScore,
-        }))
-        const riItems = (tickerRi ?? []).slice(0, 5).map(r => ({ title: r.title ?? r.summary ?? 'Fato relevante' }))
-
-        const diagInput = assetToDiagnosisInput(asset, {
-          news: newsItems.length > 0 ? newsItems : undefined,
-          riEvents: riItems.length > 0 ? riItems : undefined,
-          cagedData: undefined, // CAGED integrado em sprint futura
-          portfolioContext: portfolioCtx,
-          dcfUpside,
-        })
-
-        if (diagInput) {
-          const regime = getCurrentRegime()
-          const macro = {
-            regime: regime?.regime ?? ('neutral' as const),
-            selicReal: regime?.selicReal ?? 8,
-          }
-          aiDiagnosis = await generateAIDiagnosis(diagInput, macro)
-        }
-      } catch {
-        // Diagnóstico IA é opcional — não deve impedir carregamento
-      }
+      // AI diagnosis — backend provides this data, no local calculation needed
+      const aiDiagnosis: { text: string; source: 'ai' | 'template' } | null = null
 
       return {
         id: asset.id,
@@ -371,7 +244,7 @@ export const assetsRouter = router({
         aqScore: asset.aqScore,
         lensScores: asset.lensScores,
         scoreBreakdown,
-        narrative: fullScore ? generateNarrative(fullScore, getCurrentRegime()) : null,
+        narrative: null, // Narrative generation moved to backend
         aiDiagnosis,
         fundamentals: [mappedFundamental],
         quotes,
@@ -530,20 +403,7 @@ export const assetsRouter = router({
   sensitivity: premiumProcedure
     .input(z.object({ ticker: z.string() }))
     .query(async ({ input }) => {
-      const assets = await getAssets()
-      const asset = assets.find(a => a.ticker === input.ticker.toUpperCase())
-      if (!asset) throw new TRPCError({ code: 'NOT_FOUND', message: `Ativo ${input.ticker} não encontrado.` })
-
-      const regime = getCurrentRegime()
-      const macro = {
-        selic: regime?.inputSelic ?? 13.75,
-        ipca: regime?.inputIpca ?? 4.5,
-        selicReal: regime?.selicReal ?? 9.25,
-      }
-
-      const localResult = calculateSensitivity(asset, macro)
-
-      // Enrich with backend sensitivity if available
+      // Sensitivity analysis provided by backend
       try {
         const backendSens = await investiq.get<{
           scenarios: Array<{
@@ -555,22 +415,19 @@ export const assetsRouter = router({
         }>(`/analytics/sensitivity?ticker=${input.ticker.toUpperCase()}`)
 
         if (backendSens?.scenarios?.length) {
-          return [
-            ...localResult,
-            ...backendSens.scenarios.map(s => ({
-              label: s.name,
-              description: s.description,
-              scoreImpact: s.impact_score,
-              priceImpact: s.impact_price,
-              affectedPillars: s.affected_pillars,
-              regimeChange: s.regime_change,
-              source: 'backend' as const,
-            })),
-          ]
+          return backendSens.scenarios.map(s => ({
+            label: s.name,
+            description: s.description,
+            scoreImpact: s.impact_score,
+            priceImpact: s.impact_price,
+            affectedPillars: s.affected_pillars,
+            regimeChange: s.regime_change,
+            source: 'backend' as const,
+          }))
         }
-      } catch { /* fallback to local only */ }
+      } catch { /* backend unavailable */ }
 
-      return localResult
+      return []
     }),
 
   // ─── Evidence Explorer (Backend IQ-Cognit) ─────────────────
