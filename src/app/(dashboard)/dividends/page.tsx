@@ -286,7 +286,7 @@ export default function DividendsPage() {
                         {div.type === 'JCP' ? 'JCP' : 'Div'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right font-mono">R$ {div.valuePerShare.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-right font-mono">R$ {Number(div.valuePerShare).toFixed(2)}</td>
                     <td className="px-4 py-3 text-right font-mono">{div.quantity}</td>
                     <td className="px-4 py-3 text-right font-mono font-bold text-teal">{formatCurrency(div.totalValue)}</td>
                   </tr>
@@ -368,7 +368,7 @@ export default function DividendsPage() {
                           {div.quantity} cotas
                         </span>
                         <span className="text-[var(--text-small)] text-[var(--text-2)] font-mono shrink-0 w-24 text-right">
-                          R$ {div.valuePerShare.toFixed(2)}/cota
+                          R$ {Number(div.valuePerShare).toFixed(2)}/cota
                         </span>
                         <span className="font-mono text-[var(--text-small)] font-bold text-teal w-24 text-right shrink-0">{formatCurrency(div.totalValue)}</span>
                       </Link>

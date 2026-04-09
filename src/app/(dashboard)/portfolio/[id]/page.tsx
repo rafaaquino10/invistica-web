@@ -521,7 +521,7 @@ export default function PortfolioDetailPage() {
                       setTransactionForm({
                         ...transactionForm,
                         ticker: asset.ticker,
-                        price: asset.price ? asset.price.toFixed(2) : transactionForm.price,
+                        price: asset.price ? Number(asset.price).toFixed(2) : transactionForm.price,
                       })
                       setTickerSelected(true)
                     }}
@@ -531,7 +531,7 @@ export default function PortfolioDetailPage() {
                     <span className="font-semibold">{asset.ticker}</span>
                     <span className="text-[var(--text-2)] flex-1 truncate text-[var(--text-caption)]">{asset.name}</span>
                     {asset.price != null && (
-                      <span className="text-[var(--text-2)] text-[var(--text-caption)] font-mono">R$ {asset.price.toFixed(2)}</span>
+                      <span className="text-[var(--text-2)] text-[var(--text-caption)] font-mono">R$ {Number(asset.price).toFixed(2)}</span>
                     )}
                   </button>
                 ))}
@@ -736,7 +736,7 @@ function PortfolioDividendsTab({ positions, totalValue }: {
                   </td>
                   <td className="py-2.5 px-4 text-right">
                     <span className={cn('font-mono font-bold', pos.yoc >= 8 ? 'text-teal' : pos.yoc >= 4 ? 'text-[var(--text-1)]' : 'text-[var(--text-3)]')}>
-                      {pos.yoc.toFixed(1)}%
+                      {Number(pos.yoc).toFixed(1)}%
                     </span>
                   </td>
                 </tr>

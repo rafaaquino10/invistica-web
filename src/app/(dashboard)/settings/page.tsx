@@ -694,7 +694,7 @@ function PaymentHistory() {
             <tr key={i}>
               <td className="py-3 font-mono">{new Date(p.date).toLocaleDateString('pt-BR')}</td>
               <td className="py-3">{p.plan}</td>
-              <td className="py-3 text-right font-mono">R$ {p.amount.toFixed(2)}</td>
+              <td className="py-3 text-right font-mono">R$ {Number(p.amount).toFixed(2)}</td>
               <td className="py-3 text-right">
                 <span className={cn(
                   'px-2 py-0.5 rounded text-[var(--text-caption)] font-medium',

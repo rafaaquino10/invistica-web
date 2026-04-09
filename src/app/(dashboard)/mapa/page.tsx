@@ -255,7 +255,7 @@ export default function MapaPage() {
               <div>
                 <span className="text-[var(--text-small)] font-bold">{summary.biggestGainer.ticker}</span>
                 <span className="ml-2 text-[var(--text-small)] font-mono text-teal">
-                  +{summary.biggestGainer.changePercent.toFixed(2)}%
+                  +{Number(summary.biggestGainer.changePercent).toFixed(2)}%
                 </span>
               </div>
             ) : (
@@ -270,7 +270,7 @@ export default function MapaPage() {
               <div>
                 <span className="text-[var(--text-small)] font-bold">{summary.biggestLoser.ticker}</span>
                 <span className="ml-2 text-[var(--text-small)] font-mono text-red">
-                  {summary.biggestLoser.changePercent.toFixed(2)}%
+                  {Number(summary.biggestLoser.changePercent).toFixed(2)}%
                 </span>
               </div>
             ) : (

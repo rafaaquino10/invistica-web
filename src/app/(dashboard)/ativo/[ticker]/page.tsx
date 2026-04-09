@@ -631,7 +631,7 @@ function CompanySection({ companyProfile, sector, name, marketCap }: {
           {sector && <MetaItem label="Setor" value={sector} />}
           {companyProfile?.segment && <MetaItem label="Segmento B3" value={companyProfile.segment} />}
           {companyProfile?.headquarters && <MetaItem label="Sede" value={companyProfile.headquarters} />}
-          {companyProfile?.employees && <MetaItem label="Funcionários" value={companyProfile.employees.toLocaleString('pt-BR')} />}
+          {companyProfile?.employees && <MetaItem label="Funcionários" value={Number(companyProfile.employees).toLocaleString('pt-BR')} />}
           {companyProfile?.founded && <MetaItem label="Fundação" value={String(companyProfile.founded)} />}
           {marketCap != null && marketCap > 0 && (
             <MetaItem label="Market Cap" value={

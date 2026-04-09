@@ -217,17 +217,17 @@ export default function EstrategiaDetailPage({
                           </Link>
                         </td>
                         <td className="py-3 px-2 text-[var(--text-caption)] text-[var(--text-2)] max-w-[100px] truncate">{stock.sector}</td>
-                        <td className="py-3 px-2 text-right font-mono text-[var(--text-1)]">R$ {stock.price.toFixed(2)}</td>
+                        <td className="py-3 px-2 text-right font-mono text-[var(--text-1)]">R$ {Number(stock.price).toFixed(2)}</td>
                         <td className="py-3 px-2 text-right">
-                          <span className={cn('font-semibold', stock.score >= 70 ? 'text-green-500' : stock.score >= 50 ? 'text-amber-500' : 'text-red-500')}>
-                            {stock.score.toFixed(1)}
+                          <span className={cn('font-semibold', Number(stock.score) >= 70 ? 'text-green-500' : Number(stock.score) >= 50 ? 'text-amber-500' : 'text-red-500')}>
+                            {Number(stock.score).toFixed(1)}
                           </span>
                         </td>
-                        <td className="py-3 px-2 text-right font-mono text-[var(--text-2)]">{stock.lensScore.toFixed(1)}</td>
-                        <td className="py-3 px-2 text-right font-mono text-[var(--text-2)]">{stock.dy != null ? `${stock.dy.toFixed(1)}%` : '—'}</td>
-                        <td className="py-3 px-2 text-right font-mono text-[var(--text-2)]">{stock.peRatio != null ? `${stock.peRatio.toFixed(1)}x` : '—'}</td>
-                        <td className="py-3 px-2 text-right font-mono text-[var(--text-2)]">{stock.roe != null ? `${stock.roe.toFixed(1)}%` : '—'}</td>
-                        <td className="py-3 px-3 text-right font-mono text-[var(--text-2)]">{stock.divEbitda != null ? `${stock.divEbitda.toFixed(1)}x` : '—'}</td>
+                        <td className="py-3 px-2 text-right font-mono text-[var(--text-2)]">{Number(stock.lensScore).toFixed(1)}</td>
+                        <td className="py-3 px-2 text-right font-mono text-[var(--text-2)]">{stock.dy != null ? `${Number(stock.dy).toFixed(1)}%` : '—'}</td>
+                        <td className="py-3 px-2 text-right font-mono text-[var(--text-2)]">{stock.peRatio != null ? `${Number(stock.peRatio).toFixed(1)}x` : '—'}</td>
+                        <td className="py-3 px-2 text-right font-mono text-[var(--text-2)]">{stock.roe != null ? `${Number(stock.roe).toFixed(1)}%` : '—'}</td>
+                        <td className="py-3 px-3 text-right font-mono text-[var(--text-2)]">{stock.divEbitda != null ? `${Number(stock.divEbitda).toFixed(1)}x` : '—'}</td>
                       </tr>
                     ))
                   )}

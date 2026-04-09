@@ -21,7 +21,7 @@ export default function ComparisonPage() {
   const [selectedTickers, setSelectedTickers] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearching, setIsSearching] = useState(false)
-  const [historyRange, setHistoryRange] = useState(HISTORY_RANGES[3]!) // 1A default
+  const [historyRange, setHistoryRange] = useState(HISTORY_RANGES[1]!) // 3M default
 
   const { data: searchResults } = trpc.assets.search.useQuery(
     { query: searchQuery },

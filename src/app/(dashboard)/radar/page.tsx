@@ -504,7 +504,7 @@ function AlertRow({ alert, onToggle, onDelete }: { alert: any; onToggle: () => v
         </div>
         <p className="text-[var(--text-small)] text-[var(--text-2)]">
           {config.label}{' '}
-          {alert.threshold && <span className="font-mono font-medium text-[var(--text-1)]">R$ {alert.threshold.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>}
+          {alert.threshold && <span className="font-mono font-medium text-[var(--text-1)]">R$ {Number(alert.threshold).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>}
         </p>
       </div>
       <div className="flex items-center gap-2">
