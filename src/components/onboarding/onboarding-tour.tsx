@@ -1,253 +1,216 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { InvestorProfileQuiz } from './investor-profile-quiz'
 
 const STORAGE_KEY = 'investiq-onboarding-completed'
 
-interface Step {
+interface TourStep {
+  /** CSS selector do elemento a destacar */
+  target: string
+  /** Titulo breve */
   title: string
+  /** Descricao curta (1-2 linhas) */
   description: string
-  icon: React.ReactNode
-  target?: string    // CSS selector para spotlight
-  action?: { label: string; href: string }
+  /** Rota onde este step deve aparecer (null = qualquer) */
+  route?: string
+  /** Posicao preferida do tooltip */
+  position?: 'top' | 'bottom' | 'left' | 'right'
 }
 
-const steps: Step[] = [
-  {
-    title: 'Bem-vindo ao InvestIQ',
-    description:
-      'Sua plataforma de análise fundamentalista inteligente. Avaliamos ações brasileiras de 0 a 100 com base em 6 pilares: Valuation, Qualidade, Risco, Dividendos, Crescimento e Qualitativo.',
-    icon: (
-      <div className="w-16 h-16 rounded-[var(--radius)] border border-[var(--border-1)] flex items-center justify-center">
-        <span className="text-[var(--text-1)] font-bold text-[var(--text-display)]">aQ</span>
-      </div>
-    ),
-  },
-  {
-    title: 'Seus KPIs',
-    description:
-      'Patrimônio, rentabilidade e saúde da carteira em tempo real. Acompanhe a evolução do seu portfólio contra benchmarks como CDI e IBOV.',
-    target: '#kpi-strip',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-2)]">
-        <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Explorer',
-    description:
-      'Explore todas as ações da B3 com filtros avançados, ordenação por qualquer indicador e rankings ao vivo. Clique em uma ação para ver a análise completa.',
-    target: '[data-tour="explorer"]',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-2)]">
-        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-      </svg>
-    ),
-    action: { label: 'Explorar', href: '/explorer' },
-  },
-  {
-    title: 'IQ-Cognit™',
-    description:
-      'Motor proprietário que analisa 20 indicadores com calibração setorial, detecção de regime e diagnóstico IA. Scores de 81+ são Excepcionais, 61-80 Saudáveis, 31-60 Atenção e abaixo de 30 Críticos.',
-    icon: (
-      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-2)]">
-        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-      </svg>
-    ),
-  },
+/**
+ * Steps do tour organizado por pagina.
+ * Ao navegar para cada pagina do sidebar, os steps daquela pagina sao exibidos.
+ */
+const TOUR_STEPS: TourStep[] = [
+  // Dashboard
+  { target: '#kpi-strip, [class*="KpiStrip"]', title: 'Seus KPIs', description: 'Patrimonio, resultado e regime macro da sua carteira em tempo real.', route: '/dashboard', position: 'bottom' },
+  { target: '[class*="SignalCard"], [class*="signal-card"]', title: 'Motor Estrategico', description: 'Sinais de compra/venda/hold gerados pelo motor IQ-Cognit com nivel de confianca.', route: '/dashboard', position: 'left' },
+  { target: '[class*="RegimeStrip"], [class*="regime-strip"]', title: 'Regime Macro', description: 'SELIC, IPCA, cambio e Brent em linha unica. O regime macro guia a estrategia.', route: '/dashboard', position: 'bottom' },
+
+  // Explorer
+  { target: '[data-tour="explorer"], [role="tablist"]', title: 'Lens de Analise', description: 'Troque entre Geral, Valor, Dividendos, Crescimento, Defensiva e Momento. As colunas ajustam automaticamente.', route: '/explorer', position: 'bottom' },
+
+  // Asset Detail
+  { target: '[class*="ScoreGauge"]', title: 'IQ Score', description: 'Score de 0 a 100 baseado em 6 pilares: Valuation, Qualidade, Risco, Dividendos, Crescimento e Qualitativo.', route: '/ativo', position: 'left' },
+
+  // Estrategias
+  { target: '[class*="TabButton"], [class*="tab-button"]', title: 'Estrategias IQ', description: 'Carteiras inteligentes, alocacao otima pelo motor e candidatos a short — tudo baseado no IQ-Cognit.', route: '/estrategias', position: 'bottom' },
 ]
+
+/** Posicao e dimensoes de um elemento na tela */
+interface Rect { top: number; left: number; width: number; height: number }
+
+function getElementRect(selector: string): Rect | null {
+  // Support comma-separated selectors (try each)
+  const selectors = selector.split(',').map(s => s.trim())
+  for (const sel of selectors) {
+    const el = document.querySelector(sel)
+    if (el) {
+      const rect = el.getBoundingClientRect()
+      if (rect.width > 0 && rect.height > 0) {
+        return { top: rect.top + window.scrollY, left: rect.left, width: rect.width, height: rect.height }
+      }
+    }
+  }
+  return null
+}
 
 export function OnboardingTour() {
   const router = useRouter()
-  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname()
+  const [isActive, setIsActive] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
-  const [showQuiz, setShowQuiz] = useState(false)
+  const [targetRect, setTargetRect] = useState<Rect | null>(null)
+  const tooltipRef = useRef<HTMLDivElement>(null)
 
+  // Filter steps for current route
+  const activeSteps = TOUR_STEPS.filter(s => !s.route || pathname.startsWith(s.route))
+
+  // Auto-start on first visit
   useEffect(() => {
     const completed = localStorage.getItem(STORAGE_KEY)
     if (!completed) {
-      const timer = setTimeout(() => setIsOpen(true), 800)
+      const timer = setTimeout(() => setIsActive(true), 1200)
       return () => clearTimeout(timer)
     }
   }, [])
 
-  // Highlight target element when step changes
-  useEffect(() => {
-    if (!isOpen || showQuiz) return
-    const step = steps[currentStep]
-    if (!step?.target) return
-
-    const el = document.querySelector(step.target)
-    if (el) {
-      el.classList.add('tour-spotlight')
-      return () => el.classList.remove('tour-spotlight')
+  // Update target rect when step changes
+  const updateRect = useCallback(() => {
+    if (!isActive || activeSteps.length === 0) return
+    const step = activeSteps[currentStep]
+    if (!step) return
+    const rect = getElementRect(step.target)
+    setTargetRect(rect)
+    if (rect) {
+      window.scrollTo({ top: Math.max(0, rect.top - 120), behavior: 'smooth' })
     }
-  }, [isOpen, currentStep, showQuiz])
+  }, [isActive, currentStep, activeSteps])
+
+  useEffect(() => {
+    updateRect()
+    const id = setInterval(updateRect, 2000) // recalc on layout shifts
+    return () => clearInterval(id)
+  }, [updateRect])
+
+  // Reset step when route changes
+  useEffect(() => {
+    if (isActive) setCurrentStep(0)
+  }, [pathname])
 
   const handleNext = () => {
-    if (currentStep < steps.length - 1) {
+    if (currentStep < activeSteps.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
-      // Após último step do tour, mostrar quiz de perfil
-      setShowQuiz(true)
+      handleComplete()
     }
-  }
-
-  const handleSkip = () => {
-    handleComplete()
   }
 
   const handleComplete = () => {
     localStorage.setItem(STORAGE_KEY, 'true')
-    setIsOpen(false)
+    setIsActive(false)
+    setCurrentStep(0)
   }
 
-  const handleAction = (href: string) => {
-    handleComplete()
-    router.push(href)
-  }
+  if (!isActive || activeSteps.length === 0) return null
 
-  if (!isOpen) return null
+  const step = activeSteps[currentStep]
+  if (!step) return null
 
-  const step = steps[currentStep]!
-  const isLast = currentStep === steps.length - 1
+  const pos = step.position ?? 'bottom'
+
+  // Calculate tooltip position relative to target
+  const tooltipStyle: React.CSSProperties = targetRect
+    ? {
+        position: 'absolute',
+        ...(pos === 'bottom' && { top: targetRect.top + targetRect.height + 12, left: targetRect.left }),
+        ...(pos === 'top' && { top: targetRect.top - 12, left: targetRect.left, transform: 'translateY(-100%)' }),
+        ...(pos === 'left' && { top: targetRect.top, left: targetRect.left - 12, transform: 'translateX(-100%)' }),
+        ...(pos === 'right' && { top: targetRect.top, left: targetRect.left + targetRect.width + 12 }),
+        maxWidth: 320,
+        zIndex: 110,
+      }
+    : {
+        position: 'fixed',
+        bottom: 80,
+        right: 24,
+        maxWidth: 320,
+        zIndex: 110,
+      }
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-        >
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={handleSkip}
-          />
+    <>
+      {/* Subtle overlay — semi-transparent, NOT blocking */}
+      <div
+        className="fixed inset-0 z-[100] pointer-events-none"
+        style={{ background: 'rgba(0,0,0,0.15)' }}
+      />
 
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-md rounded-[var(--radius)] border border-[var(--border-1)]/50 overflow-hidden"
-            style={{
-              background: 'color-mix(in srgb, var(--surface-1) 85%, transparent)',
-              backdropFilter: 'blur(20px)',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-            }}
-          >
-            {/* Content */}
-            <div className="p-8">
-              {showQuiz ? (
-                <InvestorProfileQuiz
-                  onComplete={() => handleComplete()}
-                  onSkip={handleComplete}
-                />
-              ) : (
-                <>
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={currentStep}
-                      initial={{ opacity: 0, x: 30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -30 }}
-                      transition={{ duration: 0.25 }}
-                      className="flex flex-col items-center text-center"
-                    >
-                      {/* Icon */}
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3, delay: 0.1 }}
-                        className="mb-5"
-                      >
-                        {step.icon}
-                      </motion.div>
-
-                      {/* Step counter */}
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--accent-1)]/60 mb-2">
-                        {currentStep + 1} de {steps.length}
-                      </span>
-
-                      {/* Title */}
-                      <h2 className="text-[var(--text-heading)] font-bold mb-3">{step.title}</h2>
-
-                      {/* Description */}
-                      <p className="text-[var(--text-small)] text-[var(--text-2)] leading-relaxed">
-                        {step.description}
-                      </p>
-                    </motion.div>
-                  </AnimatePresence>
-
-                  {/* Footer */}
-                  <div className="mt-6">
-                    {/* Progress dots */}
-                    <div className="flex justify-center gap-2 mb-5">
-                      {steps.map((_, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setCurrentStep(i)}
-                          className={cn(
-                            'h-1.5 rounded-full transition-all duration-300',
-                            i === currentStep
-                              ? 'w-6 bg-[var(--accent-1)]'
-                              : i < currentStep
-                                ? 'w-1.5 bg-[var(--accent-1)]/40'
-                                : 'w-1.5 bg-[var(--border-1)]'
-                          )}
-                        />
-                      ))}
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="flex items-center justify-between">
-                      <button
-                        onClick={handleSkip}
-                        className="text-[var(--text-caption)] text-[var(--text-2)] hover:text-[var(--text-1)] transition-colors"
-                      >
-                        Pular
-                      </button>
-                      <div className="flex items-center gap-2">
-                        {step.action && (
-                          <button
-                            onClick={() => handleAction(step.action!.href)}
-                            className="px-4 py-2 rounded-lg text-[var(--text-small)] font-medium text-[var(--accent-1)] border border-[var(--accent-1)]/30 hover:bg-[var(--accent-1)]/10 transition-colors"
-                          >
-                            {step.action.label}
-                          </button>
-                        )}
-                        <button
-                          onClick={handleNext}
-                          className={cn(
-                            'px-5 py-2 rounded-lg text-[var(--text-small)] font-medium transition-all',
-                            'bg-[var(--accent-1)] text-white hover:bg-[var(--accent-1)]/90',
-                            'hover:shadow-[var(--accent-1)]/20'
-                          )}
-                        >
-                          {isLast ? 'Descobrir meu perfil' : 'Próximo'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </motion.div>
-        </motion.div>
+      {/* Spotlight cutout on target element */}
+      {targetRect && (
+        <div
+          className="fixed z-[101] pointer-events-none rounded-[var(--radius)] ring-2 ring-[var(--accent-1)] ring-offset-2"
+          style={{
+            top: targetRect.top - window.scrollY,
+            left: targetRect.left,
+            width: targetRect.width,
+            height: targetRect.height,
+            boxShadow: '0 0 0 9999px rgba(0,0,0,0.15)',
+            background: 'transparent',
+          }}
+        />
       )}
-    </AnimatePresence>
+
+      {/* Tooltip card */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentStep}
+          ref={tooltipRef}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2 }}
+          className="z-[110] pointer-events-auto"
+          style={tooltipStyle as any}
+        >
+          <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-[var(--radius)] shadow-[var(--shadow-overlay)] p-4 max-w-[320px]">
+            {/* Step indicator */}
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[10px] font-bold text-[var(--accent-1)] uppercase tracking-wider">
+                {currentStep + 1}/{activeSteps.length}
+              </span>
+              <div className="flex gap-1 flex-1">
+                {activeSteps.map((_, i) => (
+                  <div key={i} className={cn('h-1 rounded-full flex-1', i <= currentStep ? 'bg-[var(--accent-1)]' : 'bg-[var(--border-1)]')} />
+                ))}
+              </div>
+            </div>
+
+            {/* Content */}
+            <h3 className="text-[var(--text-small)] font-bold text-[var(--text-1)] mb-1">{step.title}</h3>
+            <p className="text-[var(--text-caption)] text-[var(--text-2)] leading-relaxed mb-3">{step.description}</p>
+
+            {/* Actions */}
+            <div className="flex items-center justify-between">
+              <button
+                onClick={handleComplete}
+                className="text-[var(--text-caption)] text-[var(--text-3)] hover:text-[var(--text-1)] transition-colors"
+              >
+                Pular tour
+              </button>
+              <button
+                onClick={handleNext}
+                className="px-3 py-1.5 rounded-md text-[var(--text-caption)] font-semibold bg-[var(--accent-1)] text-white hover:bg-[var(--accent-1)]/90 transition-colors"
+              >
+                {currentStep === activeSteps.length - 1 ? 'Entendi' : 'Proximo'}
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </>
   )
 }
