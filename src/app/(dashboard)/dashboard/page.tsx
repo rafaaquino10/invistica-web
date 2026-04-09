@@ -52,10 +52,10 @@ function RegimeStrip({ data }: { data: RegimeData | null }) {
       )}
       <div className="h-4 border-l border-[var(--border-1)]" />
       <div className="flex items-center gap-4 text-[var(--text-caption)]">
-        <span className="text-[var(--text-3)]">SELIC <span className="font-mono font-bold text-[var(--text-1)]">{data.macro.selic.toFixed(2)}%</span></span>
-        <span className="text-[var(--text-3)]">IPCA <span className="font-mono font-bold text-[var(--text-1)]">{data.macro.ipca.toFixed(2)}%</span></span>
-        <span className="text-[var(--text-3)]">USD <span className="font-mono font-bold text-[var(--text-1)]">R${data.macro.cambio_usd.toFixed(2)}</span></span>
-        <span className="text-[var(--text-3)]">Brent <span className="font-mono font-bold text-[var(--text-1)]">${data.macro.brent.toFixed(0)}</span></span>
+        <span className="text-[var(--text-3)]">SELIC <span className="font-mono font-bold text-[var(--text-1)]">{Number(data.macro.selic).toFixed(2)}%</span></span>
+        <span className="text-[var(--text-3)]">IPCA <span className="font-mono font-bold text-[var(--text-1)]">{Number(data.macro.ipca).toFixed(2)}%</span></span>
+        <span className="text-[var(--text-3)]">USD <span className="font-mono font-bold text-[var(--text-1)]">R${Number(data.macro.cambio_usd).toFixed(2)}</span></span>
+        <span className="text-[var(--text-3)]">Brent <span className="font-mono font-bold text-[var(--text-1)]">${Number(data.macro.brent).toFixed(0)}</span></span>
       </div>
     </div>
   )
@@ -129,7 +129,7 @@ function SignalCard() {
               'text-[var(--text-subheading)] font-mono font-bold',
               volStress <= 1.0 ? 'text-teal' : volStress <= 1.2 ? 'text-amber' : 'text-red'
             )}>
-              {volStress.toFixed(2)}x
+              {Number(volStress).toFixed(2)}x
             </span>
           </div>
         )}

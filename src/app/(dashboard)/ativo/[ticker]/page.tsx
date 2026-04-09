@@ -297,7 +297,7 @@ export default function AssetDetailPage() {
                   Último: {formatCurrency(currentPrice)}
                   {currentChange != null && (
                     <span className={cn('ml-2', currentChange >= 0 ? 'text-[var(--pos)]' : 'text-[var(--neg)]')}>
-                      {currentChange >= 0 ? '+' : ''}{currentChange.toFixed(2)}%
+                      {currentChange >= 0 ? '+' : ''}{Number(currentChange).toFixed(2)}%
                     </span>
                   )}
                 </p>
@@ -356,7 +356,7 @@ export default function AssetDetailPage() {
                         <div className={cn('h-full rounded-full transition-all', pillarBarColor(p.value))} style={{ width: `${p.value}%` }} />
                       </div>
                       <span className={cn('w-8 text-[var(--text-base)] font-mono font-bold text-right', pillarTextColor(p.value))}>
-                        {p.value.toFixed(0)}
+                        {Number(p.value).toFixed(0)}
                       </span>
                     </div>
                   ))}
@@ -704,7 +704,7 @@ function InstitutionalHoldersCard({ ticker }: { ticker: string }) {
           <div key={i} className="flex items-center justify-between text-[var(--text-small)]">
             <span className="text-[var(--text-2)] truncate max-w-[60%]">{h.fund_name}</span>
             <span className="font-mono text-[var(--text-1)]">
-              {h.market_value >= 1e6 ? `R$${(h.market_value / 1e6).toFixed(1)}M` : `R$${h.market_value.toLocaleString('pt-BR')}`}
+              {Number(h.market_value) >= 1e6 ? `R$${(Number(h.market_value) / 1e6).toFixed(1)}M` : `R$${Number(h.market_value).toLocaleString('pt-BR')}`}
             </span>
           </div>
         ))}
@@ -739,13 +739,13 @@ function ShortInterestCard({ ticker }: { ticker: string }) {
         <div>
           <p className="text-[var(--text-caption)] text-[var(--text-3)]">Ações Alugadas</p>
           <p className="text-[var(--text-base)] font-mono font-bold text-[var(--text-1)]">
-            {latest.shares_lent >= 1e6 ? `${(latest.shares_lent / 1e6).toFixed(1)}M` : latest.shares_lent.toLocaleString('pt-BR')}
+            {Number(latest.shares_lent) >= 1e6 ? `${(Number(latest.shares_lent) / 1e6).toFixed(1)}M` : Number(latest.shares_lent).toLocaleString('pt-BR')}
           </p>
         </div>
         <div>
           <p className="text-[var(--text-caption)] text-[var(--text-3)]">Taxa de Aluguel</p>
           <p className={cn('text-[var(--text-base)] font-mono font-bold', latest.lending_rate > 5 ? 'text-red' : 'text-[var(--text-1)]')}>
-            {latest.lending_rate.toFixed(2)}% a.a.
+            {Number(latest.lending_rate).toFixed(2)}% a.a.
           </p>
         </div>
       </div>
@@ -755,7 +755,7 @@ function ShortInterestCard({ ticker }: { ticker: string }) {
           {data.history.slice(0, 5).map((h, i) => (
             <div key={i} className="flex items-center justify-between text-[var(--text-caption)]">
               <span className="text-[var(--text-3)] font-mono">{h.reference_date}</span>
-              <span className="font-mono text-[var(--text-2)]">{h.lending_rate.toFixed(2)}%</span>
+              <span className="font-mono text-[var(--text-2)]">{Number(h.lending_rate).toFixed(2)}%</span>
             </div>
           ))}
         </div>
