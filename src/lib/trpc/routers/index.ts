@@ -4,7 +4,6 @@ import { screenerRouter } from './screener'
 import { portfolioRouter } from './portfolio'
 import { dividendsRouter } from './dividends'
 import { radarRouter } from './radar'
-import { goalsRouter } from './goals'
 import { userRouter } from './user'
 import { economyRouter } from './economy'
 import { scoreHistoryRouter } from './score-history'
@@ -23,7 +22,6 @@ export const appRouter = router({
   portfolio: portfolioRouter,
   dividends: dividendsRouter,
   radar: radarRouter,
-  goals: goalsRouter,
   user: userRouter,
   economy: economyRouter,
   scoreHistory: scoreHistoryRouter,

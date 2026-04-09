@@ -12,7 +12,6 @@ export default function robots(): MetadataRoute.Robots {
           '/api/',
           '/portfolio/',
           '/dividends/',
-          '/goals/',
           '/settings/',
         ],
       },

@@ -23,10 +23,10 @@ type NavSection = {
   items: NavItem[]
 }
 
-/* ─── Task-driven navigation (V2) ─────────────── */
+/* ─── Navigation V3 — 3 seções, 8 itens ─────────── */
 const navigationSections: NavSection[] = [
   {
-    label: 'ANÁLISE',
+    label: 'MERCADO',
     items: [
       {
         label: 'Dashboard',
@@ -51,21 +51,21 @@ const navigationSections: NavSection[] = [
         ),
       },
       {
-        label: 'Comparar',
-        href: '/comparar',
+        label: 'Mapa',
+        href: '/mapa',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="7" height="7" />
-            <rect x="14" y="3" width="7" height="7" />
-            <rect x="14" y="14" width="7" height="7" />
-            <rect x="3" y="14" width="7" height="7" />
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="4" rx="1" />
+            <rect x="14" y="10" width="7" height="11" rx="1" />
+            <rect x="3" y="13" width="7" height="8" rx="1" />
           </svg>
         ),
       },
     ],
   },
   {
-    label: 'INVESTIMENTOS',
+    label: 'MINHA CARTEIRA',
     items: [
       {
         label: 'Carteira',
@@ -88,26 +88,8 @@ const navigationSections: NavSection[] = [
           </svg>
         ),
       },
-      // Metas removido — InvestIQ é 100% free, sem goals backend
-    ],
-  },
-  {
-    label: 'MONITORAMENTO',
-    items: [
       {
-        label: 'Mapa',
-        href: '/mercado/mapa',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1" />
-            <rect x="14" y="3" width="7" height="4" rx="1" />
-            <rect x="14" y="10" width="7" height="11" rx="1" />
-            <rect x="3" y="13" width="7" height="8" rx="1" />
-          </svg>
-        ),
-      },
-      {
-        label: 'Radar IQ',
+        label: 'Radar',
         href: '/radar',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -123,8 +105,8 @@ const navigationSections: NavSection[] = [
     label: 'IQ-COGNIT',
     items: [
       {
-        label: 'Carteiras IQ',
-        href: '/carteiras-inteligentes',
+        label: 'Estratégias IQ',
+        href: '/estrategias',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" />
@@ -134,42 +116,12 @@ const navigationSections: NavSection[] = [
         ),
       },
       {
-        label: 'Backtest',
-        href: '/backtest-lab',
+        label: 'Lab',
+        href: '/lab',
         icon: (
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-          </svg>
-        ),
-      },
-      {
-        label: 'Modelo',
-        href: '/analytics/modelo',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 20V10" />
-            <path d="M18 20V4" />
-            <path d="M6 20v-4" />
-          </svg>
-        ),
-      },
-      {
-        label: 'Feedback Loop',
-        href: '/analytics/feedback',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 3v18h18" />
-            <path d="m19 9-5 5-4-4-3 3" />
-          </svg>
-        ),
-      },
-      {
-        label: 'Glossário',
-        href: '/glossario',
-        icon: (
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            <path d="M9 3h6v7l5 8H4l5-8V3z" />
+            <line x1="8" y1="3" x2="16" y2="3" />
           </svg>
         ),
       },

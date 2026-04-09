@@ -29,6 +29,7 @@ import { RiskLab } from '@/components/score/risk-lab'
 import { ThesisCard } from '@/components/score/thesis-card'
 import { EvidenceExplorer } from '@/components/score/evidence-explorer'
 import { DossierReport } from '@/components/score/dossier-report'
+import { MetricTooltip } from '@/components/ui/metric-tooltip'
 
 const RANGE_MAP: Record<TimeRange, { range: string; interval: string }> = {
   '1D': { range: '1d', interval: '1d' },
@@ -336,7 +337,9 @@ export default function AssetDetailPage() {
                 { label: 'Qualitativo', value: pillars?.qualitativo ?? 0 },
               ] as const).map(p => (
                 <div key={p.label} className="flex items-center gap-2.5">
-                  <span className="w-[82px] text-[13px] text-[var(--text-2)] flex-shrink-0">{p.label}</span>
+                  <MetricTooltip term={p.label} position="right">
+                    <span className="w-[82px] text-[var(--text-small)] text-[var(--text-2)] flex-shrink-0 cursor-help border-b border-dotted border-[var(--border-2)]">{p.label}</span>
+                  </MetricTooltip>
                   <div className="flex-1 h-[7px] bg-[var(--surface-2)] rounded-full overflow-hidden">
                     <div
                       className={cn('h-full rounded-full transition-all', pillarBarColor(p.value))}

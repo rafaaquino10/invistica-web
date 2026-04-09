@@ -54,15 +54,60 @@ const primaryNav = [
 ]
 
 const moreMenuItems = [
-  { label: 'Comparar', href: '/comparar', icon: '⬡' },
-  { label: 'Dividendos', href: '/dividends', icon: '＄' },
-  { label: 'Backtest', href: '/backtest-lab', icon: '⚡' },
-  { label: 'Modelo', href: '/analytics/modelo', icon: '📊' },
-  { label: 'Mapa', href: '/mercado/mapa', icon: '▦' },
-  { label: 'Carteiras IQ', href: '/carteiras-inteligentes', icon: '💡' },
-  { label: 'Metas', href: '/goals', icon: '✓' },
-  { label: 'Glossario', href: '/glossario', icon: '📖' },
-  { label: 'Ajustes', href: '/settings', icon: '⚙' },
+  {
+    label: 'Mapa',
+    href: '/mapa',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Dividendos',
+    href: '/dividends',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Estratégias',
+    href: '/estrategias',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z" /><line x1="9" y1="21" x2="15" y2="21" /><line x1="10" y1="24" x2="14" y2="24" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Lab',
+    href: '/lab',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 3h6v7l5 8H4l5-8V3z" /><line x1="8" y1="3" x2="16" y2="3" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Comparar',
+    href: '/comparar',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Ajustes',
+    href: '/settings',
+    icon: (
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+      </svg>
+    ),
+  },
 ]
 
 export function BottomNav() {
@@ -96,7 +141,7 @@ export function BottomNav() {
                 <div className="px-4 py-3 border-b border-[var(--border-1)]">
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-[var(--text-3)]">Navegação</p>
                 </div>
-                <div className="grid grid-cols-4 gap-1 p-3">
+                <div className="grid grid-cols-3 gap-1 p-3">
                   {moreMenuItems.map((item) => {
                     const active = pathname.startsWith(item.href)
                     return (
@@ -111,7 +156,7 @@ export function BottomNav() {
                             : 'text-[var(--text-2)] active:bg-[var(--surface-2)]'
                         )}
                       >
-                        <span className="text-lg leading-none">{item.icon}</span>
+                        <span className="leading-none">{item.icon}</span>
                         <span className="text-[10px] font-medium text-center leading-tight">{item.label}</span>
                       </Link>
                     )

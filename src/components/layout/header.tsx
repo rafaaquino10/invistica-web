@@ -137,10 +137,10 @@ export function Header({ isSidebarCollapsed, user }: HeaderProps) {
     { label: 'Comparar ativos', href: '/comparar' },
     { label: 'Meu portfólio', href: '/portfolio' },
     { label: 'Radar de alertas', href: '/radar' },
-    { label: 'Carteiras inteligentes', href: '/carteiras' },
-    { label: 'Dividendos', href: '/dividendos' },
-    { label: 'Glossário financeiro', href: '/glossario' },
-    { label: 'Configurações', href: '/configuracoes' },
+    { label: 'Carteiras inteligentes', href: '/estrategias' },
+    { label: 'Dividendos', href: '/dividends' },
+    { label: 'Lab IQ', href: '/lab' },
+    { label: 'Configurações', href: '/settings' },
   ]
 
   const filteredActions = debouncedQuery.length >= 1
