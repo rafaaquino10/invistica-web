@@ -171,7 +171,6 @@ export default function MarketingLayout({
               <Link href="/portfolio" className="hover:text-[var(--text-1)] transition-colors">Portfólio</Link>
               <Link href="/comparar" className="hover:text-[var(--text-1)] transition-colors">Comparar</Link>
               <Link href="/radar" className="hover:text-[var(--text-1)] transition-colors">Radar</Link>
-              <Link href="/pricing" className="hover:text-[var(--text-1)] transition-colors">Planos</Link>
               <Link href="/termos" className="hover:text-[var(--text-1)] transition-colors">Termos</Link>
               <Link href="/privacidade" className="hover:text-[var(--text-1)] transition-colors">Privacidade</Link>
             </div>

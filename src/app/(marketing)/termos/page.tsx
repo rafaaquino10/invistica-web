@@ -81,13 +81,13 @@ const sections = [
         <line x1="1" y1="10" x2="23" y2="10" />
       </svg>
     ),
-    title: 'Planos e Pagamentos',
-    content: `O InvestIQ oferece planos gratuitos e pagos. Para planos pagos:`,
+    title: 'Uso da Plataforma',
+    content: `O InvestIQ é uma plataforma de análise de investimentos:`,
     list: [
-      'Os pagamentos são processados de forma segura via Mercado Pago',
-      'As assinaturas são renovadas automaticamente',
-      'Você pode cancelar a qualquer momento, mantendo o acesso até o fim do período pago',
-      'Não há reembolsos para períodos parciais',
+      'O acesso à plataforma é fornecido mediante cadastro',
+      'Os dados são atualizados diariamente com fontes oficiais (CVM, BCB, B3)',
+      'O InvestIQ não constitui recomendação de investimento',
+      'Decisões de investimento são de responsabilidade exclusiva do usuário',
     ],
   },
   {
