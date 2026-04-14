@@ -15,6 +15,7 @@ import { valuationRouter } from './valuation'
 import { communityRouter } from './community'
 import { newsRouter } from './news'
 import { backtestRouter } from './backtest'
+import { pluggyRouter } from './pluggy'
 
 export const appRouter = router({
   assets: assetsRouter,
@@ -33,6 +34,7 @@ export const appRouter = router({
   community: communityRouter,
   news: newsRouter,
   backtest: backtestRouter,
+  pluggy: pluggyRouter,
 })
 
 export type AppRouter = typeof appRouter
