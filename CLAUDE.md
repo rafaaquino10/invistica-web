@@ -1,353 +1,348 @@
-# InvestIQ Web — Frontend
+# CLAUDE.md — Invística
 
-## Regras para o Claude Code
-
-- Nunca gerar codigo sem seguir o Design System Ocean Forge (secao abaixo).
-- Nunca usar bibliotecas de componentes prontas (shadcn, MUI, Chakra). Componentes sao custom sobre Tailwind CSS.
-- Todo dado financeiro exibido deve usar `tabular-nums` (font Geist Mono).
-- Nao simplificar ou "dumbificar" implementacoes. O padrao e enterprise.
-- Copy em PT-BR sempre. Termos tecnicos financeiros podem ficar em ingles quando nao ha traducao consolidada (ex: "spread", "drawdown").
-- Zero emojis em qualquer lugar da interface.
-- O frontend e um **thin client**. TODA logica de scoring, analytics, valuation e estrategia vive no backend. O front NUNCA recalcula, NUNCA duplica logica. Cada dado vem de `investiq-client.ts` chamando a API Railway.
-- Antes de fechar a sessao: atualizar a secao "Ultima Sessao" deste arquivo com o que foi feito e o que falta.
+> Arquivo de contexto persistente. Lido automaticamente pelo Claude Code a cada nova sessão.
+> Última atualização: 2026-04-17
 
 ---
 
-## O que e
+## 1 · Identidade da marca-mãe
 
-Frontend da plataforma InvestIQ. Consome a API FastAPI no Railway (40+ endpoints de analise quantamental de acoes B3).
+**Invística** é a casa brasileira de inteligência quantamental aplicada a investimentos em ações.
 
-**Repo separado:** este projeto (`investiq-web/`) e independente do backend (`investiq/`). O `investiq/web/` esta vazio (placeholder com `.gitkeep`).
+**Tagline oficial:** *Inteligência que valoriza.*
 
-## Backend API
+**Manifesto:**
 
-- URL: `https://investiqbackend-production.up.railway.app`
-- Swagger: `https://investiqbackend-production.up.railway.app/docs`
-- Client: `src/lib/investiq-client.ts` — singleton `investiq` com `.get()`, `.post()`, `.put()`, `.delete()`
+> Investir é uma disciplina. Tem método, rigor e tempo — como qualquer arte que exige domínio.
+>
+> Aqui, cada decisão passa por três olhares: o que os números revelam, o que a empresa demonstra ao longo do tempo, o que o preço justo confirma. Os três precisam convergir. Nada avança sem isso.
+>
+> Esta é a Invística. Uma forma de investir que não depende de sorte, intuição ou pressa.
 
-## Stack
+**Natureza do negócio:** plataforma SaaS de análise e gestão quantamental em paralelo com trilha regulatória para clube de investimentos e eventual gestora CVM. Não é fintech retail, não é corretora, não é app. É buyside acessível.
 
-| Camada | Tecnologia |
-|--------|-----------|
-| Framework | Next.js 16.2 App Router |
-| UI | React 19 + TypeScript 5.7 |
-| Styling | Tailwind CSS 3.4 + CSS variables |
-| Animations | Framer Motion 11.15 |
-| Charts | Lightweight Charts 5.1 (candle/price) + Recharts 2.15 (cartesiano) + D3 7.9 (viz) |
-| State | tRPC (RC 11) + TanStack Query 5.64 |
-| ORM | Prisma 6.2 + PostgreSQL (Supabase) |
-| Auth | Custom JWT (jose) + OAuth (Google/GitHub) + Supabase SSR |
-| Forms | React Hook Form 7.54 + Zod 3.24 |
-| Payments | Mercado Pago SDK 2.12 (desabilitado — acesso gratuito) |
-| Open Finance | react-pluggy-connect 2.12 |
-| Toasts | Sonner 2.0 |
-| Error tracking | Sentry 10.38 (opcional) |
-| Fonts | Geist Sans (UI) + Geist Mono (dados financeiros) |
-| Testing | Vitest 4.0 |
-| Deploy | Vercel |
+**Público-âncora:** o vácuo dos R$ 500k–R$ 10M. Retail sofisticado insatisfeito com superficialidade de Gorila/Snowball + semi-profissional que tem assessor XP/BTG mas quer autonomia com rigor + profissional solo (gestor CVM, family office júnior, RI) via plano institucional.
 
-## Scripts
-
-```
-npm run dev          # Next.js + gateway (turbopack)
-npm run build        # Build producao
-npm run db:generate  # Prisma generate
-npm run db:push      # Push schema para DB
-npm run db:studio    # Prisma Studio (GUI)
-npm run test         # Vitest
-npm run type-check   # tsc --noEmit
-```
+**Postura de marca:** severa no método, calorosa na comunicação. Referências: Apple, Porsche, UBS, Ray-Ban, Ferrari, Mercedes. Nenhuma dessas explica o que faz; todas afirmam por existirem.
 
 ---
 
-## Design System: Ocean Forge
+## 2 · Arquitetura de marca
 
-### Cores (CSS Variables)
+Três camadas. Apenas duas nomeadas. Nenhuma poluição de jargão interno vazando para o público.
 
-**Light mode:**
-- Background: `--light-bg: #F7F8FA`
-- Cards: `--light-card: #FFFFFF`
-- Hover: `--light-hover: #F1F3F5`
-- Text: `--light-text: #1A1D23`
-- Text secondary: `--light-text-secondary: #5A6170`
-- Border: `--light-border: #E3E5EA`
+| Camada | Nome | Função |
+|--------|------|--------|
+| Marca-mãe | **Invística** | A casa |
+| Produto-insígnia | **Invscore** | O score de 0 a 100 atribuído a cada ação |
+| Componentes internos | Sem nome próprio | Descrição técnica apenas |
 
-**Dark mode:**
-- Background: `--dark-bg: #0C0F17`
-- Cards: `--dark-card: #13161F`
-- Hover: `--dark-hover: #1C1F2A`
-- Text: `--dark-text: #E0E2E8`
-- Text secondary: `--dark-text-secondary: #8B919E`
-- Border: `--dark-border: #232736`
-
-**Semanticas:**
-- Accent: `--accent-1`, `--accent-2`
-- Positive: `--pos` (teal)
-- Negative: `--neg` (red)
-- Warning: `--warn` (amber)
-- Sand Gold: `#C4AD78` (premium, scores 81+, logo iQ)
-- Ocean Blue: `#2A5078` (primario)
-
-### Score Tiers (cores)
-- 81-100: Sand/Gold
-- 61-80: Ocean Blue
-- 41-60: Gray
-- 21-40: Amber
-- 0-20: Red
-
-### Tipografia
-- Font principal: Geist Sans (--font-geist-sans)
-- Font mono: Geist Mono (--font-geist-mono) — obrigatorio em dados financeiros
-- Tamanhos custom: caption, small, body, base, subheading, heading, title, display, hero
-
-### Animacoes
-- fade-in (0.3s), slide-up/down (0.3s), scale-in (0.2s), pulse-slow (3s)
-- Framer Motion para sequencias complexas e stagger
-
-### Espacamento
-- v2-1 a v2-8 (CSS variables)
-- Border radius: xs(2px), sm(4px), md(6px), lg/xl/2xl(8px), full(9999px)
+**Componentes internos sem nome:**
+- O modelo / o motor / o método quantamental — nunca nomeado publicamente
+- Pilar Quantitativo, Pilar Qualitativo, Pilar Valuation — descrição neutra, sem marca
+- Versão do modelo (ex: v11) — versionamento interno, não público
 
 ---
 
-## Estrutura do Projeto
+## 3 · Branding do Invscore
 
-```
-investiq-web/
-├── src/
-│   ├── app/                          # App Router
-│   │   ├── layout.tsx                # Root: Auth + TRPC + Theme providers
-│   │   ├── middleware.ts             # Auth redirect rules
-│   │   ├── error.tsx                 # Error boundary
-│   │   ├── not-found.tsx             # 404
-│   │   ├── robots.ts                 # SEO
-│   │   ├── sitemap.ts               # Dynamic sitemap
-│   │   │
-│   │   ├── (marketing)/              # Paginas publicas (6)
-│   │   │   ├── page.tsx              # Landing page (hero + features + CTA)
-│   │   │   ├── backtest/             # Resultados backtest (charts + metricas)
-│   │   │   ├── cookies/              # Politica de cookies
-│   │   │   ├── privacidade/          # Politica de privacidade (LGPD)
-│   │   │   ├── termos/               # Termos de servico
-│   │   │   └── prototipos/           # Design prototype showcase
-│   │   │
-│   │   ├── (auth)/                   # Auth (3 paginas)
-│   │   │   ├── login/                # Login + social + demo
-│   │   │   ├── register/             # Registro + social
-│   │   │   └── onboarding/           # Wizard 3 steps (perfil, setores, objetivo)
-│   │   │
-│   │   ├── (dashboard)/              # Protegidas — requerem auth (13 paginas)
-│   │   │   ├── dashboard/            # KPI strip + performance + signals + regime + posicoes
-│   │   │   ├── explorer/             # Screener: 6 lenses, colunas dinamicas, filtros
-│   │   │   ├── ativo/[ticker]/       # Detalhe: 5 tabs (overview, valuation, dividendos, score, noticias)
-│   │   │   ├── portfolio/            # Lista portfolios + criar
-│   │   │   ├── portfolio/[id]/       # Detalhe: holdings, P&L, weighted view
-│   │   │   ├── portfolio/importar/   # Import CSV wizard
-│   │   │   ├── comparar/             # Comparacao lado a lado
-│   │   │   ├── dividends/            # Calendario + yield analysis
-│   │   │   ├── radar/                # Risk radar scatter
-│   │   │   ├── mapa/                 # Heatmap setorial
-│   │   │   ├── estrategias/          # Smart portfolios, alocacao, short candidates
-│   │   │   ├── estrategias/[id]/     # Detalhe estrategia + backtest
-│   │   │   └── settings/             # Preferencias, plano, conta
-│   │   │
-│   │   └── api/                      # API Routes (22 routes)
-│   │       ├── auth/                 # login, register, logout, me, demo, github, google, callbacks
-│   │       ├── trpc/[trpc]/          # Gateway tRPC
-│   │       ├── mercadopago/          # checkout, manage, webhook
-│   │       ├── jobs/                 # score-snapshot, weekly-report
-│   │       ├── pipeline/             # trigger pipeline
-│   │       ├── debug/pipeline/       # debug status
-│   │       ├── onboarding/complete/  # salvar onboarding
-│   │       ├── health/               # health check
-│   │       └── og/                   # OG image generator
-│   │
-│   ├── components/                   # ~127 componentes custom
-│   │   ├── ui/           (39)        # Design system: button, card, badge, input, modal, tabs, etc
-│   │   ├── charts/       (11)        # price-chart, performance, radar, gauge, sparkline, donut, treemap
-│   │   ├── score/        (10)        # gauge, xray, evidence, qualitative-cards, risk-lab, thesis, dossier
-│   │   ├── layout/       (9)         # sidebar, header, bottom-nav, ticker-tape, theme-toggle, help-fab
-│   │   ├── dashboard/    (8)         # kpi-strip, positions-table, opportunities, regime, signals, alerts
-│   │   ├── portfolio/    (8)         # analytics-tab, performance, diagnostics, irpf, csv-import, smart-contribution
-│   │   ├── asset/        (7)         # dividend-summary, dividend-trap, dupont, peers, news, calendar
-│   │   ├── analytics/    (7)         # hit-rate, ic-timeline, quintile, sector-rotation, sensitivity
-│   │   ├── screener/     (5)         # table, filters, pagination, column-selector
-│   │   ├── onboarding/   (4)         # quiz, tour, checklist
-│   │   ├── valuation/    (2)         # dcf-card, monte-carlo-card
-│   │   ├── billing/      (2)         # paywall-gate
-│   │   ├── brand/        (2)         # logo
-│   │   ├── seo/          (2)         # json-ld
-│   │   └── [outros]      (11)        # community, education, insights, momentum, simulation, strategy, etc
-│   │
-│   ├── lib/
-│   │   ├── trpc/                     # 17 tRPC routers
-│   │   │   └── routers/
-│   │   │       ├── assets.ts         # list, getByTicker, search, history, sparklines, evidence, dossier, holders, short
-│   │   │       ├── screener.ts       # query, rankings, export, heatmap, opportunities, treemap
-│   │   │       ├── portfolio.ts      # CRUD, transactions, performance, monte carlo, smart contribution
-│   │   │       ├── backtest.ts       # summary, run, risk, IC, signal decay, catalysts, sector rotation
-│   │   │       ├── radar.ts          # alerts CRUD, insights, health, reports, news
-│   │   │       ├── dividends.ts      # calendar, summary, projections, simulate, trap risk
-│   │   │       ├── analytics.ts      # attribution (Brinson), risk (VaR/Beta/HHI), scenario, quintile
-│   │   │       ├── economy.ts        # indicators, regime, CAGED pulse
-│   │   │       ├── user.ts           # profile, preferences, notifications
-│   │   │       ├── community.ts      # comments, upvotes
-│   │   │       ├── news.ts           # ticker news, RI events
-│   │   │       ├── insights.ts       # list, per-ticker
-│   │   │       ├── smart-portfolios.ts # list, detail, simulate
-│   │   │       ├── score-history.ts  # history, movers, feedback
-│   │   │       ├── score-snapshots.ts # snapshots, forward returns, metrics
-│   │   │       ├── valuation.ts      # getByTicker, dcf
-│   │   │       └── pluggy.ts         # connect token, import positions
-│   │   │
-│   │   ├── auth/                     # Custom JWT auth (NAO usa NextAuth)
-│   │   │   ├── jwt.ts               # sign/verify tokens (jose)
-│   │   │   ├── cookies.ts           # get/set/clear auth cookies
-│   │   │   ├── session.ts           # current user getter
-│   │   │   ├── credentials.ts       # email/password login
-│   │   │   ├── oauth-google.ts      # Google OAuth flow
-│   │   │   ├── oauth-github.ts      # GitHub OAuth flow
-│   │   │   ├── demo-user.ts         # Demo mode
-│   │   │   └── provider.tsx         # AuthProvider context
-│   │   │
-│   │   ├── investiq-client.ts       # Singleton API client para backend Railway
-│   │   ├── gateway-client.ts        # Fetch wrappers para data layer
-│   │   │
-│   │   ├── data/                    # Orquestracao de dados
-│   │   │   ├── data-orchestrator.ts # getAssets(), getAssetByTicker()
-│   │   │   ├── data-fetcher.ts      # fetch gateway: quotes, fundamentals, news
-│   │   │   ├── data-merger.ts       # merge backend scores + gateway fundamentals
-│   │   │   ├── investiq-adapter.ts  # mapeia formato backend → frontend
-│   │   │   └── asset-cache.ts       # cache in-memory com TTL
-│   │   │
-│   │   ├── scoring/                 # Interpretacao client-side (enrichment, NAO recalculo)
-│   │   │   ├── iq-score.ts          # Engine v3 AQ Score (1.177 linhas)
-│   │   │   ├── lens-calculator.ts   # Lenses: value, dividends, growth, defensive, momentum
-│   │   │   ├── regime-detector.ts   # Deteccao regime SELIC/IPCA
-│   │   │   ├── score-narrator.ts    # Narrativa dos scores
-│   │   │   └── sentiment-adjustment.ts
-│   │   │
-│   │   ├── analytics/               # Performance attribution, risk, scenarios
-│   │   ├── ai/                      # claude-client, ollama, research-note, synthesis
-│   │   ├── mercadopago/             # checkout, webhooks (desabilitado)
-│   │   ├── repositories/            # DAL: prisma/ (prod) + demo/ (mock)
-│   │   ├── email/                   # Resend client, weekly template
-│   │   ├── pipeline/                # sensors, analyzers, synthesizers
-│   │   └── utils/                   # formatters, cn, a11y, motion, logger
-│   │
-│   └── middleware.ts                # Auth check, route protection
-│
-├── prisma/
-│   └── schema.prisma                # User, Asset, Quote, Fundamental, AqScore, Portfolio, etc
-│
-├── packages/
-│   └── @investiq/shared/            # Types + constants compartilhados (web + futuro mobile)
-│       ├── types.ts                 # AssetData, AqScoreSummary, Portfolio, AuthUser, etc
-│       └── constants.ts             # PLAN_LIMITS, SECTORS, SECTOR_LABELS
-│
-├── public/                          # Assets estaticos, favicon, fonts, manifest
-├── tailwind.config.ts               # Design tokens Ocean Forge
-├── next.config.ts                   # Security headers, Sentry, image domains
-├── vercel.json                      # Cron jobs (score-snapshot sex 18h, weekly-report sex 19h)
-└── package.json
-```
+### 3.1 · Estrutura do nome
+
+`Inv` (raiz de Invística) + `score` (vocabulário técnico). A tipografia revela essa estrutura sem quebrar a leitura.
+
+### 3.2 · Logotipo oficial
+
+- **`Inv`** em serif display (PP Editorial New)
+- **`score`** em sans-serif (Geist Sans)
+- **Acento agudo em cobre** sobre o "I" inicial — assinatura visual herdada de Invística
+- Filete em cobre de apoio quando aplicável
+- A transição serif → sans dentro da palavra narra visualmente que Invscore é *a expressão técnica da inteligência Invística*
+
+### 3.3 · Três estados tipográficos
+
+**Estado 1 — Logotipo oficial (materiais de marca)**
+Tipografia dupla (serif + sans), acento em cobre. Uso: página de produto, manifesto, apresentações institucionais, materiais de imprensa, header de relatórios.
+
+**Estado 2 — Forma de produto (UI e copy corrido)**
+Escrito como palavra única, em Geist Sans medium, com I capitalizado: `Invscore`. Uso: chat, dashboard, filtros, tooltips, copy corrido do site.
+> *"ITUB4 tem Invscore 84."*
+> *"Filtre ações com Invscore acima de 80."*
+
+**Estado 3 — Forma numérica (dados tabulares)**
+Label "Invscore" em Geist Sans caixa baixa acima, número em Geist Mono com tabular-nums:
+> `Invscore`
+> `84`
+
+### 3.4 · Escala qualitativa — 5 faixas nomeadas
+
+O Invscore vai de 0 a 100. Para copy e UI, também há leitura qualitativa por faixas:
+
+| Faixa | Nome | Significado |
+|-------|------|-------------|
+| 85–100 | **Convicção** | Evidência forte nos três pilares |
+| 70–84 | **Favorável** | Maioria dos pilares aponta positivo |
+| 55–69 | **Neutro** | Pilares divididos ou sem sinal claro |
+| 40–54 | **Reserva** | Pelo menos um pilar com alerta |
+| 0–39 | **Evitar** | Pilares convergem negativamente |
+
+Copy de exemplo:
+> *"VALE3 em Convicção, Invscore 89."*
+> *"Essa ação saiu de Favorável para Reserva no último trimestre."*
+> *"12 ações em Convicção na metodologia atual."*
+
+### 3.5 · Expressões-satélite (vocabulário oficial)
+
+- **"Invscore alto / baixo"** — referência qualitativa
+- **"Dentro do Invscore"** — *"essa convicção está dentro do Invscore da ação"*
+- **"Subiu / caiu no Invscore"** — movimento temporal
+- **"Acima do Invscore de corte"** — threshold para recomendação
+- **"O Invscore médio do setor"** — comparativos agregados
+
+Essas expressões devem aparecer organicamente em copy, posts, relatórios — vocabulário que se naturaliza com uso consistente.
 
 ---
 
-## Autenticacao
+## 4 · Filosofia editorial — voz da marca
 
-**Sistema custom** (NAO usa NextAuth):
-- JWT via `jose` — sign/verify com `AUTH_SECRET`
-- Cookies HTTP-only para sessao
-- OAuth: Google + GitHub (flows em `lib/auth/oauth-*.ts`)
-- Demo mode: usuario de teste com acesso completo
-- Middleware protege rotas `/dashboard`, `/explorer`, `/portfolio`, `/dividends`, `/radar`, `/settings`, `/comparar`, `/ativo`, `/mapa`, `/estrategias`
-- Rotas `/login`, `/register` redirecionam para `/dashboard` se ja autenticado
+Regras operacionais para qualquer texto de qualquer superfície (home, emails, posts, carta ao investidor, UI microcopy):
 
-## Planos (shared constants)
-
-| Recurso | Free | Pro | Elite |
-|---------|------|-----|-------|
-| Portfolios | 1 | 5 | 20 |
-| Ativos/portfolio | 10 | 50 | 200 |
-| Filtros screener | 3 | 10 | Ilimitado |
-| AQ Scores/dia | 3 | 50 | Ilimitado |
-| Assets explorer | 15 | 100 | Ilimitado |
-
-Definidos em `packages/@investiq/shared/constants.ts`.
-
-## Prisma Models (principais)
-
-- **User**: auth, plan (free/pro/elite), preferences, onboarding
-- **Asset**: ticker, name, sector, type, CNPJ, ISIN
-- **Quote**: OHLCV diario
-- **Fundamental**: metricas financeiras (balanco, DRE, ratios)
-- **AqScore**: IQ-Score + breakdown por pilar
-- **Dividend**: ex-date, valor por acao
-- **ScoreSnapshot**: historico de scores para feedback loop
-- **Portfolio**: carteira do usuario
-- **Position**: holdings (qty, avg cost)
-- **Transaction**: buy/sell/dividend/split
-- **Alert**: alertas customizados (preco, score, dividendo)
-- **Comment/Vote**: comunidade
-- **Goal/Milestone**: metas financeiras
-- **Insight**: insights AI personalizados
-- **WeeklyReport**: relatorio semanal automatico
-- **WebhookEvent**: audit trail Mercado Pago
-
-## Variaveis de Ambiente
-
-```bash
-# Backend
-INVESTIQ_API_URL=https://investiqbackend-production.up.railway.app
-
-# Database (Supabase PostgreSQL)
-DATABASE_URL=
-DIRECT_URL=
-
-# Auth
-AUTH_SECRET=          # openssl rand -base64 32
-APP_URL=http://localhost:3000
-
-# OAuth
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
-
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-
-# API
-NEXT_PUBLIC_API_BASE_URL=
-
-# Sentry (opcional)
-SENTRY_DSN=
-NEXT_PUBLIC_SENTRY_DSN=
-
-# Feature flags
-ALLOW_DEMO=false
-NEXT_PUBLIC_USE_MOCK_API=false
-```
-
-## Vercel Cron Jobs
-
-- `/api/jobs/score-snapshot` — sexta 18:00 UTC (snapshot semanal)
-- `/api/jobs/weekly-report` — sexta 19:00 UTC (relatorio semanal)
-
-## Security Headers (next.config.ts)
-
-- X-Frame-Options: DENY
-- X-Content-Type-Options: nosniff
-- HSTS: max-age=63072000; includeSubDomains; preload
-- Permissions-Policy: camera=(), microphone=(), geolocation=()
-- Referrer-Policy: origin-when-cross-origin
+1. **Frases curtas. Pontos finais frequentes.** Período médio: 12–18 palavras.
+2. **Zero adjetivo sem substância.** "Poderoso", "completo", "inovador", "revolucionário" proibidos. Toda qualidade é provada com número, método ou exemplo concreto.
+3. **Números específicos vencem arredondamento.** Não é "milhares de análises"; é "947 ações". Não é "performance superior"; é "+15,4% a.a. vs IBOV (2012–2025)".
+4. **Vocabulário institucional sem opacidade.** Termos técnicos corretos (Sharpe, Information Coefficient, margem de segurança, walk-forward) sempre com explicação embutida na primeira aparição.
+5. **Zero superlativo comercial.** "Melhor do Brasil", "mais avançado", "número 1" são linguagem de concorrente. Invística afirma pelo método, não pelo ranking.
+6. **Nunca atacar concorrentes.** Direto nem indireto. Nada de "ao contrário de outros", "sem os vícios do mercado".
+7. **Nunca explicar o óbvio.** Se o leitor não entende um conceito, ele aprende navegando — não é educado no manifesto.
+8. **Zero linguagem de urgência comercial.** Nada de "comece agora", "transforme seus investimentos". Invística convida, não convoca.
+9. **Números técnicos ficam em páginas técnicas.** Metodologia, Backtest, Resultados — ali sim, rigor quantitativo visível.
+10. **Copy em PT-BR sempre.** Termos técnicos financeiros em inglês quando não há tradução consolidada (spread, drawdown, alpha).
 
 ---
 
-## Ultima Sessao
+## 5 · Identidade visual — paleta
 
-**Data:** 2026-04-15
-**O que foi feito:** Auditoria completa e reescrita do CLAUDE.md para refletir estado real do projeto (stack, componentes, rotas, design system, auth, tRPC routers).
-**O que falta:** Melhorias a serem definidas pelo Rafael.
+### 5.1 · Modo primário: dark
+
+Contexto profissional de investimento é dark por convenção (terminal Bloomberg, research institucional). Light mode existe como secundário.
+
+### 5.2 · Cores primárias
+
+| Nome | Hex | Uso |
+|------|-----|-----|
+| Preto absoluto | `#0A0C10` | Background primário dark mode |
+| Off-white institucional | `#ECEAE4` | Texto primário sobre fundo escuro |
+| Cobre dessaturado | `#B87333` | Acento único da marca |
+| Cobre claro | `#D69A5C` | Variante para detalhes sobre fundo escuro (melhor contraste) |
+
+### 5.3 · Cinzas editoriais
+
+| Nome | Hex | Uso |
+|------|-----|-----|
+| Surface 1 | `#12151C` | Cards primários |
+| Surface 2 | `#1C2029` | Cards secundários, hover |
+| Border | `#2A2F3A` | Bordas sutis |
+| Text secondary | `#9EA3AE` | Labels, captions, metadados |
+| Text tertiary | `#5C6170` | Texto menos relevante |
+
+### 5.4 · Cores funcionais (sempre dessaturadas)
+
+| Nome | Hex | Uso |
+|------|-----|-----|
+| Positivo | `#4E9B7E` | Ganhos, compras, positivo |
+| Negativo | `#C45D5D` | Perdas, vendas, negativo |
+| Atenção | `#D9A854` | Alertas, warnings |
+
+### 5.5 · Regras absolutas de cor
+
+- Verde e vermelho puros **proibidos** — sempre dessaturados
+- Cobre só é usado como **acento**, nunca em área grande
+- Fundo preto absoluto sem textura, sem gradiente, sem ruído
+- Apenas uma cor de marca (cobre) — proibida expansão de paleta sem discussão explícita
+
+---
+
+## 6 · Identidade visual — tipografia
+
+### 6.1 · Sistema de três vozes
+
+- **Display editorial (serif):** **PP Editorial New** (Pangram Pangram) como primeira opção. Alternativas aceitas: Tiempos Headline, Reckless Neue. Uso: logotipo Invística, primeira parte (`Inv`) do logotipo Invscore, títulos de páginas institucionais, thesis statements.
+- **UI principal (sans):** **Geist Sans**. Uso: toda UI funcional, formulários, navegação, body copy técnico, segunda parte (`score`) do logotipo Invscore.
+- **Tabular mono (dados):** **Geist Mono**. Uso: tickers, preços, números do Invscore em tabelas, qualquer dado financeiro que precise alinhamento rígido.
+
+### 6.2 · Regras globais de número
+
+- `font-variant-numeric: tabular-nums lining-nums` aplicado globalmente via CSS no `body`
+- Milhar com ponto, decimal com vírgula (padrão brasileiro)
+- Zero sempre com traço cortante se a fonte oferecer (Geist Mono tem)
+
+### 6.3 · Decisões absolutas de UI
+
+- **Zero emoji** em qualquer interface de produção
+- **Zero glassmorphism**, zero glow, zero gradient decorativo
+- **Mobile-first** a partir de 375px
+- **Radius máximo 8px** (coerente com disciplina anti-template já codificada no Tailwind atual)
+- **Animação ease-out curta** (150–250ms), nunca spring bouncy, nunca animação performática sem função
+- Logotipo Invística usa acento agudo do "í" em cobre como elemento gráfico distintivo
+- Logotipo Invscore usa acento agudo sobre o "I" inicial em cobre (rima visual com Invística)
+
+---
+
+## 7 · Arquitetura do produto
+
+### 7.1 · O motor quantamental (sem nome próprio)
+
+**3 pilares. 9 setores. Regime-aware. 947 ações B3 analisadas diariamente.**
+
+- **Pilar Quantitativo** — 5 sub-scores: Qualidade (ROE, ROIC, Piotroski), Risco (Altman Z-Score, Merton PD), Valuation (múltiplos relativos ao setor), Crescimento (CAGR 5a), Momento (RSI, MA)
+- **Pilar Qualitativo** — 6 dimensões avaliadas por IA: Pricing Power, Alocação de Capital, Gestão, Resiliência, Competitividade, Governança
+- **Pilar Valuation** — 4 modelos combinados: DCF (5 anos), Gordon DDM, Múltiplos setoriais, Monte Carlo (10.000 simulações, bandas P25/P75)
+
+**Versão interna:** v11 Adaptive Apex, com gatekeeper de 3 camadas e rotação setorial ajustada por regime macro (Risk On / Risk Off / Estagflação / Recuperação). *Versionamento não exposto publicamente.*
+
+**Performance validada:** walk-forward 2012–2025, CAGR 21,2%, alpha +15,4% a.a. vs IBOV, Sharpe 0,67, Max DD −37,2%. R$1M → R$12,79M no período. Custos reais, impostos e survivorship bias considerados.
+
+**Output do motor:** o Invscore — nota de 0 a 100 atribuída a cada ação, com faixa qualitativa nomeada.
+
+### 7.2 · Universo de ativos V1
+
+**Todas as ações da B3.** UX deve deixar claro que o universo é completo, com marcação visual para ativos de baixa liquidez (`ADTV < R$ 2M`) indicando "Liquidez insuficiente para aporte > R$ 50k" — transparência radical sem excluir ninguém da análise.
+
+### 7.3 · Teses de investimento V1
+
+Três teses no V1, cobrindo 90% da demanda sem dispersar execução:
+
+1. **Value** (Guepardo-style) — qualidade + preço + paciência
+2. **Dividendos** (income-first) — safety score, DY projetado, detecção de trap risk
+3. **Quality / Growth** (Baillie Gifford adaptado ao Brasil)
+
+### 7.4 · Roadmap
+
+**V1 (0–9 meses):** Plataforma de análise quantamental + gestão prescritiva de carteira. Recomendação nível prescritivo (*"Compre R$ 3.400 de VALE3 hoje"*), sem execução direta. Importação via Pluggy, rebalance plan, ordens sugeridas para execução manual. Backtest público sob login.
+
+**V2 (9–18 meses):** FIIs como motor dedicado (indicadores próprios, não reaproveitamento de equities). Teses adicionais: Small Caps, Defensive. Abertura B2B profissional via API.
+
+**V3 (18–36 meses):** Clube de investimentos (após certificação CVM). Eventual evolução para gestora CVM com fundo aberto espelhando a metodologia. SaaS continua rodando em paralelo como funil de aquisição.
+
+---
+
+## 8 · Modelo de negócio
+
+### 8.1 · PF — SaaS puro
+
+Monetização por assinatura. Tiering a fechar após validação de mercado, mas direção indicativa:
+- Tier popular — demonstração/observador
+- Tier essencial — análise completa + 3 teses
+- Tier profissional — gestão prescritiva + backtest + laboratório
+
+### 8.2 · PJ — Institucional sob consulta
+
+Licenciamento B2B para gestor solo, family office júnior, RI de empresas listadas. Preço alto, baixo volume, alta margem. A partir de R$ 1.500/mês, negociado caso a caso.
+
+### 8.3 · Regulatório
+
+Hoje: plataforma informacional. Trilha: certificação CGA ANBIMA (2026) → analista CVM → eventual gestor CVM (V3).
+
+---
+
+## 9 · Stack técnica
+
+### 9.1 · Definido (backend/dados)
+
+- **Banco de dados:** Supabase (PostgreSQL)
+- **Cache:** Redis via Upstash
+- **Orquestração de agentes:** LangGraph
+- **Dados de mercado:** Brapi (B3), dados fundamentalistas próprios, CVM
+- **Pagamento:** Mercado Pago
+- **Monitoramento:** Sentry
+
+### 9.2 · Frontend (estado atual do repositório herdado)
+
+- Next.js 16 + React 19
+- Tailwind CSS 3.4 (token system V2 já implementado, com disciplina anti-template)
+- tRPC 11 + Prisma 6
+- TanStack Query
+- Framer Motion
+- Lightweight Charts (séries de preço) + Recharts/D3 (charts analíticos)
+- Pluggy Connect (Open Finance)
+- Geist Sans + Geist Mono (a complementar com PP Editorial New)
+
+### 9.3 · Arquitetura
+
+- Monorepo com `packages/shared`
+- Gateway BFF separado entre front e API
+- CSP rigorosa + HSTS preload + X-Frame-Options DENY
+- Demo mode via feature flag (`NEXT_PUBLIC_DEMO_MODE`)
+
+---
+
+## 10 · Convenções de código
+
+### 10.1 · TypeScript
+
+- Strict mode obrigatório
+- Sem `any` — tipar tudo explicitamente
+- Types simples preferidos sobre Interfaces, exceto quando herança exige
+
+### 10.2 · Componentes React
+
+- Functional components only
+- Props tipadas inline para componentes simples, type separado para complexos
+- Naming: PascalCase para componentes, camelCase para hooks e utils
+
+### 10.3 · Git
+
+- Commits em português, mensagens descritivas
+- Conventional commits: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`
+
+---
+
+## 11 · Regras absolutas para o Claude Code
+
+1. **Nunca gerar código que contradiga a paleta, a tipografia ou as decisões absolutas de UI.** Se houver dúvida, perguntar antes de gerar.
+2. **Nunca assumir features ou decisões de produto não documentadas aqui.** Consultar antes.
+3. **Todo dado financeiro exibido deve usar `tabular-nums`.**
+4. **Não simplificar ou "dumbificar" implementações.** O padrão é enterprise.
+5. **Copy em PT-BR sempre, respeitando as 10 regras editoriais da seção "Voz da marca".**
+6. **Nunca adicionar bibliotecas de componentes prontas** (shadcn, MUI, Chakra) sem discussão explícita. Componentes são construídos em cima de Radix UI primitivos.
+7. **Nunca usar `IQ-Score`, `IQ-Cognit` ou variações** — essa nomenclatura é legada do InvestIQ e não pertence à Invística. O score se chama Invscore. O motor não tem nome público.
+8. **Antes de fechar a sessão:** atualizar a seção "Estado atual" abaixo com o que foi feito e o que falta. Atualizar também o log de sessões.
+
+---
+
+## 12 · Estado atual
+
+**Fase:** Transição do front herdado (InvestIQ) para identidade nova (Invística). Marca, manifesto, paleta, tipografia e branding do Invscore fechados. Backend em produção no Railway com o motor quantamental funcional.
+
+**Concluído:**
+- Nome Invística registrado nos domínios `.com.br` e `.com`
+- Instagram `@invistica` garantido
+- Tagline oficial: *Inteligência que valoriza*
+- Manifesto v2 aprovado
+- Paleta dark-first com cobre dessaturado definida
+- Sistema tipográfico de três vozes definido
+- **Nome do score definido: Invscore**
+- Tratamento tipográfico do Invscore definido (serif + sans + acento cobre)
+- Escala qualitativa do Invscore definida (Convicção / Favorável / Neutro / Reserva / Evitar)
+- Arquitetura de marca fechada (Invística → Invscore → componentes sem nome)
+- Backtests v11 validados (CAGR 21,2%, alpha +15,4% a.a.)
+- Stack backend em produção
+- 40+ endpoints expostos via API
+
+**Próximos passos (em ordem):**
+- [ ] Registro INPI classe 36 (serviços financeiros) e classe 9 (software) para Invística e Invscore
+- [ ] Produção do logotipo Invística e Invscore em SVG final (PP Editorial New + Geist Sans)
+- [ ] Rename de `InvestIQ` / `IQ-Score` / `IQ-Cognit` para `Invística` / `Invscore` no código do repositório `investiq-web`
+- [ ] Aplicação da paleta nova sobre o token system V2 existente
+- [ ] Carregar PP Editorial New na stack de fontes
+- [ ] Reescrita da landing: home-manifesto, página metodologia, página resultados
+- [ ] Ticker page unificada (tela-herói consumindo ~12 endpoints em dossiê único)
+- [ ] Apontamento de DNS dos domínios `invistica.com.br` e `invistica.com`
+- [ ] Certificação CGA ANBIMA em 2026
+
+---
+
+## 13 · Log de sessões
+
+| Data | Resumo | Decisões fechadas |
+|------|--------|-------------------|
+| 2026-04-17 | Rebrand completo InvestIQ → Invística. Identidade visual, voz, posicionamento, produto-insígnia. | Nome Invística; tagline *Inteligência que valoriza*; cobre dessaturado `#B87333`; serif PP Editorial New + Geist Sans/Mono; manifesto v2; roadmap V1/V2/V3; modelo PF SaaS + PJ institucional; **nome do score: Invscore**; tratamento tipográfico dual (serif+sans); escala qualitativa 5 faixas nomeadas; motor e pilares sem nome próprio |
