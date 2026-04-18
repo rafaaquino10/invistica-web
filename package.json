@@ -19,6 +19,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource/fraunces": "^5.2.9",
     "@hookform/resolvers": "^3.9.1",
     "@prisma/client": "^6.2.1",
     "@sentry/nextjs": "^10.38.0",
