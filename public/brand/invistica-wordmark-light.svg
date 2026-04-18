@@ -1,0 +1,19 @@
+<svg viewBox="0 0 450 140" width="450" height="140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,144,400;1,144,400&amp;display=swap');
+      .text { font-family: 'Fraunces', serif; font-variation-settings: "opsz" 144, "wght" 400; font-size: 100px; letter-spacing: -0.02em; fill: #0A1F3D; }
+      .italic { font-style: italic; }
+      .roman { font-style: normal; }
+    </style>
+  </defs>
+  <text x="10" y="100" class="text">
+    <tspan class="italic">I</tspan><tspan class="roman">nv</tspan><tspan class="italic">ı</tspan><tspan class="roman">stica</tspan>
+  </text>
+  <g transform="translate(145, 33) rotate(-22)">
+    <rect fill="#E8DC20" x="0" y="0" width="24" height="5" rx="2" />
+  </g>
+  <g transform="translate(148, 23) rotate(-22)">
+    <rect fill="#0A1F3D" x="0" y="0" width="24" height="5" rx="2" />
+  </g>
+</svg>
