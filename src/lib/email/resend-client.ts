@@ -3,7 +3,7 @@
 // Fallback graceful: se RESEND_API_KEY não configurada, log no console.
 
 const RESEND_API_KEY = process.env['RESEND_API_KEY'] ?? ''
-const RESEND_FROM = process.env['RESEND_FROM_EMAIL'] ?? 'InvestIQ <noreply@investiq.com.br>'
+const RESEND_FROM = process.env['RESEND_FROM_EMAIL'] ?? 'Invística <noreply@invistica.com.br>'
 const RESEND_API_URL = 'https://api.resend.com/emails'
 
 export interface EmailPayload {

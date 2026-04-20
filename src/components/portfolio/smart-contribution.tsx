@@ -33,12 +33,12 @@ export function SmartContribution({ portfolioId }: SmartContributionProps) {
           Contribuicao Inteligente
         </h2>
         <span className="text-[10px] text-[var(--accent-1)] font-medium">
-          IQ-Cognit Engine
+          Invscore Engine
         </span>
       </div>
       <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
         <p className="text-[13px] text-[var(--text-2)] mb-4">
-          {data.rationale ?? 'Distribuicao otima baseada no IQ-Score, valuation e diversificacao da carteira.'}
+          {data.rationale ?? 'Distribuicao otima baseada no Invscore, valuation e diversificacao da carteira.'}
         </p>
 
         <div className="space-y-2">

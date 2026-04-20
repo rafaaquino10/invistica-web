@@ -54,8 +54,8 @@ const TERMS: GlossaryTerm[] = [
   { term: 'Risk On / Risk Off', category: 'macro', definition: 'Regime de mercado. Risk On = juros baixos, apetite por risco, favorece ações de crescimento. Risk Off = juros altos, aversão a risco, favorece dividendos e defensivos.' },
 
   // Geral
-  { term: 'IQ Score', category: 'geral', definition: 'Nota de 0 a 100 que avalia a saúde financeira de uma ação em 6 dimensões: Valuation, Qualidade, Risco, Dividendos, Crescimento e Qualitativo (moat, earnings quality, Z-Score).' },
-  { term: 'Score X-Ray', category: 'geral', definition: 'Visualização detalhada de todas as 18+ sub-notas que compõem o IQ Score, incluindo pesos setoriais e ajustes aplicados.' },
+  { term: 'Invscore', category: 'geral', definition: 'Nota de 0 a 100 que avalia a saúde financeira de uma ação em 6 dimensões: Valuation, Qualidade, Risco, Dividendos, Crescimento e Qualitativo (moat, earnings quality, Z-Score).' },
+  { term: 'Score X-Ray', category: 'geral', definition: 'Visualização detalhada de todas as 18+ sub-notas que compõem o Invscore, incluindo pesos setoriais e ajustes aplicados.' },
   { term: 'Kill Switch', category: 'geral', definition: 'Mecanismo de segurança que zera o score de empresas com eventos graves (recuperação judicial, fraude contábil, etc.).' },
   { term: 'Fato Relevante', category: 'geral', definition: 'Comunicado obrigatório à CVM sobre eventos que podem impactar significativamente o preço da ação.' },
 ]

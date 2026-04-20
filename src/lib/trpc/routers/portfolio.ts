@@ -156,7 +156,7 @@ export const portfolioRouter = router({
       })
     }),
 
-  // ─── Smart Contribution (Backend IQ-Cognit) ───────────────
+  // ─── Smart Contribution (Backend Invscore) ───────────────
   smartContribution: premiumProcedure
     .input(z.object({
       portfolioId: z.string().optional(),

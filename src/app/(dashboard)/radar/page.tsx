@@ -628,12 +628,12 @@ function CreateAlertModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
   const alertTypes = [
     { value: 'price_below', label: 'Preço abaixo de', desc: 'Avisa quando o preço cair abaixo do valor definido' },
     { value: 'price_above', label: 'Preço acima de', desc: 'Avisa quando o preço subir acima do valor definido' },
-    { value: 'score_change', label: 'Mudança no Score', desc: 'Avisa quando o IQ Score mudar significativamente' },
+    { value: 'score_change', label: 'Mudança no Score', desc: 'Avisa quando o Invscore mudar significativamente' },
     { value: 'dividend', label: 'Novo dividendo', desc: 'Avisa sobre ex-dates proximos' },
     { value: 'fair_value_reached', label: 'Fair Value atingido', desc: 'Avisa quando o preço cruzar o valor justo estimado' },
     { value: 'anti_panic', label: 'Anti-Pânico', desc: 'Avisa quando o ativo cair mas os fundamentos estiverem intactos — oportunidade de compra' },
     { value: 'anti_fomo', label: 'Anti-FOMO', desc: 'Avisa quando o ativo subir mas o score estiver deteriorando — sinal de cautela' },
-    { value: 'smart_contribution', label: 'Aporte Inteligente', desc: 'Sugestao mensal de rebalanceamento baseada no motor IQ-Cognit' },
+    { value: 'smart_contribution', label: 'Aporte Inteligente', desc: 'Sugestao mensal de rebalanceamento baseada no motor Invscore' },
   ]
 
   const needsThreshold = formData.type === 'price_above' || formData.type === 'price_below'

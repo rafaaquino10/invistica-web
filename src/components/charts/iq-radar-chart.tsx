@@ -159,7 +159,7 @@ export function IQRadarChart({
 
           {/* Actual values */}
           <Radar
-            name="IQ Score"
+            name="Invscore"
             dataKey="value"
             stroke="#1A73E8"
             fill="url(#radarGradient)"

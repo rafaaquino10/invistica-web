@@ -1,5 +1,5 @@
 // ─── Backend Response Types ──────────────────────────────────
-// Canonical type definitions for IQ-Cognit FastAPI responses.
+// Canonical type definitions for Invscore FastAPI responses.
 // All consumers should import from here instead of gateway-client.
 
 export interface BackendQuote {

@@ -1,5 +1,5 @@
 // ─── Score History & Alerts ──────────────────────────────────
-// Persists daily IQ Score snapshots to disk for trend analysis.
+// Persists daily Invscore snapshots to disk for trend analysis.
 // Files stored in gateway/data/score-history/{YYYY-MM-DD}.json.
 // Alerts detect significant score changes (>= 5 pts) between days.
 

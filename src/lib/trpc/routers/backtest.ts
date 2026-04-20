@@ -1,5 +1,5 @@
 // ─── Backtest Router ─────────────────────────────────────────
-// Conecta ao POST /backtest do IQ-Cognit Engine (Nuclear v8)
+// Conecta ao POST /backtest do Invscore Engine (Nuclear v8)
 
 import { z } from 'zod'
 import { router, premiumProcedure } from '../trpc'

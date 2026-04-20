@@ -99,10 +99,10 @@ export async function generateClaudeCompletion(
 }
 
 /**
- * System prompt padrão para diagnósticos IQ-Cognit.
+ * System prompt padrão para diagnósticos Invscore.
  * Garante tom consultivo, dados reais, sem recomendação de compra/venda.
  */
-export const IQ_SYSTEM_PROMPT = `Você é o motor de inteligência IQ-Cognit, um analista fundamentalista sênior focado no mercado de ações brasileiro.
+export const IQ_SYSTEM_PROMPT = `Você é o motor de inteligência Invscore, um analista fundamentalista sênior focado no mercado de ações brasileiro.
 
 REGRAS ABSOLUTAS:
 1. Use SOMENTE os dados fornecidos — NUNCA invente números

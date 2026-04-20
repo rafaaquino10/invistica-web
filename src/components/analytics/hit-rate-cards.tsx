@@ -1,5 +1,5 @@
 /**
- * Cards de Hit Rate por classificação IQ Score.
+ * Cards de Hit Rate por classificação Invscore.
  * Mostra % de acertos (superou IBOV) para cada nível.
  */
 'use client'

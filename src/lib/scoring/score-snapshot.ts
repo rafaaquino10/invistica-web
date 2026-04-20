@@ -1,7 +1,7 @@
 /**
  * Tipos e utilidades para ScoreSnapshot (feedback loop).
  *
- * Grava snapshots semanais de IQ Scores para tracking de
+ * Grava snapshots semanais de Invscore para tracking de
  * performance preditiva ao longo do tempo.
  */
 

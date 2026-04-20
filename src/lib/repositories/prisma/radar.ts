@@ -7,7 +7,7 @@ function getAlertMessage(type: string, ticker: string, threshold: number | null)
   switch (type) {
     case 'price_above': return `${ticker} ultrapassou R$ ${threshold?.toFixed(2) || '-'}`
     case 'price_below': return `${ticker} caiu abaixo de R$ ${threshold?.toFixed(2) || '-'}`
-    case 'score_change': return `IQ Score de ${ticker} foi atualizado`
+    case 'score_change': return `Invscore de ${ticker} foi atualizado`
     case 'dividend': return `${ticker} anunciou novo provento`
     default: return `Alerta disparado para ${ticker}`
   }
@@ -165,7 +165,7 @@ export class PrismaRadarRepo {
       const missing = ['Utilities', 'Consumo', 'Tecnologia'].filter((t) => !sectorAllocation[t])
       if (missing.length > 0) recommendations.push(`Explore setores como: ${missing.join(', ')}`)
     }
-    if (lowScoreAssets.length > 0) recommendations.push(`Reavalie: ${lowScoreAssets.map((p) => p.asset.ticker).join(', ')} (IQ Score baixo)`)
+    if (lowScoreAssets.length > 0) recommendations.push(`Reavalie: ${lowScoreAssets.map((p) => p.asset.ticker).join(', ')} (Invscore baixo)`)
     const fiiPercentage = allPositions.filter((p) => p.asset.type === 'fii').reduce((sum, p) => sum + (Number(p.quantity) * Number(p.avgCost)) / totalValue, 0)
     if (fiiPercentage < 0.1 && allPositions.length >= 3) recommendations.push('Considere adicionar FIIs para renda passiva')
 

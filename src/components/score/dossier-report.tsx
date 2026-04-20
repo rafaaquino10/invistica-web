@@ -58,7 +58,7 @@ export function DossierReport({ ticker }: DossierReportProps) {
         <div className="flex items-end justify-between">
           <div>
             <p className="text-[10px] font-bold text-[var(--accent-1)] uppercase tracking-[0.15em] mb-1">
-              IQ-Cognit Dossier Qualitativo
+              Invscore Dossier Qualitativo
             </p>
             <h2 className="text-[var(--text-title)] font-bold tracking-tight">
               {data.company_name ?? ticker}
@@ -150,7 +150,7 @@ export function DossierReport({ ticker }: DossierReportProps) {
 
       {/* Footer */}
       <div className="mt-6 pt-4 border-t border-[var(--border-1)]/20 flex items-center justify-between text-[10px] text-[var(--text-3)]">
-        <span>Dossier gerado por agentes LLM do IQ-Cognit Engine</span>
+        <span>Dossier gerado por agentes LLM do Invscore Engine</span>
         <span>Uso exclusivo para analise — nao constitui recomendacao</span>
       </div>
     </div>

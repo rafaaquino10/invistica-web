@@ -228,7 +228,7 @@ export async function ingestAsset(ticker: string): Promise<IngestionResult> {
       result.dividendsUpdated++
     }
 
-    // Calculate IQ Score
+    // Calculate Invscore
     try {
       await calculateAssetScore(prisma, ticker, { forceRecalculate: true, saveToDB: true })
       result.scoreCalculated = true

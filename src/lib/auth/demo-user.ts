@@ -3,7 +3,7 @@
  */
 export const DEMO_USER = {
   id: 'demo-user-id',
-  email: 'demo@investiq.com.br',
+  email: 'demo@invistica.com.br',
   name: 'Rafael Demo',
   image: null,
   plan: 'elite',

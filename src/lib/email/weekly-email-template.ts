@@ -42,7 +42,7 @@ export function generateWeeklyEmailHtml(report: WeeklyReportData): string {
           </div>
         </div>
         <div style="flex: 1; min-width: 120px;">
-          <div style="color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">IQ Score medio</div>
+          <div style="color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Invscore medio</div>
           <div style="color: ${scoreColor(report.portfolio.avgScore)}; font-size: 20px; font-weight: 700; margin-top: 4px;">
             ${report.portfolio.avgScore.toFixed(0)}
           </div>
@@ -113,7 +113,7 @@ export function generateWeeklyEmailHtml(report: WeeklyReportData): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatorio Semanal InvestIQ</title>
+  <title>Relatorio Semanal Invística</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
   <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -160,15 +160,15 @@ export function generateWeeklyEmailHtml(report: WeeklyReportData): string {
       <p style="margin: 0;">As analises apresentadas sao de carater informativo e educacional.</p>
       <p style="margin: 0;">Nao constituem recomendacao de investimento.</p>
       <p style="margin: 8px 0 0 0;">
-        <a href="${process.env['NEXT_PUBLIC_APP_URL'] ?? 'https://investiq.com.br'}/settings" style="color: #0D9488; text-decoration: none;">
+        <a href="${process.env['NEXT_PUBLIC_APP_URL'] ?? 'https://invistica.com.br'}/settings" style="color: #0D9488; text-decoration: none;">
           Gerenciar preferencias de email
         </a>
         &nbsp;|&nbsp;
-        <a href="${process.env['NEXT_PUBLIC_APP_URL'] ?? 'https://investiq.com.br'}/settings" style="color: #0D9488; text-decoration: none;">
+        <a href="${process.env['NEXT_PUBLIC_APP_URL'] ?? 'https://invistica.com.br'}/settings" style="color: #0D9488; text-decoration: none;">
           Cancelar inscricao
         </a>
       </p>
-      <p style="margin: 8px 0 0 0; color: #d1d5db;">InvestIQ &copy; ${new Date().getFullYear()}</p>
+      <p style="margin: 8px 0 0 0; color: #d1d5db;">Invística &copy; ${new Date().getFullYear()}</p>
     </div>
   </div>
 </body>

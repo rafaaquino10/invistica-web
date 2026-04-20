@@ -51,7 +51,7 @@ export const PLANS = {
     price: { monthly: 0, yearly: 0 },
     features: [
       'Explorer completo (todas as ações)',
-      'IQ Score™ ilimitado',
+      'Invscore ilimitado',
       'Screener com todos os filtros',
       '1 carteira com até 20 ativos',
       'Comparação de até 4 ativos',
@@ -73,7 +73,7 @@ export const PLANS = {
     price: { monthly: 39, yearly: 390 },
     features: [
       'Explorer completo (200+ ativos)',
-      'IQ Score™ ilimitado',
+      'Invscore ilimitado',
       'Screener com todos os filtros',
       '5 carteiras, ativos ilimitados',
       'Comparação de até 4 ativos',

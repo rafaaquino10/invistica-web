@@ -76,7 +76,7 @@ export async function GET(request: Request) {
 
       const result = await sendEmail({
         to: user.email,
-        subject: `Relatório Semanal InvestIQ — ${report.period.from} a ${report.period.to}`,
+        subject: `Relatório Semanal Invística — ${report.period.from} a ${report.period.to}`,
         html,
         text,
       })

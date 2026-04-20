@@ -14,7 +14,7 @@ interface ScoreLayer {
 }
 
 export interface ScoreStackProps {
-  /** Total IQ Score (0-100) */
+  /** Total Invscore (0-100) */
   score: number | null
   /** Classification text (Excepcional, Saudável, Atenção, Crítico) */
   classification: string

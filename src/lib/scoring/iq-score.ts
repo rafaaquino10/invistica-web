@@ -1,5 +1,5 @@
 /**
- * IQ Score™ Engine v3
+ * Invscore Engine v3
  *
  * Proprietary scoring system (0-100) for Brazilian stocks.
  * 5 Pillars: Valuation 25%, Qualidade 25%, Risco 20%, Dividendos 15%, Crescimento 15%

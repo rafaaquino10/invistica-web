@@ -11,7 +11,7 @@ const screenerFiltersSchema = z.object({
   types: z.array(z.enum(['stock'])).optional(),
   sectors: z.array(z.string()).optional(),
 
-  // IQ Score filters
+  // Invscore filters
   minScore: z.number().min(0).max(100).optional(),
   maxScore: z.number().min(0).max(100).optional(),
   minValuationScore: z.number().min(0).max(100).optional(),
@@ -204,7 +204,7 @@ export const screenerRouter = router({
           lensScores: asset.lensScores,
           fundamental: asset.fundamentals,
           latestQuote: { close: asset.price, change: asset.change, changePercent: asset.changePercent },
-          // IQ-Cognit specific fields for Explorer columns
+          // Invscore specific fields for Explorer columns
           rating: (asset as any).rating ?? null,
           ratingLabel: (asset as any).ratingLabel ?? null,
           valuation: asset.valuation,
@@ -327,7 +327,7 @@ export const screenerRouter = router({
       const exported = filtered.slice(0, maxExport)
 
       const fmt = (v: number | null) => v != null ? String(v).replace('.', ',') : ''
-      const header = 'Ticker;Nome;Setor;Tipo;Preco;IQ Score;P/L;P/VP;ROE;ROIC;Margem Liquida;DY;Div Liq/EBITDA;EV/EBITDA;Liq Corrente;Cresc Receita 5a'
+      const header = 'Ticker;Nome;Setor;Tipo;Preco;Invscore;P/L;P/VP;ROE;ROIC;Margem Liquida;DY;Div Liq/EBITDA;EV/EBITDA;Liq Corrente;Cresc Receita 5a'
       const rows = exported.map(a =>
         [
           a.ticker, `"${a.name}"`, `"${a.sector}"`, a.type,
@@ -469,7 +469,7 @@ export const screenerRouter = router({
     }),
 
   // ─── Opportunities ─────────────────────────────────────
-  // High IQ Score stocks NOT in user's portfolio
+  // High Invscore stocks NOT in user's portfolio
   opportunities: publicProcedure
     .input(z.object({
       limit: z.number().min(1).max(20).default(8),

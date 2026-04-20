@@ -1,5 +1,5 @@
-// ─── Data Orchestrator (InvestIQ Backend Only) ──────────────
-// Fetches all asset data from the InvestIQ FastAPI backend.
+// ─── Data Orchestrator (Invística Backend Only) ──────────────
+// Fetches all asset data from the Invística FastAPI backend.
 // No more Gateway dependency.
 
 import type { AssetData } from './asset-cache'
@@ -59,7 +59,7 @@ export async function getAssets(): Promise<AssetData[]> {
       .then(data => {
         if (data.length > 0) {
           setCachedAssets(data)
-          console.log(`[SWR] Background rebuild: ${data.length} stocks from InvestIQ`)
+          console.log(`[SWR] Background rebuild: ${data.length} stocks from Invística`)
         }
       })
       .catch(err => {
@@ -80,12 +80,12 @@ export async function getAssets(): Promise<AssetData[]> {
     ])
     if (assets.length > 0) {
       setCachedAssets(assets)
-      console.log(`[data-source] ${assets.length} stocks from InvestIQ backend`)
+      console.log(`[data-source] ${assets.length} stocks from Invística backend`)
     }
     return assets
   } catch (err) {
     setLastBuildError(err as Error)
-    console.warn('[data-source] InvestIQ backend unavailable:', (err as Error).message)
+    console.warn('[data-source] Invística backend unavailable:', (err as Error).message)
     if (cached) return cached
     return [] // Return empty instead of throwing — let UI show empty state
   } finally {

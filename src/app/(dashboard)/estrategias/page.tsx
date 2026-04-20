@@ -15,12 +15,12 @@ export default function EstrategiasPage() {
     <div className="space-y-5">
       {/* Header */}
       <div>
-        <p className="text-[var(--text-caption)] font-bold text-[var(--accent-1)] uppercase tracking-[0.12em]">IQ-Cognit Strategy Engine</p>
+        <p className="text-[var(--text-caption)] font-bold text-[var(--accent-1)] uppercase tracking-[0.12em]">Invscore Strategy Engine</p>
         <h1 className="font-display text-[var(--text-title)] font-bold tracking-tight">
           Estratégias IQ
         </h1>
         <p className="text-[var(--text-small)] text-[var(--text-2)] mt-0.5">
-          Seleções algorítmicas, alocação ótima e oportunidades de short — tudo baseado no motor IQ-Cognit
+          Seleções algorítmicas, alocação ótima e oportunidades de short — tudo baseado no motor Invscore
         </p>
       </div>
 
@@ -160,7 +160,7 @@ function AlocacaoTab() {
             <thead>
               <tr className="border-b border-[var(--border-1)] text-[var(--text-3)]">
                 <th className="text-left p-3 font-semibold">Ativo</th>
-                <th className="text-right p-3 font-semibold">IQ Score</th>
+                <th className="text-right p-3 font-semibold">Invscore</th>
                 <th className="text-right p-3 font-semibold">Peso</th>
                 <th className="text-left p-3 font-semibold">Racional</th>
               </tr>
@@ -235,7 +235,7 @@ function ShortsTab() {
           <thead>
             <tr className="border-b border-[var(--border-1)] text-[var(--text-3)]">
               <th className="text-left p-3 font-semibold">Ativo</th>
-              <th className="text-right p-3 font-semibold">IQ Score</th>
+              <th className="text-right p-3 font-semibold">Invscore</th>
               <th className="text-right p-3 font-semibold">Merton PD</th>
               <th className="text-right p-3 font-semibold">Momentum 6M</th>
               <th className="text-left p-3 font-semibold">Motivo</th>

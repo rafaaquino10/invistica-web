@@ -2,13 +2,13 @@
 import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
-// Colunas IQ-Cognit — alinhadas com o propósito da plataforma
+// Colunas Invscore — alinhadas com o propósito da plataforma
 export const ALL_COLUMNS = [
   { key: 'sector', label: 'Setor' },
   { key: 'close', label: 'Preço' },
   { key: 'changePercent', label: 'Dia' },
   { key: 'marketCap', label: 'Mkt Cap' },
-  { key: 'scoreTotal', label: 'IQ-Score' },
+  { key: 'scoreTotal', label: 'Invscore' },
   { key: 'rating', label: 'Rating' },
   { key: 'scoreQuali', label: 'Quali' },
   { key: 'scoreQuanti', label: 'Quanti' },

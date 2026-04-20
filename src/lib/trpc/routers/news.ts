@@ -2,7 +2,7 @@
  * News tRPC Router
  *
  * Noticias e RI (fatos relevantes CVM) por ticker.
- * Migrado para chamadas diretas ao IQ-Cognit backend.
+ * Migrado para chamadas diretas ao Invscore backend.
  */
 
 import { z } from 'zod'
@@ -35,7 +35,7 @@ export const newsRouter = router({
           id: `news-${input.ticker}-${i}`,
           title: n.title,
           summary: n.summary ?? '',
-          source: n.source || 'InvestIQ',
+          source: n.source || 'Invística',
           sourceColor: '#606878',
           link: n.url || '#',
           tickers: n.tickers ?? [input.ticker],

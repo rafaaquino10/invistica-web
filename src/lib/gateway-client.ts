@@ -1,6 +1,6 @@
 // ─── Backend Client (Legacy Compatibility Layer) ─────────────
 // Re-exports types from @/lib/types/backend and provides fetch wrappers.
-// All functions call the IQ-Cognit FastAPI backend via investiq client.
+// All functions call the Invscore FastAPI backend via investiq client.
 //
 // NEW CODE should import types from '@/lib/types/backend'
 // and use `investiq` client from '@/lib/investiq-client' directly.
@@ -119,7 +119,7 @@ export async function fetchNews(_category?: string, limit = 30): Promise<Backend
   return safeFetch(async () => {
     const res = await investiq.get<{ catalysts: Array<{ type: string; title: string; date: string; source?: string; url?: string; ticker?: string }> }>('/scores/catalysts', { params: { days: 7 } })
     return (res.catalysts || []).slice(0, limit).map((c, i) => ({
-      id: `cat-${i}`, title: c.title, summary: '', source: c.source || 'InvestIQ', sourceColor: '#606878',
+      id: `cat-${i}`, title: c.title, summary: '', source: c.source || 'Invística', sourceColor: '#606878',
       link: c.url || '#', tickers: c.ticker ? [c.ticker] : [], date: c.date, category: c.type, sentiment: 'neutral',
     }))
   }, [], 'news')
@@ -141,7 +141,7 @@ export async function fetchIntelligence(ticker: string): Promise<BackendIntellig
     return {
       ticker, companyName: ticker,
       news: (res.news || []).map((n, i) => ({
-        id: `n-${i}`, title: n.title, summary: '', source: n.source || 'InvestIQ', sourceColor: '#606878',
+        id: `n-${i}`, title: n.title, summary: '', source: n.source || 'Invística', sourceColor: '#606878',
         link: n.url || '#', tickers: [ticker], date: n.date, category: 'news', sentiment: n.sentiment || 'neutral',
       })),
       killSwitch: { triggered: false, reason: null }, relevantFacts: [],

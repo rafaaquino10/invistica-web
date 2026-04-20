@@ -1,5 +1,5 @@
-// ─── InvestIQ Backend Adapter ────────────────────────────────
-// Maps IQ-Cognit FastAPI responses to the AssetData format.
+// ─── Invística Backend Adapter ────────────────────────────────
+// Maps Invscore FastAPI responses to the AssetData format.
 // Uses /tickers as SINGLE source (now returns quotes + scores inline).
 
 import type { AssetData } from './asset-cache'
@@ -28,7 +28,7 @@ interface EnrichedTicker {
   open?: number | null
   volume?: number | null
   market_cap?: number | null
-  // IQ-Score enrichment (from iq_scores table)
+  // Invscore enrichment (from iq_scores table)
   iq_score?: number | null
   rating?: string | null
   rating_label?: string | null

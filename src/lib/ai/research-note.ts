@@ -114,7 +114,7 @@ function buildResearchPrompt(
 ${asset.ticker} — ${asset.name}
 Setor: ${asset.sector}
 Preço: R$ ${asset.price.toFixed(2)}
-IQ Score: ${asset.scoreTotal.toFixed(0)}/100 (${asset.classificacao})
+Invscore: ${asset.scoreTotal.toFixed(0)}/100 (${asset.classificacao})
 
 ═══ PILARES ═══
 Valuation: ${asset.pillarScores.valuation.toFixed(0)}/100

@@ -88,7 +88,7 @@ export default function DashboardLayout({
 
   const user = authUser
     ? { name: authUser.name ?? null, email: authUser.email ?? null, image: authUser.image ?? null, plan: (authUser as any).plan ?? 'free' }
-    : { name: 'Rafael Demo', email: 'demo@investiq.com.br', image: null, plan: 'elite' }
+    : { name: 'Rafael Demo', email: 'demo@invistica.com.br', image: null, plan: 'elite' }
 
   if (!isMounted) {
     return (

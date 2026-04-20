@@ -430,7 +430,7 @@ export const assetsRouter = router({
       return []
     }),
 
-  // ─── Evidence Explorer (Backend IQ-Cognit) ─────────────────
+  // ─── Evidence Explorer (Backend Invscore) ─────────────────
   evidence: premiumProcedure
     .input(z.object({ ticker: z.string() }))
     .query(async ({ input }) => {

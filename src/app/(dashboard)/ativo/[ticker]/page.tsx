@@ -337,7 +337,7 @@ export default function AssetDetailPage() {
           {/* Pilares + Forcas/Riscos */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-              <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Pilares IQ-Cognit</h2>
+              <h2 className="text-[var(--text-caption)] font-semibold text-[var(--text-3)] uppercase tracking-wider mb-2">Pilares Invscore</h2>
               <div className="border border-[var(--border-1)] rounded-[var(--radius)] shadow-sm bg-[var(--surface-1)] p-4">
                 <div className="space-y-4">
                   {([

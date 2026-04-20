@@ -190,7 +190,7 @@ export function MonteCarloSection({ portfolioId }: MonteCarloSectionProps) {
             </div>
 
             <p className="text-[var(--text-caption)] text-[var(--text-3)] mt-3">
-              Total investido: {formatCurrency(data.totalInvested)}. Retorno e volatilidade estimados via IQ Score e setor.
+              Total investido: {formatCurrency(data.totalInvested)}. Retorno e volatilidade estimados via Invscore e setor.
             </p>
           </>
         )}

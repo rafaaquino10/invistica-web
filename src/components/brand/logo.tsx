@@ -32,7 +32,7 @@ export function IQSymbol({ size = 40, animated = false }: { size?: number; anima
       viewBox="0 0 56 56"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="InvestIQ symbol"
+      aria-label="Invística symbol"
       className={cn(animated && 'group transition-transform duration-300 hover:scale-105')}
     >
       <rect x="4" y="4" width="48" height="48" rx="12" fill={COLORS.electricBlue} />
@@ -53,7 +53,7 @@ export function IQSymbol({ size = 40, animated = false }: { size?: number; anima
 
 // Wordmark component
 // When withSymbol=true, shows "Invest" (symbol already provides "IQ")
-// When withSymbol=false, shows full "InvestIQ" as text
+// When withSymbol=false, shows full "Invística" as text
 export function IQWordmark({
   fontSize = 32,
   className,

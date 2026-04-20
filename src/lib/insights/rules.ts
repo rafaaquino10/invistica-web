@@ -340,7 +340,7 @@ const scoreMilestoneRule: InsightRule = {
           ticker: a.ticker,
           sector: a.sector,
           title: `${a.ticker} é Excepcional (${a.aqScore.scoreTotal.toFixed(0)})`,
-          description: `${a.name} atingiu score ${a.aqScore.scoreTotal.toFixed(0)}, classificação Excepcional. Uma das melhores ações avaliadas pelo IQ Score.`,
+          description: `${a.name} atingiu score ${a.aqScore.scoreTotal.toFixed(0)}, classificação Excepcional. Uma das melhores ações avaliadas pelo Invscore.`,
           data: { scoreTotal: a.aqScore.scoreTotal },
           actionable: true,
           action: `Analisar ${a.ticker}`,

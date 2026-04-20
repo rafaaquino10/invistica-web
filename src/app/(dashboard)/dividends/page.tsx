@@ -907,7 +907,7 @@ function DividendRadarTab() {
                   <th className="text-left py-2.5 px-3 font-medium">Ativo</th>
                   <th className="text-left py-2.5 px-2 font-medium">Setor</th>
                   <th className="text-right py-2.5 px-2 font-medium">Preço</th>
-                  <th className="text-right py-2.5 px-2 font-medium">IQ Score</th>
+                  <th className="text-right py-2.5 px-2 font-medium">Invscore</th>
                   <th className="text-right py-2.5 px-2 font-medium">DY Proj</th>
                   <th className="text-right py-2.5 px-2 font-medium">Safety</th>
                   <th className="text-right py-2.5 px-3 font-medium">Margem</th>

@@ -161,7 +161,7 @@ export default function ImportarPage() {
           <div className="px-5 py-5">
             <p className="text-[var(--text-body)] text-[var(--text-2)] leading-relaxed max-w-xl mb-5">
               Conecte-se a sua corretora de forma segura. Suas posicoes em acoes serao
-              importadas automaticamente para o InvestIQ e analisadas pelo motor IQ-Cognit.
+              importadas automaticamente para a Invística e analisadas pelo motor Invscore.
             </p>
 
             {/* Broker Grid */}
@@ -361,7 +361,7 @@ export default function ImportarPage() {
           <div className="flex items-center justify-between px-5 py-3 border-t border-[var(--border-1)] bg-[var(--surface-2)]">
             <p className="text-[10px] text-[var(--text-3)] max-w-sm leading-relaxed">
               Posicoes importadas refletem os dados mais recentes da sua corretora.
-              Ativos nao cobertos pelo motor IQ-Cognit foram ignorados.
+              Ativos nao cobertos pelo motor Invscore foram ignorados.
             </p>
             <div className="flex gap-2">
               <Button variant="secondary" size="sm" onClick={handleReset}>

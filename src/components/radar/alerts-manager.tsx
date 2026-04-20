@@ -63,7 +63,7 @@ export function AlertsManager({ ticker }: AlertsManagerProps) {
                 className="w-full bg-[var(--surface-1)] border border-[var(--border-1)]/30 rounded px-2 py-1.5 text-[13px]"
               >
                 <option value="price">Preco</option>
-                <option value="score">IQ Score</option>
+                <option value="score">Invscore</option>
                 <option value="dividend">Dividendo</option>
               </select>
             </div>

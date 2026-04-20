@@ -2,7 +2,7 @@
  * Macro Regime Detector
  *
  * Detecta o regime macro com base em SELIC Real (SELIC - IPCA 12 meses).
- * Retorna pesos ajustados dos pilares para o motor IQ Score.
+ * Retorna pesos ajustados dos pilares para o motor Invscore.
  *
  * Risk Off (SELIC Real > 6%): Juros reais elevados — RF domina.
  *   → Aumenta Risco e Dividendos, reduz Crescimento.

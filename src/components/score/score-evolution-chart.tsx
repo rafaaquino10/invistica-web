@@ -37,7 +37,7 @@ const PILLAR_COLORS: Record<string, string> = {
 }
 
 const PILLAR_LABELS: Record<string, string> = {
-  score: 'IQ Score',
+  score: 'Invscore',
   valuation: 'Valuation',
   quality: 'Qualidade',
   risk: 'Risco',
@@ -67,7 +67,7 @@ export function ScoreEvolutionChart({ ticker, className }: ScoreEvolutionChartPr
   )
 
   const chartData = useMemo(() => {
-    // Prefer backend history (12 real periods from IQ-Cognit)
+    // Prefer backend history (12 real periods from Invscore)
     if (backendHistory?.history?.length) {
       return backendHistory.history.map(h => ({
         date: h.date,

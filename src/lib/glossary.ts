@@ -4,11 +4,10 @@
  */
 
 export const GLOSSARY: Record<string, string> = {
-  // IQ-Cognit
-  'IQ Score': 'Nota de 0 a 100 que avalia a saúde financeira da ação em 6 dimensões: valuation, qualidade, risco, dividendos, crescimento e qualitativo.',
-  'IQ-Cognit': 'Sistema proprietário de análise que combina score quantitativo, diagnóstico IA e monitoramento em tempo real.',
+  // Invscore
+  'Invscore': 'Nota de 0 a 100 que avalia a saúde financeira da ação em 6 dimensões: valuation, qualidade, risco, dividendos, crescimento e qualitativo.',
 
-  // Pilares do IQ Score
+  // Pilares do Invscore
   'Valuation': 'Mede se o preço está barato ou caro em relação aos fundamentos. Combina DCF, Gordon e múltiplos relativos ao setor (P/L, P/VP, EV/EBITDA).',
   'Qualidade': 'Avalia eficiência operacional, governança e qualidade do lucro. Considera ROE, ROIC, margens, Piotroski F-Score e DuPont.',
   'Risco': 'Analisa solidez financeira e exposição a risco. Inclui Altman Z-Score, Merton PD, endividamento, liquidez e cobertura de juros.',
@@ -17,11 +16,11 @@ export const GLOSSARY: Record<string, string> = {
   'Qualitativo': 'Avaliação por IA de 6 dimensões: pricing power, alocação de capital, credibilidade da gestão, resiliência, posicionamento competitivo e governança.',
 
   // Rating
-  'STRONG_BUY': 'Compra forte — IQ Score entre 82 e 100. Alta convicção em valorização acima do mercado.',
-  'BUY': 'Acumular — IQ Score entre 70 e 81. Fundamentos sólidos com upside relevante.',
-  'HOLD': 'Manter — IQ Score entre 45 e 69. Sem catalisadores claros, manter posição.',
-  'REDUCE': 'Reduzir — IQ Score entre 30 e 44. Fundamentos deteriorados, considerar redução.',
-  'AVOID': 'Evitar — IQ Score abaixo de 30. Riscos significativos, não recomendado.',
+  'STRONG_BUY': 'Compra forte — Invscore entre 82 e 100. Alta convicção em valorização acima do mercado.',
+  'BUY': 'Acumular — Invscore entre 70 e 81. Fundamentos sólidos com upside relevante.',
+  'HOLD': 'Manter — Invscore entre 45 e 69. Sem catalisadores claros, manter posição.',
+  'REDUCE': 'Reduzir — Invscore entre 30 e 44. Fundamentos deteriorados, considerar redução.',
+  'AVOID': 'Evitar — Invscore abaixo de 30. Riscos significativos, não recomendado.',
 
   // Valuation avançado
   'Fair Value': 'Valor justo estimado da ação, calculado pela média ponderada de DCF, Gordon e múltiplos do setor.',
@@ -46,7 +45,7 @@ export const GLOSSARY: Record<string, string> = {
 
   // Analytics
   'HHI': 'Índice Herfindahl-Hirschman: mede concentração da carteira. <1500 = baixa, 1500-2500 = moderada, >2500 = alta concentração.',
-  'IC Spearman': 'Information Coefficient: correlação entre o IQ Score previsto e os retornos realizados. Mede poder preditivo do modelo.',
+  'IC Spearman': 'Information Coefficient: correlação entre o Invscore previsto e os retornos realizados. Mede poder preditivo do modelo.',
   'Hit Rate': 'Percentual de acertos: proporção de ações com IQ alto que efetivamente superaram o benchmark.',
   'Sharpe': 'Retorno ajustado ao risco: (retorno - taxa livre) / volatilidade. Maior = melhor relação risco-retorno.',
 

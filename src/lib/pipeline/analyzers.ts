@@ -1,5 +1,5 @@
 // ─── Pipeline Camada 2: Core Quant (Analyzers) ──────────────
-// Recebe dados brutos, aplica motor IQ Score, regime detection, pilares.
+// Recebe dados brutos, aplica motor Invscore, regime detection, pilares.
 // Determinístico: mesmos inputs = mesmos outputs.
 
 export { scoreAsset, assetWithoutScore, type ScoringContext } from '../data/scoring-pipeline'

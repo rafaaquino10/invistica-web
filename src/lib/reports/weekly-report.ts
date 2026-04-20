@@ -161,7 +161,7 @@ export async function enrichReportWithAI(report: WeeklyReportData): Promise<Week
   if (!isClaudeAvailable()) return report
 
   try {
-    const prompt = `Você é um analista financeiro do InvestIQ. Gere um resumo semanal conciso (3-5 frases) sobre o mercado brasileiro de ações com base nestes dados:
+    const prompt = `Você é um analista financeiro da Invística. Gere um resumo semanal conciso (3-5 frases) sobre o mercado brasileiro de ações com base nestes dados:
 
 - Score médio B3: ${report.marketOverview.avgScoreB3}/100
 - Setores em alta: ${report.marketOverview.sectorsUp} | Em baixa: ${report.marketOverview.sectorsDown}
@@ -199,7 +199,7 @@ Regras: tom acessível e informativo, sem recomendar compra/venda, sem emojis. F
 export function formatReportAsText(report: WeeklyReportData): string {
   const lines: string[] = []
 
-  lines.push(`═══ Relatório Semanal InvestIQ ═══`)
+  lines.push(`═══ Relatório Semanal Invística ═══`)
   lines.push(`Período: ${report.period.from} a ${report.period.to}`)
   lines.push('')
 
@@ -207,7 +207,7 @@ export function formatReportAsText(report: WeeklyReportData): string {
     lines.push(`── Sua Carteira ──`)
     lines.push(`Patrimônio: R$ ${report.portfolio.totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`)
     lines.push(`Rentabilidade: ${report.portfolio.gainLossPct >= 0 ? '+' : ''}${report.portfolio.gainLossPct.toFixed(2)}%`)
-    lines.push(`IQ Score médio: ${report.portfolio.avgScore.toFixed(0)}`)
+    lines.push(`Invscore médio: ${report.portfolio.avgScore.toFixed(0)}`)
     lines.push(`Posições: ${report.portfolio.positionCount}`)
     lines.push('')
   }

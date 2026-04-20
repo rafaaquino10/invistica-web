@@ -15,7 +15,7 @@ export function StrategyHub() {
     <div>
       <div className="flex items-center justify-between mb-3">
         <div>
-          <p className="text-[10px] font-bold text-[var(--accent-1)] uppercase tracking-[0.15em]">IQ-Cognit Strategy Engine</p>
+          <p className="text-[10px] font-bold text-[var(--accent-1)] uppercase tracking-[0.15em]">Invscore Strategy Engine</p>
           <h2 className="text-[var(--text-heading)] font-bold">Centro Estrategico</h2>
         </div>
         <div className="flex bg-[var(--surface-2)] rounded-lg p-0.5">
@@ -70,7 +70,7 @@ function RecommendationPanel() {
           <thead>
             <tr className="border-b border-[var(--border-1)]/20 text-[var(--text-3)]">
               <th className="text-left p-3 font-semibold">Ativo</th>
-              <th className="text-right p-3 font-semibold">IQ Score</th>
+              <th className="text-right p-3 font-semibold">Invscore</th>
               <th className="text-right p-3 font-semibold">Peso</th>
               <th className="text-left p-3 font-semibold">Racional</th>
             </tr>
@@ -132,7 +132,7 @@ function ShortCandidatesPanel() {
           <thead>
             <tr className="border-b border-[var(--border-1)]/20 text-[var(--text-3)]">
               <th className="text-left p-3 font-semibold">Ativo</th>
-              <th className="text-right p-3 font-semibold">IQ Score</th>
+              <th className="text-right p-3 font-semibold">Invscore</th>
               <th className="text-right p-3 font-semibold">Merton PD</th>
               <th className="text-right p-3 font-semibold">Momentum 6M</th>
               <th className="text-left p-3 font-semibold">Motivo</th>

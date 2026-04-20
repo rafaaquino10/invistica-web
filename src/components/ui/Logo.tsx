@@ -1,5 +1,5 @@
 /**
- * InvestIQ Logo Component (UI variant)
+ * Invística Logo Component (UI variant)
  * Re-exports from brand/logo.tsx for backward compatibility
  */
 

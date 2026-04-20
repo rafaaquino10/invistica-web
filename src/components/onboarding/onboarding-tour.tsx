@@ -27,17 +27,17 @@ interface TourStep {
 const TOUR_STEPS: TourStep[] = [
   // Dashboard
   { target: '#kpi-strip, [class*="KpiStrip"]', title: 'Seus KPIs', description: 'Patrimonio, resultado e regime macro da sua carteira em tempo real.', route: '/dashboard', position: 'bottom' },
-  { target: '[class*="SignalCard"], [class*="signal-card"]', title: 'Motor Estrategico', description: 'Sinais de compra/venda/hold gerados pelo motor IQ-Cognit com nivel de confianca.', route: '/dashboard', position: 'left' },
+  { target: '[class*="SignalCard"], [class*="signal-card"]', title: 'Motor Estrategico', description: 'Sinais de compra/venda/hold gerados pelo motor Invscore com nivel de confianca.', route: '/dashboard', position: 'left' },
   { target: '[class*="RegimeStrip"], [class*="regime-strip"]', title: 'Regime Macro', description: 'SELIC, IPCA, cambio e Brent em linha unica. O regime macro guia a estrategia.', route: '/dashboard', position: 'bottom' },
 
   // Explorer
   { target: '[data-tour="explorer"], [role="tablist"]', title: 'Lens de Analise', description: 'Troque entre Geral, Valor, Dividendos, Crescimento, Defensiva e Momento. As colunas ajustam automaticamente.', route: '/explorer', position: 'bottom' },
 
   // Asset Detail
-  { target: '[class*="ScoreGauge"]', title: 'IQ Score', description: 'Score de 0 a 100 baseado em 6 pilares: Valuation, Qualidade, Risco, Dividendos, Crescimento e Qualitativo.', route: '/ativo', position: 'left' },
+  { target: '[class*="ScoreGauge"]', title: 'Invscore', description: 'Score de 0 a 100 baseado em 6 pilares: Valuation, Qualidade, Risco, Dividendos, Crescimento e Qualitativo.', route: '/ativo', position: 'left' },
 
   // Estrategias
-  { target: '[class*="TabButton"], [class*="tab-button"]', title: 'Estrategias IQ', description: 'Carteiras inteligentes, alocacao otima pelo motor e candidatos a short — tudo baseado no IQ-Cognit.', route: '/estrategias', position: 'bottom' },
+  { target: '[class*="TabButton"], [class*="tab-button"]', title: 'Estrategias IQ', description: 'Carteiras inteligentes, alocacao otima pelo motor e candidatos a short — tudo baseado no Invscore.', route: '/estrategias', position: 'bottom' },
 ]
 
 /** Posicao e dimensoes de um elemento na tela */

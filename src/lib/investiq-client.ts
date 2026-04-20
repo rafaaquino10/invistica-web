@@ -1,5 +1,5 @@
 /**
- * InvestIQ Backend API Client
+ * Invística Backend API Client
  * Wraps the FastAPI backend at Railway
  */
 
@@ -28,7 +28,7 @@ class InvestIQClient {
       cache: 'no-store',
       signal: opts?.timeout ? AbortSignal.timeout(opts.timeout) : undefined,
     })
-    if (!res.ok) throw new Error(`InvestIQ API error: ${res.status} ${res.statusText}`)
+    if (!res.ok) throw new Error(`Invística API error: ${res.status} ${res.statusText}`)
     return res.json()
   }
 
@@ -40,7 +40,7 @@ class InvestIQClient {
       body: opts?.body ? JSON.stringify(opts.body) : undefined,
       signal: opts?.timeout ? AbortSignal.timeout(opts.timeout) : undefined,
     })
-    if (!res.ok) throw new Error(`InvestIQ API error: ${res.status} ${res.statusText}`)
+    if (!res.ok) throw new Error(`Invística API error: ${res.status} ${res.statusText}`)
     return res.json()
   }
 
@@ -51,14 +51,14 @@ class InvestIQClient {
       headers: { 'Content-Type': 'application/json' },
       body: opts?.body ? JSON.stringify(opts.body) : undefined,
     })
-    if (!res.ok) throw new Error(`InvestIQ API error: ${res.status} ${res.statusText}`)
+    if (!res.ok) throw new Error(`Invística API error: ${res.status} ${res.statusText}`)
     return res.json()
   }
 
   async delete<T = any>(path: string): Promise<T> {
     const url = this.buildUrl(path)
     const res = await fetch(url, { method: 'DELETE' })
-    if (!res.ok) throw new Error(`InvestIQ API error: ${res.status} ${res.statusText}`)
+    if (!res.ok) throw new Error(`Invística API error: ${res.status} ${res.statusText}`)
     return res.json()
   }
 

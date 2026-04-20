@@ -80,7 +80,7 @@ export function PaywallGate({
   }
 
   // Demo mode: everything is unlocked for exploration
-  const isDemo = user.email === 'demo@investiq.com.br'
+  const isDemo = user.email === 'demo@invistica.com.br'
   const userPlan = user.plan as PlanType || 'free'
 
   if (isDemo || hasAccess(userPlan, requiredPlan)) {

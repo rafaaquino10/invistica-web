@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     const preapproval = await preApprovalClient.create({
       body: {
-        reason: `InvestIQ ${getPlanDisplayName(plan)} - ${interval === 'monthly' ? 'Mensal' : 'Anual'}`,
+        reason: `Invística ${getPlanDisplayName(plan)} - ${interval === 'monthly' ? 'Mensal' : 'Anual'}`,
         auto_recurring: {
           frequency: subConfig.frequency,
           frequency_type: subConfig.frequencyType,

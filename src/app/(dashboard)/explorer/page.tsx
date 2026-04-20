@@ -34,7 +34,7 @@ const LENS_TABS = [
 // ─── Sort Options ───────────────────────────────────────────
 
 const sortOptions = [
-  { value: 'scoreTotal', label: 'IQ-Score' },
+  { value: 'scoreTotal', label: 'Invscore' },
   { value: 'ticker', label: 'Ticker' },
   { value: 'changePercent', label: 'Variação' },
   { value: 'marketCap', label: 'Mkt Cap' },
@@ -59,7 +59,7 @@ const COLUMN_CONFIG: Record<ColumnKey, {
   close:            { label: 'Preço',       align: 'right' },
   changePercent:    { label: 'Dia',          align: 'center' },
   marketCap:        { label: 'Mkt Cap',      align: 'right',  hide: 'xl', glossaryKey: 'Mkt Cap' },
-  scoreTotal:       { label: 'IQ-Score',     align: 'center', glossaryKey: 'IQ Score' },
+  scoreTotal:       { label: 'Invscore',     align: 'center', glossaryKey: 'Invscore' },
   rating:           { label: 'Rating',       align: 'center', noSort: true },
   scoreQuali:       { label: 'Quali',        align: 'center', hide: 'xl', glossaryKey: 'Qualitativo' },
   scoreQuanti:      { label: 'Quanti',       align: 'center', hide: 'xl', glossaryKey: 'Qualidade' },
@@ -204,7 +204,7 @@ export default function ExplorerPage() {
     if (!data?.assets.length) return
     const colLabels: Record<string, string> = {
       close: 'Preço', changePercent: 'Variação %', marketCap: 'Mkt Cap', sector: 'Setor',
-      scoreTotal: 'IQ Score', peRatio: 'P/L', pbRatio: 'P/VP', roe: 'ROE %',
+      scoreTotal: 'Invscore', peRatio: 'P/L', pbRatio: 'P/VP', roe: 'ROE %',
       dividendYield: 'DY %', liq2meses: 'Liquidez 2M', lensMomentum: 'Momento',
       crescimentoReceita5a: 'Cresc. Receita 5a %',
     }
@@ -233,7 +233,7 @@ export default function ExplorerPage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `investiq-explorer-${new Date().toISOString().split('T')[0]}.csv`
+    a.download = `invistica-explorer-${new Date().toISOString().split('T')[0]}.csv`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -249,8 +249,8 @@ export default function ExplorerPage() {
   // Coluna de score dinâmica conforme a lente ativa
   const activeLens = LENS_TABS.find(l => l.id === selectedLens) ?? LENS_TABS[0]!
   const scoreLensLabel = selectedLens === 'general'
-    ? 'IQ Score'
-    : `IQ ${activeLens.label}`
+    ? 'Invscore'
+    : `Invscore ${activeLens.label}`
 
   return (
     <div className="space-y-6">

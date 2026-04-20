@@ -8,7 +8,7 @@ import { formatMarketCap } from '@/lib/utils/formatters'
 
 const COLOR_MODES: { value: ColorMode; label: string }[] = [
   { value: 'change', label: 'Variação' },
-  { value: 'score', label: 'IQ Score' },
+  { value: 'score', label: 'Invscore' },
   { value: 'sector', label: 'Setor' },
 ]
 
@@ -98,7 +98,7 @@ export default function MapaPage() {
               {' · '}
               {formatMarketCap(data.totals.marketCap)} market cap
               {data.totals.averageScore !== null && (
-                <> {' · '} IQ Score médio: <span className="font-mono font-semibold">{data.totals.averageScore}</span></>
+                <> {' · '} Invscore médio: <span className="font-mono font-semibold">{data.totals.averageScore}</span></>
               )}
             </p>
           )}
@@ -280,7 +280,7 @@ export default function MapaPage() {
 
           {/* Average Score */}
           <div className="bg-[var(--surface-1)] border border-[var(--border-1)] rounded-lg shadow-sm px-4 py-3">
-            <p className="text-[var(--text-caption)] text-[var(--text-3)] uppercase tracking-wider mb-1">IQ Score Médio</p>
+            <p className="text-[var(--text-caption)] text-[var(--text-3)] uppercase tracking-wider mb-1">Invscore Médio</p>
             <span className="text-[var(--text-small)] font-mono font-bold" style={{ color: data.totals.averageScore ? (data.totals.averageScore >= 60 ? '#4ADE80' : '#FB923C') : undefined }}>
               {data.totals.averageScore ?? '--'}
             </span>

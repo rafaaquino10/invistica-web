@@ -1,6 +1,6 @@
 // ─── Sensitivity Analysis Engine ─────────────────────────────
 // Calcula cenários "E se..." para SELIC, IPCA, USD no detalhe do ativo.
-// Re-calcula o IQ Score com pesos de regime diferentes.
+// Re-calcula o Invscore com pesos de regime diferentes.
 
 import type { AssetData } from '../data-source'
 import { calcularAqScore, type DadosFundamentalistas, type RegimeWeights } from '../scoring/iq-score'
