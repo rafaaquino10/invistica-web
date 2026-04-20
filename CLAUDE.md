@@ -234,7 +234,8 @@ O que **não** herdamos da Gorila:
 - Next.js 16 (App Router)
 - React 19
 - TypeScript strict
-- Tailwind CSS 3.4 + shadcn/ui
+- Tailwind CSS 4 + shadcn/ui
+- Configuração via `@theme inline` em `globals.css` (sem `tailwind.config.ts`)
 - Lucide icons
 - Recharts para visualizações de dados
 - Framer Motion para animações
@@ -491,6 +492,8 @@ Registro de decisões estratégicas com data e racional. Novas decisões devem s
 **2026-04** — Anti-princípios explicitados: não somos rede social / consolidador multi-custódia / corretora / edtech / robo-advisor por perfil.
 
 **2026-04** — MVP enxuto definido: Home + Ranking Invscore + Ativo básico + Carteira manual + Teses + Performance + Conta. Screener, valuation multi-modelo, simulador e relatórios vão para V2.
+
+**2026-04** — Stack ajustada para Tailwind 4 no bootstrap v6 (default do Next 16). Configuração migra para `@theme inline` em `globals.css`, sem `tailwind.config.ts`. Razão: default do framework, sintaxe atual, alinhado com shadcn/ui recente.
 
 ---
 
