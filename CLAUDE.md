@@ -456,18 +456,22 @@ Converter `hero-invistica-v2.html` (mockup validado) em componente React + Tailw
 
 Só após landing nova estar em produção e validada visualmente por Rafael: apontar `invistica.com.br` → Vercel.
 
-### 14.5 Seções pós-hero da landing (prioridade média)
+### 14.5 Seções pós-hero da landing (bloqueadas pela área logada)
 
-A serem especificadas em sessão futura com Rafael. Rafael mencionou preferência por "telas de demonstração da Invística" (screenshots ou mockups do produto logado) como fold subsequente ao hero.
+Folds pós-hero são o **último entregável do rebuild v6**. Ficam bloqueados até que toda a área logada (MVP de 7 módulos) esteja construída e aprovada pelo Rafael, para que os folds possam referenciar features e páginas reais — padrão Gorila — em vez de vaporware.
 
-### 14.6 Camadas 2, 3, 4 do produto (prioridade alta para MVP)
+Escopo preliminar: screenshots/mockups do produto logado, features do motor quantamental, prova de performance. Detalhamento só após a área logada estar pronta.
 
-Ver `PRODUCT.md` seção 9:
-- Camada 2 — Funcionalidades por módulo (a produzir em sessão específica)
+### 14.6 Camadas 2, 3, 4 do produto — inversão de ordem
+
+Originalmente (`PRODUCT.md` §9) as Camadas 2, 3 e 4 eram pré-requisito para implementar os módulos logados:
+- Camada 2 — Funcionalidades por módulo
 - Camada 3 — Wireframes dos 7 módulos MVP
 - Camada 4 — Copy editorial por página
 
-Não implementar módulos logados sem antes ter Camadas 2, 3 e 4 validadas.
+**Decisão 2026-04-20 (ver §15):** essa ordem foi invertida. Vamos direto ao código da área logada, iterativamente, módulo por módulo, com validação do Rafael entre entregas. Camadas 2/3/4, se produzidas, viram documentação posterior do que foi construído — nunca mais pré-requisito bloqueante.
+
+Razão: o hero completo e seus folds não podem ser 100% fiéis a um produto que ainda não existe. Precisamos construir a área logada primeiro, aprovar, e só então fechar a landing tipo Gorila.
 
 ---
 
@@ -494,6 +498,8 @@ Registro de decisões estratégicas com data e racional. Novas decisões devem s
 **2026-04** — MVP enxuto definido: Home + Ranking Invscore + Ativo básico + Carteira manual + Teses + Performance + Conta. Screener, valuation multi-modelo, simulador e relatórios vão para V2.
 
 **2026-04** — Stack ajustada para Tailwind 4 no bootstrap v6 (default do Next 16). Configuração migra para `@theme inline` em `globals.css`, sem `tailwind.config.ts`. Razão: default do framework, sintaxe atual, alinhado com shadcn/ui recente.
+
+**2026-04-20** — **Inversão da ordem de build no rebuild v6.** O hero (seção principal) já foi entregue na sessão 3, mas os folds pós-hero e a versão "Gorila-completa" da landing ficam para o fim. A partir de agora a ordem é: **área logada (MVP de 7 módulos) → aprovação → só então finalização do hero e folds da landing**. Razão: o hero e seus links não podem ser 100% fiéis a um produto que ainda não existe. Camadas 2/3/4 do `PRODUCT.md` deixam de ser pré-requisito bloqueante (ver §14.6) e passam a ser documentação opcional do que for construído. Páginas institucionais `/sobre`, `/blog` e `/precos` foram eliminadas do escopo — o preço do trial vive embutido no modal de cadastro (sessão 4).
 
 ---
 

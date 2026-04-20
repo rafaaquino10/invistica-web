@@ -322,36 +322,28 @@ Explicitamente ausentes (propositalmente):
 
 ## 9 — Próximos passos após este documento
 
-Ordem sugerida de continuação, sessão a sessão:
+**Decisão 2026-04-20:** a ordem original (Camadas 2 → 3 → 4 → 5) foi invertida. Vamos direto ao código da área logada. O hero final da landing fica por último, pois não pode ser 100% fiel a um produto que ainda não existe. Camadas 2/3/4, se produzidas, viram documentação posterior do que foi construído — nunca mais pré-requisito. Ver também `CLAUDE.md` §14.6 e §15.
 
-**Próxima sessão · Camada 2 — Funcionalidades por módulo MVP**
-Para cada um dos 7 módulos do MVP (Home, Descobrir, Ativo, Carteira, Teses, Performance, Conta), detalhar:
-- Quais componentes existem na tela
-- Quais dados consome do backend
-- Interações possíveis do usuário
-- Estados (vazio, carregando, erro, sucesso)
+**Ordem atual de execução:**
 
-Saída: documento `PRODUCT-MVP-MODULES.md` com especificação de cada módulo.
+1. **Construção iterativa da área logada** — implementar os 7 módulos do MVP (Home, Descobrir, Ativo, Carteira, Teses, Performance, Conta) em `invistica-web`, módulo por módulo, com validação do Rafael entre cada entrega. Dados mockados até o backend estar pronto para este frontend.
 
-**Sessão seguinte · Camada 3 — Wireframes das páginas MVP**
-Para cada módulo, desenhar wireframe em HTML/CSS vanilla (padrão do que fizemos no hero), com paleta preto/branco/vermelho e estrutura Gorila adaptada. Não é design final — é esqueleto visual para validar fluxo.
+2. **Finalização do hero e folds da landing** — só depois da área logada estar construída e aprovada. Os folds referenciam features e páginas reais, padrão Gorila.
 
-Saída: 7 wireframes navegáveis (um por módulo).
+3. **Documentação retrospectiva (opcional)** — se fizer sentido, produzir `PRODUCT-MVP-MODULES.md`, wireframes históricos e `PRODUCT-COPY.md` descrevendo o que foi construído.
 
-**Sessão seguinte · Camada 4 — Copy editorial por página**
-Copy final de cada tela seguindo as 10 regras editoriais do CLAUDE.md v5. Títulos, subtítulos, labels, mensagens de estado, confirmações.
+**Ordem histórica descartada** (mantida aqui só para rastreabilidade):
+- ~~Camada 2 — Funcionalidades por módulo MVP em `PRODUCT-MVP-MODULES.md`~~
+- ~~Camada 3 — Wireframes HTML/CSS vanilla dos 7 módulos~~
+- ~~Camada 4 — Copy editorial em `PRODUCT-COPY.md`~~
+- ~~Camada 5 — Conversão em React/Next.js a partir de wireframes + copy validados~~
 
-Saída: documento `PRODUCT-COPY.md` com copy por tela.
+**Páginas públicas eliminadas (2026-04-20):** `/sobre`, `/blog` e `/precos` saíram do escopo. O preço do trial de R$ 38,90/mês foi embutido no modal de cadastro. A landing pública fica com apenas `/` (home), `/metodo` e `/performance` — e mesmo essas duas só vêm depois da área logada.
 
-**Sessão seguinte · Camada 5 — Conversão em React/Next.js**
-Com wireframes + copy validados, via Claude Code CLI:
-- Converter wireframes em componentes React com Tailwind
-- Integrar com backend `invistica-api-production.up.railway.app`
-- Implementar em `invistica-web` no repositório
-
-Antes disso, executar também:
-- **Rename semântico** do código (InvestIQ → Invística, IQ-Score → Invscore) — via Claude Code CLI
-- **Atualização CLAUDE.md v6** com decisões desta sessão (paleta nova, tipografia Inter, referência Gorila, persona Alexandre, princípios 1-5, anti-princípios)
+**Itens paralelos já executados:**
+- Rename semântico InvestIQ → Invística e IQ-Score → Invscore
+- CLAUDE.md v6 publicado
+- Rebuild v6 sessões 1 a 4 em produção (bootstrap, wordmark, header, footer, hero, modais de auth com Google OAuth)
 
 ---
 
