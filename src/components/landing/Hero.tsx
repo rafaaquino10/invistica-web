@@ -107,7 +107,7 @@ const cards: CardConfig[] = [
 
 export function Hero() {
   return (
-    <section className="relative z-10 mx-auto max-w-7xl overflow-visible px-6 pt-24 pb-32 md:px-8 md:pt-28 lg:px-12 lg:pt-32">
+    <section className="relative z-10 w-full overflow-visible px-6 pt-24 pb-32 md:px-10 md:pt-28 lg:px-16 lg:pt-32 xl:px-24">
       <HeroCurve />
       <div className="relative z-10 grid min-h-[540px] items-center gap-16 lg:grid-cols-2">
         <motion.div

@@ -22,8 +22,8 @@ const columns: FooterColumn[] = [
 
 export function Footer() {
   return (
-    <footer className="bg-elevated border-t border-[var(--border)] px-6 py-16 md:px-8 lg:px-12">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+    <footer className="bg-elevated border-t border-[var(--border)] px-6 py-16 md:px-10 lg:px-16 xl:px-24">
+      <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
         <div className="flex flex-col gap-4">
           <Wordmark size="md" />
           <p className="text-sm text-muted">
@@ -52,7 +52,7 @@ export function Footer() {
         ))}
       </div>
 
-      <div className="mx-auto mt-12 flex max-w-7xl flex-col justify-between gap-2 border-t border-[var(--border)] pt-8 text-xs text-faint md:flex-row">
+      <div className="mt-12 flex w-full flex-col justify-between gap-2 border-t border-[var(--border)] pt-8 text-xs text-faint md:flex-row">
         <span>© 2026 Invística. CNPJ a ser registrado.</span>
         <span>Made in Brasil.</span>
       </div>
