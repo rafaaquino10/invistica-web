@@ -44,9 +44,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/brand/favicon.svg', type: 'image/svg+xml' },
+      { url: '/brand/favicon.ico', sizes: '32x32' },
     ],
-    apple: '/favicon.svg',
+    apple: '/brand/favicon.svg',
   },
   manifest: '/site.webmanifest',
   openGraph: {
