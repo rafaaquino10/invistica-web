@@ -11,10 +11,10 @@ const sizeClasses: Record<WordmarkSize, string> = {
 };
 
 const accentClasses: Record<WordmarkSize, string> = {
-  sm: "w-[5px] h-[1.5px] top-[-4px]",
-  md: "w-[6px] h-[1.5px] top-[-5px]",
-  lg: "w-[9px] h-[2px] top-[-7px]",
-  xl: "w-[16px] h-[3px] top-[-10px]",
+  sm: "w-[5px] h-[1.5px] top-[-4px] left-[calc(50%+1px)]",
+  md: "w-[6px] h-[1.5px] top-[-5px] left-[calc(50%+1px)]",
+  lg: "w-[9px] h-[2px] top-[-7px] left-[calc(50%+2px)]",
+  xl: "w-[16px] h-[3px] top-[-10px] left-[calc(50%+5px)]",
 };
 
 const variantClasses: Record<WordmarkVariant, string> = {
@@ -43,7 +43,7 @@ export function Wordmark({
         <span
           aria-hidden="true"
           className={cn(
-            "absolute left-1/2 -translate-x-1/2 bg-accent rounded-[1px]",
+            "absolute -translate-x-1/2 bg-accent rounded-[1px]",
             accentClasses[size],
           )}
         />
