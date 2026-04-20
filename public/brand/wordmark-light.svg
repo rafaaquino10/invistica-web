@@ -1,0 +1,14 @@
+<svg viewBox="0 0 280 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,500;1,500&amp;display=swap');
+      .wm { font-family: 'Inter', system-ui, sans-serif; font-weight: 500; font-size: 44px; letter-spacing: -1.2px; fill: #0A0A0A; }
+      .it { font-style: italic; }
+      .rm { font-style: normal; }
+    </style>
+  </defs>
+  <text x="6" y="44" class="wm">
+    <tspan class="it">I</tspan><tspan class="rm">nv</tspan><tspan class="it">ı</tspan><tspan class="rm">stica</tspan>
+  </text>
+  <rect x="66" y="13" width="10" height="2" rx="1" fill="#DC2626"/>
+</svg>
