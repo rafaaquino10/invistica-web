@@ -62,7 +62,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!asset) {
     return {
-      title: `${upperTicker} - Ativo não encontrado | InvestIQ`,
+      title: `${upperTicker} - Ativo não encontrado | Invística`,
       description: `O ativo ${upperTicker} não foi encontrado em nossa base de dados.`,
     }
   }
@@ -71,12 +71,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const price = asset.quotes[0] ? Number(asset.quotes[0].close) : null
   const scoreLabel = score !== null ? getScoreLabel(score) : null
 
-  const title = `${upperTicker} - ${asset.name} | InvestIQ`
+  const title = `${upperTicker} - ${asset.name} | Invística`
   const description = score !== null
-    ? `Análise completa de ${upperTicker} (${asset.name}). IQ Score: ${score.toFixed(0)} (${scoreLabel}). ${asset.type === 'fii' ? 'Fundo Imobiliário' : 'Ação'} do setor ${asset.sector ?? 'N/A'}.`
+    ? `Análise completa de ${upperTicker} (${asset.name}). Invscore: ${score.toFixed(0)} (${scoreLabel}). ${asset.type === 'fii' ? 'Fundo Imobiliário' : 'Ação'} do setor ${asset.sector ?? 'N/A'}.`
     : `Análise de ${upperTicker} (${asset.name}). ${asset.type === 'fii' ? 'Fundo Imobiliário' : 'Ação'} do setor ${asset.sector ?? 'N/A'}.`
 
-  const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://investiq.com.br'
+  const baseUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://invistica.com.br'
 
   return {
     title,
@@ -90,21 +90,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       'investimento',
       'bolsa brasileira',
       'B3',
-      'IQ Score',
+      'Invscore',
     ].filter(Boolean),
-    authors: [{ name: 'InvestIQ' }],
+    authors: [{ name: 'Invística' }],
     openGraph: {
       title,
       description,
       type: 'website',
       url: `${baseUrl}/ativo/${upperTicker}`,
-      siteName: 'InvestIQ',
+      siteName: 'Invística',
       images: [
         {
           url: `${baseUrl}/api/og?ticker=${upperTicker}`,
           width: 1200,
           height: 630,
-          alt: `${upperTicker} - IQ Score`,
+          alt: `${upperTicker} - Invscore`,
         },
       ],
     },

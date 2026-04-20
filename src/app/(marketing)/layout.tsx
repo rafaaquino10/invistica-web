@@ -10,7 +10,7 @@ import { Disclaimer } from '@/components/ui'
 
 const navLinks = [
   { label: 'Recursos', href: '#features' },
-  { label: 'IQ-Cognit™', href: '#motor' },
+  { label: 'Invscore', href: '#motor' },
 ]
 
 export default function MarketingLayout({
@@ -177,7 +177,7 @@ export default function MarketingLayout({
 
             {/* Right — copyright */}
             <div className="lg:ml-auto text-[var(--text-caption)] text-[var(--text-3)] flex flex-col sm:flex-row gap-1 sm:gap-3">
-              <span>© 2026 InvestIQ</span>
+              <span>© 2026 Invística</span>
               <span className="hidden sm:inline">·</span>
               <span className="text-[10px] text-[var(--text-3)]">Informações para fins educacionais. Não constitui recomendação de investimento.</span>
             </div>

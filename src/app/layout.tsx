@@ -8,21 +8,21 @@ import { OrganizationJsonLd, SoftwareApplicationJsonLd } from '@/components/seo'
 import './globals.css'
 
 // Geist Sans (--font-geist-sans): fonte principal para UI, headings e body text.
-// Geist Mono (--font-geist-mono): para números financeiros, tabelas, IQ Score
+// Geist Mono (--font-geist-mono): para números financeiros, tabelas, Invscore
 //   e qualquer dado numérico — usar classe `font-mono` nos elementos.
 
 export const metadata: Metadata = {
   title: {
-    default: 'InvestIQ | Inteligência que valoriza',
-    template: '%s | InvestIQ',
+    default: 'Invística | Inteligência que valoriza',
+    template: '%s | Invística',
   },
   description:
-    'Plataforma premium de analytics de investimentos com IQ-Cognit™. Análise fundamentalista com motor proprietário, portfólio analytics e gestão de carteira numa única experiência.',
+    'Plataforma premium de analytics de investimentos com Invscore. Análise fundamentalista com motor proprietário, portfólio analytics e gestão de carteira numa única experiência.',
   keywords: [
     'investimentos',
     'ações',
     'análise fundamentalista',
-    'IQ Score',
+    'Invscore',
     'portfolio',
     'ações brasileiras',
     'B3',
@@ -30,15 +30,15 @@ export const metadata: Metadata = {
     'analytics',
     'bolsa de valores',
   ],
-  authors: [{ name: 'InvestIQ' }],
-  creator: 'InvestIQ',
-  publisher: 'InvestIQ',
+  authors: [{ name: 'Invística' }],
+  creator: 'Invística',
+  publisher: 'Invística',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://investiq.com.br'),
+  metadataBase: new URL('https://invistica.com.br'),
   alternates: {
     canonical: '/',
   },
@@ -52,26 +52,26 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    url: 'https://investiq.com.br',
-    siteName: 'InvestIQ',
-    title: 'InvestIQ | Inteligência que valoriza',
+    url: 'https://invistica.com.br',
+    siteName: 'Invística',
+    title: 'Invística | Inteligência que valoriza',
     description:
-      'Plataforma premium de analytics de investimentos com IQ-Cognit™.',
+      'Plataforma premium de analytics de investimentos com Invscore.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'InvestIQ - Inteligência que valoriza',
+        alt: 'Invística - Inteligência que valoriza',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'InvestIQ',
+    title: 'Invística',
     description: 'Inteligência que valoriza.',
     images: ['/og-image.png'],
-    creator: '@investiq',
+    creator: '@invistica',
   },
   robots: {
     index: true,

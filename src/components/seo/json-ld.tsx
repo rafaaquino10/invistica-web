@@ -22,18 +22,18 @@ export function OrganizationJsonLd() {
       data={{
         '@context': 'https://schema.org',
         '@type': 'Organization',
-        name: 'InvestIQ',
-        url: 'https://investiq.com.br',
-        logo: 'https://investiq.com.br/logo.png',
+        name: 'Invística',
+        url: 'https://invistica.com.br',
+        logo: 'https://invistica.com.br/logo.png',
         description: 'Plataforma de análise fundamentalista de ações brasileiras para investidores',
         sameAs: [
-          'https://twitter.com/investiq',
-          'https://linkedin.com/company/investiq',
+          'https://twitter.com/invistica',
+          'https://linkedin.com/company/invistica',
         ],
         contactPoint: {
           '@type': 'ContactPoint',
           contactType: 'customer service',
-          email: 'contato@investiq.com.br',
+          email: 'contato@invistica.com.br',
         },
       }}
     />
@@ -47,7 +47,7 @@ export function SoftwareApplicationJsonLd() {
       data={{
         '@context': 'https://schema.org',
         '@type': 'SoftwareApplication',
-        name: 'InvestIQ',
+        name: 'Invística',
         operatingSystem: 'Web',
         applicationCategory: 'FinanceApplication',
         offers: {
@@ -114,7 +114,7 @@ export function AssetJsonLd({ ticker, name, type, sector, price, priceChange, sc
           }] : []),
           ...(score !== null ? [{
             '@type': 'PropertyValue',
-            name: 'IQ Score',
+            name: 'Invscore',
             value: score,
           }] : []),
         ],

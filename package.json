@@ -2,6 +2,7 @@
   "name": "invistica-web",
   "version": "0.1.0",
   "private": true,
+  "description": "Research quantamental institucional aplicado a ações da B3. Invscore 0–100, valuation multi-modelo e alpha auditável.",
   "scripts": {
     "dev": "concurrently --names gateway,next --prefix-colors blue,green \"npm run gateway\" \"next dev --turbopack\"",
     "dev:next": "next dev --turbopack",
