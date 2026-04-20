@@ -1,418 +1,508 @@
-# CLAUDE.md — Invística (frontend `invistica-web`)
+# CLAUDE.md — Invística
 
-Este documento é a fonte de verdade para tudo que envolve a marca, a voz e a arquitetura visual da Invística no frontend. Claude Code CLI deve consultá-lo antes de qualquer decisão de copy, componente, estilo ou naming.
+Documento oficial de contexto para assistentes IA (Claude Code CLI, Claude chat, Cursor, GitHub Copilot) trabalhando no projeto Invística.
 
-Última atualização: abril de 2026 · v5 · sistema de marca finalizado com símbolo "Pilar Alpha"
+Versão 6.0 · abril de 2026 · substitui v5. Consolidação após rebrand visual completo (paleta preto/branco/vermelho, tipografia Inter, referência estrutural Gorila Invest) e após formalização do PRODUCT.md v1.2.
+
+Ler este documento antes de qualquer ação no repositório. Em caso de conflito entre este documento e outros briefings antigos, este prevalece. Conflitos com `PRODUCT.md` devem ser escalados ao fundador Rafael Aquino para decisão.
 
 ---
 
 ## 1 — Identidade
 
-**Nome:** Invística
-**Pronúncia:** /in.ˈvis.ti.ka/
-**Etimologia:** raiz latina *invest-* (investir, aplicar) + *vís-* (de *videre*, visão) + sufixo *-ica* (disciplina técnica, como estatística, semiótica, física)
-**Significado:** disciplina técnica do investir com visão. Sugere metodologia, rigor, conhecimento aplicado.
+**Invística** é SaaS de research quantamental aplicado a ações da B3, voltado ao investidor comum sofisticado.
 
-**Tagline oficial:** *Inteligência que valoriza*
+Website: invistica.com.br (DNS ainda não apontado na data desta versão).
+Deploy atual: invistica-web.vercel.app.
+Backend: invistica-api-production.up.railway.app.
+Fundador solo: Rafael Aquino (engenheiro CLT em transição para empreendedor, planejando CGA ANBIMA 2026 para habilitar constituição de gestora CVM em 36 meses).
 
-Uso: aparece permanentemente abaixo do logotipo em aplicações formais, ou sozinha em contextos de campanha. Declaração absoluta, sem verbo imperativo.
-
-**Descritor institucional:** *Inteligência aplicada a investimentos*
-
-Uso: acompanha o logotipo em contextos onde a marca precisa de contexto imediato. Sempre em caps com letter-spacing ampliado.
+Nome anterior do projeto: InvestIQ. Nome anterior do score: IQ-Score / IQ-Cognit. **Qualquer referência textual remanescente a esses nomes antigos em código, metadata, UI, copy ou documentação deve ser renomeada** — ver Seção 14 (Rename Semântico Pendente).
 
 ---
 
-## 2 — Manifesto
+## 2 — Frase-tese e posicionamento
 
-> Investir é uma disciplina. Tem método, rigor e tempo — como qualquer arte que exige domínio.
->
-> Aqui, cada decisão passa por três olhares: o que os números revelam, o que a empresa demonstra ao longo do tempo, o que o preço justo confirma. Os três precisam convergir. Nada avança sem isso.
->
-> Esta é a Invística. Uma forma de investir que não depende de sorte, intuição ou pressa.
+> **Research quantamental institucional, aplicado por qualquer investidor comum, com alpha mensurável — a um preço que cabe no orçamento de quem investe.**
 
-Texto institucional-mãe. Pode aparecer na home, em contracapa de relatórios, em abertura de apresentações. Citável, não reescrevível.
+Quatro vetores não-negociáveis:
 
----
+1. **Research quantamental institucional** — motor proprietário (quantitativo + qualitativo + valuation multi-modelo) é o produto. Nada de questionário comportamental, perfil psicográfico, recomendação emocional
+2. **Aplicado por qualquer investidor comum** — zero barreira financeira, interface sem pressupor conhecimento técnico prévio
+3. **Com alpha mensurável** — prova numérica auditável: +15,4% a.a. sobre IBOV desde 2019. Zero promessa, zero projeção
+4. **A um preço que cabe no orçamento de quem investe** — mensalidade nunca compete com aporte do usuário
 
-## 3 — Posicionamento (do fundador)
-
-A Invística é a plataforma de investimentos mais inteligente e poderosa do Brasil. É uma ferramenta quantamental proprietária (quantitativo completo + qualitativo profundo) focada exclusivamente no mercado brasileiro. Entrega vantagem mensurável (alpha real) acima do Ibovespa, CDI e SELIC para investidores que buscam performance consistente, sem depender de palpites ou ferramentas genéricas e sem precisar aderir a grande fundo com valor mínimo altíssimo para obter cota.
+Qualquer feature, copy, tela ou decisão deve atender a pelo menos três destes quatro vetores.
 
 ---
 
-## 4 — Voz editorial (10 regras absolutas)
+## 3 — Os 6 princípios de produto
 
-1. Frases curtas (12-18 palavras). Longas só quando a ideia exige.
-2. Zero adjetivo vazio. Só adjetivos que se sustentam por si (rigoroso, auditável, verificável).
-3. Números específicos (947 ações B3, +15,4% a.a. vs IBOV, Sharpe 0,67).
-4. Vocabulário institucional com explicação embutida.
-5. Zero superlativo comercial.
-6. Nunca atacar concorrentes.
-7. Nunca explicar o óbvio.
-8. Zero urgência comercial.
-9. Copy em português brasileiro.
-10. Tom institucional calmo — severa no método, calorosa na comunicação.
+Referência completa em `PRODUCT.md` seção 2. Resumo operacional:
+
+1. **Motor em primeiro lugar** — toda feature alimenta, consome ou demonstra o motor quantamental
+2. **Alpha auditável como moeda** — números são linguagem nativa. Performance real, walk-forward validada
+3. **Simplicidade prescritiva, profundidade opcional** — superfície padrão é prescritiva. Camada abaixo é analítica
+4. **Voz editorial contida** — copy factual, sem pitch, sem adjetivos de venda. Frase curta, número específico
+5. **Marca brasileira, produto brasileiro** — foco B3 no MVP e V2. Benchmarks BR (IBOV, CDI, SELIC). Copy pt-BR
+6. **Pricing como missão** — mensalidade inferior a 2-4 unidades de uma ação média. Ganhamos em volume, nunca em ARPU
 
 ---
 
-## 5 — Arquitetura de marca
+## 4 — Os 5 anti-princípios
 
-**Casa-mãe:** Invística
-**Produto-insígnia:** Invscore (nota proprietária 0-100 atribuída a cada ação)
-**Componentes internos:** motor quantitativo, 3 pilares de análise — SEM nome próprio público
+O que a Invística **não é**, mesmo que o mercado faça:
 
-### Invscore — tratamento tipográfico oficial
-
-`Inv` em serif italic (Fraunces) + `score` em sans-serif light (Geist Sans). Filete amarelo sob a palavra conectando produto à marca-mãe.
-
-### Escala qualitativa do Invscore
-
-| Faixa | Nome | Descrição |
-|---|---|---|
-| 85-100 | Convicção | Alta qualidade + preço favorável + tese clara |
-| 70-84 | Favorável | Qualidade consistente, preço justo |
-| 55-69 | Neutro | Sem tese clara em qualquer direção |
-| 40-54 | Reserva | Fragilidade em um ou mais pilares |
-| 0-39 | Evitar | Fragilidade estrutural em múltiplos pilares |
+1. **Não somos rede social de investimento** — zero feed, zero ranking de usuários, zero "gurus seguidos"
+2. **Não somos consolidador multi-custódia** — esse é o domínio da Gorila. Carteira manual no MVP, Pluggy só em V2
+3. **Não somos corretora nem operador de boletas** — zero execução de ordens
+4. **Não somos edtech nem produtor de conteúdo genérico** — blog serve ao research, não ao ensino
+5. **Não somos robo-advisor por perfil psicográfico** — zero questionário de perfil de investidor
 
 ---
 
-## 6 — Paleta cromática oficial
+## 5 — Persona-âncora
 
-Sistema dual-mode obrigatório.
+**Alexandre, 37 anos** — engenheiro CLT, salário R$ 22k/mês, patrimônio R$ 420k (R$ 180k renda fixa + R$ 210k ações + R$ 30k FIIs), 12 papéis em 3 corretoras.
 
-### Dark Mode — "Noite OLED"
+Usa planilha manual. Assina 2 newsletters premium. Nunca fez conta se bate IBOV. Quer método, não palpite. Não tem 8h/semana para virar analista.
 
-```
---bg-body:        #070A12
---bg-hero:        #0D1120
---bg-surface:     #10141F
---border:         #1C2030
---text-primary:   #F2F1E2
---text-secondary: #7C85A3
---text-tertiary:  #6B7490
---accent:         #FFE93D  (amarelo luminoso)
---accent-ink:     #0A0A00
-```
+Ticket aceitável: até R$ 50/mês.
 
-### Light Mode — "Swiss Branco"
+**Referência completa em `PRODUCT.md` seção 4.**
 
-```
---bg-body:        #FFFFFF
---bg-hero:        #FFFFFF
---bg-surface:     #FAFAF6
---border:         #E3E6EC
---text-primary:   #0A1F3D  (Azul Aquino)
---text-secondary: #4A5A72
---text-tertiary:  #8A96AD
---accent:         #E8DC20  (amarelo saturado)
---accent-ink:     #1A1D00
---accent-text:    #8A7500  (amarelo-mostarda para texto legível)
-```
-
-### Cores funcionais (ambos os modos)
-
-```
-Dark:    --positive: #4ADE80   --negative: #F87171   --warning: #FFE93D
-Light:   --positive: #16A34A   --negative: #DC2626   --warning: #CA8A04
-```
-
-### Princípio de aplicação — 3 camadas
-
-Cor nunca inunda a tela toda. Toda página se organiza em:
-1. Header estreito (zona funcional)
-2. Hero (cor de marca em superfície grande mas contida)
-3. Body de trabalho (UI real, cor como acento pontual)
-
-Amarelo aparece como CTAs, tags destacadas, acentos numéricos, sublinhados. Nunca como fundo de conteúdo textual longo.
+Regra: se uma feature não serve ao Alexandre, **não entra no MVP**.
 
 ---
 
-## 7 — Sistema de marca visual
+## 6 — Voz editorial (10 regras)
 
-### 7.1 Componentes
+Toda copy de UI, e-mail, blog, notificação, tooltip e documentação segue estas regras:
 
-A marca Invística tem **dois ativos visuais principais** que operam como sistema:
+1. **Frases curtas.** Máximo 20 palavras por frase sempre que possível
+2. **Números antes de adjetivos.** "+15,4% a.a. sobre IBOV" > "performance excepcional"
+3. **Zero superlativo vazio.** Proibidos: "incrível", "revolucionário", "surpreendente", "inigualável"
+4. **Zero urgência fabricada.** Proibidos: "não perca", "só hoje", "garanta já", countdown timers
+5. **Zero pitch.** Proibidos: "descubra como", "aprenda a", "transforme sua"
+6. **Vocabulário institucional com explicação embutida.** "Fair Value (preço justo calculado)" > "Fair Value" puro na primeira menção
+7. **Nomes próprios em caixa moderada.** Invscore, não INVSCORE. Apenas siglas de método (DCF, CAPM, WACC) em caixa alta
+8. **Português brasileiro formal-neutro.** Você, não tu. Vocês, não vós. Evita gíria regional. Evita coloquialismo excessivo
+9. **Referências sempre a fontes auditáveis.** "Conforme metodologia em /performance" > "segundo nossos estudos"
+10. **Sujeito humano, não corporativo.** "Acompanhamos" > "a plataforma monitora"
 
-**(A) Símbolo "Pilar Alpha"** — forma geométrica proprietária
-**(B) Wordmark tipográfico** — a palavra "Invística" em Fraunces
+---
 
-Os dois podem aparecer juntos (lockup) ou separados, conforme o contexto.
+## 7 — Arquitetura de marca
 
-### 7.2 Símbolo "Pilar Alpha" — código SVG oficial
-
-```svg
-<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-  <!-- Pilar: polígono principal, corte diagonal no topo em -22° -->
-  <polygon points="0,60.4 100,20 100,120 0,120" fill="currentColor"/>
-  <!-- Acento Alpha: retângulo rotacionado em -22° sobre o pilar -->
-  <g transform="rotate(-22 50 30)">
-    <rect x="0" y="2" width="100" height="18" rx="4" fill="#E8DC20"/>
-  </g>
-</svg>
-```
-
-Leitura conceitual do símbolo:
-- Forma sólida fechada — funciona bordada em polo, gravada em metal, em favicon 16x16
-- Corte diagonal no topo (22°) — referência à letra "I" italic do wordmark
-- Acento amarelo suspenso — representa o "alpha" acima (alpha acima de IBOV, CDI, SELIC)
-- Geometria única no mercado financeiro brasileiro
-
-### 7.3 Wordmark — especificação
-
-```
-Fonte:        Fraunces 400 Regular (opsz 144)
-Fallback:     Georgia, Times New Roman, serif
-Italic:       APENAS no "I" maiúsculo inicial e no "í" com acento interno
-Romano:       todas as outras letras (n, v, s, t, i, c, a)
-Tracking:     -2% (letter-spacing: -0.02em)
-Cor letras:   var(--text-primary) [azul em light, off-white em dark]
-```
-
-### 7.4 Acento agudo sobre o "í" — construção
-
-O acento NÃO é o diacrítico padrão da fonte. É elemento geométrico construído:
+### 7.1 Paleta cromática oficial
 
 ```css
-.accent {
-  width: 0.15em;
-  height: 0.04em;
-  border-radius: 0.02em;
-  transform: rotate(-22deg);
-  position: absolute;
-  top: 0.14em;
-  left: 58%;
-  background: var(--accent);
-}
+/* Light mode — fundo branco, regra 85% preto+branco, 15% vermelho como acento */
+--bg:                #FFFFFF;  /* branco puro */
+--bg-elevated:       #FAFAFA;  /* cards, painéis elevados */
+--bg-subtle:         #F4F4F5;  /* sessões alternadas */
+--text:              #0A0A0A;  /* texto primário */
+--text-muted:        #52525B;  /* texto secundário */
+--text-dim:          #71717A;  /* labels, metadata */
+--text-faint:        #A1A1AA;  /* hint, placeholder */
+--border:            #E4E4E7;  /* divisórias padrão */
+--border-strong:     #D4D4D8;  /* divisórias ativas */
+
+/* Acento vermelho — uso pontual, 15% máximo da tela */
+--accent:            #DC2626;  /* vermelho principal */
+--accent-hover:      #B91C1C;  /* estado hover */
+--accent-soft-bg:    #FEE2E2;  /* fundo de badge suave */
+--accent-soft-text:  #991B1B;  /* texto sobre accent-soft-bg */
+
+/* Dark mode — fundo preto, mesma regra */
+--bg-dark:                #0A0A0A;
+--bg-elevated-dark:       #141414;
+--bg-subtle-dark:         #1C1C1C;
+--text-dark:              #FAFAFA;
+--text-muted-dark:        #A1A1AA;
+--text-dim-dark:          #71717A;
+--border-dark:            #27272A;
 ```
 
-### 7.5 Lockups oficiais (6 variações)
+**Regra dura:** vermelho aparece apenas em acentos pontuais — CTA principal, destaque numérico, ponto pulsante de status, hover state, badge de novidade, assinatura do wordmark. **Nunca em blocos grandes de cor. Nunca como fundo de seção inteira.**
 
-| # | Lockup | Aplicação primária |
-|---|---|---|
-| 01 | Horizontal Light | Navbar do site, headers de plataforma web |
-| 02 | Horizontal Dark | Terminal quantamental, dashboards OLED |
-| 03 | Vertical Light | Papelaria, relatórios de gestão, contratos |
-| 04 | Vertical Dark | Telas de login, capas de pitchbook digital |
-| 05 | Favicon Light | Aba de navegador, bookmark light |
-| 06 | Favicon Dark | Ícone de app, avatar institucional dark |
+### 7.2 Tipografia oficial
 
-### 7.6 Proporções canônicas
+**Fonte única de todo o produto: Inter** (Google Fonts, gratuita).
 
-- **Lockup horizontal:** símbolo 0.85em da altura do wordmark, gap de 0.4em entre eles, alinhados pela baseline
-- **Lockup vertical:** símbolo 1.2em (maior que o horizontal), gap de 0.5em, centrados horizontalmente
-- **Favicon:** símbolo ocupa 60% da área do quadrado, padding de 20% em cada lado
+```css
+--font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+```
 
-### 7.7 Regras de proteção
+Pesos em uso:
+- **400 regular** — texto corrido, parágrafos, labels
+- **500 medium** — botões, navegação, metadata destacada
+- **600 semibold** — subtítulos, destaques em prosa
+- **700 bold** — títulos H1 / H2, números em cards, wordmark do produto
 
-- O símbolo Pilar Alpha é inviolável — não alterar corte diagonal, ângulo do acento, proporções internas
-- O acento amarelo é o único elemento em amarelo em qualquer aplicação
-- Tamanho mínimo: horizontal 120px de largura; símbolo isolado 24px (favicon)
-- Espaçamento de segurança: área livre equivalente à altura do acento em todos os lados
-- Fundos permitidos: branco puro, Noite OLED, amarelo Invística (só para variação destaque)
-- Não permitido: alterar cores do acento, inclinar o logotipo, aplicar sombras, gradientes ou efeitos
+**Uso de itálico:** permitido apenas no wordmark da marca (letras "I" inicial e "ı" medial) e em citações bibliográficas. **Nunca em copy corrido de UI.**
 
----
+**Tracking padrão:**
+- Títulos grandes (>32px) — `letter-spacing: -0.03em` (-1.2 a -1.8px)
+- Texto corrido — `letter-spacing: 0`
+- Labels uppercase — `letter-spacing: 0.15em` (2-3px)
 
-## 8 — Tipografia
+Fontes anteriores **descontinuadas** neste projeto (Fraunces, Georgia, Geist Sans): não usar em nenhuma circunstância no produto Invística.
 
-### Display serif — Fraunces
+### 7.3 Wordmark oficial
 
+Renderização padrão:
+```
+Invística
+```
+
+Onde:
+- "**I**" inicial em Inter italic
+- "**nv**" em Inter romana regular
+- "**ı**" medial em Inter italic, sem ponto próprio, **com acento vermelho customizado** posicionado acima
+- "**stica**" em Inter romana regular
+
+Peso recomendado: 500 medium para wordmark em aplicações de escala padrão (20-28px). 700 bold para uso hero em tamanhos grandes (>48px).
+
+**Acento vermelho customizado sobre o "ı":** retângulo horizontal simples, dimensões proporcionais:
+- Em header 22px: largura 6px, altura 1.5px, `top: -5px`, centralizado
+- Em hero 72px: largura 16px, altura 3px, `top: -10px`, centralizado
+- Cor: `var(--accent)` (#DC2626)
+
+Em implementação React/HTML, usar estrutura:
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,144,400;1,144,400&display=swap" rel="stylesheet">
+<span class="wordmark">
+  <span class="italic">I</span>nv<span class="dot-wrap"><span class="italic">ı</span></span>stica
+</span>
 ```
 
-```css
-font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
-font-variation-settings: "opsz" 144, "wght" 400;
-```
+### 7.4 Símbolo
 
-Usada em: logotipo, títulos grandes (h1/h2), citações editoriais, frase-manifesto.
+**Status atual:** O símbolo "Pilar Alpha" que existia na v5 foi desenhado em torno do contraste azul+amarelo da paleta antiga. Com a transição para preto/branco/vermelho, o símbolo precisa ser **reinterpretado visualmente** antes de ser reintroduzido na família de assets.
 
-Migração futura: em ~1 ano para **PP Editorial New** (Pangram Pangram, licença paga). Proporções próximas, troca trivial de `@font-face`.
+**Até lá, o wordmark opera como lockup único da marca.** Qualquer implementação que exija símbolo isolado (favicon, ícone de app, avatar em redes sociais) deve usar uma das soluções placeholder:
 
-### UI sans — Geist Sans
+- Quadrado preto `#0A0A0A` com letra "I" em italic Inter 500 branca centralizada
+- Ou apenas o acento vermelho horizontal isolado sobre fundo preto (experimental, pendente validação)
 
-```css
-font-family: 'Geist', 'Helvetica Neue', Arial, sans-serif;
-```
+**Não regerar SVGs do Pilar Alpha anterior sob nenhuma circunstância** — aquela família está descontinuada. Reinterpretação será tarefa de sessão futura com Rafael.
 
-Usada em: corpo de texto, navegação, labels, descritores, tags, botões. Pesos 300/400/500.
-
-### Dados tabulares — Geist Mono
-
-```css
-.tabular {
-  font-family: 'Geist Mono', 'SF Mono', 'Courier New', monospace;
-  font-variant-numeric: tabular-nums lining-nums;
-}
-```
-
-Usada em: números de cotação, scores, percentuais, gráficos, tabelas de dados.
-
-### Descritor institucional
-
-Quando aparece com o logotipo:
-- Geist Sans weight 400
-- Font-size 1/6 da altura do nome
-- Letter-spacing 3-4px
-- `text-transform: uppercase`
-- Cor `var(--text-secondary)`
-
----
-
-## 9 — Estrutura de assets da marca
-
-Hospedar em `/public/brand/` no repositório:
+### 7.5 Estrutura de pastas de assets
 
 ```
-invistica-web/
-└── public/
-    ├── favicon.ico
-    ├── favicon.png
-    └── brand/
-        ├── invistica-lockup-horizontal-light.svg
-        ├── invistica-lockup-horizontal-dark.svg
-        ├── invistica-lockup-vertical-light.svg
-        ├── invistica-lockup-vertical-dark.svg
-        ├── invistica-simbolo-light.svg
-        ├── invistica-simbolo-dark.svg
-        ├── invistica-wordmark-only-light.svg
-        ├── invistica-wordmark-only-dark.svg
-        └── invistica-monocromatico.svg
+/public/brand/
+  wordmark-light.svg       # wordmark em fundo branco
+  wordmark-dark.svg        # wordmark em fundo preto
+  favicon.svg              # placeholder quadrado preto + "I" branco italic
+  favicon.ico              # fallback raster 32x32
+  og-home.png              # imagem OpenGraph 1200x630 branco com wordmark centralizado
+  og-article.png           # template OpenGraph para blog posts futuros
 ```
 
----
-
-## 10 — Stack técnica
-
-Frontend (`invistica-web`):
-
-- **Framework:** Next.js 16 (App Router)
-- **React:** 19
-- **Styling:** Tailwind CSS 3.4 (customizado com paleta Invística)
-- **RPC:** tRPC 11
-- **ORM:** Prisma
-- **DB:** Supabase (Postgres)
-- **Cache:** Upstash (Redis)
-- **Open Banking:** Pluggy
-- **Pagamento:** Mercado Pago
-- **Error tracking:** Sentry
-- **Fontes:** Fraunces (Google Fonts) + Geist Sans (Vercel) + Geist Mono (Vercel)
-- **Deploy:** Vercel (`invistica-web.vercel.app`)
+**Nenhum dos arquivos acima está regerado na v6.** Tarefa pendente listada na Seção 14.
 
 ---
 
-## 11 — Contratos externos (backend `invistica-api`)
+## 8 — Referência visual e estrutural: Gorila Invest
 
-Backend separado em Python/FastAPI, deployado em Railway.
+**Site:** gorila.com.br
 
-- **Base URL produção:** `https://invistica-api-production.up.railway.app`
-- **Variável de ambiente:** `NEXT_PUBLIC_API_URL`
-- **Contrato:** OpenAPI 3 exposto em `/openapi.json`
-- **Auth:** JWT via header `Authorization: Bearer <token>`
+A Invística adota a **gramática estrutural e visual da Gorila** (hierarquia, espaçamento, densidade de informação, CTAs, tipografia sans-serif institucional, composição de hero) **sem copiar a voz editorial** (Gorila é B2B sales-driven; Invística é voz contida institucional).
 
-Endpoints críticos consumidos pelo frontend:
-- `/scores/{ticker}` — retorna Invscore + pilares + tese
-- `/scores/top` — ranking por Invscore
-- `/portfolio/*` — gestão de carteira
-- `/tickers` — metadata das ações
-- `/analytics/regime` — contexto macro
+O que herdamos da Gorila:
+- Estrutura de folds organizada e previsível (hero → features → benefícios → público-alvo → CTA → footer)
+- Hero com composição dividida (texto à esquerda, visual à direita)
+- Navegação compacta no header com menu dropdown para categorias
+- CTAs claros (1 primário por fold, nunca 3+)
+- Badges de novidade em formato pílula
+- Uso editorial de negrito em palavras-chave dentro de prose
+- Ilustrações / visualizações ao invés de stock photos
 
-Mudanças breaking nesses endpoints requerem rename coordenado em N telas do frontend.
-
----
-
-## 12 — Público-alvo e posicionamento
-
-**Primário (PF):** investidor com R$ 500k a R$ 10M em ativos. Perfil: retail sofisticado, semi-profissional, gestor solo, family office júnior, profissional de RI. Lê relatórios completos, valoriza método, desconfia de promessas, quer entender.
-
-**Secundário (PJ):** gestoras independentes, family offices, consultorias de investimento, RIs buscando solução institucional. ~R$ 1.500/mês+ como referência.
-
-**Postura competitiva:**
-- Severa no método, calorosa na comunicação
-- Nunca ataca concorrentes diretamente
-- Referências: Apple, Porsche, UBS, Ray-Ban, Ferrari, Mercedes
-- Compete em disciplina, não em features
+O que **não** herdamos da Gorila:
+- Copy pitch-y ("liberdade para criar", "mais potente e inteligente")
+- Adjetivos de impacto ("experiências incríveis")
+- Super CTAs repetidos ao longo da página
+- Multiplicidade de públicos-alvo apresentados simultaneamente
 
 ---
 
-## 13 — Roadmap evolutivo
+## 9 — Arquitetura técnica
 
-### V1 (0–9 meses) — atual
-Análise quantamental + gestão prescritiva para toda B3. Três teses (Value, Dividendos, Quality/Growth). Motor v11 em produção. Performance auditada: CAGR 21,2%, alpha +15,4% a.a. vs IBOV.
+### 9.1 Stack
 
-### V2 (9–18 meses)
-Motor dedicado a FIIs. Expansão Small Caps e Defensive. API B2B.
+**Frontend** (`invistica-web`, deploy Vercel):
+- Next.js 16 (App Router)
+- React 19
+- TypeScript strict
+- Tailwind CSS 3.4 + shadcn/ui
+- Lucide icons
+- Recharts para visualizações de dados
+- Framer Motion para animações
 
-### V3 (18–36 meses)
-Clube de investimentos → gestora CVM (dependente de CGA ANBIMA 2026).
+**Backend** (`invistica-api`, deploy Railway):
+- Python 3.12 + FastAPI
+- PostgreSQL (via Supabase)
+- Redis Upstash para cache
+- Pipelines de dados com Prefect
+- Motor quantamental proprietário (v11 em produção)
 
----
+**Dados:**
+- B3 via provedor licenciado (cobertura de 947 ações)
+- Dados fundamentalistas via BMF&Bovespa + CVM
+- Pluggy (Open Finance) — **apenas em V2**, não usar no MVP
 
-## 14 — Convenções de código
+**Integrações de pagamento:**
+- Mercado Pago (PIX, cartão, assinatura recorrente) — MVP
+- Stripe como fallback V2
 
-### Componentes
-
-- **Naming:** PascalCase descritivo. `InvscoreCard`, `PortfolioTable`, `PilarValuation`
-- **Estrutura:** um componente por arquivo, export default
-- **Props:** sempre tipadas, interfaces nomeadas (`InvscoreCardProps`)
-- **Compostos:** Radix UI como base, Tailwind styling
-
-### Números e dados
-
-- **Monetários:** `toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })`
-- **Percentuais:** sempre com sinal (`+15,4%` / `-3,2%`)
-- **Separador decimal:** vírgula (pt-BR)
-- **Tabular nums:** `font-variant-numeric: tabular-nums lining-nums` obrigatório
-
-### Tokens de cor em Tailwind
-
-Evitar `bg-yellow-400`, `text-blue-900`. Usar tokens semânticos:
+### 9.2 Endpoints principais (backend)
 
 ```
-bg-body, bg-hero, bg-surface
-text-primary, text-secondary, text-tertiary
-border-subtle, border-emphasis
-accent, accent-ink
+POST   /auth/signup
+POST   /auth/login
+POST   /auth/trial-start          # cria trial de 14 dias
+GET    /user/me
+GET    /user/plan
+
+GET    /assets                     # lista completa B3 (947 ativos)
+GET    /assets/:ticker             # dados completos de um ativo
+GET    /assets/:ticker/invscore    # score 0-100 + 11 sub-scores + faixa qualitativa
+GET    /assets/:ticker/valuation   # DCF + Gordon + Múltiplos + Monte Carlo
+GET    /assets/:ticker/dividends   # histórico + safety score + projeção
+GET    /assets/:ticker/thesis      # tese institucional do motor
+
+GET    /ranking/invscore           # top 100 ordenado por score
+GET    /ranking/by-thesis/:thesis  # value | dividends | quality | momentum
+
+POST   /portfolio                  # criar/editar carteira manual
+GET    /portfolio                  # carteira do usuário
+GET    /portfolio/analysis         # score ponderado + stress test + exposição
+GET    /portfolio/recommendations  # sugestões prescritivas de rebalanceamento
+
+GET    /performance                # track record do motor (público)
+GET    /performance/walk-forward   # detalhe walk-forward 2012-hoje
 ```
 
-Definir em `tailwind.config.ts` apontando para variáveis CSS da seção 6.
+Todos os endpoints protegidos por JWT + row-level-security do Supabase.
 
-### Copy em componentes
+### 9.3 Convenções de código
 
-- Zero placeholder comercial. Usar `[pendente: descrição]`, nunca lorem ipsum
-- Microcopy segue as 10 regras da seção 4
+**TypeScript:**
+- Strict mode sempre. Zero `any`
+- Interfaces para contratos de API em `/src/types/api.ts`
+- Zod schemas para validação de input em `/src/schemas/`
 
----
+**React:**
+- Componentes funcionais apenas
+- Hooks customizados em `/src/hooks/`
+- Server Components por padrão; `'use client'` apenas quando necessário
+- Props sempre tipadas via interface nomeada (não inline)
 
-## 15 — Regras para Claude Code CLI
+**Tailwind:**
+- Não escrever CSS puro. Tudo via classes Tailwind
+- Usar `cn()` helper para merging condicional
+- Tokens do design system via CSS variables em `globals.css`
 
-1. **Ler este CLAUDE.md antes de qualquer mudança de estilo, copy ou branding.**
-2. **Nunca usar "InvestIQ", "IQ-Cognit" ou "IQ-Score" em código novo.** Referências antigas em processo de rename semântico.
-3. **Nunca propor cores fora da paleta oficial.**
-4. **Seguir a voz editorial das 10 regras.**
-5. **Referência ao backend via `NEXT_PUBLIC_API_URL`.** Nunca hardcode URL de API.
-6. **Commits em português, imperativo, curtos.** Exemplo: `feat: adiciona card Invscore na home`
-7. **Quando houver dúvida sobre marca ou estilo, parar e perguntar.**
+**Nomenclatura:**
+- Componentes: PascalCase (`InvscoreCard.tsx`)
+- Hooks: camelCase com prefixo `use` (`useInvscore.ts`)
+- Utils: camelCase (`formatCurrency.ts`)
+- Tipos: PascalCase com prefixo `T` opcional (`Invscore` ou `TInvscore`)
 
----
-
-## 16 — Histórico de decisões
-
-- **Nome "Invística"** escolhido após descoberta de plágio do domínio `investiq.com.br`. Domínios `.com.br` e `.com` registrados.
-- **Cobre rejeitado** — associação errada com tecnologia retrógrada.
-- **Verde esmeralda rejeitado** — próximo demais de Ágora.
-- **Amarelos Ferrari/Rossi rejeitados** — signaling esportivo errado para research.
-- **Paleta final: azul Aquino + amarelo neon** — raiz familiar do fundador + território virgem no mercado financeiro BR.
-- **Dark = "Noite OLED"** (preto-azulado com tingimento), não azul BIC nem preto puro.
-- **Light = "Swiss Branco"** (branco puro com amarelo aflorado), não creme nem marfim.
-- **Símbolo "Pilar Alpha"** (polígono com corte diagonal + acento amarelo rotacionado) foi finalizado no Gemini 3 Pro após tentativas frustradas em SVG inline, Recraft e plugins Figma. Sistema de 6 lockups + favicon entregue como HTML/CSS executável.
-- **Fraunces** como display serif gratuita. PP Editorial New como migração futura (1+ ano).
+**Commits:**
+- Conventional Commits: `feat:`, `fix:`, `refactor:`, `docs:`, `style:`, `test:`
+- Mensagens em português
+- Exemplo: `feat: adiciona componente InvscoreCard com sub-scores`
 
 ---
 
-Fim do CLAUDE.md v5.
+## 10 — Escala Invscore
 
-Para dúvidas, correções ou evoluções deste documento, consultar diretamente Rafael Aquino (fundador).
+O Invscore é a nota proprietária 0-100 da Invística. **Implementação viva no motor v11 em produção.** Os valores abaixo são as faixas qualitativas oficiais para apresentação ao usuário.
+
+| Faixa | Score   | Label         | Semântica                                    | Cor em UI                |
+|-------|---------|---------------|----------------------------------------------|--------------------------|
+| 5     | 85–100  | **Convicção** | Três pilares convergem. Alocação sugerida    | `var(--accent)` sólido   |
+| 4     | 70–84   | **Favorável** | Qualidade consistente. Posição justificada   | `var(--accent)` 60% opac |
+| 3     | 55–69   | **Neutro**    | Sem tese clara. Monitorar                    | `var(--accent)` 35% opac |
+| 2     | 40–54   | **Reserva**   | Fragilidade pontual. Evitar aumentar posição | `var(--text-dim)`        |
+| 1     | 0–39    | **Evitar**    | Risco estrutural. Sair da posição            | `var(--text-dim)` mais   |
+
+**Nunca representar score com verde/vermelho tradicional (bull/bear).** A Invística usa gradiente de vermelho → cinza, coerente com a identidade de marca, **sem** associação emocional com "positivo/negativo".
+
+---
+
+## 11 — Pricing e monetização
+
+**Plano único MVP e V2:**
+- **Premium R$ 38,90/mês** (ou R$ 388/ano com 2 meses grátis)
+- **Trial de 14 dias gratuito** antes da primeira cobrança, acesso completo
+- **Sem freemium, sem tier grátis eterno**
+
+**Razão estratégica (imutável no primeiro ano):** ver `PRODUCT.md` seção 2 princípio 6. Pricing como missão. Volume sobre ARPU.
+
+**Meta de breakeven:** ~1.000 assinantes pagantes gerando ~R$ 40k MRR, suficientes para infraestrutura (Vercel Pro, Railway Pro, Supabase Pro, Upstash, licenças de dados B3) + alocação para OpenAI/Anthropic API (análise qualitativa) + retirada pró-labore mínima do fundador.
+
+**Disciplina de custo obrigatória:** margem unitária de R$ 38,90 é apertada. Toda decisão de infraestrutura deve considerar custo unitário marginal. Em caso de dúvida, priorizar caching agressivo (Redis Upstash) antes de chamar APIs pagas.
+
+---
+
+## 12 — Mapa de páginas do produto
+
+Referência completa em `PRODUCT.md` seção 5. Resumo para implementação:
+
+**Páginas públicas (não logado):**
+- `/` Home (landing)
+- `/metodo` Método
+- `/performance` Performance auditada
+- `/precos` Preços
+- `/sobre` Sobre
+- `/blog` Blog (stub no MVP, ativação em V2)
+- `/login`, `/signup`, `/trial-start`, `/esqueci-senha`
+
+**Páginas logadas (autenticadas):**
+- `/app` Home (dashboard inteligente)
+- `/app/descobrir` Descobrir (ranking Invscore no MVP, screener + radar em V2)
+- `/app/ativo/:ticker` Página de ativo
+- `/app/carteira` Carteira
+- `/app/teses` Teses
+- `/app/simulador` Simulador (V2)
+- `/app/performance` Performance
+- `/app/relatorios` Relatórios (V2)
+- `/app/conta` Conta
+
+**Priorização MVP/V2/V3 detalhada em `PRODUCT.md` seção 6.**
+
+---
+
+## 13 — Sessão operacional de trabalho
+
+### 13.1 Workflow padrão de nova feature
+
+1. Claude lê `CLAUDE.md` (este) + `PRODUCT.md` + eventual briefing específico
+2. Claude confirma entendimento antes de produzir código
+3. Claude implementa em branch dedicada (`feat/nome-feature`)
+4. Claude propõe testes automatizados onde aplicável
+5. Rafael revisa e faz merge
+6. Deploy automático via Vercel (frontend) ou Railway (backend)
+
+### 13.2 Workflow de decisão visual
+
+1. Rafael descreve pedido
+2. Claude pergunta em caso de ambiguidade — **nunca adivinha paleta, tipografia ou hierarquia**
+3. Claude produz protótipo HTML vanilla primeiro (mockup rápido)
+4. Rafael valida visualmente
+5. Só após validação, Claude converte em componente React
+
+### 13.3 Regras de comunicação assistente ↔ fundador
+
+- Frases curtas, factuais, sem elogio automático
+- Reconhecer erro imediatamente quando cobrado, sem justificar excessivamente
+- Nunca produzir 3 opções quando 1 basta
+- Propor 3 caminhos quando a decisão é estratégica
+- Ao receber print de referência: analisar tecnicamente antes de sugerir implementação
+- Nunca sugerir copy sensacionalista. Voz contida sempre (princípio 4 e voz editorial seção 6)
+
+---
+
+## 14 — Pendências técnicas conhecidas
+
+Itens que precisam ser executados **antes ou durante a implementação do MVP**. Ordem sugerida:
+
+### 14.1 Rename semântico (prioridade alta)
+
+Executar via Claude Code CLI no repositório `invistica-web`:
+
+**Strings a renomear em todo o código, metadata, OpenGraph, títulos de página:**
+- `InvestIQ` → `Invística`
+- `investiq` → `invistica`
+- `INVESTIQ` → `INVISTICA`
+- `IQ-Score` → `Invscore`
+- `IQ-Cognit` → `Invscore`
+- `iq-score` → `invscore`
+- `iqScore` → `invscore`
+
+**Também em:**
+- `package.json` nome do projeto
+- `README.md`
+- `next.config.ts` metadata
+- Arquivos `.env` e `.env.example` (variáveis com prefixo)
+- Títulos `<title>` em layouts
+- OpenGraph `og:title`, `og:description`, `og:site_name`
+
+**Prompt sugerido para Claude Code CLI:**
+> Leia o CLAUDE.md na raiz do projeto. Execute o rename semântico listado na Seção 14.1. Não altere código funcional, apenas strings de identidade visual, metadata e documentação. Preserve histórico git com commits separados por categoria (metadata, UI, docs).
+
+### 14.2 Família de assets da marca (prioridade alta)
+
+Regerar em paleta preto/branco/vermelho + Inter:
+- `wordmark-light.svg`
+- `wordmark-dark.svg`
+- `favicon.svg`
+- `favicon.ico`
+- `og-home.png` (template Figma a criar)
+
+Símbolo Pilar Alpha está **descontinuado** até reinterpretação em sessão futura com Rafael.
+
+### 14.3 Landing nova (prioridade alta)
+
+Converter `hero-invistica-v2.html` (mockup validado) em componente React + Tailwind na rota `/` do `invistica-web`.
+
+**Prompt sugerido para Claude Code CLI:**
+> Converta o arquivo hero-invistica-v2.html em componente React funcional usando App Router. Extraia os tokens de cor para CSS variables em globals.css. Use Tailwind para layout. Preserve motion (framer-motion). Garanta responsividade mobile. Use next/font para Inter.
+
+### 14.4 DNS (prioridade média)
+
+Só após landing nova estar em produção e validada visualmente por Rafael: apontar `invistica.com.br` → Vercel.
+
+### 14.5 Seções pós-hero da landing (prioridade média)
+
+A serem especificadas em sessão futura com Rafael. Rafael mencionou preferência por "telas de demonstração da Invística" (screenshots ou mockups do produto logado) como fold subsequente ao hero.
+
+### 14.6 Camadas 2, 3, 4 do produto (prioridade alta para MVP)
+
+Ver `PRODUCT.md` seção 9:
+- Camada 2 — Funcionalidades por módulo (a produzir em sessão específica)
+- Camada 3 — Wireframes dos 7 módulos MVP
+- Camada 4 — Copy editorial por página
+
+Não implementar módulos logados sem antes ter Camadas 2, 3 e 4 validadas.
+
+---
+
+## 15 — Histórico de decisões importantes
+
+Registro de decisões estratégicas com data e racional. Novas decisões devem ser adicionadas aqui ao final, nunca sobrescrever.
+
+**2025-09** — Decisão de rebrand de InvestIQ para Invística. Motivo: InvestIQ comunica ferramenta genérica, Invística evoca *inquisitio* latino (pesquisa metódica) e tem identidade brasileira única.
+
+**2026-01** — Definição da paleta azul Aquino (#1E40AF) + amarelo neon (#FFE93D) + fonte Fraunces. Razão: queríamos signaling editorial sério + ponto de impacto. **REVERTIDA em 2026-04.**
+
+**2026-04** — Pivot completo de paleta e tipografia:
+- Paleta: azul Aquino + amarelo → preto `#0A0A0A` + branco `#FFFFFF` + vermelho `#DC2626`
+- Tipografia: Fraunces → Inter
+- Referência estrutural: Gorila Invest como norte de hierarquia e composição
+- Razão: paleta azul+amarelo ficava "fintech genérica"; preto+branco+vermelho comunica institucional premium sem concorrer visualmente com Itaú (laranja+azul) ou Santander (vermelho dominante). Inter resolve gap de kerning que Geist criava no wordmark com I+ı italic
+
+**2026-04** — Persona-âncora formalizada: **Alexandre, 37 anos**, engenheiro CLT R$ 22k/mês, patrimônio R$ 420k. Substituiu persona anterior genérica.
+
+**2026-04** — Pricing elevado a princípio de produto (princípio 6): R$ 38,90/mês mantido por pelo menos 12 meses. Volume sobre ARPU.
+
+**2026-04** — Anti-princípios explicitados: não somos rede social / consolidador multi-custódia / corretora / edtech / robo-advisor por perfil.
+
+**2026-04** — MVP enxuto definido: Home + Ranking Invscore + Ativo básico + Carteira manual + Teses + Performance + Conta. Screener, valuation multi-modelo, simulador e relatórios vão para V2.
+
+---
+
+## 16 — Documentos vivos relacionados
+
+- `PRODUCT.md` v1.2 — posicionamento estratégico e mapa de produto completo
+- `README.md` — orientações de setup local (frontend e backend)
+- `CHANGELOG.md` — histórico de versões do produto em produção
+- Documentos futuros a criar: `PRODUCT-MVP-MODULES.md`, `PRODUCT-COPY.md`, `DESIGN-SYSTEM.md`
+
+---
+
+Fim do CLAUDE.md v6.
+
+Este documento substitui integralmente o CLAUDE.md v5. Versões anteriores devem ser arquivadas para referência histórica mas nunca consultadas para decisões operacionais.

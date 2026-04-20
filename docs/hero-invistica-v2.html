@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invística — Análise quantamental aplicada a ações da B3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #FFFFFF;
+    --text: #0A0A0A;
+    --text-muted: #52525B;
+    --text-dim: #71717A;
+    --text-faint: #A1A1AA;
+    --border: #E4E4E7;
+    --border-strong: #D4D4D8;
+    --accent: #DC2626;
+    --accent-soft-bg: #FEE2E2;
+    --accent-soft-text: #991B1B;
+    --card-bg: #FAFAFA;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Grão sutil no fundo — estilo InvestIQ original */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+  }
+
+  /* HEADER */
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .header-inner {
+    max-width: 1440px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 40px;
+  }
+  .wordmark {
+    font-family: 'Inter', sans-serif;
+    font-size: 22px; font-weight: 500; letter-spacing: -0.6px;
+    color: var(--text); line-height: 1;
+    display: flex; align-items: baseline; gap: 0;
+  }
+  .wordmark .italic { font-style: italic; }
+  .wordmark .dot-wrap { position: relative; display: inline-block; }
+  .wordmark .dot-wrap::before {
+    content: ''; position: absolute; left: 50%; top: -5px;
+    width: 6px; height: 1.5px; background: var(--accent);
+    border-radius: 1px; transform: translateX(-50%);
+  }
+  .nav { display: flex; gap: 32px; align-items: center; }
+  .nav a {
+    font-size: 14px; color: var(--text); font-weight: 400;
+    text-decoration: none; transition: color 180ms;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .nav a:hover { color: var(--accent); }
+  .nav-chevron { font-size: 10px; color: var(--text-dim); }
+  .header-right { display: flex; gap: 8px; align-items: center; }
+  .btn-link {
+    font-size: 14px; color: var(--text); font-weight: 500;
+    padding: 8px 16px; background: transparent; border: 0.5px solid transparent;
+    border-radius: 6px; cursor: pointer; font-family: inherit;
+    transition: background 180ms;
+  }
+  .btn-link:hover { background: #F4F4F5; }
+  .btn-outline {
+    font-size: 14px; color: var(--text); font-weight: 500;
+    padding: 8px 16px; background: transparent;
+    border: 0.5px solid var(--border-strong); border-radius: 6px; cursor: pointer;
+    font-family: inherit; transition: background 180ms, border-color 180ms;
+  }
+  .btn-outline:hover { border-color: var(--text); }
+  .btn-primary {
+    font-size: 14px; color: #FFFFFF; font-weight: 500;
+    padding: 8px 16px; background: var(--accent); border: 0.5px solid var(--accent);
+    border-radius: 6px; cursor: pointer; font-family: inherit;
+    transition: background 180ms, transform 150ms;
+  }
+  .btn-primary:hover { background: #B91C1C; transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    max-width: 1440px; margin: 0 auto;
+    padding: 100px 40px 160px;
+    min-height: 700px;
+    overflow: visible;
+    z-index: 2;
+  }
+
+  .bg-curve {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 1800ms ease;
+  }
+  .bg-curve.in { opacity: 1; }
+
+  .hero-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+    min-height: 540px;
+    z-index: 10;
+  }
+
+  .hero-left {
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1), transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .hero-left.in { opacity: 1; transform: translateY(0); }
+
+  h1.hero-title {
+    font-size: 60px; font-weight: 700; letter-spacing: -1.8px;
+    line-height: 1.04; margin-bottom: 28px;
+    color: var(--text); margin-top: 0;
+  }
+  .rotator {
+    color: var(--accent); display: block;
+    position: relative; min-height: 1.1em;
+  }
+  .rotator-word {
+    display: inline-block;
+    transition: opacity 400ms ease, transform 400ms ease;
+  }
+  .rotator-word.out { opacity: 0; transform: translateY(-8px); }
+  .rotator-word.in { opacity: 1; transform: translateY(0); }
+
+  .hero-sub {
+    font-size: 17px; color: var(--text-muted); line-height: 1.55;
+    max-width: 480px; font-weight: 400;
+  }
+  .hero-sub strong { color: var(--text); font-weight: 600; }
+
+  /* HERO RIGHT — cards de ações */
+  .hero-right {
+    position: relative;
+    height: 620px;
+  }
+
+  .stock-card {
+    position: absolute;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 18px 14px;
+    width: 260px;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 4px 12px rgba(0, 0, 0, 0.04),
+      0 16px 40px rgba(0, 0, 0, 0.06);
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+    transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1), transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 5;
+  }
+  .stock-card.in {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .stock-card.float-slow { animation: float-slow 8s ease-in-out infinite; }
+  .stock-card.float-med { animation: float-med 7s ease-in-out infinite; animation-delay: -2s; }
+  .stock-card.float-fast { animation: float-fast 6s ease-in-out infinite; animation-delay: -3.5s; }
+  .stock-card.float-alt { animation: float-alt 7.5s ease-in-out infinite; animation-delay: -1s; }
+
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes float-med {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes float-fast {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  @keyframes float-alt {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-7px); }
+  }
+
+  .sc-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .sc-ticker-row {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sc-logo {
+    width: 24px; height: 24px; border-radius: 5px;
+    background: var(--accent); color: #FFFFFF;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+  }
+  .sc-logo.alt { background: var(--text); }
+  .sc-logo.alt2 { background: #FFFFFF; color: var(--text); border: 1px solid var(--text); }
+  .sc-ticker {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    font-variant-numeric: tabular-nums; line-height: 1.2;
+  }
+  .sc-price {
+    font-size: 12px; color: var(--text-muted); font-weight: 500;
+    font-variant-numeric: tabular-nums; line-height: 1.2;
+  }
+  .sc-tag {
+    font-size: 10px; color: var(--accent); font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .sc-score-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .sc-score-label {
+    font-size: 10px; color: var(--text-dim); letter-spacing: 1.5px;
+    text-transform: uppercase; font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .sc-score {
+    font-size: 38px; font-weight: 700; color: var(--text);
+    line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .sc-score.accent { color: var(--accent); }
+  .sc-score-bar {
+    width: 56px; height: 3px; background: var(--border); border-radius: 1px;
+    position: relative; margin-bottom: 10px;
+  }
+  .sc-score-bar span {
+    position: absolute; top: 0; left: 0; bottom: 0;
+    background: var(--accent); border-radius: 1px;
+  }
+  .sc-subscores {
+    display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+  .sc-sub {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 3px;
+  }
+  .sc-sub-label {
+    font-size: 9px; color: var(--text-dim); font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .sc-sub-value {
+    font-size: 11px; font-weight: 700; color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+  .sc-sub-value.high { color: var(--accent); }
+
+  /* Posições dos 4 cards — sem sobreposição */
+  .card-1 { top: 0px; right: 0px; }
+  .card-2 { top: 180px; left: 0px; }
+  .card-3 { top: 340px; right: 20px; }
+  .card-4 { top: 500px; left: 40px; }
+
+  @media (max-width: 1100px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+    .hero-right { height: 520px; order: 2; }
+    h1.hero-title { font-size: 42px; letter-spacing: -1px; }
+    .nav { display: none; }
+    .header-inner { padding: 16px 24px; }
+    .hero { padding: 48px 24px 100px; }
+    .card-1 { right: 0px; }
+    .card-2 { left: 0px; top: 160px; }
+    .card-3 { right: 0px; top: 300px; }
+    .card-4 { left: 20px; top: 460px; }
+    .stock-card { width: 240px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div style="display: flex; align-items: center; gap: 48px;">
+      <div class="wordmark">
+        <span class="italic">I</span>nv<span class="dot-wrap"><span class="italic">ı</span></span>stica
+      </div>
+      <nav class="nav">
+        <a href="#">Plataforma<span class="nav-chevron">▾</span></a>
+        <a href="#">Invscore<span class="nav-chevron">▾</span></a>
+        <a href="#">Método</a>
+        <a href="#">Performance</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <button class="btn-link">Entrar</button>
+      <button class="btn-outline">Criar conta</button>
+      <button class="btn-primary">Acessar plataforma</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+
+  <svg class="bg-curve" id="bg-curve" viewBox="0 0 1440 700" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="curve-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#DC2626" stop-opacity="0" />
+        <stop offset="50%" stop-color="#DC2626" stop-opacity="0.15" />
+        <stop offset="100%" stop-color="#DC2626" stop-opacity="0.30" />
+      </linearGradient>
+      <linearGradient id="area-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#DC2626" stop-opacity="0.03" />
+        <stop offset="100%" stop-color="#DC2626" stop-opacity="0" />
+      </linearGradient>
+    </defs>
+    <path id="curve-area" d="M 0,680 Q 400,620 720,500 T 1440,140 L 1440,700 L 0,700 Z"
+      fill="url(#area-grad)" opacity="0" />
+    <path id="curve-line" d="M 0,680 Q 400,620 720,500 T 1440,140"
+      fill="none" stroke="url(#curve-grad)" stroke-width="1.5" stroke-linecap="round" />
+  </svg>
+
+  <div class="hero-grid">
+    <div class="hero-left" id="hero-left">
+      <h1 class="hero-title">
+        Análise quantamental<br>aplicada para<br>
+        <span class="rotator">
+          <span class="rotator-word in" id="rotator-word">value investing</span>
+        </span>
+      </h1>
+
+      <p class="hero-sub">
+        Motor proprietário que combina <strong>análise quantitativa completa</strong> e <strong>qualitativa profunda</strong>, aplicado a 947 ações da B3.
+      </p>
+    </div>
+
+    <div class="hero-right">
+
+      <div class="stock-card card-1 float-slow" data-delay="400">
+        <div class="sc-header">
+          <div class="sc-ticker-row">
+            <div class="sc-logo">W</div>
+            <div>
+              <div class="sc-ticker">WEGE3</div>
+              <div class="sc-price">R$ 52,30</div>
+            </div>
+          </div>
+          <div class="sc-tag">TOP</div>
+        </div>
+        <div class="sc-score-row">
+          <div>
+            <div class="sc-score-label">Invscore</div>
+            <div class="sc-score accent">86</div>
+          </div>
+          <div class="sc-score-bar"><span style="width: 86%;"></span></div>
+        </div>
+        <div class="sc-subscores">
+          <div class="sc-sub"><span class="sc-sub-label">Val</span><span class="sc-sub-value">72</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Qual</span><span class="sc-sub-value high">88</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Risc</span><span class="sc-sub-value high">92</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Div</span><span class="sc-sub-value">68</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Cresc</span><span class="sc-sub-value">75</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">QLT</span><span class="sc-sub-value high">85</span></div>
+        </div>
+      </div>
+
+      <div class="stock-card card-2 float-med" data-delay="600">
+        <div class="sc-header">
+          <div class="sc-ticker-row">
+            <div class="sc-logo alt">I</div>
+            <div>
+              <div class="sc-ticker">ITUB4</div>
+              <div class="sc-price">R$ 33,12</div>
+            </div>
+          </div>
+          <div class="sc-tag">TOP</div>
+        </div>
+        <div class="sc-score-row">
+          <div>
+            <div class="sc-score-label">Invscore</div>
+            <div class="sc-score accent">84</div>
+          </div>
+          <div class="sc-score-bar"><span style="width: 84%;"></span></div>
+        </div>
+        <div class="sc-subscores">
+          <div class="sc-sub"><span class="sc-sub-label">Val</span><span class="sc-sub-value">78</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Qual</span><span class="sc-sub-value high">86</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Risc</span><span class="sc-sub-value">82</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Div</span><span class="sc-sub-value high">88</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Cresc</span><span class="sc-sub-value">70</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">QLT</span><span class="sc-sub-value">80</span></div>
+        </div>
+      </div>
+
+      <div class="stock-card card-3 float-fast" data-delay="800">
+        <div class="sc-header">
+          <div class="sc-ticker-row">
+            <div class="sc-logo alt2">T</div>
+            <div>
+              <div class="sc-ticker">TAEE11</div>
+              <div class="sc-price">R$ 38,45</div>
+            </div>
+          </div>
+        </div>
+        <div class="sc-score-row">
+          <div>
+            <div class="sc-score-label">Invscore</div>
+            <div class="sc-score">82</div>
+          </div>
+          <div class="sc-score-bar"><span style="width: 82%;"></span></div>
+        </div>
+        <div class="sc-subscores">
+          <div class="sc-sub"><span class="sc-sub-label">Val</span><span class="sc-sub-value high">85</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Qual</span><span class="sc-sub-value">78</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Risc</span><span class="sc-sub-value high">88</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Div</span><span class="sc-sub-value high">92</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Cresc</span><span class="sc-sub-value">62</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">QLT</span><span class="sc-sub-value">76</span></div>
+        </div>
+      </div>
+
+      <div class="stock-card card-4 float-alt" data-delay="1000">
+        <div class="sc-header">
+          <div class="sc-ticker-row">
+            <div class="sc-logo alt">B</div>
+            <div>
+              <div class="sc-ticker">BBSE3</div>
+              <div class="sc-price">R$ 37,80</div>
+            </div>
+          </div>
+        </div>
+        <div class="sc-score-row">
+          <div>
+            <div class="sc-score-label">Invscore</div>
+            <div class="sc-score">74</div>
+          </div>
+          <div class="sc-score-bar"><span style="width: 74%;"></span></div>
+        </div>
+        <div class="sc-subscores">
+          <div class="sc-sub"><span class="sc-sub-label">Val</span><span class="sc-sub-value">72</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Qual</span><span class="sc-sub-value">75</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Risc</span><span class="sc-sub-value">68</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Div</span><span class="sc-sub-value high">90</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">Cresc</span><span class="sc-sub-value">65</span></div>
+          <div class="sc-sub"><span class="sc-sub-label">QLT</span><span class="sc-sub-value">72</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+(function() {
+  setTimeout(function() {
+    document.getElementById('hero-left').classList.add('in');
+  }, 100);
+
+  setTimeout(function() {
+    document.getElementById('bg-curve').classList.add('in');
+    var curveLine = document.getElementById('curve-line');
+    var curveArea = document.getElementById('curve-area');
+    if (curveLine) {
+      var len = curveLine.getTotalLength();
+      curveLine.style.strokeDasharray = len;
+      curveLine.style.strokeDashoffset = len;
+      curveLine.style.transition = 'stroke-dashoffset 2800ms cubic-bezier(0.4, 0, 0.2, 1)';
+      setTimeout(function() { curveLine.style.strokeDashoffset = '0'; }, 50);
+    }
+    if (curveArea) {
+      curveArea.style.transition = 'opacity 1400ms ease';
+      setTimeout(function() { curveArea.style.opacity = '1'; }, 1400);
+    }
+  }, 200);
+
+  var cards = document.querySelectorAll('.stock-card');
+  cards.forEach(function(card) {
+    var delay = parseInt(card.getAttribute('data-delay'), 10) || 0;
+    setTimeout(function() {
+      card.classList.add('in');
+    }, delay);
+  });
+
+  var words = ['value investing', 'dividendos consistentes', 'quality at a reasonable price', 'momentum fundamentalista'];
+  var idx = 0;
+  var wordEl = document.getElementById('rotator-word');
+
+  function rotate() {
+    idx = (idx + 1) % words.length;
+    wordEl.classList.remove('in');
+    wordEl.classList.add('out');
+    setTimeout(function() {
+      wordEl.textContent = words[idx];
+      wordEl.classList.remove('out');
+      wordEl.classList.add('in');
+    }, 400);
+  }
+
+  setTimeout(function() {
+    setInterval(rotate, 2600);
+  }, 2400);
+})();
+</script>
+
+</body>
+</html>
