@@ -34,7 +34,7 @@ export function Header() {
       role="banner"
       className="sticky top-0 z-50 border-b border-[var(--border)] bg-[rgb(255_255_255_/_0.92)] backdrop-blur-xl"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10 md:py-5">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-8 md:py-5 lg:px-12">
         <div className="flex items-center gap-12">
           <Wordmark size="md" />
           <nav
