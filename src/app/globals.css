@@ -49,12 +49,6 @@
   --color-accent-soft-text: var(--accent-soft-text);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
 html {
   font-family: var(--font-inter), system-ui, sans-serif;
 }
