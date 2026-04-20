@@ -1,0 +1,13 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="6" fill="#0A0A0A"/>
+  <text
+    x="16" y="24"
+    font-family="Inter, system-ui, sans-serif"
+    font-weight="500"
+    font-style="italic"
+    font-size="22"
+    fill="#FAFAFA"
+    text-anchor="middle"
+  >I</text>
+  <rect x="20" y="7" width="5" height="1.5" rx="0.75" fill="#DC2626"/>
+</svg>
