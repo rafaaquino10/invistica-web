@@ -4,7 +4,7 @@ import { SocialLoginButtons } from './social-buttons'
 
 export const metadata = {
   title: 'Entrar',
-  description: 'Faça login na sua conta InvestIQ',
+  description: 'Faça login na sua conta Invística',
 }
 
 export default async function LoginPage({

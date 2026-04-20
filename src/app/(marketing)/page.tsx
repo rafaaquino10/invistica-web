@@ -239,7 +239,7 @@ function ScorePipeline() {
       <ConveyorDots />
 
       <div className="relative h-[200px]">
-        {/* Center — IQ Score Engine (absolutely centered on page) */}
+        {/* Center — Invscore Engine (absolutely centered on page) */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
           {/* Soft glow behind — intensifies subtly on processing */}
           <motion.div
@@ -279,7 +279,7 @@ function ScorePipeline() {
           </motion.div>
 
           <span className="mt-3 text-[11px] uppercase tracking-[0.2em] font-semibold text-[var(--accent-1)]/70">
-            IQ-Cognit™
+            Invscore
           </span>
         </div>
 
@@ -417,7 +417,7 @@ function MobileScorePipeline() {
           </AnimatePresence>
         </div>
 
-        {/* Center — IQ Score Engine */}
+        {/* Center — Invscore Engine */}
         <div className="relative z-10 flex flex-col items-center py-3">
           <motion.div
             animate={{
@@ -440,7 +440,7 @@ function MobileScorePipeline() {
             <IQSymbol size={56} />
           </motion.div>
           <span className="mt-2 text-[10px] uppercase tracking-[0.2em] font-semibold text-[var(--accent-1)]/70">
-            IQ-Cognit™
+            Invscore
           </span>
         </div>
 
@@ -665,7 +665,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── Motor IQ-Cognit — 3 Pilares ──────────── */}
+      {/* ─── Motor Invscore — 3 Pilares ──────────── */}
       <section id="motor" className="relative py-20 md:py-28 border-t border-[var(--border-1)]/20">
         <DiagonalLines />
 
@@ -676,7 +676,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <p className="text-sm font-medium tracking-widest uppercase text-[var(--accent-1)] mb-4">IQ-Cognit v11 Adaptive Apex</p>
+            <p className="text-sm font-medium tracking-widest uppercase text-[var(--accent-1)] mb-4">Invscore v11 Adaptive Apex</p>
             <h2 className="text-3xl md:text-4xl font-bold leading-tight">
               3 pilares. 9 setores. Regime-aware.
             </h2>
@@ -791,7 +791,7 @@ export default function HomePage() {
                 KPIs da carteira, performance vs benchmarks, sinais de compra/venda do motor estratégico e regime macro em uma única tela.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
-                {['Signal Card com confiança % e vol stress', 'Regime Strip: SELIC, IPCA, USD, Brent ao vivo', 'Performance vs CDI e IBOV com período configurável', 'Oportunidades rankeadas pelo motor IQ-Cognit'].map((item) => (
+                {['Signal Card com confiança % e vol stress', 'Regime Strip: SELIC, IPCA, USD, Brent ao vivo', 'Performance vs CDI e IBOV com período configurável', 'Oportunidades rankeadas pelo motor Invscore'].map((item) => (
                   <li key={item} className="flex items-center gap-2"><span className="w-1 h-1 rounded-full bg-[var(--accent-1)]" />{item}</li>
                 ))}
               </ul>
@@ -843,7 +843,7 @@ export default function HomePage() {
               <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Explorer</p>
               <h3 className="text-2xl font-bold mb-3">6 Lentes. Colunas Dinâmicas.</h3>
               <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                Screener com colunas que mudam automaticamente conforme a lente selecionada. IQ Score, Rating, Fair Value, Margem de Segurança, DY Projetado e Safety Score.
+                Screener com colunas que mudam automaticamente conforme a lente selecionada. Invscore, Rating, Fair Value, Margem de Segurança, DY Projetado e Safety Score.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
                 {['Colunas dinâmicas por lens (valor, dividendos, growth...)', 'Tooltips educativos em cada métrica', 'Filtros por setor, score mínimo, DY', 'Export CSV e atalhos de teclado (j/k/Enter)'].map((item) => (
@@ -859,7 +859,7 @@ export default function HomePage() {
               <p className="text-xs font-semibold tracking-widest uppercase text-[var(--accent-1)] mb-3">Analise do Ativo</p>
               <h3 className="text-2xl font-bold mb-3">5 Tabs. Tudo Sobre o Ativo.</h3>
               <p className="text-[var(--text-2)] leading-relaxed mb-5">
-                Hero com preço + IQ Score + cotação ao vivo. 5 tabs organizadas: Visão Geral, Valuation (Fair Value Strip + DCF + Monte Carlo + Institutional Holders), Dividendos, Score (X-Ray + Thesis + Dossier IA), Notícias.
+                Hero com preço + Invscore + cotação ao vivo. 5 tabs organizadas: Visão Geral, Valuation (Fair Value Strip + DCF + Monte Carlo + Institutional Holders), Dividendos, Score (X-Ray + Thesis + Dossier IA), Notícias.
               </p>
               <ul className="space-y-2 text-sm text-[var(--text-2)]">
                 {['Fair Value: DCF + Gordon + Multiplos + Monte Carlo P25/P75', 'Institutional Holders (CVM) + Short Interest (B3)', 'Dividend Safety Score + Trap Detection', '6 dimensoes qualitativas avaliadas por IA'].map((item) => (
@@ -949,7 +949,7 @@ export default function HomePage() {
             </div>
             <div>
               <p className="text-3xl font-bold font-mono text-[var(--text-1)]">40+</p>
-              <p className="text-sm text-[var(--text-2)] mt-1">Endpoints do motor IQ-Cognit</p>
+              <p className="text-sm text-[var(--text-2)] mt-1">Endpoints do motor Invscore</p>
             </div>
             <div>
               <p className="text-3xl font-bold font-mono text-amber">4</p>

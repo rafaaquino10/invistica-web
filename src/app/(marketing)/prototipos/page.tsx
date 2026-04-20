@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 /*
  ╔══════════════════════════════════════════════════════════════╗
- ║  InvestIQ — Protótipo de Design "911"                       ║
+ ║  Invística — Protótipo de Design "911"                      ║
  ║                                                              ║
  ║  Filosofia: Porsche 911                                      ║
  ║  - Performance pura, design atemporal                        ║
@@ -194,7 +194,7 @@ export default function PrototiposPage() {
             </div>
           </div>
 
-          {/* IQ Score da carteira */}
+          {/* Invscore da carteira */}
           <div style={{ background: C.s1, borderRadius: 10, padding: 20, border: `1px solid ${C.glassBorder}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ fontSize: 9, color: C.t3, fontWeight: 700, letterSpacing: 1.5, marginBottom: 8 }}>IQ SCORE MÉDIO</div>
             <ScoreArc score={76} size={64} />

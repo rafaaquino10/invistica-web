@@ -320,8 +320,8 @@ export default function CookiesPage() {
               <h3 className="text-lg font-semibold mb-1">Dúvidas sobre cookies?</h3>
               <p className="text-[var(--text-2)]">
                 Entre em contato conosco pelo e-mail{' '}
-                <a href="mailto:privacidade@investiq.com.br" className="text-amber hover:underline font-medium">
-                  privacidade@investiq.com.br
+                <a href="mailto:privacidade@invistica.com.br" className="text-amber hover:underline font-medium">
+                  privacidade@invistica.com.br
                 </a>
               </p>
             </div>

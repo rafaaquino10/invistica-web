@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Termos de Uso',
-  description: 'Termos e condições de uso da plataforma InvestIQ.',
+  description: 'Termos e condições de uso da plataforma Invística.',
 }
 
 const sections = [
@@ -16,7 +16,7 @@ const sections = [
       </svg>
     ),
     title: 'Aceitação dos Termos',
-    content: `Ao acessar ou usar a plataforma InvestIQ ("Serviço"), você concorda em estar vinculado a estes Termos de Uso. Se você não concordar com qualquer parte dos termos, não poderá acessar o Serviço.`,
+    content: `Ao acessar ou usar a plataforma Invística ("Serviço"), você concorda em estar vinculado a estes Termos de Uso. Se você não concordar com qualquer parte dos termos, não poderá acessar o Serviço.`,
   },
   {
     id: 'servico',
@@ -27,10 +27,10 @@ const sections = [
       </svg>
     ),
     title: 'Descrição do Serviço',
-    content: `O InvestIQ é uma plataforma de análise de investimentos que fornece:`,
+    content: `O Invística é uma plataforma de análise de investimentos que fornece:`,
     list: [
       'Análise fundamentalista de ações listadas na B3',
-      'Sistema proprietário de análise (IQ-Cognit™)',
+      'Sistema proprietário de análise (Invscore)',
       'Ferramentas de gestão de carteira',
       'Projeções e simulações de dividendos',
       'Alertas e notificações personalizadas',
@@ -47,8 +47,8 @@ const sections = [
     ),
     title: 'Isenção de Responsabilidade',
     highlight: true,
-    content: `O InvestIQ NÃO é uma casa de análise, consultoria de investimentos ou instituição financeira. As informações fornecidas são meramente educacionais e informativas.`,
-    extraContent: `O IQ-Cognit™ e todas as análises apresentadas:`,
+    content: `O Invística NÃO é uma casa de análise, consultoria de investimentos ou instituição financeira. As informações fornecidas são meramente educacionais e informativas.`,
+    extraContent: `O Invscore e todas as análises apresentadas:`,
     list: [
       'NÃO constituem recomendação de compra ou venda de ativos',
       'NÃO garantem rentabilidade futura',
@@ -82,11 +82,11 @@ const sections = [
       </svg>
     ),
     title: 'Uso da Plataforma',
-    content: `O InvestIQ é uma plataforma de análise de investimentos:`,
+    content: `O Invística é uma plataforma de análise de investimentos:`,
     list: [
       'O acesso à plataforma é fornecido mediante cadastro',
       'Os dados são atualizados diariamente com fontes oficiais (CVM, BCB, B3)',
-      'O InvestIQ não constitui recomendação de investimento',
+      'O Invística não constitui recomendação de investimento',
       'Decisões de investimento são de responsabilidade exclusiva do usuário',
     ],
   },
@@ -98,7 +98,7 @@ const sections = [
       </svg>
     ),
     title: 'Propriedade Intelectual',
-    content: `Todo o conteúdo do InvestIQ, incluindo mas não limitado a textos, gráficos, logos, ícones, imagens, código-fonte e o sistema IQ-Cognit™, são propriedade exclusiva do InvestIQ e protegidos por leis de propriedade intelectual.`,
+    content: `Todo o conteúdo do Invística, incluindo mas não limitado a textos, gráficos, logos, ícones, imagens, código-fonte e o sistema Invscore, são propriedade exclusiva do Invística e protegidos por leis de propriedade intelectual.`,
   },
   {
     id: 'uso',
@@ -127,7 +127,7 @@ const sections = [
       </svg>
     ),
     title: 'Limitação de Responsabilidade',
-    content: `Em nenhuma circunstância o InvestIQ será responsável por quaisquer danos diretos, indiretos, incidentais, especiais ou consequentes resultantes do uso ou da incapacidade de usar o Serviço, incluindo perdas financeiras decorrentes de decisões de investimento.`,
+    content: `Em nenhuma circunstância o Invística será responsável por quaisquer danos diretos, indiretos, incidentais, especiais ou consequentes resultantes do uso ou da incapacidade de usar o Serviço, incluindo perdas financeiras decorrentes de decisões de investimento.`,
   },
   {
     id: 'lei',
@@ -160,7 +160,7 @@ export default function TermosPage() {
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Termos de Uso</h1>
           <p className="text-[var(--text-2)] max-w-2xl mx-auto">
-            Leia atentamente os termos e condições que regem o uso da plataforma InvestIQ.
+            Leia atentamente os termos e condições que regem o uso da plataforma Invística.
           </p>
           <p className="text-sm text-[var(--text-2)] mt-4">
             Última atualização: 10 de fevereiro de 2026
@@ -267,8 +267,8 @@ export default function TermosPage() {
               <h3 className="text-lg font-semibold mb-1">Dúvidas sobre os termos?</h3>
               <p className="text-[var(--text-2)]">
                 Entre em contato conosco pelo e-mail{' '}
-                <a href="mailto:contato@investiq.com.br" className="text-[var(--accent-1)] hover:underline font-medium">
-                  contato@investiq.com.br
+                <a href="mailto:contato@invistica.com.br" className="text-[var(--accent-1)] hover:underline font-medium">
+                  contato@invistica.com.br
                 </a>
               </p>
             </div>

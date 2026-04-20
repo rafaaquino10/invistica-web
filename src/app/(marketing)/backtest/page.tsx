@@ -96,7 +96,7 @@ export default function BacktestPage() {
             Prova de Robustez
           </h1>
           <p className="text-lg md:text-xl text-slate-400 mb-2">
-            Motor IQ-Cognit™
+            Motor Invscore
           </p>
           <p className="text-sm text-slate-500 max-w-2xl mx-auto">
             Backtest completo de jan/2016 a dez/2025 com 120 meses de dados reais da B3.
@@ -159,7 +159,7 @@ export default function BacktestPage() {
         {/* ─── 3. Quintis ──────────────────────────────── */}
         <section>
           <h2 className="text-2xl font-bold mb-2">Análise por Quintis</h2>
-          <p className="text-slate-400 text-sm mb-6">Retorno acumulado (2016-2025) por quintil de IQ Score — Q1 (melhores) vs Q5 (piores)</p>
+          <p className="text-slate-400 text-sm mb-6">Retorno acumulado (2016-2025) por quintil de Invscore — Q1 (melhores) vs Q5 (piores)</p>
           <div className="bg-[#1E293B] rounded-xl p-4 md:p-6 border border-white/5">
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={quintiles} layout="vertical" barCategoryGap="25%">
@@ -293,7 +293,7 @@ export default function BacktestPage() {
         {/* ─── CTA ──────────────────────────────────────── */}
         <section className="text-center py-12">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Experimente o IQ Score em todas as 387 ações
+            Experimente o Invscore em todas as 387 ações
           </h2>
           <p className="text-slate-400 mb-8 max-w-xl mx-auto">
             O mesmo motor que gerou +10.55% de alpha anualizado está disponível em tempo real para sua carteira.

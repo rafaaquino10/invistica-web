@@ -6,7 +6,7 @@ import { Button } from '@/components/ui'
 
 export const metadata: Metadata = {
   title: 'Criar Conta',
-  description: 'Crie sua conta gratuita no InvestIQ',
+  description: 'Crie sua conta gratuita na Invística',
 }
 
 export default function RegisterPage() {
