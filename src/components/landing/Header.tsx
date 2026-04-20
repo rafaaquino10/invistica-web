@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
+import { useAuthModal } from "@/components/auth";
 import { Wordmark } from "@/components/brand";
 import { cn } from "@/lib/utils";
 
@@ -11,10 +12,8 @@ const navLinks: { label: string; hasChevron: boolean }[] = [
   { label: "Performance", hasChevron: false },
 ];
 
-const btnBase =
-  "text-sm font-medium px-4 py-2 rounded-md transition-all";
+const btnBase = "text-sm font-medium px-4 py-2 rounded-md transition-all";
 
-const btnLink = cn(btnBase, "text-foreground hover:bg-subtle");
 const btnOutline = cn(
   btnBase,
   "text-foreground border border-[var(--border-strong)] hover:border-[var(--text)]",
@@ -25,8 +24,16 @@ const btnPrimary = cn(
 );
 
 export function Header() {
-  const noop = () => {
-    // TODO: integração de auth/rota em sessão futura
+  const { openLogin, openSignup } = useAuthModal();
+
+  const handleNavClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    // TODO: dropdowns reais e rotas em sessão futura
+  };
+
+  const handleAccess = () => {
+    // TODO: quando houver contexto de auth, se autenticado rotear para /app
+    openLogin();
   };
 
   return (
@@ -45,15 +52,15 @@ export function Header() {
               <a
                 key={link.label}
                 href="#"
-                onClick={(event) => {
-                  event.preventDefault();
-                  noop();
-                }}
+                onClick={handleNavClick}
                 className="flex items-center gap-1 text-sm text-foreground transition-colors hover:text-accent"
               >
                 {link.label}
                 {link.hasChevron && (
-                  <ChevronDown className="h-3 w-3 text-dim" aria-hidden="true" />
+                  <ChevronDown
+                    className="h-3 w-3 text-dim"
+                    aria-hidden="true"
+                  />
                 )}
               </a>
             ))}
@@ -63,19 +70,12 @@ export function Header() {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={noop}
-            className={cn("hidden md:inline-flex", btnLink)}
-          >
-            Entrar
-          </button>
-          <button
-            type="button"
-            onClick={noop}
+            onClick={openSignup}
             className={cn("hidden md:inline-flex", btnOutline)}
           >
             Criar conta
           </button>
-          <button type="button" onClick={noop} className={btnPrimary}>
+          <button type="button" onClick={handleAccess} className={btnPrimary}>
             Acessar plataforma
           </button>
         </div>
