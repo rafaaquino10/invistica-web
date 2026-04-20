@@ -4,17 +4,17 @@ import { cn } from "@/lib/utils";
 import type { WordmarkProps, WordmarkSize, WordmarkVariant } from "@/types/brand";
 
 const sizeClasses: Record<WordmarkSize, string> = {
-  sm: "text-[18px] font-medium",
-  md: "text-[22px] font-medium",
-  lg: "text-[32px] font-bold",
-  xl: "text-[72px] font-bold",
+  sm: "text-[18px] font-medium tracking-[-0.5px]",
+  md: "text-[22px] font-medium tracking-[-0.6px]",
+  lg: "text-[32px] font-bold tracking-[-1px]",
+  xl: "text-[72px] font-bold tracking-[-2px]",
 };
 
 const accentClasses: Record<WordmarkSize, string> = {
-  sm: "w-[5px] h-[1.5px] top-[-4px] left-[calc(50%+1px)]",
-  md: "w-[6px] h-[1.5px] top-[-5px] left-[calc(50%+1px)]",
-  lg: "w-[9px] h-[2px] top-[-7px] left-[calc(50%+2px)]",
-  xl: "w-[16px] h-[3px] top-[-10px] left-[calc(50%+5px)]",
+  sm: "before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bg-accent before:rounded-[1px] before:w-[5px] before:h-[1.5px] before:top-[-4px]",
+  md: "before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bg-accent before:rounded-[1px] before:w-[6px] before:h-[1.5px] before:top-[-5px]",
+  lg: "before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bg-accent before:rounded-[1px] before:w-[9px] before:h-[2px] before:top-[-7px]",
+  xl: "before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bg-accent before:rounded-[1px] before:w-[16px] before:h-[3px] before:top-[-10px]",
 };
 
 const variantClasses: Record<WordmarkVariant, string> = {
@@ -30,7 +30,7 @@ export function Wordmark({
   return (
     <span
       className={cn(
-        "inline-flex items-baseline leading-none tracking-tight select-none",
+        "inline-flex items-baseline leading-none gap-0 whitespace-nowrap select-none",
         sizeClasses[size],
         variantClasses[variant],
         className,
@@ -38,18 +38,11 @@ export function Wordmark({
       aria-label="Invística"
     >
       <span className="italic">I</span>
-      <span>nv</span>
-      <span className="relative inline-block">
-        <span
-          aria-hidden="true"
-          className={cn(
-            "absolute -translate-x-1/2 bg-accent rounded-[1px]",
-            accentClasses[size],
-          )}
-        />
+      {"nv"}
+      <span className={cn("relative inline-block", accentClasses[size])}>
         <span className="italic">&#x0131;</span>
       </span>
-      <span>stica</span>
+      {"stica"}
     </span>
   );
 }
